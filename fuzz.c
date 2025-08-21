@@ -167,7 +167,7 @@ int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
 			return EXIT_FAILURE;
 		}
 
-		if (grug_init(runtime_error_handler, "mod_api.json", "fuzzing", "mod_dlls", 10)) {
+		if (grug_init(runtime_error_handler, "mod_api.json", "fuzzing", "mod_dlls", 10, NULL)) {
 			fprintf(stderr, "grug_init() error: %s (detected by grug.c:%d)\n", grug_error.msg, grug_error.grug_c_line_number);
 			exit(EXIT_FAILURE);
 		}

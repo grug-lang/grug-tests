@@ -8,14 +8,14 @@ global on_fns
 on_fns:
 	dq on_a
 
-entity_type:
-	db 0
 on_fn_path:
 	db "tests/ok/entity_duplicate/input-D.grug", 0
 on_fn_name:
 	db "on_a", 0
 foo:
 	db "ok:foo", 0
+entity_type:
+	db 0
 bar:
 	db "ok:bar", 0
 baz:

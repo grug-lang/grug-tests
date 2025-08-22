@@ -8,14 +8,14 @@ global on_fns
 on_fns:
 	dq on_a
 
-entity_type:
-	db 0
 on_fn_path:
 	db "tests/ok/entity_in_on_fn/input-D.grug", 0
 on_fn_name:
 	db "on_a", 0
 entity:
 	db "ok:foo", 0
+entity_type:
+	db 0
 
 align 8
 global resources_size

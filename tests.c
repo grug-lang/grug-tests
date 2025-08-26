@@ -20,7 +20,7 @@
 #include <unistd.h>
 
 // Forward declaration, since grug.h doesn't declare it
-bool grug_test_regenerate_dll(const char *grug_file_path, const char *dll_path, const char *mod);
+bool grug_test_regenerate(const char *grug_file_path, const char *dll_path, const char *mod);
 
 // From https://stackoverflow.com/a/2114249/13279557
 #ifdef __x86_64__
@@ -1109,7 +1109,7 @@ static void test_error(
 
 	create_failed_file(failed_file_path);
 
-	assert(grug_test_regenerate_dll(grug_path, output_dll_path, "err"));
+	assert(grug_test_regenerate(grug_path, output_dll_path, "err"));
 
 	FILE *f = fopen(grug_output_path, "w");
 
@@ -1189,7 +1189,7 @@ static void generate_and_compare_output_dll(
 	const char *applied_path,
 	const char *failed_file_path
 ) {
-	if (grug_test_regenerate_dll(grug_path, output_dll_path, "ok")) {
+	if (grug_test_regenerate(grug_path, output_dll_path, "ok")) {
 		printf("The test wasn't supposed to print anything, but did:\n");
 		printf("----\n");
 		printf("%s\n", grug_error.msg);
@@ -6798,7 +6798,7 @@ static void add_ok_tests(void) {
 }
 
 int main(int argc, const char *argv[]) {
-	if (grug_init(runtime_error_handler, "mod_api.json", "tests", "mod_dlls", 10, NULL)) {
+	if (grug_init(runtime_error_handler, "mod_api.json", "tests", 10, NULL)) {
 		fprintf(stderr, "grug_init() error: %s (detected by grug.c:%d)\n", grug_error.msg, grug_error.grug_c_line_number);
 		exit(EXIT_FAILURE);
 	}

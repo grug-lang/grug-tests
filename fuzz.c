@@ -16,7 +16,7 @@
 #include <unistd.h>
 
 // Forward declaration, since grug.h doesn't declare it
-bool grug_test_regenerate_dll(const char *grug_file_path, const char *dll_path, const char *mod);
+bool grug_test_regenerate(const char *grug_file_path, const char *mod);
 
 void game_fn_nothing(void) {}
 int32_t game_fn_magic(void) { return 0; }
@@ -156,18 +156,11 @@ static void runtime_error_handler(const char *reason, enum grug_runtime_error_ty
 // Source: https://github.com/google/security-research-pocs/blob/649b6ed74c842f533d15410f13d94aada96375ef/autofuzz/alembic_fuzzer.cc#L293
 int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
 	static bool initialized = false;
-	static char dll_path[] = "./fuzz.dll";
 
 	if (!initialized) {
     	ignore_stdout();
 
-		int fd = open(dll_path, O_CREAT | O_TRUNC | O_RDWR, 0644);
-		if (fd == -1) {
-			perror("open");
-			return EXIT_FAILURE;
-		}
-
-		if (grug_init(runtime_error_handler, "mod_api.json", "fuzzing", "mod_dlls", 10, NULL)) {
+		if (grug_init(runtime_error_handler, "mod_api.json", "fuzzing", 10, NULL)) {
 			fprintf(stderr, "grug_init() error: %s (detected by grug.c:%d)\n", grug_error.msg, grug_error.grug_c_line_number);
 			exit(EXIT_FAILURE);
 		}
@@ -181,7 +174,7 @@ int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
 	}
 
 	// If there wasn't an error generating the dll
-	if (!grug_test_regenerate_dll(grug_path, dll_path, "fuzzing")) {
+	if (!grug_test_regenerate(grug_path, "fuzzing")) {
 		void *handle = dlopen(dll_path, RTLD_NOW);
 		if (!handle) {
 			fprintf(stderr, "dlopen: %s\n", dlerror());
@@ -212,7 +205,7 @@ int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
 		}
 	}
 
-	// fprintf(stderr, "grug_test_regenerate_dll() error: %s\n", grug_error.msg);
+	// fprintf(stderr, "grug_test_regenerate() error: %s\n", grug_error.msg);
 	// exit(EXIT_FAILURE);
 
 	if (delete_file(grug_path) != 0) {

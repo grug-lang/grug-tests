@@ -1,0 +1,17 @@
+a: i32 = 1
+
+on_a() {
+    initialize(x(helper_foo(), helper_bar()))
+}
+
+helper_x(a: i32, b: i32) {
+    return a + b
+}
+
+helper_foo() i32 {
+    return 1
+}
+
+helper_bar() i32 {
+    return 2
+}

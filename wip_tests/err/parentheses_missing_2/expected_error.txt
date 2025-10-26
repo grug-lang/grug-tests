@@ -1,1 +1,1 @@
-asd
+'false or true and true' has ambiguous operator precedence, so add parentheses to clarify intention: 'false or (true and true)'

@@ -1,1 +1,0 @@
-Global variables can't be assigned 'me'

@@ -1,0 +1,10 @@
+a: i32 = 1
+
+on_a() {
+    initialize(a + helper_foo())
+}
+
+helper_foo() i32 {
+    a = a + 1
+    return a
+}

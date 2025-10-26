@@ -11,18 +11,18 @@
 //    the grug file needs to pass the global variable into a game function of tests.c,
 //    which will save the value into its own static global.
 //
-// The README and CI of every language's grug bindings repository should explain how
-// the grug-tests repository needs to be cloned next to the bindings repository.
-// Every language's grug bindings repository then should contain a small bindings_tester.c
-// that passes the path of the grug-tests repository its tests/ directory to grug_init().
-// This allows tests to be treated as mods.
-// The bindings_tester.c should then call grug_trace_run_tests() from grug-tests its tests.h.
+// The README and CI of every language's grug bindings repository should state it's tested
+// by cloning the grug-tests repository next to it.
+// Every language's grug bindings repository should contain a small bindings_tester.c
+// that passes the path of the grug-tests repository its tests/ directory
+// to the bindings its init(). This allows tests to be treated as mods.
+// bindings_tester.c should then call grug_trace_run_tests() from grug-tests its tests.h.
 
 // bindings_tester.c will be responsible for providing an on fn dispatcher,
 // by matching on_fn_name to the appropriate on fn in the bindings.
 // This *does* strongly couple bindings_tester.c with every on fn
 // called by grug-tests its tests.c, but that seems acceptable.
-typedef void (*on_fn_dispatcher_t)(const char *on_fn_name);
+typedef void (*on_fn_dispatcher_t)(const char *on_fn_name, const char *grug_file_path);
 
 // Loops over all .grug files in tests/err/, tests/err_runtime/ and tests/ok/.
 void grug_trace_run_tests(on_fn_dispatcher_t on_fn_dispatcher);

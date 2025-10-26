@@ -16,7 +16,7 @@
 // Every language's grug bindings repository should contain a small bindings_tester.c
 // that passes the path of the grug-tests repository its tests/ directory
 // to the bindings its init(). This allows tests to be treated as mods.
-// bindings_tester.c should then call grug_trace_run_tests() from grug-tests its tests.h.
+// bindings_tester.c should then call grug_tests_run() from grug-tests its tests.h.
 
 // bindings_tester.c will be responsible for providing an on fn dispatcher,
 // by matching on_fn_name to the appropriate on fn in the bindings.
@@ -25,4 +25,4 @@
 typedef void (*on_fn_dispatcher_t)(const char *on_fn_name, const char *grug_file_path);
 
 // Loops over all .grug files in tests/err/, tests/err_runtime/ and tests/ok/.
-void grug_trace_run_tests(on_fn_dispatcher_t on_fn_dispatcher);
+void grug_tests_run(on_fn_dispatcher_t on_fn_dispatcher);

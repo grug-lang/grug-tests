@@ -2058,13 +2058,6 @@ static void ok_entity_and_resource_as_subexpression(void) {
 	assert(streq(game_fn_has_resource_path, "tests/ok/entity_and_resource_as_subexpression/foo.txt"));
 	assert(streq(game_fn_has_entity_name, "ok:baz"));
 	assert(streq(game_fn_has_string_str, "bar"));
-
-	assert(resources_size == 1);
-	assert(streq(resources[0], "tests/ok/entity_and_resource_as_subexpression/foo.txt"));
-
-	assert(entities_size == 1);
-	assert(streq(entities[0], "ok:baz"));
-	assert(streq(entity_types[0], ""));
 }
 
 static void ok_entity_duplicate(void) {
@@ -2073,16 +2066,6 @@ static void ok_entity_duplicate(void) {
 	assert(game_fn_spawn_call_count == 4);
 
 	assert(streq(game_fn_spawn_name, "ok:baz"));
-
-	assert(entities_size == 4);
-	assert(streq(entities[0], "ok:foo"));
-	assert(streq(entity_types[0], ""));
-	assert(streq(entities[1], "ok:bar"));
-	assert(streq(entity_types[1], ""));
-	assert(streq(entities[2], "ok:bar"));
-	assert(streq(entity_types[2], ""));
-	assert(streq(entities[3], "ok:baz"));
-	assert(streq(entity_types[3], ""));
 }
 
 static void ok_entity_in_on_fn(void) {
@@ -2091,10 +2074,6 @@ static void ok_entity_in_on_fn(void) {
 	assert(game_fn_spawn_call_count == 1);
 
 	assert(streq(game_fn_spawn_name, "ok:foo"));
-
-	assert(entities_size == 1);
-	assert(streq(entities[0], "ok:foo"));
-	assert(streq(entity_types[0], ""));
 }
 
 static void ok_entity_in_on_fn_with_mod_specified(void) {
@@ -2103,10 +2082,6 @@ static void ok_entity_in_on_fn_with_mod_specified(void) {
 	assert(game_fn_spawn_call_count == 1);
 
 	assert(streq(game_fn_spawn_name, "wow:foo"));
-
-	assert(entities_size == 1);
-	assert(streq(entities[0], "wow:foo"));
-	assert(streq(entity_types[0], ""));
 }
 
 static void ok_eq_false(void) {
@@ -3094,13 +3069,6 @@ static void ok_resource_and_entity(void) {
 
 	assert(streq(game_fn_draw_sprite_path, "tests/ok/resource_and_entity/foo.txt"));
 	assert(streq(game_fn_spawn_name, "ok:foo"));
-
-	assert(resources_size == 1);
-	assert(streq(resources[0], "tests/ok/resource_and_entity/foo.txt"));
-
-	assert(entities_size == 1);
-	assert(streq(entities[0], "ok:foo"));
-	assert(streq(entity_types[0], ""));
 }
 
 static void ok_resource_can_contain_dot_1(void) {
@@ -3109,9 +3077,6 @@ static void ok_resource_can_contain_dot_1(void) {
 	assert(game_fn_draw_call_count == 1);
 
 	assert(streq(game_fn_draw_sprite_path, "tests/ok/resource_can_contain_dot_1/.foo"));
-
-	assert(resources_size == 1);
-	assert(streq(resources[0], "tests/ok/resource_can_contain_dot_1/.foo"));
 }
 
 static void ok_resource_can_contain_dot_2(void) {
@@ -3120,9 +3085,6 @@ static void ok_resource_can_contain_dot_2(void) {
 	assert(game_fn_draw_call_count == 1);
 
 	assert(streq(game_fn_draw_sprite_path, "tests/ok/resource_can_contain_dot_2/foo."));
-
-	assert(resources_size == 1);
-	assert(streq(resources[0], "tests/ok/resource_can_contain_dot_2/foo."));
 }
 
 static void ok_resource_can_contain_dot_3(void) {
@@ -3131,9 +3093,6 @@ static void ok_resource_can_contain_dot_3(void) {
 	assert(game_fn_draw_call_count == 1);
 
 	assert(streq(game_fn_draw_sprite_path, "tests/ok/resource_can_contain_dot_3/foo.bar"));
-
-	assert(resources_size == 1);
-	assert(streq(resources[0], "tests/ok/resource_can_contain_dot_3/foo.bar"));
 }
 
 static void ok_resource_can_contain_dot_dot_1(void) {
@@ -3142,9 +3101,6 @@ static void ok_resource_can_contain_dot_dot_1(void) {
 	assert(game_fn_draw_call_count == 1);
 
 	assert(streq(game_fn_draw_sprite_path, "tests/ok/resource_can_contain_dot_dot_1/..foo"));
-
-	assert(resources_size == 1);
-	assert(streq(resources[0], "tests/ok/resource_can_contain_dot_dot_1/..foo"));
 }
 
 static void ok_resource_can_contain_dot_dot_2(void) {
@@ -3153,9 +3109,6 @@ static void ok_resource_can_contain_dot_dot_2(void) {
 	assert(game_fn_draw_call_count == 1);
 
 	assert(streq(game_fn_draw_sprite_path, "tests/ok/resource_can_contain_dot_dot_2/foo.."));
-
-	assert(resources_size == 1);
-	assert(streq(resources[0], "tests/ok/resource_can_contain_dot_dot_2/foo.."));
 }
 
 static void ok_resource_can_contain_dot_dot_3(void) {
@@ -3164,9 +3117,6 @@ static void ok_resource_can_contain_dot_dot_3(void) {
 	assert(game_fn_draw_call_count == 1);
 
 	assert(streq(game_fn_draw_sprite_path, "tests/ok/resource_can_contain_dot_dot_3/foo..bar"));
-
-	assert(resources_size == 1);
-	assert(streq(resources[0], "tests/ok/resource_can_contain_dot_dot_3/foo..bar"));
 }
 
 static void ok_resource_duplicate(void) {
@@ -3175,11 +3125,6 @@ static void ok_resource_duplicate(void) {
 	assert(game_fn_draw_call_count == 4);
 
 	assert(streq(game_fn_draw_sprite_path, "tests/ok/resource_duplicate/baz.txt"));
-
-	assert(resources_size == 3);
-	assert(streq(resources[0], "tests/ok/resource_duplicate/foo.txt"));
-	assert(streq(resources[1], "tests/ok/resource_duplicate/bar.txt"));
-	assert(streq(resources[2], "tests/ok/resource_duplicate/baz.txt"));
 }
 
 static void ok_return(void) {

@@ -1,5 +1,7 @@
 #pragma once
 
+#include "grug_backend.h"
+
 // The goal is for every language's grug bindings to check their correctness using tests.c.
 //
 // It should be made as easy as possible for bindings to use tests.c, which means:
@@ -18,11 +20,14 @@
 // to the bindings its init(). This allows tests to be treated as mods.
 // bindings_tester.c should then call grug_tests_run() from grug-tests its tests.h.
 
+// bindings_tester.c will be responsible for providing an init globals fn dispatcher.
+typedef void (*init_globals_fn_dispatcher_t)(const char *grug_file_path);
+
 // bindings_tester.c will be responsible for providing an on fn dispatcher,
 // by matching on_fn_name to the appropriate on fn in the bindings.
 // This *does* strongly couple bindings_tester.c with every on fn
 // called by grug-tests its tests.c, but that seems acceptable.
-typedef void (*on_fn_dispatcher_t)(const char *on_fn_name, const char *grug_file_path);
+typedef void (*on_fn_dispatcher_t)(const char *on_fn_name, const char *grug_file_path, struct grug_value values[]);
 
 // Loops over all .grug files in tests/err/, tests/err_runtime/ and tests/ok/.
-void grug_tests_run(on_fn_dispatcher_t on_fn_dispatcher);
+void grug_tests_run(init_globals_fn_dispatcher_t init_globals_fn_dispatcher, on_fn_dispatcher_t on_fn_dispatcher);

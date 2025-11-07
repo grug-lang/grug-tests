@@ -29,5 +29,10 @@ typedef void (*init_globals_fn_dispatcher_t)(const char *grug_file_path);
 // called by grug-tests its tests.c, but that seems acceptable.
 typedef void (*on_fn_dispatcher_t)(const char *on_fn_name, const char *grug_file_path, struct grug_value values[]);
 
-// Loops over all .grug files in tests/err/, tests/err_runtime/ and tests/ok/.
+// All grug tests are ran when the bindings calls this functions.
+// It loops over all .grug files in tests/err/, tests/err_runtime/ and tests/ok/.
 void grug_tests_run(init_globals_fn_dispatcher_t init_globals_fn_dispatcher, on_fn_dispatcher_t on_fn_dispatcher);
+
+// The bindings should call this whenever there was a runtime error.
+// It allows tests.c to assert that a runtime error happened.
+void grug_tests_runtime_error_handler(const char *reason, enum grug_runtime_error_type type, const char *on_fn_name, const char *on_fn_path);

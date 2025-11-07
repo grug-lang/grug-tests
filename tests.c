@@ -68,6 +68,9 @@ typedef uint16_t u16;
 typedef uint32_t u32;
 typedef uint64_t u64;
 
+static init_globals_fn_dispatcher_t init_globals_fn_dispatcher;
+static on_fn_dispatcher_t on_fn_dispatcher;
+
 struct test_data {
 	bool run;
 };
@@ -1415,7 +1418,7 @@ static size_t error_handler_calls = 0;
 static enum grug_runtime_error_type runtime_error_type = -1;
 static const char *runtime_error_on_fn_name = NULL;
 static const char *runtime_error_on_fn_path = NULL;
-static void runtime_error_handler(const char *reason, enum grug_runtime_error_type type, const char *on_fn_name, const char *on_fn_path) {
+void grug_tests_runtime_error_handler(const char *reason, enum grug_runtime_error_type type, const char *on_fn_name, const char *on_fn_path) {
 	had_runtime_error = true;
 	error_handler_calls++;
 
@@ -3997,11 +4000,9 @@ static void add_ok_tests(void) {
 	ADD_TEST_OK(write_to_global_variable, "D", 16);
 }
 
-int main(int argc, const char *argv[]) {
-	if (grug_init(runtime_error_handler, "mod_api.json", "tests", 10, NULL)) {
-		fprintf(stderr, "grug_init() error: %s (detected by grug.c:%d)\n", grug_error.msg, grug_error.grug_c_line_number);
-		exit(EXIT_FAILURE);
-	}
+void grug_tests_run(init_globals_fn_dispatcher_t init_globals_fn_dispatcher_, on_fn_dispatcher_t on_fn_dispatcher_) {
+	init_globals_fn_dispatcher = init_globals_fn_dispatcher_;
+	on_fn_dispatcher = on_fn_dispatcher_;
 
 	for (int i = 1; i < argc; i++) {
 		whitelisted_tests[whitelisted_tests_size++] = argv[i];

@@ -255,7 +255,7 @@ jobs:
 
   #     - name: Build
   #       # `gcc` is a nasty symlink to clang, so we use the absolute path of gcc here
-  #       run: /opt/homebrew/Cellar/gcc/14.2.0/bin/gcc-14 foo.c -o foo -Wfatal-errors -Wno-pragmas
+  #       run: /opt/homebrew/Cellar/gcc/14.2.0/bin/gcc-14 foo.c -o foo -Wfatal-errors
 
   #     - name: Run
   #       run: ./foo

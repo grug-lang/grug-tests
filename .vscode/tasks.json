@@ -23,7 +23,6 @@
         "-Wuninitialized",
         "-Wunused-macros",
         "-Wfatal-errors",
-        "-Wno-pragmas",
         "-rdynamic",
         "-lm",
         // "-fsanitize=address,undefined",

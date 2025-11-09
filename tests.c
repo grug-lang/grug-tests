@@ -1,7 +1,5 @@
 #include "tests.h"
 
-#include "grug.h"
-
 #include "mod_api.h"
 
 #include <assert.h>
@@ -24,12 +22,7 @@
 #define ASSERT_16_BYTE_STACK_ALIGNED() {\
 	int64_t rsp;\
 	\
-	_Pragma("GCC diagnostic push")\
-	_Pragma("GCC diagnostic ignored \"-Wlanguage-extension-token\"")\
-	\
 	__asm__ volatile("mov %%rsp, %0\n\t" : "=r" (rsp));\
-	\
-	_Pragma("GCC diagnostic pop")\
 	\
 	if ((rsp & 0xf) != 0) {\
 		static char msg[] = "The stack was not 16-byte aligned!\n";\
@@ -41,12 +34,7 @@
 #define ASSERT_16_BYTE_STACK_ALIGNED() {\
 	int64_t rsp;\
 	\
-	_Pragma("GCC diagnostic push")\
-	_Pragma("GCC diagnostic ignored \"-Wlanguage-extension-token\"")\
-	\
 	__asm__ volatile("mov %0, sp\n\t" : "=r" (rsp));\
-	\
-	_Pragma("GCC diagnostic pop")\
 	\
 	if ((rsp & 0xf) != 0) {\
 		static char msg[] = "The stack was not 16-byte aligned!\n";\
@@ -65,9 +53,11 @@ typedef uint64_t u64;
 
 static compile_grug_file_t compile_grug_file;
 static init_globals_fn_dispatcher_t init_globals_fn_dispatcher;
-static on_fn_dispatcher_t on_fn_dispatcher;
+static on_fn_dispatcher_t on_fn_dispatcher_with_args;
 static dump_file_to_json_t dump_file_to_json;
 static generate_file_from_json_t generate_file_from_json;
+static game_fn_error_t game_fn_error;
+static const char *whitelisted_test;
 
 struct error_test_data {
 	const char *test_name_str;
@@ -145,6 +135,10 @@ static size_t game_fn_box_i32_call_count;
 
 static bool streq(const char *a, const char *b) {
 	return strcmp(a, b) == 0;
+}
+
+static void on_fn_dispatcher(const char *on_fn_name, const char *grug_file_path) {
+	on_fn_dispatcher_with_args(on_fn_name, grug_file_path, NULL, 0);
 }
 
 void game_fn_nothing(void) {
@@ -681,7 +675,7 @@ void game_fn_cause_game_fn_error(void) {
 	ASSERT_16_BYTE_STACK_ALIGNED();
 	game_fn_cause_game_fn_error_call_count++;
 
-	grug_game_function_error_happened("cause_game_fn_error(): Game function error");
+	game_fn_error("cause_game_fn_error(): Example game function error");
 }
 void game_fn_call_on_b_fn(void) {
 	ASSERT_16_BYTE_STACK_ALIGNED();
@@ -761,7 +755,6 @@ static void check_null(void *ptr, const char *fn_name) {
 	}
 }
 
-static const char *whitelisted_test;
 static bool is_whitelisted_test(const char *name) {
 	return whitelisted_test == NULL || streq(name, whitelisted_test);
 }
@@ -976,9 +969,8 @@ static void test_error(
 	}
 
 	const char *expected_error = get_expected_error(expected_error_path);
-	size_t expected_error_len = strlen(expected_error);
 
-	if (expected_error_len != msg_len || memcmp(msg, expected_error, expected_error_len) != 0) {
+	if (!streq(msg, expected_error)) {
 		printf("\nThe output differs from the expected output.\n");
 		printf("Output:\n");
 		printf("%s\n", msg);
@@ -998,12 +990,12 @@ static void diff_dump_and_apply(
 	const char *applied_path
 ) {
 	if (dump_file_to_json(grug_path, dump_path)) {
-		printf("Failed to dump file AST: %s: %s (detected by grug.c:%d)\n", grug_error.path, grug_error.msg, grug_error.grug_c_line_number);
+		printf("Failed to dump file AST\n");
 		exit(EXIT_FAILURE);
 	}
 
 	if (generate_file_from_json(dump_path, applied_path)) {
-		printf("Failed to apply file AST: %s: %s (detected by grug.c:%d)\n", grug_error.path, grug_error.msg, grug_error.grug_c_line_number);
+		printf("Failed to apply file AST\n");
 		exit(EXIT_FAILURE);
 	}
 
@@ -1015,7 +1007,7 @@ static void diff_dump_and_apply(
 	size_t applied_path_bytes_len = read_file(applied_path, applied_path_bytes);
 	applied_path_bytes[applied_path_bytes_len] = '\0';
 
-	if (grug_path_bytes_len != applied_path_bytes_len || memcmp(grug_path_bytes, applied_path_bytes, grug_path_bytes_len) != 0) {
+	if (!streq((const char *)grug_path_bytes, (const char *)applied_path_bytes)) {
 		printf("\nThe output differs from the expected output.\n");
 		printf("Output:\n");
 		printf("%s\n", applied_path_bytes);
@@ -1036,12 +1028,9 @@ static void runtime_error_epilogue(
 	const char *applied_path,
 	const char *failed_file_path
 ) {
-	size_t grug_error_msg_len = strlen(runtime_error_reason);
-
 	const char *expected_error = get_expected_error(expected_error_path);
-	size_t expected_error_len = strlen(expected_error);
 
-	if (expected_error_len != grug_error_msg_len || memcmp(runtime_error_reason, expected_error, expected_error_len) != 0) {
+	if (!streq(runtime_error_reason, expected_error)) {
 		printf("\nThe error message differs from the expected error message.\n");
 		printf("Output:\n");
 		printf("%s\n", runtime_error_reason);
@@ -1909,7 +1898,7 @@ static void ok_f32_passed_to_helper_fn(void) {
 
 static void ok_f32_passed_to_on_fn(void) {
 	assert(game_fn_sin_call_count == 0);
-    on_fn_args_dispatcher("on_a", "ok/f32_passed_to_on_fn/input-R.grug", (struct grug_value[]){{.type=grug_value_f32, .value=42.0f}});
+    on_fn_args_dispatcher("on_a", "ok/f32_passed_to_on_fn/input-R.grug", (struct grug_value[]){{.type=grug_value_f32, .value=42.0f}}, 1);
 	assert(game_fn_sin_call_count == 1);
 
 	assert(game_fn_sin_x == 42.0f);
@@ -2263,7 +2252,7 @@ static void ok_id_ne_2(void) {
 
 static void ok_id_on_fn_param(void) {
 	assert(game_fn_store_call_count == 0);
-    on_fn_args_dispatcher("on_a", "ok/id_on_fn_param/input-U.grug", (struct grug_value[]){{.type=grug_value_id, .value=77}});
+    on_fn_args_dispatcher("on_a", "ok/id_on_fn_param/input-U.grug", (struct grug_value[]){{.type=grug_value_id, .value=77}}, 1);
 	assert(game_fn_store_call_count == 1);
 
 	assert(game_fn_store_id == 77);
@@ -2544,7 +2533,7 @@ static void ok_on_fn_calling_no_game_fn_but_with_global(void) {
 static void ok_on_fn_overwriting_param(void) {
 	assert(game_fn_initialize_call_count == 0);
 	assert(game_fn_sin_call_count == 0);
-    on_fn_args_dispatcher("on_a", "ok/on_fn_overwriting_param/input-S.grug", (struct grug_value[]){{.type=grug_type_i32, .value=2}, {.type=grug_type_f32, .value=3.0f}});
+    on_fn_args_dispatcher("on_a", "ok/on_fn_overwriting_param/input-S.grug", (struct grug_value[]){{.type=grug_type_i32, .value=2}, {.type=grug_type_f32, .value=3.0f}}, 2);
 	assert(game_fn_initialize_call_count == 1);
 	assert(game_fn_sin_call_count == 1);
 
@@ -3628,12 +3617,13 @@ static void add_ok_tests(void) {
 	ADD_TEST_OK(write_to_global_variable, "D", 16);
 }
 
-void grug_tests_run(compile_grug_file_t compile_grug_file_, init_globals_fn_dispatcher_t init_globals_fn_dispatcher_, on_fn_dispatcher_t on_fn_dispatcher_, dump_file_to_json_t dump_file_to_json_, generate_file_from_json_t generate_file_from_json_, const char *whitelisted_test) {
+void grug_tests_run(compile_grug_file_t compile_grug_file_, init_globals_fn_dispatcher_t init_globals_fn_dispatcher_, on_fn_dispatcher_t on_fn_dispatcher_, dump_file_to_json_t dump_file_to_json_, generate_file_from_json_t generate_file_from_json_, game_fn_error_t game_fn_error_, const char *whitelisted_test_) {
 	compile_grug_file = compile_grug_file_;
 	init_globals_fn_dispatcher = init_globals_fn_dispatcher_;
-	on_fn_dispatcher = on_fn_dispatcher_;
+	on_fn_dispatcher_with_args = on_fn_dispatcher_;
 	dump_file_to_json = dump_file_to_json_;
 	generate_file_from_json = generate_file_from_json_;
+	game_fn_error = game_fn_error_;
 	whitelisted_test = whitelisted_test_;
 
 	add_error_tests();

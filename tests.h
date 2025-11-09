@@ -19,13 +19,37 @@
 
 #pragma once
 
-#include "grug_backend.h"
+#define _XOPEN_SOURCE 700 // This is required to get struct FTW from ftw.h
+
+#include <stddef.h>
+#include <stdint.h>
+
+enum grug_type {
+    grug_type_i32,
+    grug_type_f32,
+};
+
+struct grug_value {
+    enum grug_type type;
+    union {
+        int32_t i32;
+        float f32;
+    } value;
+};
+
+enum grug_runtime_error_type {
+	GRUG_ON_FN_DIVISION_BY_ZERO,
+	GRUG_ON_FN_STACK_OVERFLOW,
+	GRUG_ON_FN_TIME_LIMIT_EXCEEDED,
+	GRUG_ON_FN_OVERFLOW,
+	GRUG_ON_FN_GAME_FN_ERROR,
+};
 
 /**
  * @typedef compile_grug_file_t
  * @brief Function pointer type for compiling a grug file.
  *
- * This function is provided by `bindings_tester.c`.  
+ * This function is provided by `bindings_tester.c`.
  *
  * @param grug_file_path Path to the grug source file to compile.
  * @return `NULL` on success, or an error message string on failure.
@@ -46,15 +70,17 @@ typedef void (*init_globals_fn_dispatcher_t)(const char *grug_file_path);
  * @typedef on_fn_dispatcher_t
  * @brief Function pointer type for invoking a grug function handler.
  *
- * This function is provided by `bindings_tester.c`.  
+ * This function is provided by `bindings_tester.c`.
+ *
  * It should call the specified function `on_fn_name` in the grug file at `grug_file_path`,
  * passing along the provided array of `values`.
  *
  * @param on_fn_name Name of the grug function to invoke.
  * @param grug_file_path Path to the grug source file containing the function.
  * @param values Array of `grug_value` arguments to pass to the function.
+ * @param value_count Number of values in the `values` array parameter.
  */
-typedef void (*on_fn_dispatcher_t)(const char *on_fn_name, const char *grug_file_path, struct grug_value values[]);
+typedef void (*on_fn_dispatcher_t)(const char *on_fn_name, const char *grug_file_path, struct grug_value values[], size_t value_count);
 
 /**
  * @typedef dump_file_to_json_t
@@ -64,6 +90,7 @@ typedef void (*on_fn_dispatcher_t)(const char *on_fn_name, const char *grug_file
  * grug AST and generating a textual `.grug` source file from it.
  *
  * This function is provided by `bindings_tester.c`.
+ *
  * It should parse the grug file at `input_grug_path`, produce a JSON
  * representation of its AST, and write it to `output_json_path`.
  *
@@ -81,6 +108,7 @@ typedef bool (*dump_file_to_json_t)(const char *input_grug_path, const char *out
  * grug AST and generating a textual `.grug` source file from it.
  *
  * This function is provided by `bindings_tester.c`.
+ *
  * It should read the AST at `input_json_path`, generate the `.grug` text for it,
  * and write it to `output_grug_path`.
  *
@@ -91,9 +119,19 @@ typedef bool (*dump_file_to_json_t)(const char *input_grug_path, const char *out
 typedef bool (*generate_file_from_json_t)(const char *input_json_path, const char *output_grug_path);
 
 /**
+ * @typedef game_fn_error_t
+ * @brief Function pointer type for throwing a game function error.
+ *
+ * This function is provided by `bindings_tester.c`.
+ *
+ * @param message The error message.
+ */
+typedef void (*game_fn_error_t)(const char *message);
+
+/**
  * @brief Runs all grug tests.
  *
- * Called by the bindings to execute all available grug tests.  
+ * Called by the bindings to execute all available grug tests.
  * This function iterates over all `.grug` files in the following directories:
  * - `tests/err/`
  * - `tests/err_runtime/`
@@ -104,6 +142,7 @@ typedef bool (*generate_file_from_json_t)(const char *input_json_path, const cha
  * @param on_fn_dispatcher Function to invoke grug functions during testing.
  * @param dump_file_to_json Function to dump a grug file's AST to JSON.
  * @param generate_file_from_json Function to generate a grug file from an AST JSON.
+ * @param game_fn_error Function to throw a game function error.
  * @param whitelisted_test A specific test name to run. Pass `NULL` if all tests should be run.
  */
 void grug_tests_run(compile_grug_file_t compile_grug_file,
@@ -111,6 +150,7 @@ void grug_tests_run(compile_grug_file_t compile_grug_file,
                     on_fn_dispatcher_t on_fn_dispatcher,
                     dump_file_to_json_t dump_file_to_json,
                     generate_file_from_json_t generate_file_from_json,
+                    game_fn_error_t game_fn_error,
                     const char *whitelisted_test);
 
 /**

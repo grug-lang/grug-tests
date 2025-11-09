@@ -73,10 +73,7 @@ compiler_flags+=' -DCRASH_ON_UNREACHABLE'
 CC="${CC:=clang}"
 echo "Compilation will use $CC"
 
-if [[ "$CC" = "gcc" ]]
-then
-    compiler_flags+=' -Wno-pragmas'
-elif [[ "$CC" = "clang" ]]
+if [[ "$CC" = "clang" ]]
 then
     compiler_flags+=' -gdwarf-4' # build.yml requires this, for some reason
 fi

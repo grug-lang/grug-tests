@@ -1,5 +1,3 @@
-#define _XOPEN_SOURCE 700
-
 #include "tests.h"
 
 #include "grug.h"
@@ -20,9 +18,6 @@
 #include <sys/wait.h>
 #include <time.h>
 #include <unistd.h>
-
-// Forward declaration, since grug.h doesn't declare it
-bool grug_test_regenerate(const char *grug_file_path, const char *dll_path, const char *mod);
 
 // From https://stackoverflow.com/a/2114249/13279557
 #ifdef __x86_64__
@@ -170,8 +165,6 @@ static size_t game_fn_call_on_b_fn_call_count;
 static size_t game_fn_store_call_count;
 static size_t game_fn_retrieve_call_count;
 static size_t game_fn_box_i32_call_count;
-
-on_fn_dispatcher_t on_fn_dispatcher = NULL;
 
 static bool streq(const char *a, const char *b) {
 	return strcmp(a, b) == 0;
@@ -791,20 +784,13 @@ static void check_null(void *ptr, const char *fn_name) {
 	}
 }
 
-#define MAX_WHITELISTED_TESTS 420420
-static const char *whitelisted_tests[MAX_WHITELISTED_TESTS];
-static size_t whitelisted_tests_size;
+static const char *whitelisted_test;
 static bool is_whitelisted_test(const char *name) {
-	for (size_t i = 0; i < whitelisted_tests_size; i++) {
-		if (streq(whitelisted_tests[i], name)) {
-			return true;
-		}
-	}
-	return false;
+	return whitelisted_test == NULL || streq(name, whitelisted_test);
 }
 
 #define ADD_TEST_ERROR(test_name, entity_type) {\
-	if (whitelisted_tests_size == 0 || is_whitelisted_test(#test_name)) {\
+	if (is_whitelisted_test(#test_name)) {\
 		error_test_datas[err_test_datas_size++] = (struct error_test_data){\
 			.test_name_str = #test_name,\
 			.grug_path = "tests/err/"#test_name"/input-"entity_type".grug",\
@@ -818,7 +804,7 @@ static bool is_whitelisted_test(const char *name) {
 }
 
 #define ADD_TEST_RUNTIME_ERROR(test_name, entity_type, expected_globals_size) {\
-	if (whitelisted_tests_size == 0 || is_whitelisted_test(#test_name)) {\
+	if (is_whitelisted_test(#test_name)) {\
 		runtime_error_test_datas[err_runtime_test_datas_size++] = (struct runtime_error_test_data){\
 			.run = runtime_error_##test_name,\
 			.test_name_str = #test_name,\
@@ -844,7 +830,7 @@ static bool is_whitelisted_test(const char *name) {
 }
 
 #define ADD_TEST_OK(test_name, entity_type, expected_globals_size) {\
-	if (whitelisted_tests_size == 0 || is_whitelisted_test(#test_name)) {\
+	if (is_whitelisted_test(#test_name)) {\
 		ok_test_datas[ok_test_datas_size++] = (struct ok_test_data){\
 			.run = ok_##test_name,\
 			.test_name_str = #test_name,\
@@ -1106,13 +1092,14 @@ static void test_error(
 
 	create_failed_file(failed_file_path);
 
-	assert(grug_test_regenerate(grug_path, output_dll_path, "err"));
+	const char *msg = compile_grug_file(grug_path);
+	assert(msg);
 
 	FILE *f = fopen(grug_output_path, "w");
 
-	size_t grug_error_msg_len = strlen(grug_error.msg);
+	size_t msg_len = strlen(msg);
 
-	if (fwrite(grug_error.msg, grug_error_msg_len, 1, f) == 0) {
+	if (fwrite(msg, msg_len, 1, f) == 0) {
 		printf("fwrite error\n");
 		exit(EXIT_FAILURE);
 	}
@@ -1126,10 +1113,10 @@ static void test_error(
 	const char *expected_error = get_expected_error(expected_error_path);
 	size_t expected_error_len = strlen(expected_error);
 
-	if (expected_error_len != grug_error_msg_len || memcmp(grug_error.msg, expected_error, expected_error_len) != 0) {
+	if (expected_error_len != msg_len || memcmp(msg, expected_error, expected_error_len) != 0) {
 		printf("\nThe output differs from the expected output.\n");
 		printf("Output:\n");
-		printf("%s\n", grug_error.msg);
+		printf("%s\n", msg);
 
 		printf("Expected:\n");
 		printf("%s\n", expected_error);
@@ -1186,10 +1173,11 @@ static void generate_and_compare_output_dll(
 	const char *applied_path,
 	const char *failed_file_path
 ) {
-	if (grug_test_regenerate(grug_path, output_dll_path, "ok")) {
+	const char *msg = compile_grug_file(grug_path);
+	if (msg) {
 		printf("The test wasn't supposed to print anything, but did:\n");
 		printf("----\n");
-		printf("%s\n", grug_error.msg);
+		printf("%s\n", msg);
 		printf("----\n");
 
 		exit(EXIT_FAILURE);
@@ -1337,12 +1325,7 @@ static struct test_data get_expected_test_data(
 
 	void *g = malloc(globals_size);
 
-	#pragma GCC diagnostic push
-	#pragma GCC diagnostic ignored "-Wpedantic"
-	grug_init_globals_fn_t init_globals = get(dll, "init_globals");
-	#pragma GCC diagnostic pop
-
-	init_globals(g, 42);
+	init_globals_fn_dispatcher(grug_file_path);
 
 	void *on_fns = dlsym(dll, "on_fns");
 
@@ -4001,20 +3984,17 @@ static void add_ok_tests(void) {
 	ADD_TEST_OK(write_to_global_variable, "D", 16);
 }
 
-void grug_tests_run(compile_grug_file_t compile_grug_file_, init_globals_fn_dispatcher_t init_globals_fn_dispatcher_, on_fn_dispatcher_t on_fn_dispatcher_) {
+void grug_tests_run(compile_grug_file_t compile_grug_file_, init_globals_fn_dispatcher_t init_globals_fn_dispatcher_, on_fn_dispatcher_t on_fn_dispatcher_, const char *whitelisted_test) {
 	compile_grug_file = compile_grug_file_;
 	init_globals_fn_dispatcher = init_globals_fn_dispatcher_;
 	on_fn_dispatcher = on_fn_dispatcher_;
-
-	for (int i = 1; i < argc; i++) {
-		whitelisted_tests[whitelisted_tests_size++] = argv[i];
-	}
+	whitelisted_test = whitelisted_test_;
 
 	add_error_tests();
 	add_runtime_error_tests();
 	add_ok_tests();
 
-	if (whitelisted_tests_size == 0) {
+	if (whitelisted_test == NULL) {
 		CHECK_THAT_EVERY_TEST_DIRECTORY_HAS_A_FUNCTION(err);
 		CHECK_THAT_EVERY_TEST_DIRECTORY_HAS_A_FUNCTION(err_runtime);
 		CHECK_THAT_EVERY_TEST_DIRECTORY_HAS_A_FUNCTION(ok);

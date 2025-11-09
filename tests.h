@@ -29,7 +29,7 @@
  * @param grug_file_path Path to the grug source file to compile.
  * @return `NULL` on success, or an error message string on failure.
  */
-typedef char *(*compile_grug_file_t)(const char *grug_file_path);
+typedef const char *(*compile_grug_file_t)(const char *grug_file_path);
 
 /**
  * @typedef init_globals_fn_dispatcher_t
@@ -67,10 +67,12 @@ typedef void (*on_fn_dispatcher_t)(const char *on_fn_name, const char *grug_file
  * @param compile_grug_file Function to compile a grug file.
  * @param init_globals_fn_dispatcher Function to initialize globals for a grug file.
  * @param on_fn_dispatcher Function to invoke grug functions during testing.
+ * @param whitelisted_test A specific test name to run. Pass `NULL` if all tests should be run.
  */
 void grug_tests_run(compile_grug_file_t compile_grug_file,
                     init_globals_fn_dispatcher_t init_globals_fn_dispatcher,
-                    on_fn_dispatcher_t on_fn_dispatcher);
+                    on_fn_dispatcher_t on_fn_dispatcher,
+                    const char *whitelisted_test);
 
 /**
  * @brief Handles runtime errors during grug test execution.

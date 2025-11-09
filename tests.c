@@ -55,7 +55,7 @@
 	}\
 }
 #else
-#error Unsupported or unrecognized architecture
+#error Unrecognized architecture
 #endif
 
 typedef int64_t i64;

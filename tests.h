@@ -56,10 +56,38 @@ typedef void (*init_globals_fn_dispatcher_t)(const char *grug_file_path);
  */
 typedef void (*on_fn_dispatcher_t)(const char *on_fn_name, const char *grug_file_path, struct grug_value values[]);
 
-// TODO: Ask ChatGPT to generate docs, in a similar style to the surrounding docs.
+/**
+ * @typedef dump_file_to_json_t
+ * @brief Function pointer type for dumping a `.grug` file's AST to JSON.
+ *
+ * All tests verify round-trip fidelity: reading a JSON representation of a
+ * grug AST and generating a textual `.grug` source file from it.
+ *
+ * This function is provided by `bindings_tester.c`.
+ * It should parse the grug file at `input_grug_path`, produce a JSON
+ * representation of its AST, and write it to `output_json_path`.
+ *
+ * @param input_grug_path Path to the input `.grug` source file to be dumped.
+ * @param output_json_path Path to write the produced JSON file.
+ * @return `true` if an error occurred.
+ */
 typedef bool (*dump_file_to_json_t)(const char *input_grug_path, const char *output_json_path);
 
-// TODO: Ask ChatGPT to generate docs, in a similar style to the surrounding docs.
+/**
+ * @typedef generate_file_from_json_t
+ * @brief Function pointer type for generating a `.grug` file from an AST JSON.
+ *
+ * All tests verify round-trip fidelity: reading a JSON representation of a
+ * grug AST and generating a textual `.grug` source file from it.
+ *
+ * This function is provided by `bindings_tester.c`.
+ * It should read the AST at `input_json_path`, generate the `.grug` text for it,
+ * and write it to `output_grug_path`.
+ *
+ * @param input_json_path Path to the input JSON file containing the grug AST.
+ * @param output_grug_path Path to write the generated `.grug` source file.
+ * @return `true` if an error occurred.
+ */
 typedef bool (*generate_file_from_json_t)(const char *input_json_path, const char *output_grug_path);
 
 /**
@@ -75,7 +103,7 @@ typedef bool (*generate_file_from_json_t)(const char *input_json_path, const cha
  * @param init_globals_fn_dispatcher Function to initialize globals for a grug file.
  * @param on_fn_dispatcher Function to invoke grug functions during testing.
  * @param dump_file_to_json Function to dump a grug file's AST to JSON.
- * @param generate_file_from_json Function to generate a grug file from a grug AST JSON file.
+ * @param generate_file_from_json Function to generate a grug file from an AST JSON.
  * @param whitelisted_test A specific test name to run. Pass `NULL` if all tests should be run.
  */
 void grug_tests_run(compile_grug_file_t compile_grug_file,

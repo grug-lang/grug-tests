@@ -1,7 +1,3 @@
-#pragma once
-
-#include "grug_backend.h"
-
 // The goal is for every language's grug bindings to check their correctness using tests.c.
 //
 // It should be made as easy as possible for bindings to use tests.c, which means:
@@ -20,19 +16,74 @@
 // to the bindings its init(). This allows tests to be treated as mods.
 // bindings_tester.c should then call grug_tests_run() from grug-tests its tests.h.
 
-// bindings_tester.c will be responsible for providing an init globals fn dispatcher.
+#pragma once
+
+#include "grug_backend.h"
+
+/**
+ * @typedef compile_grug_file_t
+ * @brief Function pointer type for compiling a grug file.
+ *
+ * This function is provided by `bindings_tester.c`.  
+ *
+ * @param grug_file_path Path to the grug source file to compile.
+ * @return `NULL` on success, or an error message string on failure.
+ */
+typedef char *(*compile_grug_file_t)(const char *grug_file_path);
+
+/**
+ * @typedef init_globals_fn_dispatcher_t
+ * @brief Function pointer type for initializing global variables for a grug file.
+ *
+ * This function is provided by `bindings_tester.c`.
+ *
+ * @param grug_file_path Path to the grug source file whose globals should be initialized.
+ */
 typedef void (*init_globals_fn_dispatcher_t)(const char *grug_file_path);
 
-// bindings_tester.c will be responsible for providing an on fn dispatcher,
-// by matching on_fn_name to the appropriate on fn in the bindings.
-// This *does* strongly couple bindings_tester.c with every on fn
-// called by grug-tests its tests.c, but that seems acceptable.
+/**
+ * @typedef on_fn_dispatcher_t
+ * @brief Function pointer type for invoking a grug function handler.
+ *
+ * This function is provided by `bindings_tester.c`.  
+ * It should call the specified function `on_fn_name` in the grug file at `grug_file_path`,
+ * passing along the provided array of `values`.
+ *
+ * @param on_fn_name Name of the grug function to invoke.
+ * @param grug_file_path Path to the grug source file containing the function.
+ * @param values Array of `grug_value` arguments to pass to the function.
+ */
 typedef void (*on_fn_dispatcher_t)(const char *on_fn_name, const char *grug_file_path, struct grug_value values[]);
 
-// All grug tests are ran when the bindings calls this functions.
-// It loops over all .grug files in tests/err/, tests/err_runtime/ and tests/ok/.
-void grug_tests_run(init_globals_fn_dispatcher_t init_globals_fn_dispatcher, on_fn_dispatcher_t on_fn_dispatcher);
+/**
+ * @brief Runs all grug tests.
+ *
+ * Called by the bindings layer to execute all available grug tests.  
+ * This function iterates over all `.grug` files in the following directories:
+ * - `tests/err/`
+ * - `tests/err_runtime/`
+ * - `tests/ok/`
+ *
+ * @param compile_grug_file Function to compile a grug file.
+ * @param init_globals_fn_dispatcher Function to initialize globals for a grug file.
+ * @param on_fn_dispatcher Function to invoke grug functions during testing.
+ */
+void grug_tests_run(compile_grug_file_t compile_grug_file,
+                    init_globals_fn_dispatcher_t init_globals_fn_dispatcher,
+                    on_fn_dispatcher_t on_fn_dispatcher);
 
-// The bindings should call this whenever there was a runtime error.
-// It allows tests.c to assert that a runtime error happened.
-void grug_tests_runtime_error_handler(const char *reason, enum grug_runtime_error_type type, const char *on_fn_name, const char *on_fn_path);
+/**
+ * @brief Handles runtime errors during grug test execution.
+ *
+ * Called by the bindings whenever a runtime error occurs,  
+ * allowing `tests.c` to verify that an expected runtime error took place.
+ *
+ * @param reason Human-readable description of the error.
+ * @param type Type of runtime error.
+ * @param on_fn_name Name of the function where the error occurred.
+ * @param on_fn_path Path to the grug source file containing the function.
+ */
+void grug_tests_runtime_error_handler(const char *reason,
+                                      enum grug_runtime_error_type type,
+                                      const char *on_fn_name,
+                                      const char *on_fn_path);

@@ -68,6 +68,7 @@ typedef uint16_t u16;
 typedef uint32_t u32;
 typedef uint64_t u64;
 
+static compile_grug_file_t compile_grug_file;
 static init_globals_fn_dispatcher_t init_globals_fn_dispatcher;
 static on_fn_dispatcher_t on_fn_dispatcher;
 
@@ -4000,7 +4001,8 @@ static void add_ok_tests(void) {
 	ADD_TEST_OK(write_to_global_variable, "D", 16);
 }
 
-void grug_tests_run(init_globals_fn_dispatcher_t init_globals_fn_dispatcher_, on_fn_dispatcher_t on_fn_dispatcher_) {
+void grug_tests_run(compile_grug_file_t compile_grug_file_, init_globals_fn_dispatcher_t init_globals_fn_dispatcher_, on_fn_dispatcher_t on_fn_dispatcher_) {
+	compile_grug_file = compile_grug_file_;
 	init_globals_fn_dispatcher = init_globals_fn_dispatcher_;
 	on_fn_dispatcher = on_fn_dispatcher_;
 

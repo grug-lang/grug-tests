@@ -1,3 +1,4 @@
+// TODO: Move this to the readme?
 // The goal is for every language's grug bindings to check their correctness using tests.c.
 //
 // It should be made as easy as possible for bindings to use tests.c, which means:
@@ -55,6 +56,12 @@ typedef void (*init_globals_fn_dispatcher_t)(const char *grug_file_path);
  */
 typedef void (*on_fn_dispatcher_t)(const char *on_fn_name, const char *grug_file_path, struct grug_value values[]);
 
+// TODO: Ask ChatGPT to generate docs, in a similar style to the surrounding docs.
+typedef bool (*dump_file_to_json_t)(const char *input_grug_path, const char *output_json_path);
+
+// TODO: Ask ChatGPT to generate docs, in a similar style to the surrounding docs.
+typedef bool (*generate_file_from_json_t)(const char *input_json_path, const char *output_grug_path);
+
 /**
  * @brief Runs all grug tests.
  *
@@ -67,11 +74,15 @@ typedef void (*on_fn_dispatcher_t)(const char *on_fn_name, const char *grug_file
  * @param compile_grug_file Function to compile a grug file.
  * @param init_globals_fn_dispatcher Function to initialize globals for a grug file.
  * @param on_fn_dispatcher Function to invoke grug functions during testing.
+ * @param dump_file_to_json Function to dump a grug file's AST to JSON.
+ * @param generate_file_from_json Function to generate a grug file from a grug AST JSON file.
  * @param whitelisted_test A specific test name to run. Pass `NULL` if all tests should be run.
  */
 void grug_tests_run(compile_grug_file_t compile_grug_file,
                     init_globals_fn_dispatcher_t init_globals_fn_dispatcher,
                     on_fn_dispatcher_t on_fn_dispatcher,
+                    dump_file_to_json_t dump_file_to_json,
+                    generate_file_from_json_t generate_file_from_json,
                     const char *whitelisted_test);
 
 /**

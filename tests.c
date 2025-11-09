@@ -66,6 +66,8 @@ typedef uint64_t u64;
 static compile_grug_file_t compile_grug_file;
 static init_globals_fn_dispatcher_t init_globals_fn_dispatcher;
 static on_fn_dispatcher_t on_fn_dispatcher;
+static dump_file_to_json_t dump_file_to_json;
+static generate_file_from_json_t generate_file_from_json;
 
 struct error_test_data {
 	const char *test_name_str;
@@ -82,10 +84,8 @@ struct runtime_error_test_data {
 	void (*run)(void);
 	const char *test_name_str;
 	const char *grug_path;
-	const char *nasm_path;
 	const char *expected_error_path;
 	const char *results_path;
-	const char *nasm_o_path;
 	const char *dump_path;
 	const char *applied_path;
 	const char *failed_file_path;
@@ -98,9 +98,7 @@ struct ok_test_data {
 	void (*run)(void);
 	const char *test_name_str;
 	const char *grug_path;
-	const char *nasm_path;
 	const char *results_path;
-	const char *nasm_o_path;
 	const char *dump_path;
 	const char *applied_path;
 	const char *failed_file_path;
@@ -787,10 +785,8 @@ static bool is_whitelisted_test(const char *name) {
 			.run = runtime_error_##test_name,\
 			.test_name_str = #test_name,\
 			.grug_path = "tests/err_runtime/"#test_name"/input-"entity_type".grug",\
-			.nasm_path = "tests/err_runtime/"#test_name"/input.s",\
 			.expected_error_path = "tests/err_runtime/"#test_name"/expected_error.txt",\
 			.results_path = "tests/err_runtime/"#test_name"/results",\
-			.nasm_o_path = "tests/err_runtime/"#test_name"/results/expected.o",\
 			.dump_path = "tests/err_runtime/"#test_name"/results/dump.json",\
 			.applied_path = "tests/err_runtime/"#test_name"/results/applied.grug",\
 			.failed_file_path = "tests/err_runtime/"#test_name"/results/failed",\
@@ -805,9 +801,7 @@ static bool is_whitelisted_test(const char *name) {
 			.run = ok_##test_name,\
 			.test_name_str = #test_name,\
 			.grug_path = "tests/ok/"#test_name"/input-"entity_type".grug",\
-			.nasm_path = "tests/ok/"#test_name"/input.s",\
 			.results_path = "tests/ok/"#test_name"/results",\
-			.nasm_o_path = "tests/ok/"#test_name"/results/expected.o",\
 			.dump_path = "tests/ok/"#test_name"/results/dump.json",\
 			.applied_path = "tests/ok/"#test_name"/results/applied.grug",\
 			.failed_file_path = "tests/ok/"#test_name"/results/failed",\
@@ -1003,12 +997,12 @@ static void diff_dump_and_apply(
 	const char *dump_path,
 	const char *applied_path
 ) {
-	if (grug_dump_file_to_json(grug_path, dump_path)) {
+	if (dump_file_to_json(grug_path, dump_path)) {
 		printf("Failed to dump file AST: %s: %s (detected by grug.c:%d)\n", grug_error.path, grug_error.msg, grug_error.grug_c_line_number);
 		exit(EXIT_FAILURE);
 	}
 
-	if (grug_generate_file_from_json(dump_path, applied_path)) {
+	if (generate_file_from_json(dump_path, applied_path)) {
 		printf("Failed to apply file AST: %s: %s (detected by grug.c:%d)\n", grug_error.path, grug_error.msg, grug_error.grug_c_line_number);
 		exit(EXIT_FAILURE);
 	}
@@ -1071,9 +1065,7 @@ static void handle_dlerror(const char *function_name) {
 }
 
 static void prologue(
-	const char *nasm_path,
 	const char *results_path,
-	const char *nasm_o_path,
 	const char *failed_file_path,
 	size_t expected_globals_size
 ) {
@@ -3636,10 +3628,12 @@ static void add_ok_tests(void) {
 	ADD_TEST_OK(write_to_global_variable, "D", 16);
 }
 
-void grug_tests_run(compile_grug_file_t compile_grug_file_, init_globals_fn_dispatcher_t init_globals_fn_dispatcher_, on_fn_dispatcher_t on_fn_dispatcher_, const char *whitelisted_test) {
+void grug_tests_run(compile_grug_file_t compile_grug_file_, init_globals_fn_dispatcher_t init_globals_fn_dispatcher_, on_fn_dispatcher_t on_fn_dispatcher_, dump_file_to_json_t dump_file_to_json_, generate_file_from_json_t generate_file_from_json_, const char *whitelisted_test) {
 	compile_grug_file = compile_grug_file_;
 	init_globals_fn_dispatcher = init_globals_fn_dispatcher_;
 	on_fn_dispatcher = on_fn_dispatcher_;
+	dump_file_to_json = dump_file_to_json_;
+	generate_file_from_json = generate_file_from_json_;
 	whitelisted_test = whitelisted_test_;
 
 	add_error_tests();
@@ -3687,7 +3681,6 @@ void grug_tests_run(compile_grug_file_t compile_grug_file_, init_globals_fn_disp
 
 		if (failed_file_doesnt_exist(failed_file_path)
 		&& shuffles_was_not_defined()
-		&& newer(applied_path, nasm_path)
 		&& newer(applied_path, grug_path)
 		&& newer(applied_path, expected_error_path)
 		&& newer(applied_path, "mod_api.json")
@@ -3702,7 +3695,7 @@ void grug_tests_run(compile_grug_file_t compile_grug_file_, init_globals_fn_disp
 
 		printf("Running tests/err_runtime/%s...\n", test_name);
 
-		prologue(nasm_path, results_path, nasm_o_path, failed_file_path, expected_globals_size);
+		prologue(results_path, failed_file_path, expected_globals_size);
 
 		// TODO: Are these still necessary?
 		runtime_error_reason = NULL;
@@ -3728,7 +3721,6 @@ void grug_tests_run(compile_grug_file_t compile_grug_file_, init_globals_fn_disp
 
 		if (failed_file_doesnt_exist(failed_file_path)
 		&& shuffles_was_not_defined()
-		&& newer(applied_path, nasm_path)
 		&& newer(applied_path, grug_path)
 		&& newer(applied_path, "mod_api.json")
 		&& newer(applied_path, "tests.sh")
@@ -3742,7 +3734,7 @@ void grug_tests_run(compile_grug_file_t compile_grug_file_, init_globals_fn_disp
 
 		printf("Running tests/ok/%s...\n", test_name);
 
-		prologue(nasm_path, results_path, nasm_o_path, failed_file_path, expected_globals_size);
+		prologue(results_path, failed_file_path, expected_globals_size);
 
 		fn_data.run(data.on_fns, data.g, data.resources_size, data.resources, data.entities_size, data.entities, data.entity_types);
 	}

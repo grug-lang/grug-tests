@@ -10,7 +10,7 @@ This is the test suite of [my programming language called grug](https://github.c
 2. Run `cd grug-tests`.
 3. Run the tests using VS Code's debugger by hitting F5, or running `./tests.sh ../grug`.
 
-You can get more info in the test its generated `results` directory (from objdump, readelf and xxd) by running `OUTPUT_DLL_INFO= ./tests.sh ../grug`.
+You can get more info in the test its generated `results` directory (from objdump, readelf and xxd) by running `./tests.sh ../grug`.
 
 If a test failed, you can reproduce it by replacing `time(NULL)` in `main()` with the failing test's printed seed.
 

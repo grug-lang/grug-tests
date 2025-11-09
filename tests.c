@@ -67,16 +67,11 @@ static compile_grug_file_t compile_grug_file;
 static init_globals_fn_dispatcher_t init_globals_fn_dispatcher;
 static on_fn_dispatcher_t on_fn_dispatcher;
 
-struct test_data {
-	bool run;
-};
-
 struct error_test_data {
 	const char *test_name_str;
 	const char *grug_path;
 	const char *expected_error_path;
 	const char *results_path;
-	const char *output_dll_path;
 	const char *grug_output_path;
 	const char *failed_file_path;
 };
@@ -90,15 +85,7 @@ struct runtime_error_test_data {
 	const char *nasm_path;
 	const char *expected_error_path;
 	const char *results_path;
-	const char *output_dll_path;
-	const char *expected_dll_path;
 	const char *nasm_o_path;
-	const char *output_xxd_path;
-	const char *expected_xxd_path;
-	const char *output_readelf_path;
-	const char *expected_readelf_path;
-	const char *output_objdump_path;
-	const char *expected_objdump_path;
 	const char *dump_path;
 	const char *applied_path;
 	const char *failed_file_path;
@@ -113,15 +100,7 @@ struct ok_test_data {
 	const char *grug_path;
 	const char *nasm_path;
 	const char *results_path;
-	const char *output_dll_path;
-	const char *expected_dll_path;
 	const char *nasm_o_path;
-	const char *output_xxd_path;
-	const char *expected_xxd_path;
-	const char *output_readelf_path;
-	const char *expected_readelf_path;
-	const char *output_objdump_path;
-	const char *expected_objdump_path;
 	const char *dump_path;
 	const char *applied_path;
 	const char *failed_file_path;
@@ -796,7 +775,6 @@ static bool is_whitelisted_test(const char *name) {
 			.grug_path = "tests/err/"#test_name"/input-"entity_type".grug",\
 			.expected_error_path = "tests/err/"#test_name"/expected_error.txt",\
 			.results_path = "tests/err/"#test_name"/results",\
-			.output_dll_path = "tests/err/"#test_name"/results/output.so",\
 			.grug_output_path = "tests/err/"#test_name"/results/grug_output.txt",\
 			.failed_file_path = "tests/err/"#test_name"/results/failed"\
 		};\
@@ -812,15 +790,7 @@ static bool is_whitelisted_test(const char *name) {
 			.nasm_path = "tests/err_runtime/"#test_name"/input.s",\
 			.expected_error_path = "tests/err_runtime/"#test_name"/expected_error.txt",\
 			.results_path = "tests/err_runtime/"#test_name"/results",\
-			.output_dll_path = "tests/err_runtime/"#test_name"/results/output.so",\
-			.expected_dll_path = "tests/err_runtime/"#test_name"/results/expected.so",\
 			.nasm_o_path = "tests/err_runtime/"#test_name"/results/expected.o",\
-			.output_xxd_path = "tests/err_runtime/"#test_name"/results/output.hex",\
-			.expected_xxd_path = "tests/err_runtime/"#test_name"/results/expected.hex",\
-			.output_readelf_path = "tests/err_runtime/"#test_name"/results/output_elf.log",\
-			.expected_readelf_path = "tests/err_runtime/"#test_name"/results/expected_elf.log",\
-			.output_objdump_path = "tests/err_runtime/"#test_name"/results/output_objdump.log",\
-			.expected_objdump_path = "tests/err_runtime/"#test_name"/results/expected_objdump.log",\
 			.dump_path = "tests/err_runtime/"#test_name"/results/dump.json",\
 			.applied_path = "tests/err_runtime/"#test_name"/results/applied.grug",\
 			.failed_file_path = "tests/err_runtime/"#test_name"/results/failed",\
@@ -837,15 +807,7 @@ static bool is_whitelisted_test(const char *name) {
 			.grug_path = "tests/ok/"#test_name"/input-"entity_type".grug",\
 			.nasm_path = "tests/ok/"#test_name"/input.s",\
 			.results_path = "tests/ok/"#test_name"/results",\
-			.output_dll_path = "tests/ok/"#test_name"/results/output.so",\
-			.expected_dll_path = "tests/ok/"#test_name"/results/expected.so",\
 			.nasm_o_path = "tests/ok/"#test_name"/results/expected.o",\
-			.output_xxd_path = "tests/ok/"#test_name"/results/output.hex",\
-			.expected_xxd_path = "tests/ok/"#test_name"/results/expected.hex",\
-			.output_readelf_path = "tests/ok/"#test_name"/results/output_elf.log",\
-			.expected_readelf_path = "tests/ok/"#test_name"/results/expected_elf.log",\
-			.output_objdump_path = "tests/ok/"#test_name"/results/output_objdump.log",\
-			.expected_objdump_path = "tests/ok/"#test_name"/results/expected_objdump.log",\
 			.dump_path = "tests/ok/"#test_name"/results/dump.json",\
 			.applied_path = "tests/ok/"#test_name"/results/applied.grug",\
 			.failed_file_path = "tests/ok/"#test_name"/results/failed",\
@@ -893,96 +855,6 @@ static size_t read_file(const char *path, uint8_t *bytes) {
 
 	return len;
 }
-
-static void *get(void *dll, const char *label) {
-	void *p = dlsym(dll, label);
-	if (!p) {
-		printf("dlsym: %s\n", dlerror());
-		exit(EXIT_FAILURE);
-	}
-	return p;
-}
-
-static void wait_on_child(const char *child_name) {
-	int status;
-	check(wait(&status), "wait");
-
-	if (WIFEXITED(status) && WEXITSTATUS(status) != 0) {
-		printf("child \"%s\" unexpectedly exited with status %d\n", child_name, WEXITSTATUS(status));
-		exit(EXIT_FAILURE);
-	} else if (WIFSIGNALED(status)) {
-		printf("child \"%s\" killed by signal %d\n", child_name, WTERMSIG(status));
-		exit(EXIT_FAILURE);
-	} else if (WIFSTOPPED(status)) {
-		printf("child \"%s\" stopped by signal %d\n", child_name, WSTOPSIG(status));
-		exit(EXIT_FAILURE);
-	} else if (WIFCONTINUED(status)) {
-		printf("child \"%s\" continued\n", child_name);
-		exit(EXIT_FAILURE);
-	}
-}
-
-static void run(const char *const *argv) {
-	pid_t pid = fork();
-	check(pid, "fork");
-
-	if (pid == 0) {
-		execvp(argv[0], (char *const *)argv);
-		printf("execvp: %s: %s\n", argv[0], strerror(errno));
-		exit(EXIT_FAILURE);
-	}
-
-	wait_on_child(argv[0]);
-}
-
-#ifdef OUTPUT_DLL_INFO
-static void run_and_write(const char *const *argv, const char *written_path) {
-	pid_t pid = fork();
-	check(pid, "fork");
-
-	if (pid == 0) {
-		int fd = open(written_path, O_RDWR | O_CREAT | O_TRUNC, 0644);
-		check(fd, "open");
-
-		dup2(fd, STDOUT_FILENO); // Redirect stdout to written_path
-
-		close(fd);
-
-		execvp(argv[0], (char *const *)argv);
-		printf("execvp: %s: %s\n", argv[0], strerror(errno));
-		exit(EXIT_FAILURE);
-	}
-
-	wait_on_child(argv[0]);
-}
-
-static void output_dll_info(const char *dll_path, const char *xxd_path, const char *readelf_path, const char *objdump_path) {
-	pid_t pid = fork();
-	check(pid, "fork");
-
-	if (pid == 0) {
-		// In newer versions off xxd -Rnever turns colorization off,
-		// but in older versions of xxd the -R option didn't exist yet,
-		// so we can't use that
-		int fd = open(xxd_path, O_WRONLY | O_CREAT | O_TRUNC, 0644);
-		check(fd, "open");
-
-		check(dup2(fd, STDOUT_FILENO), "dup2");
-
-		check(close(fd), "close");
-
-		execvp("xxd", (char *[]){"xxd", (char *)dll_path, NULL});
-		printf("execvp: xxd: %s\n", strerror(errno));
-		exit(EXIT_FAILURE);
-	}
-
-	wait_on_child("xxd");
-
-	run_and_write((const char *[]){"readelf", "--wide", "-a", dll_path, NULL}, readelf_path);
-
-	run_and_write((const char *[]){"objdump", "-d", dll_path, "-Mintel", NULL}, objdump_path);
-}
-#endif
 
 static bool newer(const char *path1, const char *path2) {
 	struct stat s1;
@@ -1067,7 +939,6 @@ static void test_error(
 	const char *grug_path,
 	const char *expected_error_path,
 	const char *results_path,
-	const char *output_dll_path,
 	const char *grug_output_path,
 	const char *failed_file_path
 ) {
@@ -1162,67 +1033,11 @@ static void diff_dump_and_apply(
 	}
 }
 
-static void generate_and_compare_output_dll(
-	const char *grug_path,
-	const char *output_dll_path,
-	const char *expected_dll_path,
-	const char *output_xxd_path,
-	const char *output_readelf_path,
-	const char *output_objdump_path,
-	const char *dump_path,
-	const char *applied_path,
-	const char *failed_file_path
-) {
-	const char *msg = compile_grug_file(grug_path);
-	if (msg) {
-		printf("The test wasn't supposed to print anything, but did:\n");
-		printf("----\n");
-		printf("%s\n", msg);
-		printf("----\n");
-
-		exit(EXIT_FAILURE);
-	}
-
-	(void)output_xxd_path;
-	(void)output_readelf_path;
-	(void)output_objdump_path;
-#ifdef OUTPUT_DLL_INFO
-	output_dll_info(output_dll_path, output_xxd_path, output_readelf_path, output_objdump_path);
-#endif
-
-	diff_dump_and_apply(grug_path, dump_path, applied_path);
-
-	static uint8_t output_dll_bytes[420420];
-	size_t output_dll_bytes_len = read_file(output_dll_path, output_dll_bytes);
-
-	static uint8_t expected_dll_bytes[420420];
-	size_t expected_dll_bytes_len = read_file(expected_dll_path, expected_dll_bytes);
-
-	if (output_dll_bytes_len != expected_dll_bytes_len || memcmp(output_dll_bytes, expected_dll_bytes, expected_dll_bytes_len) != 0) {
-		printf("\nThe OK test's DLL bytes output differs from the expected output.\n");
-
-		if (output_dll_bytes_len == expected_dll_bytes_len) {
-			printf("The output DLL bytes length matches the expected length.\n");
-		} else {
-			printf("The output DLL bytes length was %zu, while the expected length was %zu.\n", output_dll_bytes_len, expected_dll_bytes_len);
-		}
-
-		exit(EXIT_FAILURE);
-	}
-
-	unlink(failed_file_path);
-}
-
 static const char *runtime_error_reason = NULL;
 
 static void runtime_error_epilogue(
 	const char *grug_path,
 	const char *expected_error_path,
-	const char *output_dll_path,
-	const char *expected_dll_path,
-	const char *output_xxd_path,
-	const char *output_readelf_path,
-	const char *output_objdump_path,
 	const char *dump_path,
 	const char *applied_path,
 	const char *failed_file_path
@@ -1242,8 +1057,6 @@ static void runtime_error_epilogue(
 
 		exit(EXIT_FAILURE);
 	}
-
-	generate_and_compare_output_dll(grug_path, output_dll_path, expected_dll_path, output_xxd_path, output_readelf_path, output_objdump_path, dump_path, applied_path, failed_file_path);
 }
 
 static void handle_dlerror(const char *function_name) {
@@ -1257,52 +1070,10 @@ static void handle_dlerror(const char *function_name) {
 	exit(EXIT_FAILURE);
 }
 
-static void regenerate_expected_dll(
-	const char *nasm_path,
-	const char *expected_dll_path,
-	const char *nasm_o_path,
-	const char *expected_xxd_path,
-	const char *expected_readelf_path,
-	const char *expected_objdump_path
-) {
-#ifdef __x86_64__
-	#ifdef DEBUG_EXPECTED_NASM
-	run((const char *[]){"nasm", nasm_path, "-felf64", "-g", "-O0", "-o", nasm_o_path, NULL});
-	#else
-	run((const char *[]){"nasm", nasm_path, "-felf64", "-O0", "-o", nasm_o_path, NULL});
-	#endif
-
-	// `-z noexecstack` is necessary in order for Arch Linux to not complain when dlopen()ing expected.so
-	//   about a missing GNU_STACK program header.
-	run((const char *[]){"ld", nasm_o_path, "-o", expected_dll_path, "-x", "-shared", "--hash-style=sysv", "-z", "noexecstack", NULL});
-#elif __aarch64__
-	#ifdef DEBUG_EXPECTED_NASM
-	run((const char *[]){"nasm", nasm_path, "-fmacho64", "-g", "-O0", "-o", nasm_o_path, NULL});
-	#else
-	run((const char *[]){"nasm", nasm_path, "-fmacho64", "-O0", "-o", nasm_o_path, NULL});
-	#endif
-
-	run((const char *[]){"ld", nasm_o_path, "-o", expected_dll_path, "-x", "-dylib", NULL});
-#else
-#error Unsupported or unrecognized architecture
-#endif
-
-	(void)expected_xxd_path;
-	(void)expected_readelf_path;
-	(void)expected_objdump_path;
-#ifdef OUTPUT_DLL_INFO
-	output_dll_info(expected_dll_path, expected_xxd_path, expected_readelf_path, expected_objdump_path);
-#endif
-}
-
-static struct test_data get_expected_test_data(
+static void prologue(
 	const char *nasm_path,
 	const char *results_path,
-	const char *expected_dll_path,
 	const char *nasm_o_path,
-	const char *expected_xxd_path,
-	const char *expected_readelf_path,
-	const char *expected_objdump_path,
 	const char *failed_file_path,
 	size_t expected_globals_size
 ) {
@@ -1313,88 +1084,17 @@ static struct test_data get_expected_test_data(
 
 	create_failed_file(failed_file_path);
 
-	regenerate_expected_dll(nasm_path, expected_dll_path, nasm_o_path, expected_xxd_path, expected_readelf_path, expected_objdump_path);
+	const char *msg = compile_grug_file(grug_path);
+	if (msg) {
+		printf("The test wasn't supposed to print anything, but did:\n");
+		printf("----\n");
+		printf("%s\n", msg);
+		printf("----\n");
 
-	void *dll = dlopen(expected_dll_path, RTLD_NOW);
-	if (!dll) {
-		handle_dlerror("dlopen");
+		exit(EXIT_FAILURE);
 	}
-
-	size_t globals_size = *(size_t *)get(dll, "globals_size");
-	assert(globals_size == expected_globals_size);
-
-	void *g = malloc(globals_size);
 
 	init_globals_fn_dispatcher(grug_file_path);
-
-	void *on_fns = dlsym(dll, "on_fns");
-
-	size_t *resources_size_ptr = get(dll, "resources_size");
-	const char **resources = NULL;
-	if (*resources_size_ptr > 0) {
-		resources = get(dll, "resources");
-	} else {
-		assert(!dlsym(dll, "resources"));
-	}
-
-	size_t *entities_size_ptr = get(dll, "entities_size");
-	const char **entities = NULL;
-	const char **entity_types = NULL;
-	if (*entities_size_ptr > 0) {
-		entities = get(dll, "entities");
-		entity_types = get(dll, "entity_types");
-	} else {
-		assert(!dlsym(dll, "entities"));
-		assert(!dlsym(dll, "entity_types"));
-	}
-
-	return (struct test_data){
-		.run = true,
-		.on_fns = on_fns,
-		.g = g,
-		.resources_size = *resources_size_ptr,
-		.resources = resources,
-		.entities_size = *entities_size_ptr,
-		.entities = entities,
-		.entity_types = entity_types,
-		.dll = dll,
-	};
-}
-
-static struct test_data runtime_error_prologue(
-	const char *test_name,
-	const char *grug_path,
-	const char *nasm_path,
-	const char *expected_error_path,
-	const char *results_path,
-	const char *output_dll_path,
-	const char *expected_dll_path,
-	const char *nasm_o_path,
-	const char *expected_xxd_path,
-	const char *expected_readelf_path,
-	const char *expected_objdump_path,
-	const char *failed_file_path,
-	size_t expected_globals_size
-) {
-	if (failed_file_doesnt_exist(failed_file_path)
-	 && shuffles_was_not_defined()
-	 && newer(output_dll_path, nasm_path)
-	 && newer(output_dll_path, grug_path)
-	 && newer(output_dll_path, expected_error_path)
-	 && newer(output_dll_path, expected_dll_path)
-	 && newer(output_dll_path, "mod_api.json")
-	 && newer(output_dll_path, "tests.sh")
-	 && newer(output_dll_path, "tests.out")
-	 && newer(output_dll_path, "tests/utils/defines.s")
-	 && newer(output_dll_path, "tests/utils/macros.s")
-	) {
-		printf("Skipping tests/err_runtime/%s...\n", test_name);
-		return (struct test_data){.run=false};
-	}
-
-	printf("Running tests/err_runtime/%s...\n", test_name);
-
-	return get_expected_test_data(nasm_path, results_path, expected_dll_path, nasm_o_path, expected_xxd_path, expected_readelf_path, expected_objdump_path, failed_file_path, expected_globals_size);
 }
 
 static bool had_runtime_error = false;
@@ -1660,54 +1360,6 @@ static void runtime_error_time_limit_exceeded_fibonacci(void) {
 
 	assert(streq(runtime_error_on_fn_name, "on_a"));
 	assert(streq(runtime_error_on_fn_path, "tests/err_runtime/time_limit_exceeded_fibonacci/input-D.grug"));
-}
-
-static void ok_epilogue(
-	const char *grug_path,
-	const char *output_dll_path,
-	const char *expected_dll_path,
-	const char *output_xxd_path,
-	const char *output_readelf_path,
-	const char *output_objdump_path,
-	const char *dump_path,
-	const char *applied_path,
-	const char *failed_file_path
-) {
-	generate_and_compare_output_dll(grug_path, output_dll_path, expected_dll_path, output_xxd_path, output_readelf_path, output_objdump_path, dump_path, applied_path, failed_file_path);
-}
-
-static struct test_data ok_prologue(
-	const char *test_name,
-	const char *grug_path,
-	const char *nasm_path,
-	const char *results_path,
-	const char *output_dll_path,
-	const char *expected_dll_path,
-	const char *nasm_o_path,
-	const char *expected_xxd_path,
-	const char *expected_readelf_path,
-	const char *expected_objdump_path,
-	const char *failed_file_path,
-	size_t expected_globals_size
-) {
-	if (failed_file_doesnt_exist(failed_file_path)
-	 && shuffles_was_not_defined()
-	 && newer(output_dll_path, nasm_path)
-	 && newer(output_dll_path, grug_path)
-	 && newer(output_dll_path, expected_dll_path)
-	 && newer(output_dll_path, "mod_api.json")
-	 && newer(output_dll_path, "tests.sh")
-	 && newer(output_dll_path, "tests.out")
-	 && newer(output_dll_path, "tests/utils/defines.s")
-	 && newer(output_dll_path, "tests/utils/macros.s")
-	) {
-		printf("Skipping tests/ok/%s...\n", test_name);
-		return (struct test_data){.run=false};
-	}
-
-	printf("Running tests/ok/%s...\n", test_name);
-
-	return get_expected_test_data(nasm_path, results_path, expected_dll_path, nasm_o_path, expected_xxd_path, expected_readelf_path, expected_objdump_path, failed_file_path, expected_globals_size);
 }
 
 static void ok_addition_as_argument(void) {
@@ -4006,8 +3658,7 @@ void grug_tests_run(compile_grug_file_t compile_grug_file_, init_globals_fn_disp
 	}
 
 #ifdef SHUFFLES
-	// If a test failed, you can reproduce it
-	// by replacing `time(NULL)` with the failing test's printed seed
+	// TODO: Allow this seed to be set using an ifdef.
 	unsigned int seed = time(NULL);
 	printf("The seed is %u\n", seed);
 	srand(seed);
@@ -4026,7 +3677,6 @@ void grug_tests_run(compile_grug_file_t compile_grug_file_, init_globals_fn_disp
 			data.grug_path,
 			data.expected_error_path,
 			data.results_path,
-			data.output_dll_path,
 			data.grug_output_path,
 			data.failed_file_path
 		);
@@ -4035,88 +3685,66 @@ void grug_tests_run(compile_grug_file_t compile_grug_file_, init_globals_fn_disp
 	for (size_t i = 0; i < err_runtime_test_datas_size; i++) {
 		struct runtime_error_test_data fn_data = runtime_error_test_datas[i];
 
-		struct test_data data = runtime_error_prologue(
-			fn_data.test_name_str,
+		if (failed_file_doesnt_exist(failed_file_path)
+		&& shuffles_was_not_defined()
+		&& newer(applied_path, nasm_path)
+		&& newer(applied_path, grug_path)
+		&& newer(applied_path, expected_error_path)
+		&& newer(applied_path, "mod_api.json")
+		&& newer(applied_path, "tests.sh")
+		&& newer(applied_path, "tests.out")
+		&& newer(applied_path, "tests/utils/defines.s")
+		&& newer(applied_path, "tests/utils/macros.s")
+		) {
+			printf("Skipping tests/err_runtime/%s...\n", test_name);
+			continue;
+		}
+
+		printf("Running tests/err_runtime/%s...\n", test_name);
+
+		prologue(nasm_path, results_path, nasm_o_path, failed_file_path, expected_globals_size);
+
+		// TODO: Are these still necessary?
+		runtime_error_reason = NULL;
+		had_runtime_error = false;
+		error_handler_calls = 0;
+		runtime_error_type = -1;
+		runtime_error_on_fn_name = NULL;
+		runtime_error_on_fn_path = NULL;
+
+		fn_data.run(data.on_fns, data.g, data.resources_size, data.resources, data.entities_size, data.entities, data.entity_types);
+
+		runtime_error_epilogue(
 			fn_data.grug_path,
-			fn_data.nasm_path,
 			fn_data.expected_error_path,
-			fn_data.results_path,
-			fn_data.output_dll_path,
-			fn_data.expected_dll_path,
-			fn_data.nasm_o_path,
-			fn_data.expected_xxd_path,
-			fn_data.expected_readelf_path,
-			fn_data.expected_objdump_path,
-			fn_data.failed_file_path,
-			fn_data.expected_globals_size_value
+			fn_data.dump_path,
+			fn_data.applied_path,
+			fn_data.failed_file_path
 		);
-
-		if (data.run) {
-			runtime_error_reason = NULL;
-			had_runtime_error = false;
-			error_handler_calls = 0;
-			runtime_error_type = -1;
-			runtime_error_on_fn_name = NULL;
-			runtime_error_on_fn_path = NULL;
-
-			fn_data.run(data.on_fns, data.g, data.resources_size, data.resources, data.entities_size, data.entities, data.entity_types);
-
-			runtime_error_epilogue(
-				fn_data.grug_path,
-				fn_data.expected_error_path,
-				fn_data.output_dll_path,
-				fn_data.expected_dll_path,
-				fn_data.output_xxd_path,
-				fn_data.output_readelf_path,
-				fn_data.output_objdump_path,
-				fn_data.dump_path,
-				fn_data.applied_path,
-				fn_data.failed_file_path
-			);
-		}
-
-		if (data.dll && dlclose(data.dll)) {
-			handle_dlerror("dlclose");
-		}
 	}
 
 	for (size_t i = 0; i < ok_test_datas_size; i++) {
 		struct ok_test_data fn_data = ok_test_datas[i];
 
-		struct test_data data = ok_prologue(
-			fn_data.test_name_str,
-			fn_data.grug_path,
-			fn_data.nasm_path,
-			fn_data.results_path,
-			fn_data.output_dll_path,
-			fn_data.expected_dll_path,
-			fn_data.nasm_o_path,
-			fn_data.expected_xxd_path,
-			fn_data.expected_readelf_path,
-			fn_data.expected_objdump_path,
-			fn_data.failed_file_path,
-			fn_data.expected_globals_size_value
-		);
-
-		if (data.run) {
-			fn_data.run(data.on_fns, data.g, data.resources_size, data.resources, data.entities_size, data.entities, data.entity_types);
-
-			ok_epilogue(
-				fn_data.grug_path,
-				fn_data.output_dll_path,
-				fn_data.expected_dll_path,
-				fn_data.output_xxd_path,
-				fn_data.output_readelf_path,
-				fn_data.output_objdump_path,
-				fn_data.dump_path,
-				fn_data.applied_path,
-				fn_data.failed_file_path
-			);
+		if (failed_file_doesnt_exist(failed_file_path)
+		&& shuffles_was_not_defined()
+		&& newer(applied_path, nasm_path)
+		&& newer(applied_path, grug_path)
+		&& newer(applied_path, "mod_api.json")
+		&& newer(applied_path, "tests.sh")
+		&& newer(applied_path, "tests.out")
+		&& newer(applied_path, "tests/utils/defines.s")
+		&& newer(applied_path, "tests/utils/macros.s")
+		) {
+			printf("Skipping tests/ok/%s...\n", test_name);
+			continue;
 		}
 
-		if (data.dll && dlclose(data.dll)) {
-			handle_dlerror("dlclose");
-		}
+		printf("Running tests/ok/%s...\n", test_name);
+
+		prologue(nasm_path, results_path, nasm_o_path, failed_file_path, expected_globals_size);
+
+		fn_data.run(data.on_fns, data.g, data.resources_size, data.resources, data.entities_size, data.entities, data.entity_types);
 	}
 
 #ifdef SHUFFLES

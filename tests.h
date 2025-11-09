@@ -58,7 +58,7 @@ typedef void (*on_fn_dispatcher_t)(const char *on_fn_name, const char *grug_file
 /**
  * @brief Runs all grug tests.
  *
- * Called by the bindings layer to execute all available grug tests.  
+ * Called by the bindings to execute all available grug tests.  
  * This function iterates over all `.grug` files in the following directories:
  * - `tests/err/`
  * - `tests/err_runtime/`

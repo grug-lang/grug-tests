@@ -984,7 +984,7 @@ static void test_error(
 	unlink(failed_file_path);
 }
 
-static void diff_dump_and_apply(
+static void diff_roundtrip(
 	const char *grug_path,
 	const char *dump_path,
 	const char *applied_path
@@ -1021,13 +1021,7 @@ static void diff_dump_and_apply(
 
 static const char *runtime_error_reason = NULL;
 
-static void runtime_error_epilogue(
-	const char *grug_path,
-	const char *expected_error_path,
-	const char *dump_path,
-	const char *applied_path,
-	const char *failed_file_path
-) {
+static void runtime_error_epilogue(const char *expected_error_path) {
 	const char *expected_error = get_expected_error(expected_error_path);
 
 	if (!streq(runtime_error_reason, expected_error)) {
@@ -3654,15 +3648,15 @@ void grug_tests_run(compile_grug_file_t compile_grug_file_, init_globals_fn_disp
 #endif
 
 	for (size_t i = 0; i < err_test_datas_size; i++) {
-		struct error_test_data data = error_test_datas[i];
+		struct error_test_data fn_data = error_test_datas[i];
 
 		test_error(
-			data.test_name_str,
-			data.grug_path,
-			data.expected_error_path,
-			data.results_path,
-			data.grug_output_path,
-			data.failed_file_path
+			fn_data.test_name_str,
+			fn_data.grug_path,
+			fn_data.expected_error_path,
+			fn_data.results_path,
+			fn_data.grug_output_path,
+			fn_data.failed_file_path
 		);
 	}
 
@@ -3684,6 +3678,8 @@ void grug_tests_run(compile_grug_file_t compile_grug_file_, init_globals_fn_disp
 		}
 
 		printf("Running tests/err_runtime/%s...\n", test_name);
+
+		diff_roundtrip(fn_data.grug_path, fn_data.dump_path, fn_data.applied_path);
 
 		prologue(results_path, failed_file_path, expected_globals_size);
 
@@ -3723,6 +3719,8 @@ void grug_tests_run(compile_grug_file_t compile_grug_file_, init_globals_fn_disp
 		}
 
 		printf("Running tests/ok/%s...\n", test_name);
+
+		diff_roundtrip(fn_data.grug_path, fn_data.dump_path, fn_data.applied_path);
 
 		prologue(results_path, failed_file_path, expected_globals_size);
 

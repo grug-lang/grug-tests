@@ -1013,6 +1013,15 @@
 				}
 			]
 		},
+		"set_position": {
+			"description": "foo",
+			"arguments": [
+				{
+					"name": "pos",
+					"type": "Position"
+				}
+			]
+		},
 		"cause_game_fn_error": {
 			"description": "foo"
 		},

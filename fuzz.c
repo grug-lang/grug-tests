@@ -48,6 +48,7 @@ void game_fn_offset_32_bit_i32(float f1, float f2, float f3, float f4, float f5,
 void game_fn_offset_32_bit_string(float f1, float f2, float f3, float f4, float f5, float f6, float f7, float f8, float f9, float f10, float f11, float f12, float f13, float f14, float f15, float f16, float f17, float f18, float f19, float f20, float f21, float f22, float f23, float f24, float f25, float f26, float f27, float f28, float f29, float f30, const char *s1, const char *s2, const char *s3, const char *s4, const char *s5, int32_t g) {}
 void game_fn_talk(const char *message1, const char *message2, const char *message3, const char *message4) {}
 uint64_t game_fn_get_position(uint64_t id) { return 0; }
+void game_fn_set_position(uint64_t pos) {}
 void game_fn_cause_game_fn_error(void) {}
 void game_fn_call_on_b_fn(void) {}
 void game_fn_store(uint64_t id) {}

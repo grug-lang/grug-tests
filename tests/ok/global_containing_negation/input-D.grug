@@ -1,0 +1,5 @@
+foo: i32 = -2
+
+on_a() {
+    initialize(foo)
+}

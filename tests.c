@@ -53,7 +53,7 @@ typedef uint64_t u64;
 
 static compile_grug_file_t compile_grug_file;
 static init_globals_fn_dispatcher_t init_globals_fn_dispatcher;
-static on_fn_dispatcher_t on_fn_dispatcher_with_args;
+static on_fn_dispatcher_t on_fn_args_dispatcher;
 static dump_file_to_json_t dump_file_to_json;
 static generate_file_from_json_t generate_file_from_json;
 static game_fn_error_t game_fn_error;
@@ -127,6 +127,7 @@ static size_t game_fn_offset_32_bit_i32_call_count;
 static size_t game_fn_offset_32_bit_string_call_count;
 static size_t game_fn_talk_call_count;
 static size_t game_fn_get_position_call_count;
+static size_t game_fn_set_position_call_count;
 static size_t game_fn_cause_game_fn_error_call_count;
 static size_t game_fn_call_on_b_fn_call_count;
 static size_t game_fn_store_call_count;
@@ -137,8 +138,8 @@ static bool streq(const char *a, const char *b) {
 	return strcmp(a, b) == 0;
 }
 
-static void on_fn_dispatcher(const char *on_fn_name, const char *grug_file_path) {
-	on_fn_dispatcher_with_args(on_fn_name, grug_file_path, NULL, 0);
+static void on_fn_dispatcher(const char *on_fn_name, const char *grug_path) {
+	on_fn_args_dispatcher(on_fn_name, grug_path, NULL, 0);
 }
 
 void game_fn_nothing(void) {
@@ -662,14 +663,20 @@ void game_fn_talk(const char *message1, const char *message2, const char *messag
 	game_fn_talk_message3 = message3;
 	game_fn_talk_message4 = message4;
 }
-static uint64_t game_fn_get_position_id;
 uint64_t game_fn_get_position(uint64_t id) {
 	ASSERT_16_BYTE_STACK_ALIGNED();
 	game_fn_get_position_call_count++;
 
-	game_fn_get_position_id = id;
+	(void)id;
 
 	return 1337;
+}
+static uint64_t game_fn_set_position_pos;
+void game_fn_set_position(uint64_t pos) {
+	ASSERT_16_BYTE_STACK_ALIGNED();
+	game_fn_set_position_call_count++;
+
+	game_fn_set_position_pos = pos;
 }
 void game_fn_cause_game_fn_error(void) {
 	ASSERT_16_BYTE_STACK_ALIGNED();
@@ -734,6 +741,7 @@ static void reset_call_counts(void) {
 	game_fn_offset_32_bit_string_call_count = 0;
 	game_fn_talk_call_count = 0;
 	game_fn_get_position_call_count = 0;
+	game_fn_set_position_call_count = 0;
 	game_fn_cause_game_fn_error_call_count = 0;
 	game_fn_call_on_b_fn_call_count = 0;
 	game_fn_store_call_count = 0;
@@ -1019,23 +1027,6 @@ static void diff_roundtrip(
 	}
 }
 
-static const char *runtime_error_reason = NULL;
-
-static void runtime_error_epilogue(const char *expected_error_path) {
-	const char *expected_error = get_expected_error(expected_error_path);
-
-	if (!streq(runtime_error_reason, expected_error)) {
-		printf("\nThe error message differs from the expected error message.\n");
-		printf("Output:\n");
-		printf("%s\n", runtime_error_reason);
-
-		printf("Expected:\n");
-		printf("%s\n", expected_error);
-
-		exit(EXIT_FAILURE);
-	}
-}
-
 static void handle_dlerror(const char *function_name) {
 	const char *err = dlerror();
 	if (!err) {
@@ -1048,9 +1039,9 @@ static void handle_dlerror(const char *function_name) {
 }
 
 static void prologue(
+	const char *grug_path,
 	const char *results_path,
-	const char *failed_file_path,
-	size_t expected_globals_size
+	const char *failed_file_path
 ) {
 	reset_call_counts();
 
@@ -1069,11 +1060,12 @@ static void prologue(
 		exit(EXIT_FAILURE);
 	}
 
-	init_globals_fn_dispatcher(grug_file_path);
+	init_globals_fn_dispatcher(grug_path);
 }
 
 static bool had_runtime_error = false;
 static size_t error_handler_calls = 0;
+static const char *runtime_error_reason = NULL;
 static enum grug_runtime_error_type runtime_error_type = -1;
 static const char *runtime_error_on_fn_name = NULL;
 static const char *runtime_error_on_fn_path = NULL;
@@ -1507,13 +1499,6 @@ static void ok_comment_above_block_twice(void) {
 }
 
 static void ok_comment_above_globals(void) {
-	const char *globals = g;
-	assert(*((uint64_t*)globals) == 42);
-	globals += sizeof(uint64_t);
-
-	assert(((int32_t*)globals)[0] == 420);
-	assert(((int32_t*)globals)[1] == 1337);
-	assert(((int32_t*)globals)[2] == 100);
 }
 
 static void ok_comment_above_helper_fn(void) {
@@ -1527,12 +1512,6 @@ static void ok_comment_above_on_fn(void) {
 }
 
 static void ok_comment_between_globals(void) {
-	const char *globals = g;
-	assert(*((uint64_t*)globals) == 42);
-	globals += sizeof(uint64_t);
-
-	assert(((int32_t*)globals)[0] == 420);
-	assert(((int32_t*)globals)[1] == 1337);
 }
 
 static void ok_comment_between_statements(void) {
@@ -1892,7 +1871,7 @@ static void ok_f32_passed_to_helper_fn(void) {
 
 static void ok_f32_passed_to_on_fn(void) {
 	assert(game_fn_sin_call_count == 0);
-    on_fn_args_dispatcher("on_a", "ok/f32_passed_to_on_fn/input-R.grug", (struct grug_value[]){{.type=grug_value_f32, .value=42.0f}}, 1);
+    on_fn_args_dispatcher("on_a", "ok/f32_passed_to_on_fn/input-R.grug", (struct grug_value[]){{.type=grug_type_f32, .f32=42.0f}}, 1);
 	assert(game_fn_sin_call_count == 1);
 
 	assert(game_fn_sin_x == 42.0f);
@@ -1950,22 +1929,16 @@ static void ok_ge_true_2(void) {
 }
 
 static void ok_global_2_does_not_have_error_handling(void) {
-	const char *globals = g;
-	assert(*((uint64_t*)globals) == 42);
-	globals += sizeof(uint64_t);
-
-	assert(((int32_t*)globals)[0] == -1);
-	assert(((int32_t*)globals)[1] == 0);
 }
 
 static void ok_global_call_using_me(void) {
 	assert(game_fn_get_position_call_count == 1);
 
-	const char *globals = g;
-	assert(*((uint64_t*)globals) == 42);
-	globals += sizeof(uint64_t);
+	assert(game_fn_set_position_call_count == 0);
+    on_fn_dispatcher("on_a", "ok/global_call_using_me/input-D.grug");
+	assert(game_fn_set_position_call_count == 1);
 
-	assert(((uint64_t*)globals)[0] == 1337);
+	assert(game_fn_set_position_pos == 1337);
 }
 
 static void ok_global_can_use_earlier_global(void) {
@@ -1977,11 +1950,11 @@ static void ok_global_can_use_earlier_global(void) {
 }
 
 static void ok_global_containing_negation(void) {
-	const char *globals = g;
-	assert(*((uint64_t*)globals) == 42);
-	globals += sizeof(uint64_t);
+	assert(game_fn_initialize_call_count == 0);
+    on_fn_dispatcher("on_a", "ok/global_containing_negation/input-D.grug");
+	assert(game_fn_initialize_call_count == 1);
 
-	assert(((int32_t*)globals)[0] == -2);
+	assert(game_fn_initialize_x == -2);
 }
 
 static void ok_global_id(void) {
@@ -2246,7 +2219,7 @@ static void ok_id_ne_2(void) {
 
 static void ok_id_on_fn_param(void) {
 	assert(game_fn_store_call_count == 0);
-    on_fn_args_dispatcher("on_a", "ok/id_on_fn_param/input-U.grug", (struct grug_value[]){{.type=grug_value_id, .value=77}}, 1);
+    on_fn_args_dispatcher("on_a", "ok/id_on_fn_param/input-U.grug", (struct grug_value[]){{.type=grug_type_id, .id=77}}, 1);
 	assert(game_fn_store_call_count == 1);
 
 	assert(game_fn_store_id == 77);
@@ -2527,7 +2500,7 @@ static void ok_on_fn_calling_no_game_fn_but_with_global(void) {
 static void ok_on_fn_overwriting_param(void) {
 	assert(game_fn_initialize_call_count == 0);
 	assert(game_fn_sin_call_count == 0);
-    on_fn_args_dispatcher("on_a", "ok/on_fn_overwriting_param/input-S.grug", (struct grug_value[]){{.type=grug_type_i32, .value=2}, {.type=grug_type_f32, .value=3.0f}}, 2);
+    on_fn_args_dispatcher("on_a", "ok/on_fn_overwriting_param/input-S.grug", (struct grug_value[]){{.type=grug_type_i32, .i32=2}, {.type=grug_type_f32, .f32=3.0f}}, 2);
 	assert(game_fn_initialize_call_count == 1);
 	assert(game_fn_sin_call_count == 1);
 
@@ -3614,7 +3587,7 @@ static void add_ok_tests(void) {
 void grug_tests_run(compile_grug_file_t compile_grug_file_, init_globals_fn_dispatcher_t init_globals_fn_dispatcher_, on_fn_dispatcher_t on_fn_dispatcher_, dump_file_to_json_t dump_file_to_json_, generate_file_from_json_t generate_file_from_json_, game_fn_error_t game_fn_error_, const char *whitelisted_test_) {
 	compile_grug_file = compile_grug_file_;
 	init_globals_fn_dispatcher = init_globals_fn_dispatcher_;
-	on_fn_dispatcher_with_args = on_fn_dispatcher_;
+	on_fn_args_dispatcher = on_fn_dispatcher_;
 	dump_file_to_json = dump_file_to_json_;
 	generate_file_from_json = generate_file_from_json_;
 	game_fn_error = game_fn_error_;
@@ -3663,15 +3636,15 @@ void grug_tests_run(compile_grug_file_t compile_grug_file_, init_globals_fn_disp
 	for (size_t i = 0; i < err_runtime_test_datas_size; i++) {
 		struct runtime_error_test_data fn_data = runtime_error_test_datas[i];
 
-		if (failed_file_doesnt_exist(failed_file_path)
+		if (failed_file_doesnt_exist(fn_data.failed_file_path)
 		&& shuffles_was_not_defined()
-		&& newer(applied_path, grug_path)
-		&& newer(applied_path, expected_error_path)
-		&& newer(applied_path, "mod_api.json")
-		&& newer(applied_path, "tests.sh")
-		&& newer(applied_path, "tests.out")
-		&& newer(applied_path, "tests/utils/defines.s")
-		&& newer(applied_path, "tests/utils/macros.s")
+		&& newer(fn_data.applied_path, fn_data.grug_path)
+		&& newer(fn_data.applied_path, fn_data.expected_error_path)
+		&& newer(fn_data.applied_path, "mod_api.json")
+		&& newer(fn_data.applied_path, "tests.sh")
+		&& newer(fn_data.applied_path, "tests.out")
+		&& newer(fn_data.applied_path, "tests/utils/defines.s")
+		&& newer(fn_data.applied_path, "tests/utils/macros.s")
 		) {
 			printf("Skipping tests/err_runtime/%s...\n", test_name);
 			continue;
@@ -3681,7 +3654,7 @@ void grug_tests_run(compile_grug_file_t compile_grug_file_, init_globals_fn_disp
 
 		diff_roundtrip(fn_data.grug_path, fn_data.dump_path, fn_data.applied_path);
 
-		prologue(results_path, failed_file_path, expected_globals_size);
+		prologue(fn_data.grug_path, fn_data.results_path, fn_data.failed_file_path);
 
 		// TODO: Are these still necessary?
 		runtime_error_reason = NULL;
@@ -3693,26 +3666,31 @@ void grug_tests_run(compile_grug_file_t compile_grug_file_, init_globals_fn_disp
 
 		fn_data.run(data.on_fns, data.g, data.resources_size, data.resources, data.entities_size, data.entities, data.entity_types);
 
-		runtime_error_epilogue(
-			fn_data.grug_path,
-			fn_data.expected_error_path,
-			fn_data.dump_path,
-			fn_data.applied_path,
-			fn_data.failed_file_path
-		);
+		const char *expected_error = get_expected_error(fn_data.expected_error_path);
+
+		if (!streq(runtime_error_reason, expected_error)) {
+			printf("\nThe error message differs from the expected error message.\n");
+			printf("Output:\n");
+			printf("%s\n", runtime_error_reason);
+
+			printf("Expected:\n");
+			printf("%s\n", expected_error);
+
+			exit(EXIT_FAILURE);
+		}
 	}
 
 	for (size_t i = 0; i < ok_test_datas_size; i++) {
 		struct ok_test_data fn_data = ok_test_datas[i];
 
-		if (failed_file_doesnt_exist(failed_file_path)
+		if (failed_file_doesnt_exist(fn_data.failed_file_path)
 		&& shuffles_was_not_defined()
-		&& newer(applied_path, grug_path)
-		&& newer(applied_path, "mod_api.json")
-		&& newer(applied_path, "tests.sh")
-		&& newer(applied_path, "tests.out")
-		&& newer(applied_path, "tests/utils/defines.s")
-		&& newer(applied_path, "tests/utils/macros.s")
+		&& newer(fn_data.applied_path, fn_data.grug_path)
+		&& newer(fn_data.applied_path, "mod_api.json")
+		&& newer(fn_data.applied_path, "tests.sh")
+		&& newer(fn_data.applied_path, "tests.out")
+		&& newer(fn_data.applied_path, "tests/utils/defines.s")
+		&& newer(fn_data.applied_path, "tests/utils/macros.s")
 		) {
 			printf("Skipping tests/ok/%s...\n", test_name);
 			continue;
@@ -3722,7 +3700,7 @@ void grug_tests_run(compile_grug_file_t compile_grug_file_, init_globals_fn_disp
 
 		diff_roundtrip(fn_data.grug_path, fn_data.dump_path, fn_data.applied_path);
 
-		prologue(results_path, failed_file_path, expected_globals_size);
+		prologue(fn_data.grug_path, fn_data.results_path, fn_data.failed_file_path);
 
 		fn_data.run(data.on_fns, data.g, data.resources_size, data.resources, data.entities_size, data.entities, data.entity_types);
 	}

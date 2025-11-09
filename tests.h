@@ -21,12 +21,14 @@
 
 #define _XOPEN_SOURCE 700 // This is required to get struct FTW from ftw.h
 
+#include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
 
 enum grug_type {
     grug_type_i32,
     grug_type_f32,
+    grug_type_id,
 };
 
 struct grug_value {
@@ -34,7 +36,8 @@ struct grug_value {
     union {
         int32_t i32;
         float f32;
-    } value;
+        uint64_t id;
+    };
 };
 
 enum grug_runtime_error_type {

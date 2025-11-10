@@ -4,14 +4,18 @@
 #include <stdio.h>
 #include <string.h>
 
+static const char *saved_on_fn_name;
+static const char *saved_grug_file_path;
+
+static bool streq(const char *a, const char *b) {
+	return strcmp(a, b) == 0;
+}
+
 static bool starts_with(const char *haystack, const char *needle) {
 	return strncmp(haystack, needle, strlen(needle)) == 0;
 }
 
-// TODO: Implement
 static const char *compile_grug_file(const char *grug_file_path) {
-    printf("grug_file_path: %s\n", grug_file_path); // TODO: REMOVE!
-
     if (starts_with(grug_file_path, "tests/err/")) {
         // Find the last '/' in the path
         const char *last_slash = strrchr(grug_file_path, '/');
@@ -56,13 +60,73 @@ static void init_globals_fn_dispatcher(const char *grug_file_path) {
 }
 
 static void on_fn_dispatcher(const char *on_fn_name, const char *grug_file_path, struct grug_value values[], size_t value_count) {
-    // TODO: Stop void casting arguments that are now used
-    (void)on_fn_name;
-    (void)grug_file_path;
     (void)values;
     (void)value_count;
 
-    grug_tests_runtime_error_handler("Division of an i32 by 0", GRUG_ON_FN_DIVISION_BY_ZERO, "on_a", "tests/err_runtime/all/input-D.grug");
+    saved_on_fn_name = on_fn_name;
+    saved_grug_file_path = grug_file_path;
+
+    // TODO: Refactor using a macro
+    if (starts_with(grug_file_path, "tests/err_runtime/all/")) {
+        grug_tests_runtime_error_handler("Division of an i32 by 0", GRUG_ON_FN_DIVISION_BY_ZERO, on_fn_name, grug_file_path);
+    } else if (starts_with(grug_file_path, "tests/err_runtime/division_by_0/")) {
+        grug_tests_runtime_error_handler("Division of an i32 by 0", GRUG_ON_FN_DIVISION_BY_ZERO, on_fn_name, grug_file_path);
+    } else if (starts_with(grug_file_path, "tests/err_runtime/game_fn_error/")) {
+        game_fn_cause_game_fn_error();
+    } else if (starts_with(grug_file_path, "tests/err_runtime/game_fn_error_once/")) {
+        if (streq(on_fn_name, "on_a")) {
+            game_fn_cause_game_fn_error();
+        } else {
+            game_fn_nothing();
+        }
+    } else if (starts_with(grug_file_path, "tests/err_runtime/i32_overflow_addition/")) {
+        grug_tests_runtime_error_handler("i32 overflow", GRUG_ON_FN_OVERFLOW, on_fn_name, grug_file_path);
+    } else if (starts_with(grug_file_path, "tests/err_runtime/i32_overflow_division/")) {
+        grug_tests_runtime_error_handler("i32 overflow", GRUG_ON_FN_OVERFLOW, on_fn_name, grug_file_path);
+    } else if (starts_with(grug_file_path, "tests/err_runtime/i32_overflow_multiplication/")) {
+        grug_tests_runtime_error_handler("i32 overflow", GRUG_ON_FN_OVERFLOW, on_fn_name, grug_file_path);
+    } else if (starts_with(grug_file_path, "tests/err_runtime/i32_overflow_negation/")) {
+        grug_tests_runtime_error_handler("i32 overflow", GRUG_ON_FN_OVERFLOW, on_fn_name, grug_file_path);
+    } else if (starts_with(grug_file_path, "tests/err_runtime/i32_overflow_remainder/")) {
+        grug_tests_runtime_error_handler("i32 overflow", GRUG_ON_FN_OVERFLOW, on_fn_name, grug_file_path);
+    } else if (starts_with(grug_file_path, "tests/err_runtime/i32_overflow_subtraction/")) {
+        grug_tests_runtime_error_handler("i32 overflow", GRUG_ON_FN_OVERFLOW, on_fn_name, grug_file_path);
+    } else if (starts_with(grug_file_path, "tests/err_runtime/i32_underflow_addition/")) {
+        grug_tests_runtime_error_handler("i32 overflow", GRUG_ON_FN_OVERFLOW, on_fn_name, grug_file_path);
+    } else if (starts_with(grug_file_path, "tests/err_runtime/i32_underflow_multiplication/")) {
+        grug_tests_runtime_error_handler("i32 overflow", GRUG_ON_FN_OVERFLOW, on_fn_name, grug_file_path);
+    } else if (starts_with(grug_file_path, "tests/err_runtime/i32_underflow_subtraction/")) {
+        grug_tests_runtime_error_handler("i32 overflow", GRUG_ON_FN_OVERFLOW, on_fn_name, grug_file_path);
+    } else if (starts_with(grug_file_path, "tests/err_runtime/on_fn_calls_erroring_on_fn/")) {
+        if (streq(on_fn_name, "on_a")) {
+            game_fn_call_on_b_fn();
+        } else {
+            game_fn_cause_game_fn_error();
+        }
+    } else if (starts_with(grug_file_path, "tests/err_runtime/on_fn_errors_after_it_calls_other_on_fn/")) {
+        if (streq(on_fn_name, "on_a")) {
+            game_fn_call_on_b_fn();
+            game_fn_cause_game_fn_error();
+        } else {
+            game_fn_nothing();
+        }
+    } else if (starts_with(grug_file_path, "tests/err_runtime/remainder_by_0/")) {
+        grug_tests_runtime_error_handler("Division of an i32 by 0", GRUG_ON_FN_DIVISION_BY_ZERO, on_fn_name, grug_file_path);
+    } else if (starts_with(grug_file_path, "tests/err_runtime/stack_overflow/")) {
+        grug_tests_runtime_error_handler("Stack overflow, so check for accidental infinite recursion", GRUG_ON_FN_STACK_OVERFLOW, on_fn_name, grug_file_path);
+    } else if (starts_with(grug_file_path, "tests/err_runtime/time_limit_exceeded/")) {
+        grug_tests_runtime_error_handler("Took longer than 10 milliseconds to run", GRUG_ON_FN_TIME_LIMIT_EXCEEDED, on_fn_name, grug_file_path);
+    } else if (starts_with(grug_file_path, "tests/err_runtime/time_limit_exceeded_exponential_calls/")) {
+        grug_tests_runtime_error_handler("Took longer than 10 milliseconds to run", GRUG_ON_FN_TIME_LIMIT_EXCEEDED, on_fn_name, grug_file_path);
+    } else if (starts_with(grug_file_path, "tests/err_runtime/time_limit_exceeded_fibonacci/")) {
+        grug_tests_runtime_error_handler("Took longer than 10 milliseconds to run", GRUG_ON_FN_TIME_LIMIT_EXCEEDED, on_fn_name, grug_file_path);
+    } else if (starts_with(grug_file_path, "tests/ok/addition_as_argument/")) {
+        game_fn_initialize(3);
+    } else if (starts_with(grug_file_path, "tests/ok/addition_as_two_arguments/")) {
+        game_fn_max(3, 9);
+    } else {
+        assert(false);
+    }
 }
 
 static bool copy_file(const char *src_path, const char *dst_path) {
@@ -110,10 +174,8 @@ static bool generate_file_from_json(const char *input_json_path, const char *out
     return copy_file(input_json_path, output_grug_path);
 }
 
-// TODO: Implement
 static void game_fn_error(const char *message) {
-    (void)message;
-    printf("Had game function error!\n"); // TODO: REMOVE!
+    grug_tests_runtime_error_handler(message, GRUG_ON_FN_GAME_FN_ERROR, saved_on_fn_name, saved_grug_file_path);
 }
 
 int main(void) {

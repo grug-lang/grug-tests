@@ -21,9 +21,9 @@
 
 #define _XOPEN_SOURCE 700 // This is required to get struct FTW from ftw.h
 
-#include <stdbool.h>
-#include <stddef.h>
-#include <stdint.h>
+#include <stdbool.h> // Provides bool
+#include <stddef.h> // Provides size_t
+#include <stdint.h> // Provides uint32_t
 
 enum grug_type {
     grug_type_i32,

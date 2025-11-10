@@ -1,0 +1,7 @@
+a: i32 = 420
+b: i32 = 1337
+
+on_a() {
+    initialize(a)
+    initialize(b)
+}

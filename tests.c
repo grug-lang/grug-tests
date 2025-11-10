@@ -4,8 +4,6 @@
 
 #include <assert.h>
 #include <dirent.h>
-#include <dlfcn.h>
-#include <elf.h>
 #include <errno.h>
 #include <fcntl.h>
 #include <ftw.h>
@@ -13,8 +11,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <sys/wait.h>
-#include <time.h>
+#include <sys/stat.h>
 #include <unistd.h>
 
 // From https://stackoverflow.com/a/2114249/13279557
@@ -1027,17 +1024,6 @@ static void diff_roundtrip(
 	}
 }
 
-static void handle_dlerror(const char *function_name) {
-	const char *err = dlerror();
-	if (!err) {
-		printf("dlerror() was asked to find an error string for %s(), but it couldn't find one", function_name);
-		exit(EXIT_FAILURE);
-	}
-
-	printf("%s: %s\n", function_name, err);
-	exit(EXIT_FAILURE);
-}
-
 static void prologue(
 	const char *grug_path,
 	const char *results_path,
@@ -1960,64 +1946,31 @@ static void ok_global_containing_negation(void) {
 static void ok_global_id(void) {
 	assert(game_fn_get_opponent_call_count == 1);
 
-	const char *globals = g;
-	assert(*((uint64_t*)globals) == 42);
-	globals += sizeof(uint64_t);
+	assert(game_fn_set_position_call_count == 0);
+    on_fn_dispatcher("on_a", "ok/global_id/input-D.grug");
+	assert(game_fn_set_position_call_count == 1);
 
-	assert(((uint64_t*)globals)[0] == 69);
+	assert(game_fn_set_position_pos == 69);
 }
 
 static void ok_globals(void) {
-	const char *globals = g;
-	assert(*((uint64_t*)globals) == 42);
-	globals += sizeof(uint64_t);
+	assert(game_fn_initialize_call_count == 0);
+    on_fn_dispatcher("on_a", "ok/globals/input-D.grug");
+	assert(game_fn_initialize_call_count == 2);
 
-	assert(((int32_t*)globals)[0] == 420);
-	assert(((int32_t*)globals)[1] == 1337);
+	assert(game_fn_initialize_x == 1337);
 }
 
 static void ok_globals_1000(void) {
-	const char *globals = g;
-	assert(*((uint64_t *)globals) == 42);
-	globals += sizeof(uint64_t);
-
-	for (int32_t i = 0; i < 1000; i++) {
-		assert(((int32_t *)globals)[i] == i + 1);
-	}
 }
 
 static void ok_globals_1000_string(void) {
-	const char *globals = g;
-	assert(*((uint64_t *)globals) == 42);
-	globals += sizeof(uint64_t);
-
-	static char expected[sizeof("global0001")];
-	memcpy(expected, "global", 6);
-
-	for (int32_t i = 0; i < 1000; i++) {
-		snprintf(expected + sizeof("global") - 1, sizeof("0001"), "%.4d", i + 1);
-		assert(streq(((const char **)globals)[i], expected));
-	}
 }
 
 static void ok_globals_32(void) {
-	const char *globals = g;
-	assert(*((uint64_t*)globals) == 42);
-	globals += sizeof(uint64_t);
-
-	for (int32_t i = 0; i < 32; i++) {
-		assert(((int32_t*)globals)[i] == i + 1);
-	}
 }
 
 static void ok_globals_64(void) {
-	const char *globals = g;
-	assert(*((uint64_t*)globals) == 42);
-	globals += sizeof(uint64_t);
-
-	for (int32_t i = 0; i < 64; i++) {
-		assert(((int32_t*)globals)[i] == i + 1);
-	}
 }
 
 static void ok_gt_false(void) {
@@ -2424,12 +2377,6 @@ static void ok_nested_continue(void) {
 }
 
 static void ok_no_empty_line_between_globals(void) {
-	const char *globals = g;
-	assert(*((uint64_t*)globals) == 42);
-	globals += sizeof(uint64_t);
-
-	assert(((int32_t*)globals)[0] == 420);
-	assert(((int32_t*)globals)[1] == 1337);
 }
 
 static void ok_no_empty_line_between_statements(void) {
@@ -2525,38 +2472,32 @@ static void ok_on_fn_passing_magic_to_initialize(void) {
 }
 
 static void ok_on_fn_three(void) {
+	assert(game_fn_nothing_call_count == 0);
     on_fn_dispatcher("on_a", "ok/on_fn_three/input-J.grug");
-	assert(streq(grug_fn_name, "on_a"));
-
     on_fn_dispatcher("on_b", "ok/on_fn_three/input-J.grug");
-	assert(streq(grug_fn_name, "on_b"));
-
     on_fn_dispatcher("on_c", "ok/on_fn_three/input-J.grug");
-	assert(streq(grug_fn_name, "on_c"));
+	assert(game_fn_nothing_call_count == 3);
 }
 
 static void ok_on_fn_three_unused_first(void) {
+	assert(game_fn_nothing_call_count == 0);
     on_fn_dispatcher("on_b", "ok/on_fn_three_unused_first/input-J.grug");
-	assert(streq(grug_fn_name, "on_b"));
-
     on_fn_dispatcher("on_c", "ok/on_fn_three_unused_first/input-J.grug");
-	assert(streq(grug_fn_name, "on_c"));
+	assert(game_fn_nothing_call_count == 2);
 }
 
 static void ok_on_fn_three_unused_second(void) {
+	assert(game_fn_nothing_call_count == 0);
     on_fn_dispatcher("on_a", "ok/on_fn_three_unused_second/input-J.grug");
-	assert(streq(grug_fn_name, "on_a"));
-
     on_fn_dispatcher("on_c", "ok/on_fn_three_unused_second/input-J.grug");
-	assert(streq(grug_fn_name, "on_c"));
+	assert(game_fn_nothing_call_count == 2);
 }
 
 static void ok_on_fn_three_unused_third(void) {
+	assert(game_fn_nothing_call_count == 0);
     on_fn_dispatcher("on_a", "ok/on_fn_three_unused_third/input-J.grug");
-	assert(streq(grug_fn_name, "on_a"));
-
     on_fn_dispatcher("on_b", "ok/on_fn_three_unused_third/input-J.grug");
-	assert(streq(grug_fn_name, "on_b"));
+	assert(game_fn_nothing_call_count == 2);
 }
 
 static void ok_or_false(void) {
@@ -3646,11 +3587,11 @@ void grug_tests_run(compile_grug_file_t compile_grug_file_, init_globals_fn_disp
 		&& newer(fn_data.applied_path, "tests/utils/defines.s")
 		&& newer(fn_data.applied_path, "tests/utils/macros.s")
 		) {
-			printf("Skipping tests/err_runtime/%s...\n", test_name);
+			printf("Skipping tests/err_runtime/%s...\n", fn_data.test_name_str);
 			continue;
 		}
 
-		printf("Running tests/err_runtime/%s...\n", test_name);
+		printf("Running tests/err_runtime/%s...\n", fn_data.test_name_str);
 
 		diff_roundtrip(fn_data.grug_path, fn_data.dump_path, fn_data.applied_path);
 
@@ -3664,7 +3605,7 @@ void grug_tests_run(compile_grug_file_t compile_grug_file_, init_globals_fn_disp
 		runtime_error_on_fn_name = NULL;
 		runtime_error_on_fn_path = NULL;
 
-		fn_data.run(data.on_fns, data.g, data.resources_size, data.resources, data.entities_size, data.entities, data.entity_types);
+		fn_data.run();
 
 		const char *expected_error = get_expected_error(fn_data.expected_error_path);
 
@@ -3692,17 +3633,17 @@ void grug_tests_run(compile_grug_file_t compile_grug_file_, init_globals_fn_disp
 		&& newer(fn_data.applied_path, "tests/utils/defines.s")
 		&& newer(fn_data.applied_path, "tests/utils/macros.s")
 		) {
-			printf("Skipping tests/ok/%s...\n", test_name);
+			printf("Skipping tests/ok/%s...\n", fn_data.test_name_str);
 			continue;
 		}
 
-		printf("Running tests/ok/%s...\n", test_name);
+		printf("Running tests/ok/%s...\n", fn_data.test_name_str);
 
 		diff_roundtrip(fn_data.grug_path, fn_data.dump_path, fn_data.applied_path);
 
 		prologue(fn_data.grug_path, fn_data.results_path, fn_data.failed_file_path);
 
-		fn_data.run(data.on_fns, data.g, data.resources_size, data.resources, data.entities_size, data.entities, data.entity_types);
+		fn_data.run();
 	}
 
 #ifdef SHUFFLES

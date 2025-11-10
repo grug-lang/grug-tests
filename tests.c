@@ -941,8 +941,6 @@ static void test_error(
 	 && newer(grug_output_path, "mod_api.json")
 	 && newer(grug_output_path, "tests.sh")
 	 && newer(grug_output_path, "tests.out")
-	 && newer(grug_output_path, "tests/utils/defines.s")
-	 && newer(grug_output_path, "tests/utils/macros.s")
 	) {
 		printf("Skipping tests/err/%s...\n", test_name);
 		return;
@@ -3584,8 +3582,6 @@ void grug_tests_run(compile_grug_file_t compile_grug_file_, init_globals_fn_disp
 		&& newer(fn_data.applied_path, "mod_api.json")
 		&& newer(fn_data.applied_path, "tests.sh")
 		&& newer(fn_data.applied_path, "tests.out")
-		&& newer(fn_data.applied_path, "tests/utils/defines.s")
-		&& newer(fn_data.applied_path, "tests/utils/macros.s")
 		) {
 			printf("Skipping tests/err_runtime/%s...\n", fn_data.test_name_str);
 			continue;
@@ -3630,8 +3626,6 @@ void grug_tests_run(compile_grug_file_t compile_grug_file_, init_globals_fn_disp
 		&& newer(fn_data.applied_path, "mod_api.json")
 		&& newer(fn_data.applied_path, "tests.sh")
 		&& newer(fn_data.applied_path, "tests.out")
-		&& newer(fn_data.applied_path, "tests/utils/defines.s")
-		&& newer(fn_data.applied_path, "tests/utils/macros.s")
 		) {
 			printf("Skipping tests/ok/%s...\n", fn_data.test_name_str);
 			continue;

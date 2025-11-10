@@ -22,7 +22,7 @@ grug.o
 output.map
 pvs.json
 pvs.log
-smoketest
+smoketest.o
 strace_out
 tests.o
 tests.out

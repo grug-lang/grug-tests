@@ -1,13 +1,8 @@
 #!/bin/bash
 
-# Require grug path as the first argument
-if [[ -z "$1" ]]; then
-    echo "Usage: $0 <path-to-grug> [test-args...]"
-    exit 1
-fi
-GRUG_PATH="$1"
+# TODO: Update the docs, since the grug repository isn't passed as an argument anymore
 
-compiler_flags="-I${GRUG_PATH} -g -Wall -Wextra -Werror -Wpedantic -Wstrict-prototypes -Wmissing-prototypes -Wshadow -Wuninitialized -Wunused-macros -Wfatal-errors"
+compiler_flags="-g -Wall -Wextra -Werror -Wpedantic -Wstrict-prototypes -Wmissing-prototypes -Wshadow -Wuninitialized -Wunused-macros -Wfatal-errors"
 
 # This makes compilation quite a bit slower
 # compiler_flags+=' -Og'
@@ -78,12 +73,10 @@ then
     compiler_flags+=' -gdwarf-4' # build.yml requires this, for some reason
 fi
 
-if [[ $(find "$GRUG_PATH"/src -type f -newer grug.o) ]] \
-   || [[ "$GRUG_PATH"/grug.h -nt grug.o ]] \
-   || [[ tests.sh -nt grug.o ]]
+if [[ smoketest.c -nt smoketest.o ]]
 then
-    echo "Recompiling grug.o..."
-    "$CC" "${GRUG_PATH}/src/14_hot_reloading.c" -c -o grug.o $compiler_flags || { echo 'Recompiling grug.o failed :('; exit 1; }
+    echo "Recompiling smoketest.o..."
+    "$CC" smoketest.c -c -o smoketest.o $compiler_flags || { echo 'Recompiling smoketest.o failed :('; exit 1; }
 fi
 
 if (! [[ tests.c -ot tests.o ]]) || (! [[ tests.sh -ot tests.o ]])
@@ -96,12 +89,13 @@ fi
 # `-lm` links against libm.so/libm.a to get access to math functions
 linker_flags='-rdynamic -lm'
 
-if (! [[ tests.o -ot tests.out ]]) || (! [[ grug.o -ot tests.out ]]) || (! [[ tests.sh -ot tests.out ]])
+if (! [[ tests.o -ot tests.out ]]) || (! [[ smoketest.o -ot tests.out ]]) || (! [[ tests.sh -ot tests.out ]])
 then
     # TODO: Try using the mold linker here, and add README instructions back if it's faster
     echo "Linking tests.out..."
+
     # TODO: Try removing $compiler_flags here
-    "$CC" tests.o grug.o -o tests.out $compiler_flags $linker_flags || { echo 'Linking tests.out failed :('; exit 1; }
+    "$CC" tests.o smoketest.o -o tests.out $compiler_flags $linker_flags || { echo 'Linking tests.out failed :('; exit 1; }
 fi
 
 echo "Running tests.out..."
@@ -109,9 +103,9 @@ echo "Running tests.out..."
 if [[ ${VALGRIND+x} ]]
 then
     # This makes compilation quite a bit slower
-    valgrind --quiet ./tests.out "${@:2}"
+    valgrind --quiet ./tests.out "${@:1}"
 else
-    ./tests.out "${@:2}"
+    ./tests.out "${@:1}"
 fi
 
 if [ $? -ne 0 ]; then

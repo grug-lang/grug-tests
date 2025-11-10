@@ -55,31 +55,65 @@ static void init_globals_fn_dispatcher(const char *grug_file_path) {
     (void)grug_file_path;
 }
 
-// TODO: Implement
 static void on_fn_dispatcher(const char *on_fn_name, const char *grug_file_path, struct grug_value values[], size_t value_count) {
+    // TODO: Stop void casting arguments that are now used
     (void)on_fn_name;
     (void)grug_file_path;
     (void)values;
     (void)value_count;
+
+    grug_tests_runtime_error_handler("Division of an i32 by 0", GRUG_ON_FN_DIVISION_BY_ZERO, "on_a", "tests/err_runtime/all/input-D.grug");
 }
 
-// TODO: Implement
+static bool copy_file(const char *src_path, const char *dst_path) {
+    FILE *src = fopen(src_path, "rb");
+    if (!src) {
+        perror("Failed to open source file");
+        return true;
+    }
+
+    FILE *dst = fopen(dst_path, "wb");
+    if (!dst) {
+        perror("Failed to open destination file");
+        fclose(src);
+        return true;
+    }
+
+    char buffer[4096];
+    size_t bytes;
+    while ((bytes = fread(buffer, 1, sizeof(buffer), src)) > 0) {
+        if (fwrite(buffer, 1, bytes, dst) != bytes) {
+            perror("Write error");
+            fclose(src);
+            fclose(dst);
+            return true;
+        }
+    }
+
+    if (ferror(src)) {
+        perror("Read error");
+        fclose(src);
+        fclose(dst);
+        return true;
+    }
+
+    fclose(src);
+    fclose(dst);
+    return false;
+}
+
 static bool dump_file_to_json(const char *input_grug_path, const char *output_json_path) {
-    (void)input_grug_path;
-    (void)output_json_path;
-    return false;
+    return copy_file(input_grug_path, output_json_path);
 }
 
-// TODO: Implement
 static bool generate_file_from_json(const char *input_json_path, const char *output_grug_path) {
-    (void)input_json_path;
-    (void)output_grug_path;
-    return false;
+    return copy_file(input_json_path, output_grug_path);
 }
 
 // TODO: Implement
 static void game_fn_error(const char *message) {
     (void)message;
+    printf("Had game function error!\n"); // TODO: REMOVE!
 }
 
 int main(void) {

@@ -746,16 +746,18 @@ static void reset_call_counts(void) {
 	game_fn_box_i32_call_count = 0;
 }
 
-static void check(int status, const char *fn_name) {
+static void check(int status, const char *fn_name, const char *msg) {
 	if (status < 0) {
 		perror(fn_name);
+		if (msg) fprintf(stderr, "Error message: '%s'\n", msg);
 		exit(EXIT_FAILURE);
 	}
 }
 
-static void check_null(void *ptr, const char *fn_name) {
+static void check_null(void *ptr, const char *fn_name, const char *msg) {
 	if (ptr == NULL) {
 		perror(fn_name);
+		if (msg) fprintf(stderr, "Error message: '%s'\n", msg);
 		exit(EXIT_FAILURE);
 	}
 }
@@ -825,15 +827,15 @@ static bool is_whitelisted_test(const char *name) {
 
 static size_t read_file(const char *path, uint8_t *bytes) {
 	FILE *f = fopen(path, "r");
-	check_null(f, "fopen");
+	check_null(f, "fopen", path);
 
-	check(fseek(f, 0, SEEK_END), "fseek");
+	check(fseek(f, 0, SEEK_END), "fseek", NULL);
 
 	long ftell_result = ftell(f);
-	check(ftell_result, "ftell");
+	check(ftell_result, "ftell", NULL);
 	size_t len = ftell_result;
 
-	check(fseek(f, 0, SEEK_SET), "fseek");
+	check(fseek(f, 0, SEEK_SET), "fseek", NULL);
 
 	if (fread(bytes, len, 1, f) < len && ferror(f)) {
 		printf("fread error\n");
@@ -887,7 +889,7 @@ static const char *get_expected_error(const char *expected_error_path) {
 
 static void create_failed_file(const char *failed_file_path) {
 	int fd = open(failed_file_path, O_RDWR | O_CREAT | O_TRUNC, 0644);
-	check(fd, "open");
+	check(fd, "open", failed_file_path);
 	close(fd);
 }
 
@@ -909,8 +911,7 @@ static int remove_callback(const char *entry_path, const struct stat *entry_info
 	(void)ftw;
 
 	int rv = remove(entry_path);
-
-	check(rv, "remove");
+	check(rv, "remove", entry_path);
 
 	return rv;
 }
@@ -3589,9 +3590,9 @@ void grug_tests_run(compile_grug_file_t compile_grug_file_, init_globals_fn_disp
 
 		printf("Running tests/err_runtime/%s...\n", fn_data.test_name_str);
 
-		diff_roundtrip(fn_data.grug_path, fn_data.dump_path, fn_data.applied_path);
-
 		prologue(fn_data.grug_path, fn_data.results_path, fn_data.failed_file_path);
+
+		diff_roundtrip(fn_data.grug_path, fn_data.dump_path, fn_data.applied_path);
 
 		// TODO: Are these still necessary?
 		runtime_error_reason = NULL;
@@ -3633,9 +3634,9 @@ void grug_tests_run(compile_grug_file_t compile_grug_file_, init_globals_fn_disp
 
 		printf("Running tests/ok/%s...\n", fn_data.test_name_str);
 
-		diff_roundtrip(fn_data.grug_path, fn_data.dump_path, fn_data.applied_path);
-
 		prologue(fn_data.grug_path, fn_data.results_path, fn_data.failed_file_path);
+
+		diff_roundtrip(fn_data.grug_path, fn_data.dump_path, fn_data.applied_path);
 
 		fn_data.run();
 	}

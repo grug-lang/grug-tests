@@ -203,6 +203,105 @@ static void on_fn_dispatcher(const char *on_fn_name, const char *grug_file_path,
         game_fn_store(42);
     } else if (starts_with(grug_file_path, "tests/ok/custom_id_transfer_between_globals/")) {
         game_fn_set_opponent(69);
+    } else if (starts_with(grug_file_path, "tests/ok/division_negative_result/")) {
+        game_fn_initialize(-2);
+    } else if (starts_with(grug_file_path, "tests/ok/division_positive_result/")) {
+        game_fn_initialize(2);
+    } else if (starts_with(grug_file_path, "tests/ok/double_negation_with_parentheses/")) {
+        game_fn_initialize(2);
+    } else if (starts_with(grug_file_path, "tests/ok/double_not_with_parentheses/")) {
+        game_fn_initialize_bool(true);
+    } else if (starts_with(grug_file_path, "tests/ok/else_after_else_if_false/")) {
+        game_fn_nothing();
+        game_fn_nothing();
+    } else if (starts_with(grug_file_path, "tests/ok/else_after_else_if_true/")) {
+        game_fn_nothing();
+        game_fn_nothing();
+        game_fn_nothing();
+    } else if (starts_with(grug_file_path, "tests/ok/else_false/")) {
+        game_fn_nothing();
+        game_fn_nothing();
+    } else if (starts_with(grug_file_path, "tests/ok/else_if_false/")) {
+        game_fn_nothing();
+        game_fn_nothing();
+    } else if (starts_with(grug_file_path, "tests/ok/else_if_true/")) {
+        game_fn_nothing();
+        game_fn_nothing();
+        game_fn_nothing();
+    } else if (starts_with(grug_file_path, "tests/ok/else_true/")) {
+        game_fn_nothing();
+        game_fn_nothing();
+        game_fn_nothing();
+    } else if (starts_with(grug_file_path, "tests/ok/empty_line/")) {
+        game_fn_nothing();
+        game_fn_nothing();
+    } else if (starts_with(grug_file_path, "tests/ok/entity_and_resource_as_subexpression/")) {
+        game_fn_initialize_bool(game_fn_has_resource("tests/ok/entity_and_resource_as_subexpression/foo.txt") && game_fn_has_string("bar") && game_fn_has_entity("ok:baz"));
+    } else if (starts_with(grug_file_path, "tests/ok/entity_duplicate/")) {
+        game_fn_spawn("ok:foo");
+        game_fn_spawn("ok:bar");
+        game_fn_spawn("ok:bar");
+        game_fn_spawn("ok:baz");
+    } else if (starts_with(grug_file_path, "tests/ok/entity_in_on_fn/")) {
+        game_fn_spawn("ok:foo");
+    } else if (starts_with(grug_file_path, "tests/ok/entity_in_on_fn_with_mod_specified/")) {
+        game_fn_spawn("wow:foo");
+    } else if (starts_with(grug_file_path, "tests/ok/eq_false/")) {
+        game_fn_initialize_bool(false);
+    } else if (starts_with(grug_file_path, "tests/ok/eq_true/")) {
+        game_fn_initialize_bool(true);
+    } else if (starts_with(grug_file_path, "tests/ok/f32_addition/")) {
+        game_fn_sin(6.0f);
+    } else if (starts_with(grug_file_path, "tests/ok/f32_argument/")) {
+        game_fn_sin(4.0f);
+    } else if (starts_with(grug_file_path, "tests/ok/f32_division/")) {
+        game_fn_sin(0.5f);
+    } else if (starts_with(grug_file_path, "tests/ok/f32_eq_false/")) {
+        game_fn_initialize_bool(false);
+    } else if (starts_with(grug_file_path, "tests/ok/f32_eq_true/")) {
+        game_fn_initialize_bool(true);
+    } else if (starts_with(grug_file_path, "tests/ok/f32_ge_false/")) {
+        game_fn_initialize_bool(false);
+    } else if (starts_with(grug_file_path, "tests/ok/f32_ge_true_1/")) {
+        game_fn_initialize_bool(true);
+    } else if (starts_with(grug_file_path, "tests/ok/f32_ge_true_2/")) {
+        game_fn_initialize_bool(true);
+    } else if (starts_with(grug_file_path, "tests/ok/f32_global_variable/")) {
+        game_fn_sin(4.0f);
+    } else if (starts_with(grug_file_path, "tests/ok/f32_gt_false/")) {
+        game_fn_initialize_bool(false);
+    } else if (starts_with(grug_file_path, "tests/ok/f32_gt_true/")) {
+        game_fn_initialize_bool(true);
+    } else if (starts_with(grug_file_path, "tests/ok/f32_le_false/")) {
+        game_fn_initialize_bool(false);
+    } else if (starts_with(grug_file_path, "tests/ok/f32_le_true_1/")) {
+        game_fn_initialize_bool(true);
+    } else if (starts_with(grug_file_path, "tests/ok/f32_le_true_2/")) {
+        game_fn_initialize_bool(true);
+    } else if (starts_with(grug_file_path, "tests/ok/f32_local_variable/")) {
+        game_fn_sin(4.0f);
+    } else if (starts_with(grug_file_path, "tests/ok/f32_lt_false/")) {
+        game_fn_initialize_bool(false);
+    } else if (starts_with(grug_file_path, "tests/ok/f32_lt_true/")) {
+        game_fn_initialize_bool(true);
+    } else if (starts_with(grug_file_path, "tests/ok/f32_multiplication/")) {
+        game_fn_sin(8.0f);
+    } else if (starts_with(grug_file_path, "tests/ok/f32_ne_false/")) {
+        game_fn_initialize_bool(false);
+    } else if (starts_with(grug_file_path, "tests/ok/f32_negated/")) {
+        game_fn_sin(-4.0f);
+    } else if (starts_with(grug_file_path, "tests/ok/f32_ne_true/")) {
+        game_fn_initialize_bool(true);
+    } else if (starts_with(grug_file_path, "tests/ok/f32_passed_to_helper_fn/")) {
+        game_fn_sin(42.0f);
+    } else if (starts_with(grug_file_path, "tests/ok/f32_passed_to_on_fn/")) {
+        game_fn_sin(42.0f);
+    } else if (starts_with(grug_file_path, "tests/ok/f32_passing_sin_to_cos/")) {
+        game_fn_cos(game_fn_sin(4.0f));
+    } else if (starts_with(grug_file_path, "tests/ok/f32_subtraction/")) {
+        game_fn_sin(-2.0f);
+    } else if (starts_with(grug_file_path, "tests/ok/fibonacci/")) {
+        game_fn_initialize(55);
     } else {
         assert(false);
     }

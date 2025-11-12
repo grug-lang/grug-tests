@@ -1450,8 +1450,10 @@ static void ok_bool_returned_global(void) {
 
 static void ok_bool_zero_extended_if_statement(void) {
 	assert(game_fn_nothing_call_count == 0);
+	assert(game_fn_get_evil_false_call_count == 0);
     on_fn_dispatcher("on_a", "tests/ok/bool_zero_extended_if_statement/input-D.grug");
 	assert(game_fn_nothing_call_count == 2);
+	assert(game_fn_get_evil_false_call_count == 1);
 }
 
 static void ok_bool_zero_extended_while_statement(void) {

@@ -66,7 +66,6 @@ static void on_fn_dispatcher(const char *on_fn_name, const char *grug_file_path,
     saved_on_fn_name = on_fn_name;
     saved_grug_file_path = grug_file_path;
 
-    // TODO: Refactor using a macro
     if (starts_with(grug_file_path, "tests/err_runtime/all/")) {
         grug_tests_runtime_error_handler("Division of an i32 by 0", GRUG_ON_FN_DIVISION_BY_ZERO, on_fn_name, grug_file_path);
     } else if (starts_with(grug_file_path, "tests/err_runtime/division_by_0/")) {
@@ -124,6 +123,61 @@ static void on_fn_dispatcher(const char *on_fn_name, const char *grug_file_path,
         game_fn_initialize(3);
     } else if (starts_with(grug_file_path, "tests/ok/addition_as_two_arguments/")) {
         game_fn_max(3, 9);
+    } else if (starts_with(grug_file_path, "tests/ok/addition_with_multiplication/")) {
+        game_fn_initialize(14);
+    } else if (starts_with(grug_file_path, "tests/ok/addition_with_multiplication_2/")) {
+        game_fn_initialize(10);
+    } else if (starts_with(grug_file_path, "tests/ok/and_false_1/")) {
+        game_fn_initialize_bool(false);
+    } else if (starts_with(grug_file_path, "tests/ok/and_false_2/")) {
+        game_fn_initialize_bool(false);
+    } else if (starts_with(grug_file_path, "tests/ok/and_false_3/")) {
+        game_fn_initialize_bool(false);
+    } else if (starts_with(grug_file_path, "tests/ok/and_short_circuit/")) {
+        game_fn_initialize_bool(false);
+    } else if (starts_with(grug_file_path, "tests/ok/and_true/")) {
+        game_fn_initialize_bool(true);
+    } else if (starts_with(grug_file_path, "tests/ok/blocked_alrm/")) {
+        game_fn_blocked_alrm();
+    } else if (starts_with(grug_file_path, "tests/ok/bool_logical_not_false/")) {
+        game_fn_initialize_bool(true);
+    } else if (starts_with(grug_file_path, "tests/ok/bool_logical_not_true/")) {
+        game_fn_initialize_bool(false);
+    } else if (starts_with(grug_file_path, "tests/ok/bool_returned/")) {
+        game_fn_get_evil_false();
+        game_fn_set_is_happy(false);
+    } else if (starts_with(grug_file_path, "tests/ok/bool_returned_global/")) {
+        game_fn_get_evil_false();
+        game_fn_set_is_happy(false);
+    } else if (starts_with(grug_file_path, "tests/ok/bool_zero_extended_if_statement/")) {
+        game_fn_nothing();
+        game_fn_get_evil_false();
+        game_fn_nothing();
+    } else if (starts_with(grug_file_path, "tests/ok/bool_zero_extended_while_statement/")) {
+        game_fn_nothing();
+        game_fn_get_evil_false();
+        game_fn_nothing();
+    } else if (starts_with(grug_file_path, "tests/ok/break/")) {
+        game_fn_nothing();
+        game_fn_nothing();
+        game_fn_nothing();
+    } else if (starts_with(grug_file_path, "tests/ok/calls_100/")) {
+        for (size_t i = 0; i < 100; i++) {
+            game_fn_nothing();
+        }
+    } else if (starts_with(grug_file_path, "tests/ok/calls_1000/")) {
+        for (size_t i = 0; i < 1000; i++) {
+            game_fn_nothing();
+        }
+    } else if (starts_with(grug_file_path, "tests/ok/calls_in_call/")) {
+        game_fn_max(1, 2);
+        game_fn_max(3, 4);
+        game_fn_max(2, 4);
+        game_fn_initialize(4);
+    } else if (starts_with(grug_file_path, "tests/ok/comment_above_block/")) {
+        game_fn_nothing();
+    } else if (starts_with(grug_file_path, "tests/ok/comment_above_block_twice/")) {
+        game_fn_nothing();
     } else {
         assert(false);
     }

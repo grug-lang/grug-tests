@@ -3413,11 +3413,11 @@ static void add_ok_tests(void) {
 	ADD_TEST_OK(ge_true_1, "D", 8);
 	ADD_TEST_OK(ge_true_2, "D", 8);
 	ADD_TEST_OK(global_2_does_not_have_error_handling, "A", 16);
-	ADD_TEST_OK(global_call_using_me, "A", 16);
+	ADD_TEST_OK(global_call_using_me, "D", 16);
 	ADD_TEST_OK(global_can_use_earlier_global, "D", 16);
-	ADD_TEST_OK(global_containing_negation, "A", 12);
-	ADD_TEST_OK(global_id, "A", 16);
-	ADD_TEST_OK(globals, "A", 16);
+	ADD_TEST_OK(global_containing_negation, "D", 12);
+	ADD_TEST_OK(global_id, "D", 16);
+	ADD_TEST_OK(globals, "D", 16);
 	ADD_TEST_OK(globals_1000, "A", 4008);
 	ADD_TEST_OK(globals_1000_string, "A", 8008);
 	ADD_TEST_OK(globals_32, "A", 136);

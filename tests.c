@@ -3627,6 +3627,8 @@ void grug_tests_run(compile_grug_file_t compile_grug_file_, init_globals_fn_disp
 
 			exit(EXIT_FAILURE);
 		}
+
+		unlink(fn_data.failed_file_path);
 	}
 
 	for (size_t i = 0; i < ok_test_datas_size; i++) {
@@ -3650,6 +3652,8 @@ void grug_tests_run(compile_grug_file_t compile_grug_file_, init_globals_fn_disp
 		diff_roundtrip(fn_data.grug_path, fn_data.dump_path, fn_data.applied_path);
 
 		fn_data.run();
+
+		unlink(fn_data.failed_file_path);
 	}
 
 #ifdef SHUFFLES

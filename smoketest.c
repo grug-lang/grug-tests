@@ -16,6 +16,7 @@ static bool starts_with(const char *haystack, const char *needle) {
 }
 
 static const char *compile_grug_file(const char *grug_file_path) {
+    // The tests/err/ tests return expected_error.txt
     if (starts_with(grug_file_path, "tests/err/")) {
         // Find the last '/' in the path
         const char *last_slash = strrchr(grug_file_path, '/');
@@ -49,6 +50,10 @@ static const char *compile_grug_file(const char *grug_file_path) {
         fclose(f);
 
         return buf;
+    } else if (starts_with(grug_file_path, "tests/ok/custom_id_transfer_between_globals/")) {
+        game_fn_get_opponent();
+    } else if (starts_with(grug_file_path, "tests/ok/custom_id_with_digits/")) {
+        game_fn_box_i32(42);
     }
 
     return NULL;
@@ -178,6 +183,26 @@ static void on_fn_dispatcher(const char *on_fn_name, const char *grug_file_path,
         game_fn_nothing();
     } else if (starts_with(grug_file_path, "tests/ok/comment_above_block_twice/")) {
         game_fn_nothing();
+    } else if (starts_with(grug_file_path, "tests/ok/comment_above_helper_fn/")) {
+        game_fn_nothing();
+    } else if (starts_with(grug_file_path, "tests/ok/comment_above_on_fn/")) {
+        game_fn_nothing();
+    } else if (starts_with(grug_file_path, "tests/ok/comment_between_statements/")) {
+        game_fn_nothing();
+        game_fn_nothing();
+    } else if (starts_with(grug_file_path, "tests/ok/comment_lone_block/")) {
+        game_fn_nothing();
+    } else if (starts_with(grug_file_path, "tests/ok/comment_lone_block_at_end/")) {
+        game_fn_nothing();
+    } else if (starts_with(grug_file_path, "tests/ok/comment_lone_global/")) {
+        game_fn_nothing();
+    } else if (starts_with(grug_file_path, "tests/ok/continue/")) {
+        game_fn_nothing();
+        game_fn_nothing();
+    } else if (starts_with(grug_file_path, "tests/ok/custom_id_decays_to_id/")) {
+        game_fn_store(42);
+    } else if (starts_with(grug_file_path, "tests/ok/custom_id_transfer_between_globals/")) {
+        game_fn_set_opponent(69);
     } else {
         assert(false);
     }

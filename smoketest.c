@@ -412,6 +412,187 @@ static void on_fn_dispatcher(const char *on_fn_name, const char *grug_file_path,
         game_fn_initialize_bool(false);
     } else if (starts_with(grug_file_path, "tests/ok/lt_true/")) {
         game_fn_initialize_bool(true);
+    } else if (starts_with(grug_file_path, "tests/ok/max_args/")) {
+        game_fn_mega(1.0f, 21, true, 2.0f, 3.0f, 4.0f, false, 1337, 5.0f, 6.0f, 7.0f, 8.0f, 42, "foo");
+    } else if (starts_with(grug_file_path, "tests/ok/me/")) {
+        game_fn_set_d(42);
+    } else if (starts_with(grug_file_path, "tests/ok/me_assigned_to_local_variable/")) {
+        game_fn_set_d(42);
+    } else if (starts_with(grug_file_path, "tests/ok/me_passed_to_helper_fn/")) {
+        game_fn_set_d(42);
+    } else if (starts_with(grug_file_path, "tests/ok/multiplication_as_two_arguments/")) {
+        game_fn_max(6, 20);
+    } else if (starts_with(grug_file_path, "tests/ok/ne_false/")) {
+        game_fn_initialize_bool(false);
+    } else if (starts_with(grug_file_path, "tests/ok/ne_true/")) {
+        game_fn_initialize_bool(true);
+    } else if (starts_with(grug_file_path, "tests/ok/negate_parenthesized_expr/")) {
+        game_fn_initialize(-5);
+    } else if (starts_with(grug_file_path, "tests/ok/negative_literal/")) {
+        game_fn_initialize(-42);
+    } else if (starts_with(grug_file_path, "tests/ok/nested_break/")) {
+        game_fn_nothing();
+        game_fn_nothing();
+        game_fn_nothing();
+    } else if (starts_with(grug_file_path, "tests/ok/nested_continue/")) {
+        game_fn_nothing();
+        game_fn_nothing();
+    } else if (starts_with(grug_file_path, "tests/ok/no_empty_line_between_statements/")) {
+        game_fn_nothing();
+        game_fn_nothing();
+    } else if (starts_with(grug_file_path, "tests/ok/on_fn/")) {
+        game_fn_nothing();
+    } else if (starts_with(grug_file_path, "tests/ok/on_fn_calling_game_fn_nothing/")) {
+        game_fn_nothing();
+    } else if (starts_with(grug_file_path, "tests/ok/on_fn_calling_game_fn_nothing_twice/")) {
+        game_fn_nothing();
+        game_fn_nothing();
+    } else if (starts_with(grug_file_path, "tests/ok/on_fn_calling_game_fn_plt_order/")) {
+        game_fn_nothing();
+        game_fn_magic();
+        game_fn_initialize(42);
+        game_fn_identity(69);
+        game_fn_max(1337, 8192);
+    } else if (starts_with(grug_file_path, "tests/ok/on_fn_calling_helper_fns/")) {
+        game_fn_nothing();
+        game_fn_initialize(42);
+    } else if (starts_with(grug_file_path, "tests/ok/on_fn_calling_no_game_fn/")) {
+    } else if (starts_with(grug_file_path, "tests/ok/on_fn_calling_no_game_fn_but_with_addition/")) {
+    } else if (starts_with(grug_file_path, "tests/ok/on_fn_calling_no_game_fn_but_with_global/")) {
+    } else if (starts_with(grug_file_path, "tests/ok/on_fn_overwriting_param/")) {
+        game_fn_initialize(20);
+        game_fn_sin(30.0f);
+    } else if (starts_with(grug_file_path, "tests/ok/on_fn_passing_argument_to_helper_fn/")) {
+        game_fn_initialize(42);
+    } else if (starts_with(grug_file_path, "tests/ok/on_fn_passing_magic_to_initialize/")) {
+        game_fn_initialize(game_fn_magic());
+    } else if (starts_with(grug_file_path, "tests/ok/on_fn_three/")) {
+        game_fn_nothing();
+    } else if (starts_with(grug_file_path, "tests/ok/on_fn_three_unused_first/")) {
+        game_fn_nothing();
+    } else if (starts_with(grug_file_path, "tests/ok/on_fn_three_unused_second/")) {
+        game_fn_nothing();
+    } else if (starts_with(grug_file_path, "tests/ok/on_fn_three_unused_third/")) {
+        game_fn_nothing();
+    } else if (starts_with(grug_file_path, "tests/ok/or_false/")) {
+        game_fn_initialize_bool(false);
+    } else if (starts_with(grug_file_path, "tests/ok/or_short_circuit/")) {
+        game_fn_initialize_bool(true);
+    } else if (starts_with(grug_file_path, "tests/ok/or_true_1/")) {
+        game_fn_initialize_bool(true);
+    } else if (starts_with(grug_file_path, "tests/ok/or_true_2/")) {
+        game_fn_initialize_bool(true);
+    } else if (starts_with(grug_file_path, "tests/ok/or_true_3/")) {
+        game_fn_initialize_bool(true);
+    } else if (starts_with(grug_file_path, "tests/ok/pass_string_argument_to_game_fn/")) {
+        game_fn_say("foo");
+    } else if (starts_with(grug_file_path, "tests/ok/pass_string_argument_to_helper_fn/")) {
+        game_fn_say("foo");
+    } else if (starts_with(grug_file_path, "tests/ok/remainder_negative_negative/")) {
+        game_fn_initialize(-1);
+    } else if (starts_with(grug_file_path, "tests/ok/remainder_negative_positive/")) {
+        game_fn_initialize(-1);
+    } else if (starts_with(grug_file_path, "tests/ok/remainder_positive_negative/")) {
+        game_fn_initialize(1);
+    } else if (starts_with(grug_file_path, "tests/ok/remainder_positive_positive/")) {
+        game_fn_initialize(1);
+    } else if (starts_with(grug_file_path, "tests/ok/resource_and_entity/")) {
+        game_fn_draw("tests/ok/resource_and_entity/foo.txt");
+        game_fn_spawn("ok:foo");
+    } else if (starts_with(grug_file_path, "tests/ok/resource_can_contain_dot_1/")) {
+        game_fn_draw("tests/ok/resource_can_contain_dot_1/.foo");
+    } else if (starts_with(grug_file_path, "tests/ok/resource_can_contain_dot_2/")) {
+        game_fn_draw("tests/ok/resource_can_contain_dot_2/foo.");
+    } else if (starts_with(grug_file_path, "tests/ok/resource_can_contain_dot_3/")) {
+        game_fn_draw("tests/ok/resource_can_contain_dot_3/foo.bar");
+    } else if (starts_with(grug_file_path, "tests/ok/resource_can_contain_dot_dot_1/")) {
+        game_fn_draw("tests/ok/resource_can_contain_dot_dot_1/..foo");
+    } else if (starts_with(grug_file_path, "tests/ok/resource_can_contain_dot_dot_2/")) {
+        game_fn_draw("tests/ok/resource_can_contain_dot_dot_2/foo..");
+    } else if (starts_with(grug_file_path, "tests/ok/resource_can_contain_dot_dot_3/")) {
+        game_fn_draw("tests/ok/resource_can_contain_dot_dot_3/foo..bar");
+    } else if (starts_with(grug_file_path, "tests/ok/resource_duplicate/")) {
+        game_fn_draw("tests/ok/resource_duplicate/foo.txt");
+        game_fn_draw("tests/ok/resource_duplicate/bar.txt");
+        game_fn_draw("tests/ok/resource_duplicate/bar.txt");
+        game_fn_draw("tests/ok/resource_duplicate/baz.txt");
+    } else if (starts_with(grug_file_path, "tests/ok/return/")) {
+        game_fn_initialize(42);
+    } else if (starts_with(grug_file_path, "tests/ok/return_from_on_fn/")) {
+        game_fn_nothing();
+    } else if (starts_with(grug_file_path, "tests/ok/return_from_on_fn_minimal/")) {
+    } else if (starts_with(grug_file_path, "tests/ok/return_with_no_value/")) {
+        game_fn_nothing();
+    } else if (starts_with(grug_file_path, "tests/ok/same_variable_name_in_different_functions/")) {
+        game_fn_initialize(42);
+        game_fn_initialize(69);
+    } else if (starts_with(grug_file_path, "tests/ok/spill_args_to_game_fn/")) {
+        game_fn_motherload(1, 2, 3, 4, 5, 6, 7, 1.0f, 2.0f, 3.0f, 4.0f, 5.0f, 6.0f, 7.0f, 8.0f, 42, 9.0f);
+    } else if (starts_with(grug_file_path, "tests/ok/spill_args_to_game_fn_subless/")) {
+        game_fn_motherload_subless(1, 2, 3, 4, 5, 6, 7, 1.0f, 2.0f, 3.0f, 4.0f, 5.0f, 6.0f, 7.0f, 8.0f, 9.0f, 42, 10.0f);
+    } else if (starts_with(grug_file_path, "tests/ok/spill_args_to_helper_fn/")) {
+        game_fn_motherload(1, 2, 3, 4, 5, 6, 7, 1.0f, 2.0f, 3.0f, 4.0f, 5.0f, 6.0f, 7.0f, 8.0f, 42, 9.0f);
+    } else if (starts_with(grug_file_path, "tests/ok/spill_args_to_helper_fn_32_bit_f32/")) {
+        game_fn_offset_32_bit_f32("1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", 1.0f, 2.0f, 3.0f, 4.0f, 5.0f, 6.0f, 7.0f, 8.0f, 1);
+    } else if (starts_with(grug_file_path, "tests/ok/spill_args_to_helper_fn_32_bit_i32/")) {
+        game_fn_offset_32_bit_i32(1.0f, 2.0f, 3.0f, 4.0f, 5.0f, 6.0f, 7.0f, 8.0f, 9.0f, 10.0f, 11.0f, 12.0f, 13.0f, 14.0f, 15.0f, 16.0f, 17.0f, 18.0f, 19.0f, 20.0f, 21.0f, 22.0f, 23.0f, 24.0f, 25.0f, 26.0f, 27.0f, 28.0f, 29.0f, 30.0f, 1, 2, 3, 4, 5, 6);
+    } else if (starts_with(grug_file_path, "tests/ok/spill_args_to_helper_fn_32_bit_string/")) {
+        game_fn_offset_32_bit_string(1.0f, 2.0f, 3.0f, 4.0f, 5.0f, 6.0f, 7.0f, 8.0f, 9.0f, 10.0f, 11.0f, 12.0f, 13.0f, 14.0f, 15.0f, 16.0f, 17.0f, 18.0f, 19.0f, 20.0f, 21.0f, 22.0f, 23.0f, 24.0f, 25.0f, 26.0f, 27.0f, 28.0f, 29.0f, 30.0f, "1", "2", "3", "4", "5", 1);
+    } else if (starts_with(grug_file_path, "tests/ok/spill_args_to_helper_fn_subless/")) {
+        game_fn_motherload_subless(1, 2, 3, 4, 5, 6, 7, 1.0f, 2.0f, 3.0f, 4.0f, 5.0f, 6.0f, 7.0f, 8.0f, 9.0f, 42, 10.0f);
+    } else if (starts_with(grug_file_path, "tests/ok/stack_16_byte_alignment/")) {
+        game_fn_nothing();
+        game_fn_initialize(42);
+    } else if (starts_with(grug_file_path, "tests/ok/stack_16_byte_alignment_midway/")) {
+        game_fn_initialize(game_fn_magic() + 42);
+    } else if (starts_with(grug_file_path, "tests/ok/string_can_be_passed_to_helper_fn/")) {
+        game_fn_say("foo");
+    } else if (starts_with(grug_file_path, "tests/ok/string_duplicate/")) {
+        game_fn_talk("foo", "bar", "bar", "baz");
+    } else if (starts_with(grug_file_path, "tests/ok/string_eq_false/")) {
+        game_fn_initialize_bool(false);
+    } else if (starts_with(grug_file_path, "tests/ok/string_eq_true/")) {
+        game_fn_initialize_bool(true);
+    } else if (starts_with(grug_file_path, "tests/ok/string_eq_true_empty/")) {
+        game_fn_initialize_bool(true);
+    } else if (starts_with(grug_file_path, "tests/ok/string_ne_false/")) {
+        game_fn_initialize_bool(false);
+    } else if (starts_with(grug_file_path, "tests/ok/string_ne_false_empty/")) {
+        game_fn_initialize_bool(false);
+    } else if (starts_with(grug_file_path, "tests/ok/string_ne_true/")) {
+        game_fn_initialize_bool(true);
+    } else if (starts_with(grug_file_path, "tests/ok/sub_rsp_32_bits_local_variables_i32/")) {
+        for (int32_t n = 1; n <= 30; n++) {
+            game_fn_initialize(30);
+        }
+    } else if (starts_with(grug_file_path, "tests/ok/sub_rsp_32_bits_local_variables_id/")) {
+        for (size_t i = 0; i < 15; i++) {
+            game_fn_set_d(42);
+        }
+    } else if (starts_with(grug_file_path, "tests/ok/subtraction_negative_result/")) {
+        game_fn_initialize(-3);
+    } else if (starts_with(grug_file_path, "tests/ok/subtraction_positive_result/")) {
+        game_fn_initialize(3);
+    } else if (starts_with(grug_file_path, "tests/ok/variable/")) {
+        game_fn_initialize(42);
+    } else if (starts_with(grug_file_path, "tests/ok/variable_does_not_shadow_in_different_if_statement/")) {
+        game_fn_initialize(42);
+        game_fn_initialize(69);
+    } else if (starts_with(grug_file_path, "tests/ok/variable_reassignment/")) {
+        game_fn_initialize(69);
+    } else if (starts_with(grug_file_path, "tests/ok/variable_reassignment_does_not_dealloc_outer_variable/")) {
+        game_fn_initialize(69);
+    } else if (starts_with(grug_file_path, "tests/ok/variable_string_global/")) {
+        game_fn_say("foo");
+    } else if (starts_with(grug_file_path, "tests/ok/variable_string_local/")) {
+        game_fn_say("foo");
+    } else if (starts_with(grug_file_path, "tests/ok/void_function_early_return/")) {
+        game_fn_nothing();
+    } else if (starts_with(grug_file_path, "tests/ok/while_false/")) {
+        game_fn_nothing();
+        game_fn_nothing();
+    } else if (starts_with(grug_file_path, "tests/ok/write_to_global_variable/")) {
+        game_fn_max(43, 69);
     } else {
         assert(false);
     }

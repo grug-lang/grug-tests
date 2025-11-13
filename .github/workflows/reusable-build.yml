@@ -18,7 +18,7 @@ jobs:
         name: Checkout grug-tests workflow repo
         uses: actions/checkout@v4
         with:
-          repository: MyNameIsTrez/grug-tests
+          repository: grug-lang/grug-tests
           path: grug-tests
 
       - &apt-cache
@@ -48,9 +48,9 @@ jobs:
       - &get-grug-source
         name: Get grug source
         run: |
-          if [ "${{ github.repository }}" = "MyNameIsTrez/grug-tests" ]; then
+          if [ "${{ github.repository }}" = "grug-lang/grug-tests" ]; then
             echo "Running standalone in grug-tests; clone grug"
-            git clone https://github.com/MyNameIsTrez/grug grug
+            git clone https://github.com/grug-lang/grug grug
             GRUG_PATH=$(realpath grug)
           else
             echo "Running from grug; use caller repo"

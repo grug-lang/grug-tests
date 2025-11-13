@@ -107,46 +107,47 @@ jobs:
           VALGRIND: 1
           SHUFFLES: 10
 
-  build-ubuntu-libfuzzer:
-    name: ubuntu-libfuzzer
-    runs-on: ubuntu-latest
+  # TODO: Reintroduce this, or move it to the grug repository, to fuzz the default grug interpreter.
+  # build-ubuntu-libfuzzer:
+  #   name: ubuntu-libfuzzer
+  #   runs-on: ubuntu-latest
 
-    steps:
-      - uses: actions/checkout@v4
-      - *checkout-grug-tests
-      - *apt-cache
-      - *apt-install
-      - *get-grug-source
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #     - *checkout-grug-tests
+  #     - *apt-cache
+  #     - *apt-install
+  #     - *get-grug-source
 
-      - name: Compile executable
-        run: |
-          cd grug-tests
-          clang $GRUG_PATH/grug.c fuzz.c -I$GRUG_PATH -std=gnu2x -Wall -Wextra -Werror -Wpedantic -Wstrict-prototypes -Wshadow -Wuninitialized -Wfatal-errors -Wno-language-extension-token -Wno-unused-parameter -g -rdynamic -fsanitize=address,undefined,fuzzer -Og -DCRASH_ON_UNREACHABLE
+  #     - name: Compile executable
+  #       run: |
+  #         cd grug-tests
+  #         clang $GRUG_PATH/grug.c fuzz.c -I$GRUG_PATH -std=gnu2x -Wall -Wextra -Werror -Wpedantic -Wstrict-prototypes -Wshadow -Wuninitialized -Wfatal-errors -Wno-language-extension-token -Wno-unused-parameter -g -rdynamic -fsanitize=address,undefined,fuzzer -Og -DCRASH_ON_UNREACHABLE
 
-      - name: Create test_corpus directory
-        run: |
-          cd grug-tests
-          mkdir -p test_corpus
+  #     - name: Create test_corpus directory
+  #       run: |
+  #         cd grug-tests
+  #         mkdir -p test_corpus
 
-      - name: Copy tests to test_corpus
-        run: |
-          cd grug-tests
-          for d in tests/err/* tests/err_runtime/* tests/ok/*; do name=${d##*/}; cp $d/*.grug test_corpus/$name.grug; done
+  #     - name: Copy tests to test_corpus
+  #       run: |
+  #         cd grug-tests
+  #         for d in tests/err/* tests/err_runtime/* tests/ok/*; do name=${d##*/}; cp $d/*.grug test_corpus/$name.grug; done
 
-      - name: Create corpus directory
-        run: |
-          cd grug-tests
-          mkdir -p corpus
+  #     - name: Create corpus directory
+  #       run: |
+  #         cd grug-tests
+  #         mkdir -p corpus
 
-      - name: Merge test_corpus to corpus
-        run: |
-          cd grug-tests
-          ./a.out -merge=1 corpus test_corpus
+  #     - name: Merge test_corpus to corpus
+  #       run: |
+  #         cd grug-tests
+  #         ./a.out -merge=1 corpus test_corpus
 
-      - name: Fuzz for 1 minute
-        run: |
-          cd grug-tests
-          ./a.out corpus -use_value_profile=1 -timeout=1 -max_total_time=60
+  #     - name: Fuzz for 1 minute
+  #       run: |
+  #         cd grug-tests
+  #         ./a.out corpus -use_value_profile=1 -timeout=1 -max_total_time=60
 
   build-ubuntu-gcc:
     name: ubuntu-gcc

@@ -59,7 +59,6 @@ jobs:
       - *checkout-grug-tests
       - *apt-cache
       - *apt-install
-      - *get-grug-source
 
       - name: Run the tests
         run: |
@@ -78,7 +77,6 @@ jobs:
       - *checkout-grug-tests
       - *apt-cache
       - *apt-install
-      - *get-grug-source
 
       - &install-valgrind
         name: Install valgrind
@@ -102,7 +100,6 @@ jobs:
   #     - *checkout-grug-tests
   #     - *apt-cache
   #     - *apt-install
-  #     - *get-grug-source
 
   #     - name: Compile executable
   #       run: |
@@ -143,7 +140,6 @@ jobs:
       - *checkout-grug-tests
       - *apt-cache
       - *apt-install
-      - *get-grug-source
 
       - name: Run the tests
         run: |
@@ -161,7 +157,6 @@ jobs:
       - *checkout-grug-tests
       - *apt-cache
       - *apt-install
-      - *get-grug-source
 
       - name: Run the tests
         run: |
@@ -180,7 +175,6 @@ jobs:
       - *checkout-grug-tests
       - *apt-cache
       - *apt-install
-      - *get-grug-source
       - *install-valgrind
 
       - name: Run the tests

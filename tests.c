@@ -47,6 +47,7 @@ typedef uint16_t u16;
 typedef uint32_t u32;
 typedef uint64_t u64;
 
+static const char *tests_dir_path;
 static compile_grug_file_t compile_grug_file;
 static init_globals_fn_dispatcher_t init_globals_fn_dispatcher;
 static on_fn_dispatcher_t on_fn_args_dispatcher;
@@ -777,11 +778,11 @@ static bool is_whitelisted_test(const char *name) {
 	if (is_whitelisted_test(#test_name)) {\
 		error_test_datas[err_test_datas_size++] = (struct error_test_data){\
 			.test_name_str = #test_name,\
-			.grug_path = "tests/err/"#test_name"/input-"entity_type".grug",\
-			.expected_error_path = "tests/err/"#test_name"/expected_error.txt",\
-			.results_path = "tests/err/"#test_name"/results",\
-			.grug_output_path = "tests/err/"#test_name"/results/grug_output.txt",\
-			.failed_file_path = "tests/err/"#test_name"/results/failed"\
+			.grug_path = "err/"#test_name"/input-"entity_type".grug",\
+			.expected_error_path = "err/"#test_name"/expected_error.txt",\
+			.results_path = "err/"#test_name"/results",\
+			.grug_output_path = "err/"#test_name"/results/grug_output.txt",\
+			.failed_file_path = "err/"#test_name"/results/failed"\
 		};\
 	}\
 }
@@ -791,12 +792,12 @@ static bool is_whitelisted_test(const char *name) {
 		runtime_error_test_datas[err_runtime_test_datas_size++] = (struct runtime_error_test_data){\
 			.run = runtime_error_##test_name,\
 			.test_name_str = #test_name,\
-			.grug_path = "tests/err_runtime/"#test_name"/input-"entity_type".grug",\
-			.expected_error_path = "tests/err_runtime/"#test_name"/expected_error.txt",\
-			.results_path = "tests/err_runtime/"#test_name"/results",\
-			.dump_path = "tests/err_runtime/"#test_name"/results/dump.json",\
-			.applied_path = "tests/err_runtime/"#test_name"/results/applied.grug",\
-			.failed_file_path = "tests/err_runtime/"#test_name"/results/failed",\
+			.grug_path = "err_runtime/"#test_name"/input-"entity_type".grug",\
+			.expected_error_path = "err_runtime/"#test_name"/expected_error.txt",\
+			.results_path = "err_runtime/"#test_name"/results",\
+			.dump_path = "err_runtime/"#test_name"/results/dump.json",\
+			.applied_path = "err_runtime/"#test_name"/results/applied.grug",\
+			.failed_file_path = "err_runtime/"#test_name"/results/failed",\
 			.expected_globals_size_value = expected_globals_size\
 		};\
 	}\
@@ -807,11 +808,11 @@ static bool is_whitelisted_test(const char *name) {
 		ok_test_datas[ok_test_datas_size++] = (struct ok_test_data){\
 			.run = ok_##test_name,\
 			.test_name_str = #test_name,\
-			.grug_path = "tests/ok/"#test_name"/input-"entity_type".grug",\
-			.results_path = "tests/ok/"#test_name"/results",\
-			.dump_path = "tests/ok/"#test_name"/results/dump.json",\
-			.applied_path = "tests/ok/"#test_name"/results/applied.grug",\
-			.failed_file_path = "tests/ok/"#test_name"/results/failed",\
+			.grug_path = "ok/"#test_name"/input-"entity_type".grug",\
+			.results_path = "ok/"#test_name"/results",\
+			.dump_path = "ok/"#test_name"/results/dump.json",\
+			.applied_path = "ok/"#test_name"/results/applied.grug",\
+			.failed_file_path = "ok/"#test_name"/results/failed",\
 			.expected_globals_size_value = expected_globals_size\
 		};\
 	}\
@@ -832,9 +833,39 @@ static bool is_whitelisted_test(const char *name) {
 }
 #endif
 
+// Fill `buf` with `path` prefixed by `tests_dir_path`. 
+static const char *prefix_buf(const char *path, char *buf) {
+	char *p = buf;
+
+	// buf = tests_dir_path
+	size_t tests_dir_path_len = strlen(tests_dir_path);
+	memcpy(p, tests_dir_path, tests_dir_path_len);
+	p += tests_dir_path_len;
+
+	// buf = tests_dir_path + "/"
+	*p = '/';
+	p++;
+
+	// buf = tests_dir_path + "/" + path
+	size_t path_len = strlen(path);
+	memcpy(p, path, path_len);
+	p += path_len;
+
+	// Null terminate
+	*p = '\0';
+
+	return buf;
+}
+
+// Returns a temporary static string that has `path` prefixed with `tests_dir_path`. 
+static const char *prefix(const char *path) {
+	static char buf[4096];
+	return prefix_buf(path, buf);
+}
+
 static size_t read_file(const char *path, uint8_t *bytes) {
 	FILE *f = fopen(path, "r");
-	check_null(f, "fopen", path);
+	check_null(f, "fopen", prefix(path));
 
 	check(fseek(f, 0, SEEK_END), "fseek", NULL);
 
@@ -895,8 +926,8 @@ static const char *get_expected_error(const char *expected_error_path) {
 }
 
 static void create_failed_file(const char *failed_file_path) {
-	int fd = open(failed_file_path, O_RDWR | O_CREAT | O_TRUNC, 0644);
-	check(fd, "open", failed_file_path);
+	int fd = open(prefix(failed_file_path), O_RDWR | O_CREAT | O_TRUNC, 0644);
+	check(fd, "open", prefix(failed_file_path));
 	close(fd);
 }
 
@@ -906,8 +937,9 @@ static bool failed_file_doesnt_exist(const char *failed_file_path) {
 }
 
 static void make_results_dir(const char *results_path) {
-	if (mkdir(results_path, 0755) == -1 && errno != EEXIST) {
+	if (mkdir(prefix(results_path), 0755) == -1 && errno != EEXIST) {
 		perror("mkdir");
+		fprintf(stderr, "prefix(results_path): \"%s\"\n", prefix(results_path));\
 		exit(EXIT_FAILURE);
 	}
 }
@@ -963,10 +995,10 @@ static void test_error(
 
 	create_failed_file(failed_file_path);
 
-	const char *msg = compile_grug_file(grug_path);
+	const char *msg = compile_grug_file(prefix(grug_path));
 	assert(msg);
 
-	FILE *f = fopen(grug_output_path, "w");
+	FILE *f = fopen(prefix(grug_output_path), "w");
 
 	size_t msg_len = strlen(msg);
 
@@ -981,7 +1013,7 @@ static void test_error(
 		exit(EXIT_FAILURE);
 	}
 
-	const char *expected_error = get_expected_error(expected_error_path);
+	const char *expected_error = get_expected_error(prefix(expected_error_path));
 
 	if (!streq(msg, expected_error)) {
 		printf("\nThe output differs from the expected output.\n");
@@ -1002,22 +1034,23 @@ static void diff_roundtrip(
 	const char *dump_path,
 	const char *applied_path
 ) {
-	if (dump_file_to_json(grug_path, dump_path)) {
+	static char buf[4096];
+	if (dump_file_to_json(prefix(grug_path), prefix_buf(dump_path, buf))) {
 		printf("Failed to dump file AST\n");
 		exit(EXIT_FAILURE);
 	}
 
-	if (generate_file_from_json(dump_path, applied_path)) {
+	if (generate_file_from_json(prefix(dump_path), prefix_buf(applied_path, buf))) {
 		printf("Failed to apply file AST\n");
 		exit(EXIT_FAILURE);
 	}
 
 	static uint8_t grug_path_bytes[420420];
-	size_t grug_path_bytes_len = read_file(grug_path, grug_path_bytes);
+	size_t grug_path_bytes_len = read_file(prefix(grug_path), grug_path_bytes);
 	grug_path_bytes[grug_path_bytes_len] = '\0';
 
 	static uint8_t applied_path_bytes[420420];
-	size_t applied_path_bytes_len = read_file(applied_path, applied_path_bytes);
+	size_t applied_path_bytes_len = read_file(prefix(applied_path), applied_path_bytes);
 	applied_path_bytes[applied_path_bytes_len] = '\0';
 
 	if (!streq((const char *)grug_path_bytes, (const char *)applied_path_bytes)) {
@@ -1051,7 +1084,7 @@ static void prologue(
 
 	create_failed_file(failed_file_path);
 
-	const char *msg = compile_grug_file(grug_path);
+	const char *msg = compile_grug_file(prefix(grug_path));
 	if (msg) {
 		printf("The test wasn't supposed to print anything, but did:\n");
 		printf("----\n");
@@ -3116,8 +3149,12 @@ static void ok_write_to_global_variable(void) {
 #define CHECK_THAT_EVERY_TEST_DIRECTORY_HAS_A_FUNCTION(test_dirname) {\
 	size_t entries = 0;\
 	\
-	DIR *dirp = opendir("tests/" #test_dirname);\
-	assert(dirp);\
+	DIR *dirp = opendir(prefix(#test_dirname));\
+	if (dirp == NULL) {\
+		perror("opendir");\
+		fprintf(stderr, "prefix(#test_dirname): \"%s\"\n", prefix(#test_dirname));\
+		exit(EXIT_FAILURE);\
+	}\
 	\
 	struct dirent *dp;\
 	while ((dp = readdir(dirp))) {\
@@ -3548,7 +3585,8 @@ static void add_ok_tests(void) {
 	ADD_TEST_OK(write_to_global_variable, "D", 16);
 }
 
-void grug_tests_run(compile_grug_file_t compile_grug_file_, init_globals_fn_dispatcher_t init_globals_fn_dispatcher_, on_fn_dispatcher_t on_fn_dispatcher_, dump_file_to_json_t dump_file_to_json_, generate_file_from_json_t generate_file_from_json_, game_fn_error_t game_fn_error_, const char *whitelisted_test_) {
+void grug_tests_run(const char *tests_dir_path_, compile_grug_file_t compile_grug_file_, init_globals_fn_dispatcher_t init_globals_fn_dispatcher_, on_fn_dispatcher_t on_fn_dispatcher_, dump_file_to_json_t dump_file_to_json_, generate_file_from_json_t generate_file_from_json_, game_fn_error_t game_fn_error_, const char *whitelisted_test_) {
+	tests_dir_path = tests_dir_path_;
 	compile_grug_file = compile_grug_file_;
 	init_globals_fn_dispatcher = init_globals_fn_dispatcher_;
 	on_fn_args_dispatcher = on_fn_dispatcher_;
@@ -3622,7 +3660,7 @@ void grug_tests_run(compile_grug_file_t compile_grug_file_, init_globals_fn_disp
 
 		fn_data.run();
 
-		const char *expected_error = get_expected_error(fn_data.expected_error_path);
+		const char *expected_error = get_expected_error(prefix(fn_data.expected_error_path));
 
 		if (!streq(runtime_error_reason, expected_error)) {
 			printf("\nThe error message differs from the expected error message.\n");

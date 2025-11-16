@@ -140,6 +140,7 @@ typedef void (*game_fn_error_t)(const char *message);
  * - `tests/err_runtime/`
  * - `tests/ok/`
  *
+ * @param tests_dir_path Path to grug-tests its tests/ directory.
  * @param compile_grug_file Function to compile a grug file.
  * @param init_globals_fn_dispatcher Function to initialize globals for a grug file.
  * @param on_fn_dispatcher Function to invoke grug functions during testing.
@@ -148,7 +149,8 @@ typedef void (*game_fn_error_t)(const char *message);
  * @param game_fn_error Function to throw a game function error.
  * @param whitelisted_test A specific test name to run. Pass `NULL` if all tests should be run.
  */
-void grug_tests_run(compile_grug_file_t compile_grug_file,
+void grug_tests_run(const char *tests_dir_path,
+                    compile_grug_file_t compile_grug_file,
                     init_globals_fn_dispatcher_t init_globals_fn_dispatcher,
                     on_fn_dispatcher_t on_fn_dispatcher,
                     dump_file_to_json_t dump_file_to_json,

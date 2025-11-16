@@ -11,6 +11,7 @@
 /* ------------------------------------------------------------------------- */
 
 static void (*p_grug_tests_run)(
+    const char *,
     compile_grug_file_t,
     init_globals_fn_dispatcher_t,
     on_fn_dispatcher_t,
@@ -803,6 +804,7 @@ int main(int argc, const char *argv[]) {
     }
 
     p_grug_tests_run(
+        "tests",
         compile_grug_file,
         init_globals_fn_dispatcher,
         on_fn_dispatcher,

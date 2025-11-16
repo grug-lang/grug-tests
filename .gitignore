@@ -1,6 +1,3 @@
-.vscode/*
-!.vscode/launch.json
-!.vscode/tasks.json
 corpus
 test_corpus
 results
@@ -22,7 +19,6 @@ grug.o
 output.map
 pvs.json
 pvs.log
-smoketest.o
+smoketest
 strace_out
-tests.o
-tests.out
+tests.so

@@ -942,13 +942,15 @@ static void test_error(
 	const char *grug_output_path,
 	const char *failed_file_path
 ) {
-	if (failed_file_doesnt_exist(failed_file_path)
+	if (whitelisted_test == NULL
+	 && failed_file_doesnt_exist(failed_file_path)
 	 && shuffles_was_not_defined()
 	 && newer(grug_output_path, grug_path)
 	 && newer(grug_output_path, expected_error_path)
 	 && newer(grug_output_path, "mod_api.json")
 	 && newer(grug_output_path, "tests.sh")
-	 && newer(grug_output_path, "tests.out")
+	 && newer(grug_output_path, "smoketest")
+     && newer(grug_output_path, "smoketest.c")
 	) {
 		printf("Skipping tests/err/%s...\n", test_name);
 		return;
@@ -3598,13 +3600,15 @@ void grug_tests_run(compile_grug_file_t compile_grug_file_, init_globals_fn_disp
 	for (size_t i = 0; i < err_runtime_test_datas_size; i++) {
 		struct runtime_error_test_data fn_data = runtime_error_test_datas[i];
 
-		if (failed_file_doesnt_exist(fn_data.failed_file_path)
+		if (whitelisted_test == NULL
+		&& failed_file_doesnt_exist(fn_data.failed_file_path)
 		&& shuffles_was_not_defined()
 		&& newer(fn_data.applied_path, fn_data.grug_path)
 		&& newer(fn_data.applied_path, fn_data.expected_error_path)
 		&& newer(fn_data.applied_path, "mod_api.json")
 		&& newer(fn_data.applied_path, "tests.sh")
-		&& newer(fn_data.applied_path, "tests.out")
+		&& newer(fn_data.applied_path, "smoketest")
+		&& newer(fn_data.applied_path, "smoketest.c")
 		) {
 			printf("Skipping tests/err_runtime/%s...\n", fn_data.test_name_str);
 			continue;
@@ -3637,12 +3641,14 @@ void grug_tests_run(compile_grug_file_t compile_grug_file_, init_globals_fn_disp
 	for (size_t i = 0; i < ok_test_datas_size; i++) {
 		struct ok_test_data fn_data = ok_test_datas[i];
 
-		if (failed_file_doesnt_exist(fn_data.failed_file_path)
+		if (whitelisted_test == NULL
+		&& failed_file_doesnt_exist(fn_data.failed_file_path)
 		&& shuffles_was_not_defined()
 		&& newer(fn_data.applied_path, fn_data.grug_path)
 		&& newer(fn_data.applied_path, "mod_api.json")
 		&& newer(fn_data.applied_path, "tests.sh")
-		&& newer(fn_data.applied_path, "tests.out")
+		&& newer(fn_data.applied_path, "smoketest")
+		&& newer(fn_data.applied_path, "smoketest.c")
 		) {
 			printf("Skipping tests/ok/%s...\n", fn_data.test_name_str);
 			continue;

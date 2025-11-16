@@ -2,7 +2,6 @@
 
 ## Notes
 
-- If you want to see the detailed logs of `grug.c`, run `LOGGING= ./tests.sh ../grug`.
 - If you want the tests to be run in a shuffled order twice (within the same process), run `SHUFFLES=10 ./tests.sh ../grug`.
 - If you want to allow your compiler to optimize `grug.c` hard, run `OPTIMIZED= ./tests.sh ../grug`.
 - If you want to allow your compiler to statically analyze `grug.c` for problems, run `ANALYZE= ./tests.sh ../grug`.
@@ -92,5 +91,5 @@ In order to visualize what grug.c contains when linked, follow these steps:
 ## gdb
 
 ```bash
-gdb --args tests.out and_false_1
+gdb --args smoketest and_false_1
 ```

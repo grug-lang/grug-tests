@@ -45,25 +45,10 @@ jobs:
           # Uses the cached .deb, if the nasm version hasn't changed.
           sudo apt-get install -y -o Dir::Cache::archives=$PWD/.apt-cache nasm
 
-      - &get-grug-source
-        name: Get grug source
-        run: |
-          if [ "${{ github.repository }}" = "grug-lang/grug-tests" ]; then
-            echo "Running standalone in grug-tests; clone grug"
-            git clone https://github.com/grug-lang/grug grug
-            GRUG_PATH=$(realpath grug)
-          else
-            echo "Running from grug; use caller repo"
-            GRUG_PATH=$(pwd)
-          fi
-          # Make GRUG_PATH available to subsequent steps
-          echo "GRUG_PATH=$GRUG_PATH" >> $GITHUB_ENV
-          echo "GRUG_PATH is $GRUG_PATH"
-
       - name: Run the tests
         run: |
           cd grug-tests
-          ./tests.sh $GRUG_PATH
+          ./tests.sh
 
   build-ubuntu-clang-asan:
     name: ubuntu-clang-asan
@@ -79,7 +64,7 @@ jobs:
       - name: Run the tests
         run: |
           cd grug-tests
-          ./tests.sh $GRUG_PATH
+          ./tests.sh
         env:
           ASAN: 1
           SHUFFLES: 10
@@ -102,7 +87,7 @@ jobs:
       - name: Run the tests
         run: |
           cd grug-tests
-          ./tests.sh $GRUG_PATH
+          ./tests.sh
         env:
           VALGRIND: 1
           SHUFFLES: 10
@@ -163,7 +148,7 @@ jobs:
       - name: Run the tests
         run: |
           cd grug-tests
-          ./tests.sh $GRUG_PATH
+          ./tests.sh
         env:
           CC: gcc
 
@@ -181,7 +166,7 @@ jobs:
       - name: Run the tests
         run: |
           cd grug-tests
-          ./tests.sh $GRUG_PATH
+          ./tests.sh
         env:
           CC: gcc
           ASAN: 1
@@ -201,7 +186,7 @@ jobs:
       - name: Run the tests
         run: |
           cd grug-tests
-          ./tests.sh $GRUG_PATH
+          ./tests.sh
         env:
           CC: gcc
           VALGRIND: 1

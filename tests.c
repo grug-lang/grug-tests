@@ -864,7 +864,7 @@ static const char *prefix(const char *path) {
 }
 
 static size_t read_file(const char *path, uint8_t *bytes) {
-	FILE *f = fopen(path, "r");
+	FILE *f = fopen(prefix(path), "r");
 	check_null(f, "fopen", prefix(path));
 
 	check(fseek(f, 0, SEEK_END), "fseek", NULL);
@@ -1013,7 +1013,7 @@ static void test_error(
 		exit(EXIT_FAILURE);
 	}
 
-	const char *expected_error = get_expected_error(prefix(expected_error_path));
+	const char *expected_error = get_expected_error(expected_error_path);
 
 	if (!streq(msg, expected_error)) {
 		printf("\nThe output differs from the expected output.\n");
@@ -1046,11 +1046,11 @@ static void diff_roundtrip(
 	}
 
 	static uint8_t grug_path_bytes[420420];
-	size_t grug_path_bytes_len = read_file(prefix(grug_path), grug_path_bytes);
+	size_t grug_path_bytes_len = read_file(grug_path, grug_path_bytes);
 	grug_path_bytes[grug_path_bytes_len] = '\0';
 
 	static uint8_t applied_path_bytes[420420];
-	size_t applied_path_bytes_len = read_file(prefix(applied_path), applied_path_bytes);
+	size_t applied_path_bytes_len = read_file(applied_path, applied_path_bytes);
 	applied_path_bytes[applied_path_bytes_len] = '\0';
 
 	if (!streq((const char *)grug_path_bytes, (const char *)applied_path_bytes)) {
@@ -3660,7 +3660,7 @@ void grug_tests_run(const char *tests_dir_path_, compile_grug_file_t compile_gru
 
 		fn_data.run();
 
-		const char *expected_error = get_expected_error(prefix(fn_data.expected_error_path));
+		const char *expected_error = get_expected_error(fn_data.expected_error_path);
 
 		if (!streq(runtime_error_reason, expected_error)) {
 			printf("\nThe error message differs from the expected error message.\n");

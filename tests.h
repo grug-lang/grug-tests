@@ -55,9 +55,10 @@ enum grug_runtime_error_type {
  * This function is provided by `bindings_tester.c`.
  *
  * @param grug_file_path Path to the grug source file to compile.
+ * @param mod_name Name of the mod which the grug source file is in.
  * @return `NULL` on success, or an error message string on failure.
  */
-typedef const char *(*compile_grug_file_t)(const char *grug_file_path);
+typedef const char *(*compile_grug_file_t)(const char *grug_file_path, const char *mod_name);
 
 /**
  * @typedef init_globals_fn_dispatcher_t

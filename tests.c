@@ -995,7 +995,7 @@ static void test_error(
 
 	create_failed_file(failed_file_path);
 
-	const char *msg = compile_grug_file(prefix(grug_path));
+	const char *msg = compile_grug_file(prefix(grug_path), "err");
 
 	const char *expected_error = get_expected_error(expected_error_path);
 
@@ -1072,7 +1072,8 @@ static void diff_roundtrip(
 static void prologue(
 	const char *grug_path,
 	const char *results_path,
-	const char *failed_file_path
+	const char *failed_file_path,
+	const char *mod_name
 ) {
 	reset_call_counts();
 
@@ -1088,7 +1089,7 @@ static void prologue(
 
 	create_failed_file(failed_file_path);
 
-	const char *msg = compile_grug_file(prefix(grug_path));
+	const char *msg = compile_grug_file(prefix(grug_path), mod_name);
 	if (msg) {
 		fprintf(stderr, "The test wasn't supposed to print anything, but did:\n");
 		fprintf(stderr, "----\n");
@@ -3658,7 +3659,7 @@ void grug_tests_run(const char *tests_dir_path_, compile_grug_file_t compile_gru
 
 		printf("Running tests/err_runtime/%s...\n", fn_data.test_name_str);
 
-		prologue(fn_data.grug_path, fn_data.results_path, fn_data.failed_file_path);
+		prologue(fn_data.grug_path, fn_data.results_path, fn_data.failed_file_path, "err_runtime");
 
 		diff_roundtrip(fn_data.grug_path, fn_data.dump_path, fn_data.applied_path);
 
@@ -3698,7 +3699,7 @@ void grug_tests_run(const char *tests_dir_path_, compile_grug_file_t compile_gru
 
 		printf("Running tests/ok/%s...\n", fn_data.test_name_str);
 
-		prologue(fn_data.grug_path, fn_data.results_path, fn_data.failed_file_path);
+		prologue(fn_data.grug_path, fn_data.results_path, fn_data.failed_file_path, "ok");
 
 		diff_roundtrip(fn_data.grug_path, fn_data.dump_path, fn_data.applied_path);
 

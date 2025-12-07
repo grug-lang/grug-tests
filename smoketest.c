@@ -114,7 +114,9 @@ static bool starts_with(const char *haystack, const char *needle) {
 /* Calls updated to use p_... pointers */
 /* ------------------------------------------------------------------------- */
 
-static const char *compile_grug_file(const char *grug_file_path) {
+static const char *compile_grug_file(const char *grug_file_path, const char *mod_name) {
+    (void)mod_name;
+
     if (starts_with(grug_file_path, "tests/err/")) {
         const char *last_slash = strrchr(grug_file_path, '/');
         assert(last_slash);

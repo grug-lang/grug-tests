@@ -876,7 +876,7 @@ static size_t read_file(const char *path, uint8_t *bytes) {
 	check(fseek(f, 0, SEEK_SET), "fseek", NULL);
 
 	if (fread(bytes, len, 1, f) < len && ferror(f)) {
-		printf("fread error\n");
+		fprintf(stderr, "fread error\n");
 		exit(EXIT_FAILURE);
 	}
 
@@ -892,7 +892,7 @@ static bool newer(const char *path1, const char *path2) {
 	struct stat s1;
 	if (stat(path1, &s1) == -1) {
 		if (errno != ENOENT) {
-			printf("path1: \"%s\"\n", path1);
+			fprintf(stderr, "path1: \"%s\"\n", path1);
 			perror("stat");
 			exit(EXIT_FAILURE);
 		}
@@ -901,7 +901,7 @@ static bool newer(const char *path1, const char *path2) {
 
 	struct stat s2;
 	if (stat(path2, &s2) < 0) {
-		printf("path2: \"%s\"\n", path2);
+		fprintf(stderr, "path2: \"%s\"\n", path2);
 		perror("stat");
 		exit(EXIT_FAILURE);
 	}
@@ -984,11 +984,11 @@ static void test_error(
 	 && newer(grug_output_path, "smoketest")
      && newer(grug_output_path, "smoketest.c")
 	) {
-		printf("Skipping tests/err/%s...\n", test_name);
+		fprintf(stderr, "Skipping tests/err/%s...\n", test_name);
 		return;
 	}
 
-	printf("Running tests/err/%s...\n", test_name);
+	fprintf(stderr, "Running tests/err/%s...\n", test_name);
 
 	rm_rf(results_path);
 	make_results_dir(results_path);
@@ -996,42 +996,36 @@ static void test_error(
 	create_failed_file(failed_file_path);
 
 	const char *msg = compile_grug_file(prefix(grug_path));
-	/* assert(msg); */
-
-	if (msg) {
-		FILE *f = fopen(prefix(grug_output_path), "w");
-
-		size_t msg_len = strlen(msg);
-
-		if (fwrite(msg, msg_len, 1, f) == 0) {
-			printf("fwrite error\n");
-			exit(EXIT_FAILURE);
-		}
-
-		if (fclose(f) == EOF) {
-			perror("fclose");
-			exit(EXIT_FAILURE);
-			/* exit(EXIT_FAILURE); */
-		}
-	}
 
 	const char *expected_error = get_expected_error(expected_error_path);
 
 	if (!msg) {
-		printf("\nCompilation succeeded, expected failure.\n");
+		fprintf(stderr, "\nCompilation succeeded, but expected this error message:\n");
+		fprintf(stderr, "%s\n", expected_error);
+		exit(EXIT_FAILURE);
+	}
 
-		printf("Expected:\n");
-		printf("%s\n", expected_error);
+	FILE *f = fopen(prefix(grug_output_path), "w");
+
+	size_t msg_len = strlen(msg);
+
+	if (fwrite(msg, msg_len, 1, f) == 0) {
+		fprintf(stderr, "fwrite error\n");
+		exit(EXIT_FAILURE);
+	}
+
+	if (fclose(f) == EOF) {
+		perror("fclose");
 		exit(EXIT_FAILURE);
 	}
 
 	if (!streq(msg, expected_error)) {
-		printf("\nThe output differs from the expected output.\n");
-		printf("Output:\n");
-		printf("%s\n", msg);
+		fprintf(stderr, "\nThe output differs from the expected output.\n");
+		fprintf(stderr, "Output:\n");
+		fprintf(stderr, "%s\n", msg);
 
-		printf("Expected:\n");
-		printf("%s\n", expected_error);
+		fprintf(stderr, "Expected:\n");
+		fprintf(stderr, "%s\n", expected_error);
 
 		exit(EXIT_FAILURE);
 	}
@@ -1046,12 +1040,12 @@ static void diff_roundtrip(
 ) {
 	static char buf[4096];
 	if (dump_file_to_json(prefix(grug_path), prefix_buf(dump_path, buf))) {
-		printf("Failed to dump file AST\n");
+		fprintf(stderr, "Failed to dump file AST\n");
 		exit(EXIT_FAILURE);
 	}
 
 	if (generate_file_from_json(prefix(dump_path), prefix_buf(applied_path, buf))) {
-		printf("Failed to apply file AST\n");
+		fprintf(stderr, "Failed to apply file AST\n");
 		exit(EXIT_FAILURE);
 	}
 
@@ -1064,12 +1058,12 @@ static void diff_roundtrip(
 	applied_path_bytes[applied_path_bytes_len] = '\0';
 
 	if (!streq((const char *)grug_path_bytes, (const char *)applied_path_bytes)) {
-		printf("\nThe output differs from the expected output.\n");
-		printf("Output:\n");
-		printf("%s\n", applied_path_bytes);
+		fprintf(stderr, "\nThe output differs from the expected output.\n");
+		fprintf(stderr, "Output:\n");
+		fprintf(stderr, "%s\n", applied_path_bytes);
 
-		printf("Expected:\n");
-		printf("%s\n", grug_path_bytes);
+		fprintf(stderr, "Expected:\n");
+		fprintf(stderr, "%s\n", grug_path_bytes);
 
 		exit(EXIT_FAILURE);
 	}
@@ -1096,10 +1090,10 @@ static void prologue(
 
 	const char *msg = compile_grug_file(prefix(grug_path));
 	if (msg) {
-		printf("The test wasn't supposed to print anything, but did:\n");
-		printf("----\n");
-		printf("%s\n", msg);
-		printf("----\n");
+		fprintf(stderr, "The test wasn't supposed to print anything, but did:\n");
+		fprintf(stderr, "----\n");
+		fprintf(stderr, "%s\n", msg);
+		fprintf(stderr, "----\n");
 
 		exit(EXIT_FAILURE);
 	}
@@ -3673,12 +3667,12 @@ void grug_tests_run(const char *tests_dir_path_, compile_grug_file_t compile_gru
 		const char *expected_error = get_expected_error(fn_data.expected_error_path);
 
 		if (!streq(runtime_error_reason, expected_error)) {
-			printf("\nThe error message differs from the expected error message.\n");
-			printf("Output:\n");
-			printf("%s\n", runtime_error_reason);
+			fprintf(stderr, "\nThe error message differs from the expected error message.\n");
+			fprintf(stderr, "Output:\n");
+			fprintf(stderr, "%s\n", runtime_error_reason);
 
-			printf("Expected:\n");
-			printf("%s\n", expected_error);
+			fprintf(stderr, "Expected:\n");
+			fprintf(stderr, "%s\n", expected_error);
 
 			exit(EXIT_FAILURE);
 		}

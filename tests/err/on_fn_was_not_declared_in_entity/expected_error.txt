@@ -1,1 +1,1 @@
-The function 'on_z' was not was not declared by entity 'A' in mod_api.json
+The function 'on_z' was not declared by entity 'A' in mod_api.json

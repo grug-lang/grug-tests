@@ -996,24 +996,34 @@ static void test_error(
 	create_failed_file(failed_file_path);
 
 	const char *msg = compile_grug_file(prefix(grug_path));
-	assert(msg);
+	/* assert(msg); */
 
-	FILE *f = fopen(prefix(grug_output_path), "w");
+	if (msg) {
+		FILE *f = fopen(prefix(grug_output_path), "w");
 
-	size_t msg_len = strlen(msg);
+		size_t msg_len = strlen(msg);
 
-	if (fwrite(msg, msg_len, 1, f) == 0) {
-		printf("fwrite error\n");
-		exit(EXIT_FAILURE);
-	}
+		if (fwrite(msg, msg_len, 1, f) == 0) {
+			printf("fwrite error\n");
+			exit(EXIT_FAILURE);
+		}
 
-	if (fclose(f) == EOF) {
-		perror("fclose");
-		exit(EXIT_FAILURE);
-		exit(EXIT_FAILURE);
+		if (fclose(f) == EOF) {
+			perror("fclose");
+			exit(EXIT_FAILURE);
+			/* exit(EXIT_FAILURE); */
+		}
 	}
 
 	const char *expected_error = get_expected_error(expected_error_path);
+
+	if (!msg) {
+		printf("\nCompilation succeeded, expected failure.\n");
+
+		printf("Expected:\n");
+		printf("%s\n", expected_error);
+		exit(EXIT_FAILURE);
+	}
 
 	if (!streq(msg, expected_error)) {
 		printf("\nThe output differs from the expected output.\n");

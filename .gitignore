@@ -22,3 +22,5 @@ pvs.log
 smoketest
 strace_out
 tests.so
+tests.out
+tests.o

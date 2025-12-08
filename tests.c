@@ -2398,14 +2398,6 @@ static void ok_resource_can_contain_dot_1(void) {
 	assert(streq(game_fn_draw_sprite_path, "tests/ok/resource_can_contain_dot_1/.foo"));
 }
 
-static void ok_resource_can_contain_dot_2(void) {
-	assert(game_fn_draw_call_count == 0);
-    on_fn_dispatcher("on_a", "tests/ok/resource_can_contain_dot_2/input-D.grug");
-	assert(game_fn_draw_call_count == 1);
-
-	assert(streq(game_fn_draw_sprite_path, "tests/ok/resource_can_contain_dot_2/foo."));
-}
-
 static void ok_resource_can_contain_dot_3(void) {
 	assert(game_fn_draw_call_count == 0);
     on_fn_dispatcher("on_a", "tests/ok/resource_can_contain_dot_3/input-D.grug");
@@ -2420,14 +2412,6 @@ static void ok_resource_can_contain_dot_dot_1(void) {
 	assert(game_fn_draw_call_count == 1);
 
 	assert(streq(game_fn_draw_sprite_path, "tests/ok/resource_can_contain_dot_dot_1/..foo"));
-}
-
-static void ok_resource_can_contain_dot_dot_2(void) {
-	assert(game_fn_draw_call_count == 0);
-    on_fn_dispatcher("on_a", "tests/ok/resource_can_contain_dot_dot_2/input-D.grug");
-	assert(game_fn_draw_call_count == 1);
-
-	assert(streq(game_fn_draw_sprite_path, "tests/ok/resource_can_contain_dot_dot_2/foo.."));
 }
 
 static void ok_resource_can_contain_dot_dot_3(void) {
@@ -3315,6 +3299,7 @@ static void add_error_tests(void) {
 	ADD_TEST_ERROR(resource_cant_be_passed_to_helper_fn, "D");
 	ADD_TEST_ERROR(resource_cant_contain_backslash, "D");
 	ADD_TEST_ERROR(resource_cant_contain_double_slash, "D");
+	ADD_TEST_ERROR(resource_cant_end_with_dot, "D");
 	ADD_TEST_ERROR(resource_cant_go_up_to_parent_directory_1, "D");
 	ADD_TEST_ERROR(resource_cant_go_up_to_parent_directory_2, "D");
 	ADD_TEST_ERROR(resource_cant_go_up_to_parent_directory_3, "D");
@@ -3524,10 +3509,8 @@ static void add_ok_tests(void) {
 	ADD_TEST_OK(remainder_positive_positive, "D", 8);
 	ADD_TEST_OK(resource_and_entity, "D", 8);
 	ADD_TEST_OK(resource_can_contain_dot_1, "D", 8);
-	ADD_TEST_OK(resource_can_contain_dot_2, "D", 8);
 	ADD_TEST_OK(resource_can_contain_dot_3, "D", 8);
 	ADD_TEST_OK(resource_can_contain_dot_dot_1, "D", 8);
-	ADD_TEST_OK(resource_can_contain_dot_dot_2, "D", 8);
 	ADD_TEST_OK(resource_can_contain_dot_dot_3, "D", 8);
 	ADD_TEST_OK(resource_duplicate, "D", 8);
 	ADD_TEST_OK(return, "D", 8);

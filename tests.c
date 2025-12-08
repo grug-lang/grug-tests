@@ -2349,11 +2349,11 @@ static void ok_resource_and_entity(void) {
 }
 
 static void ok_resource_can_contain_dot_1(void) {
-	assert_call_count(draw, 0);
-    on_fn_dispatcher("on_a");
-	assert_call_count(draw, 1);
+	assert(game_fn_draw_call_count == 0);
+    on_fn_dispatcher("on_a", "tests/ok/resource_can_contain_dot_1/input-D.grug");
+	assert(game_fn_draw_call_count == 1);
 
-	assert_string(game_fn_draw_sprite_path, "ok/resource_can_contain_dot_1/.foo");
+	assert(streq(game_fn_draw_sprite_path, "tests/ok/resource_can_contain_dot_1/.foo"));
 }
 
 static void ok_resource_can_contain_dot_3(void) {
@@ -2369,7 +2369,7 @@ static void ok_resource_can_contain_dot_dot_1(void) {
     on_fn_dispatcher("on_a");
 	assert_call_count(draw, 1);
 
-	assert_string(game_fn_draw_sprite_path, "ok/resource_can_contain_dot_dot_1/..foo");
+	assert(streq(game_fn_draw_sprite_path, "tests/ok/resource_can_contain_dot_dot_1/..foo"));
 }
 
 static void ok_resource_can_contain_dot_dot_3(void) {

@@ -67,6 +67,19 @@ struct error_test_data {
 static struct error_test_data error_test_datas[420420];
 static size_t err_test_datas_size;
 
+struct ok_test_data {
+	void (*run)(void);
+	const char *test_name_str;
+	const char *grug_path;
+	const char *results_path;
+	const char *dump_path;
+	const char *applied_path;
+	const char *failed_file_path;
+	size_t expected_globals_size_value;
+};
+static struct ok_test_data ok_test_datas[420420];
+static size_t ok_test_datas_size;
+
 struct runtime_error_test_data {
 	void (*run)(void);
 	const char *test_name_str;
@@ -80,19 +93,6 @@ struct runtime_error_test_data {
 };
 static struct runtime_error_test_data runtime_error_test_datas[420420];
 static size_t err_runtime_test_datas_size;
-
-struct ok_test_data {
-	void (*run)(void);
-	const char *test_name_str;
-	const char *grug_path;
-	const char *results_path;
-	const char *dump_path;
-	const char *applied_path;
-	const char *failed_file_path;
-	size_t expected_globals_size_value;
-};
-static struct ok_test_data ok_test_datas[420420];
-static size_t ok_test_datas_size;
 
 static size_t game_fn_nothing_call_count;
 static size_t game_fn_magic_call_count;
@@ -787,6 +787,21 @@ static bool is_whitelisted_test(const char *name) {
 	}\
 }
 
+#define ADD_TEST_OK(test_name, entity_type, expected_globals_size) {\
+	if (is_whitelisted_test(#test_name)) {\
+		ok_test_datas[ok_test_datas_size++] = (struct ok_test_data){\
+			.run = ok_##test_name,\
+			.test_name_str = #test_name,\
+			.grug_path = "ok/"#test_name"/input-"entity_type".grug",\
+			.results_path = "ok/"#test_name"/results",\
+			.dump_path = "ok/"#test_name"/results/dump.json",\
+			.applied_path = "ok/"#test_name"/results/applied.grug",\
+			.failed_file_path = "ok/"#test_name"/results/failed",\
+			.expected_globals_size_value = expected_globals_size\
+		};\
+	}\
+}
+
 #define ADD_TEST_RUNTIME_ERROR(test_name, entity_type, expected_globals_size) {\
 	if (is_whitelisted_test(#test_name)) {\
 		runtime_error_test_datas[err_runtime_test_datas_size++] = (struct runtime_error_test_data){\
@@ -798,21 +813,6 @@ static bool is_whitelisted_test(const char *name) {
 			.dump_path = "err_runtime/"#test_name"/results/dump.json",\
 			.applied_path = "err_runtime/"#test_name"/results/applied.grug",\
 			.failed_file_path = "err_runtime/"#test_name"/results/failed",\
-			.expected_globals_size_value = expected_globals_size\
-		};\
-	}\
-}
-
-#define ADD_TEST_OK(test_name, entity_type, expected_globals_size) {\
-	if (is_whitelisted_test(#test_name)) {\
-		ok_test_datas[ok_test_datas_size++] = (struct ok_test_data){\
-			.run = ok_##test_name,\
-			.test_name_str = #test_name,\
-			.grug_path = "ok/"#test_name"/input-"entity_type".grug",\
-			.results_path = "ok/"#test_name"/results",\
-			.dump_path = "ok/"#test_name"/results/dump.json",\
-			.applied_path = "ok/"#test_name"/results/applied.grug",\
-			.failed_file_path = "ok/"#test_name"/results/failed",\
 			.expected_globals_size_value = expected_globals_size\
 		};\
 	}\
@@ -1100,276 +1100,6 @@ static void prologue(
 	}
 
 	init_globals_fn_dispatcher(grug_path);
-}
-
-void grug_tests_runtime_error_handler(const char *reason, enum grug_runtime_error_type type, const char *on_fn_name, const char *on_fn_path) {
-	had_runtime_error = true;
-	error_handler_calls++;
-
-	runtime_error_reason = reason;
-	runtime_error_type = type;
-	runtime_error_on_fn_name = on_fn_name;
-	runtime_error_on_fn_path = on_fn_path;
-}
-
-static void runtime_error_all(void) {
-	on_fn_dispatcher("on_a", "tests/err_runtime/all/input-D.grug");
-
-	assert(had_runtime_error);
-
-	assert(runtime_error_type == GRUG_ON_FN_DIVISION_BY_ZERO);
-
-	assert(streq(runtime_error_on_fn_name, "on_a"));
-	assert(streq(runtime_error_on_fn_path, "tests/err_runtime/all/input-D.grug"));
-}
-
-static void runtime_error_division_by_0(void) {
-	on_fn_dispatcher("on_a", "tests/err_runtime/division_by_0/input-D.grug");
-
-	assert(had_runtime_error);
-
-	assert(runtime_error_type == GRUG_ON_FN_DIVISION_BY_ZERO);
-
-	assert(streq(runtime_error_on_fn_name, "on_a"));
-	assert(streq(runtime_error_on_fn_path, "tests/err_runtime/division_by_0/input-D.grug"));
-}
-
-static void runtime_error_game_fn_error(void) {
-	assert(game_fn_cause_game_fn_error_call_count == 0);
-	assert(error_handler_calls == 0);
-	on_fn_dispatcher("on_a", "tests/err_runtime/game_fn_error/input-D.grug");
-	assert(game_fn_cause_game_fn_error_call_count == 1);
-	assert(error_handler_calls == 1);
-
-	assert(had_runtime_error);
-
-	assert(runtime_error_type == GRUG_ON_FN_GAME_FN_ERROR);
-
-	assert(streq(runtime_error_on_fn_name, "on_a"));
-	assert(streq(runtime_error_on_fn_path, "tests/err_runtime/game_fn_error/input-D.grug"));
-}
-
-static void runtime_error_game_fn_error_once(void) {
-	assert(game_fn_cause_game_fn_error_call_count == 0);
-	assert(error_handler_calls == 0);
-	on_fn_dispatcher("on_a", "tests/err_runtime/game_fn_error_once/input-E.grug");
-	assert(game_fn_cause_game_fn_error_call_count == 1);
-	assert(error_handler_calls == 1);
-
-	assert(had_runtime_error);
-
-	assert(runtime_error_type == GRUG_ON_FN_GAME_FN_ERROR);
-
-	assert(streq(runtime_error_on_fn_name, "on_a"));
-	assert(streq(runtime_error_on_fn_path, "tests/err_runtime/game_fn_error_once/input-E.grug"));
-
-	had_runtime_error = false;
-
-	assert(game_fn_cause_game_fn_error_call_count == 1);
-	assert(game_fn_nothing_call_count == 0);
-	assert(error_handler_calls == 1);
-	on_fn_dispatcher("on_b", "tests/err_runtime/game_fn_error_once/input-E.grug");
-	assert(game_fn_cause_game_fn_error_call_count == 1);
-	assert(game_fn_nothing_call_count == 1);
-	assert(error_handler_calls == 1);
-
-	assert(!had_runtime_error);
-}
-
-static void runtime_error_i32_overflow_addition(void) {
-	on_fn_dispatcher("on_a", "tests/err_runtime/i32_overflow_addition/input-D.grug");
-
-	assert(had_runtime_error);
-
-	assert(runtime_error_type == GRUG_ON_FN_OVERFLOW);
-
-	assert(streq(runtime_error_on_fn_name, "on_a"));
-	assert(streq(runtime_error_on_fn_path, "tests/err_runtime/i32_overflow_addition/input-D.grug"));
-}
-
-static void runtime_error_i32_overflow_division(void) {
-	on_fn_dispatcher("on_a", "tests/err_runtime/i32_overflow_division/input-D.grug");
-
-	assert(had_runtime_error);
-
-	assert(runtime_error_type == GRUG_ON_FN_OVERFLOW);
-
-	assert(streq(runtime_error_on_fn_name, "on_a"));
-	assert(streq(runtime_error_on_fn_path, "tests/err_runtime/i32_overflow_division/input-D.grug"));
-}
-
-static void runtime_error_i32_overflow_multiplication(void) {
-	on_fn_dispatcher("on_a", "tests/err_runtime/i32_overflow_multiplication/input-D.grug");
-
-	assert(had_runtime_error);
-
-	assert(runtime_error_type == GRUG_ON_FN_OVERFLOW);
-
-	assert(streq(runtime_error_on_fn_name, "on_a"));
-	assert(streq(runtime_error_on_fn_path, "tests/err_runtime/i32_overflow_multiplication/input-D.grug"));
-}
-
-static void runtime_error_i32_overflow_negation(void) {
-	on_fn_dispatcher("on_a", "tests/err_runtime/i32_overflow_negation/input-D.grug");
-
-	assert(had_runtime_error);
-
-	assert(runtime_error_type == GRUG_ON_FN_OVERFLOW);
-
-	assert(streq(runtime_error_on_fn_name, "on_a"));
-	assert(streq(runtime_error_on_fn_path, "tests/err_runtime/i32_overflow_negation/input-D.grug"));
-}
-
-static void runtime_error_i32_overflow_remainder(void) {
-	on_fn_dispatcher("on_a", "tests/err_runtime/i32_overflow_remainder/input-D.grug");
-
-	assert(had_runtime_error);
-
-	assert(runtime_error_type == GRUG_ON_FN_OVERFLOW);
-
-	assert(streq(runtime_error_on_fn_name, "on_a"));
-	assert(streq(runtime_error_on_fn_path, "tests/err_runtime/i32_overflow_remainder/input-D.grug"));
-}
-
-static void runtime_error_i32_overflow_subtraction(void) {
-	on_fn_dispatcher("on_a", "tests/err_runtime/i32_overflow_subtraction/input-D.grug");
-
-	assert(had_runtime_error);
-
-	assert(runtime_error_type == GRUG_ON_FN_OVERFLOW);
-
-	assert(streq(runtime_error_on_fn_name, "on_a"));
-	assert(streq(runtime_error_on_fn_path, "tests/err_runtime/i32_overflow_subtraction/input-D.grug"));
-}
-
-static void runtime_error_i32_underflow_addition(void) {
-	on_fn_dispatcher("on_a", "tests/err_runtime/i32_underflow_addition/input-D.grug");
-
-	assert(had_runtime_error);
-
-	assert(runtime_error_type == GRUG_ON_FN_OVERFLOW);
-
-	assert(streq(runtime_error_on_fn_name, "on_a"));
-	assert(streq(runtime_error_on_fn_path, "tests/err_runtime/i32_underflow_addition/input-D.grug"));
-}
-
-static void runtime_error_i32_underflow_multiplication(void) {
-	on_fn_dispatcher("on_a", "tests/err_runtime/i32_underflow_multiplication/input-D.grug");
-
-	assert(had_runtime_error);
-
-	assert(runtime_error_type == GRUG_ON_FN_OVERFLOW);
-
-	assert(streq(runtime_error_on_fn_name, "on_a"));
-	assert(streq(runtime_error_on_fn_path, "tests/err_runtime/i32_underflow_multiplication/input-D.grug"));
-}
-
-static void runtime_error_i32_underflow_subtraction(void) {
-	on_fn_dispatcher("on_a", "tests/err_runtime/i32_underflow_subtraction/input-D.grug");
-
-	assert(had_runtime_error);
-
-	assert(runtime_error_type == GRUG_ON_FN_OVERFLOW);
-
-	assert(streq(runtime_error_on_fn_name, "on_a"));
-	assert(streq(runtime_error_on_fn_path, "tests/err_runtime/i32_underflow_subtraction/input-D.grug"));
-}
-
-static void runtime_error_on_fn_calls_erroring_on_fn(void) {
-	saved_grug_path = "tests/err_runtime/on_fn_calls_erroring_on_fn/input-E.grug";
-
-	assert(game_fn_call_on_b_fn_call_count == 0);
-	assert(game_fn_cause_game_fn_error_call_count == 0);
-	assert(game_fn_nothing_call_count == 0);
-	assert(error_handler_calls == 0);
-    on_fn_dispatcher("on_a", "tests/err_runtime/on_fn_calls_erroring_on_fn/input-E.grug");
-	assert(game_fn_call_on_b_fn_call_count == 1);
-	assert(game_fn_cause_game_fn_error_call_count == 1);
-	assert(game_fn_nothing_call_count == 0);
-	assert(error_handler_calls == 1);
-
-	assert(had_runtime_error);
-
-	assert(runtime_error_type == GRUG_ON_FN_GAME_FN_ERROR);
-
-	assert(streq(runtime_error_on_fn_name, "on_b"));
-	assert(streq(runtime_error_on_fn_path, "tests/err_runtime/on_fn_calls_erroring_on_fn/input-E.grug"));
-}
-
-static void runtime_error_on_fn_errors_after_it_calls_other_on_fn(void) {
-	saved_grug_path = "tests/err_runtime/on_fn_errors_after_it_calls_other_on_fn/input-E.grug";
-
-	assert(game_fn_call_on_b_fn_call_count == 0);
-	assert(game_fn_nothing_call_count == 0);
-	assert(game_fn_cause_game_fn_error_call_count == 0);
-	assert(error_handler_calls == 0);
-	on_fn_dispatcher("on_a", "tests/err_runtime/on_fn_errors_after_it_calls_other_on_fn/input-E.grug");
-	assert(game_fn_call_on_b_fn_call_count == 1);
-	assert(game_fn_nothing_call_count == 1);
-	assert(game_fn_cause_game_fn_error_call_count == 1);
-	assert(error_handler_calls == 1);
-
-	assert(had_runtime_error);
-
-	assert(runtime_error_type == GRUG_ON_FN_GAME_FN_ERROR);
-
-	assert(streq(runtime_error_on_fn_name, "on_b"));
-	assert(streq(runtime_error_on_fn_path, "tests/err_runtime/on_fn_errors_after_it_calls_other_on_fn/input-E.grug"));
-}
-
-static void runtime_error_remainder_by_0(void) {
-    on_fn_dispatcher("on_a", "tests/err_runtime/remainder_by_0/input-D.grug");
-
-	assert(had_runtime_error);
-
-	assert(runtime_error_type == GRUG_ON_FN_DIVISION_BY_ZERO);
-
-	assert(streq(runtime_error_on_fn_name, "on_a"));
-	assert(streq(runtime_error_on_fn_path, "tests/err_runtime/remainder_by_0/input-D.grug"));
-}
-
-static void runtime_error_stack_overflow(void) {
-    on_fn_dispatcher("on_a", "tests/err_runtime/stack_overflow/input-D.grug");
-
-	assert(had_runtime_error);
-
-	assert(runtime_error_type == GRUG_ON_FN_STACK_OVERFLOW);
-
-	assert(streq(runtime_error_on_fn_name, "on_a"));
-	assert(streq(runtime_error_on_fn_path, "tests/err_runtime/stack_overflow/input-D.grug"));
-}
-
-static void runtime_error_time_limit_exceeded(void) {
-    on_fn_dispatcher("on_a", "tests/err_runtime/time_limit_exceeded/input-D.grug");
-
-	assert(had_runtime_error);
-
-	assert(runtime_error_type == GRUG_ON_FN_TIME_LIMIT_EXCEEDED);
-
-	assert(streq(runtime_error_on_fn_name, "on_a"));
-	assert(streq(runtime_error_on_fn_path, "tests/err_runtime/time_limit_exceeded/input-D.grug"));
-}
-
-static void runtime_error_time_limit_exceeded_exponential_calls(void) {
-    on_fn_dispatcher("on_a", "tests/err_runtime/time_limit_exceeded_exponential_calls/input-D.grug");
-
-	assert(had_runtime_error);
-
-	assert(runtime_error_type == GRUG_ON_FN_TIME_LIMIT_EXCEEDED);
-
-	assert(streq(runtime_error_on_fn_name, "on_a"));
-	assert(streq(runtime_error_on_fn_path, "tests/err_runtime/time_limit_exceeded_exponential_calls/input-D.grug"));
-}
-
-static void runtime_error_time_limit_exceeded_fibonacci(void) {
-    on_fn_dispatcher("on_a", "tests/err_runtime/time_limit_exceeded_fibonacci/input-D.grug");
-
-	assert(had_runtime_error);
-
-	assert(runtime_error_type == GRUG_ON_FN_TIME_LIMIT_EXCEEDED);
-
-	assert(streq(runtime_error_on_fn_name, "on_a"));
-	assert(streq(runtime_error_on_fn_path, "tests/err_runtime/time_limit_exceeded_fibonacci/input-D.grug"));
 }
 
 static void ok_addition_as_argument(void) {
@@ -3151,6 +2881,276 @@ static void ok_write_to_global_variable(void) {
 	assert(game_fn_max_y == 69);
 }
 
+void grug_tests_runtime_error_handler(const char *reason, enum grug_runtime_error_type type, const char *on_fn_name, const char *on_fn_path) {
+	had_runtime_error = true;
+	error_handler_calls++;
+
+	runtime_error_reason = reason;
+	runtime_error_type = type;
+	runtime_error_on_fn_name = on_fn_name;
+	runtime_error_on_fn_path = on_fn_path;
+}
+
+static void runtime_error_all(void) {
+	on_fn_dispatcher("on_a", "tests/err_runtime/all/input-D.grug");
+
+	assert(had_runtime_error);
+
+	assert(runtime_error_type == GRUG_ON_FN_DIVISION_BY_ZERO);
+
+	assert(streq(runtime_error_on_fn_name, "on_a"));
+	assert(streq(runtime_error_on_fn_path, "tests/err_runtime/all/input-D.grug"));
+}
+
+static void runtime_error_division_by_0(void) {
+	on_fn_dispatcher("on_a", "tests/err_runtime/division_by_0/input-D.grug");
+
+	assert(had_runtime_error);
+
+	assert(runtime_error_type == GRUG_ON_FN_DIVISION_BY_ZERO);
+
+	assert(streq(runtime_error_on_fn_name, "on_a"));
+	assert(streq(runtime_error_on_fn_path, "tests/err_runtime/division_by_0/input-D.grug"));
+}
+
+static void runtime_error_game_fn_error(void) {
+	assert(game_fn_cause_game_fn_error_call_count == 0);
+	assert(error_handler_calls == 0);
+	on_fn_dispatcher("on_a", "tests/err_runtime/game_fn_error/input-D.grug");
+	assert(game_fn_cause_game_fn_error_call_count == 1);
+	assert(error_handler_calls == 1);
+
+	assert(had_runtime_error);
+
+	assert(runtime_error_type == GRUG_ON_FN_GAME_FN_ERROR);
+
+	assert(streq(runtime_error_on_fn_name, "on_a"));
+	assert(streq(runtime_error_on_fn_path, "tests/err_runtime/game_fn_error/input-D.grug"));
+}
+
+static void runtime_error_game_fn_error_once(void) {
+	assert(game_fn_cause_game_fn_error_call_count == 0);
+	assert(error_handler_calls == 0);
+	on_fn_dispatcher("on_a", "tests/err_runtime/game_fn_error_once/input-E.grug");
+	assert(game_fn_cause_game_fn_error_call_count == 1);
+	assert(error_handler_calls == 1);
+
+	assert(had_runtime_error);
+
+	assert(runtime_error_type == GRUG_ON_FN_GAME_FN_ERROR);
+
+	assert(streq(runtime_error_on_fn_name, "on_a"));
+	assert(streq(runtime_error_on_fn_path, "tests/err_runtime/game_fn_error_once/input-E.grug"));
+
+	had_runtime_error = false;
+
+	assert(game_fn_cause_game_fn_error_call_count == 1);
+	assert(game_fn_nothing_call_count == 0);
+	assert(error_handler_calls == 1);
+	on_fn_dispatcher("on_b", "tests/err_runtime/game_fn_error_once/input-E.grug");
+	assert(game_fn_cause_game_fn_error_call_count == 1);
+	assert(game_fn_nothing_call_count == 1);
+	assert(error_handler_calls == 1);
+
+	assert(!had_runtime_error);
+}
+
+static void runtime_error_i32_overflow_addition(void) {
+	on_fn_dispatcher("on_a", "tests/err_runtime/i32_overflow_addition/input-D.grug");
+
+	assert(had_runtime_error);
+
+	assert(runtime_error_type == GRUG_ON_FN_OVERFLOW);
+
+	assert(streq(runtime_error_on_fn_name, "on_a"));
+	assert(streq(runtime_error_on_fn_path, "tests/err_runtime/i32_overflow_addition/input-D.grug"));
+}
+
+static void runtime_error_i32_overflow_division(void) {
+	on_fn_dispatcher("on_a", "tests/err_runtime/i32_overflow_division/input-D.grug");
+
+	assert(had_runtime_error);
+
+	assert(runtime_error_type == GRUG_ON_FN_OVERFLOW);
+
+	assert(streq(runtime_error_on_fn_name, "on_a"));
+	assert(streq(runtime_error_on_fn_path, "tests/err_runtime/i32_overflow_division/input-D.grug"));
+}
+
+static void runtime_error_i32_overflow_multiplication(void) {
+	on_fn_dispatcher("on_a", "tests/err_runtime/i32_overflow_multiplication/input-D.grug");
+
+	assert(had_runtime_error);
+
+	assert(runtime_error_type == GRUG_ON_FN_OVERFLOW);
+
+	assert(streq(runtime_error_on_fn_name, "on_a"));
+	assert(streq(runtime_error_on_fn_path, "tests/err_runtime/i32_overflow_multiplication/input-D.grug"));
+}
+
+static void runtime_error_i32_overflow_negation(void) {
+	on_fn_dispatcher("on_a", "tests/err_runtime/i32_overflow_negation/input-D.grug");
+
+	assert(had_runtime_error);
+
+	assert(runtime_error_type == GRUG_ON_FN_OVERFLOW);
+
+	assert(streq(runtime_error_on_fn_name, "on_a"));
+	assert(streq(runtime_error_on_fn_path, "tests/err_runtime/i32_overflow_negation/input-D.grug"));
+}
+
+static void runtime_error_i32_overflow_remainder(void) {
+	on_fn_dispatcher("on_a", "tests/err_runtime/i32_overflow_remainder/input-D.grug");
+
+	assert(had_runtime_error);
+
+	assert(runtime_error_type == GRUG_ON_FN_OVERFLOW);
+
+	assert(streq(runtime_error_on_fn_name, "on_a"));
+	assert(streq(runtime_error_on_fn_path, "tests/err_runtime/i32_overflow_remainder/input-D.grug"));
+}
+
+static void runtime_error_i32_overflow_subtraction(void) {
+	on_fn_dispatcher("on_a", "tests/err_runtime/i32_overflow_subtraction/input-D.grug");
+
+	assert(had_runtime_error);
+
+	assert(runtime_error_type == GRUG_ON_FN_OVERFLOW);
+
+	assert(streq(runtime_error_on_fn_name, "on_a"));
+	assert(streq(runtime_error_on_fn_path, "tests/err_runtime/i32_overflow_subtraction/input-D.grug"));
+}
+
+static void runtime_error_i32_underflow_addition(void) {
+	on_fn_dispatcher("on_a", "tests/err_runtime/i32_underflow_addition/input-D.grug");
+
+	assert(had_runtime_error);
+
+	assert(runtime_error_type == GRUG_ON_FN_OVERFLOW);
+
+	assert(streq(runtime_error_on_fn_name, "on_a"));
+	assert(streq(runtime_error_on_fn_path, "tests/err_runtime/i32_underflow_addition/input-D.grug"));
+}
+
+static void runtime_error_i32_underflow_multiplication(void) {
+	on_fn_dispatcher("on_a", "tests/err_runtime/i32_underflow_multiplication/input-D.grug");
+
+	assert(had_runtime_error);
+
+	assert(runtime_error_type == GRUG_ON_FN_OVERFLOW);
+
+	assert(streq(runtime_error_on_fn_name, "on_a"));
+	assert(streq(runtime_error_on_fn_path, "tests/err_runtime/i32_underflow_multiplication/input-D.grug"));
+}
+
+static void runtime_error_i32_underflow_subtraction(void) {
+	on_fn_dispatcher("on_a", "tests/err_runtime/i32_underflow_subtraction/input-D.grug");
+
+	assert(had_runtime_error);
+
+	assert(runtime_error_type == GRUG_ON_FN_OVERFLOW);
+
+	assert(streq(runtime_error_on_fn_name, "on_a"));
+	assert(streq(runtime_error_on_fn_path, "tests/err_runtime/i32_underflow_subtraction/input-D.grug"));
+}
+
+static void runtime_error_on_fn_calls_erroring_on_fn(void) {
+	saved_grug_path = "tests/err_runtime/on_fn_calls_erroring_on_fn/input-E.grug";
+
+	assert(game_fn_call_on_b_fn_call_count == 0);
+	assert(game_fn_cause_game_fn_error_call_count == 0);
+	assert(game_fn_nothing_call_count == 0);
+	assert(error_handler_calls == 0);
+    on_fn_dispatcher("on_a", "tests/err_runtime/on_fn_calls_erroring_on_fn/input-E.grug");
+	assert(game_fn_call_on_b_fn_call_count == 1);
+	assert(game_fn_cause_game_fn_error_call_count == 1);
+	assert(game_fn_nothing_call_count == 0);
+	assert(error_handler_calls == 1);
+
+	assert(had_runtime_error);
+
+	assert(runtime_error_type == GRUG_ON_FN_GAME_FN_ERROR);
+
+	assert(streq(runtime_error_on_fn_name, "on_b"));
+	assert(streq(runtime_error_on_fn_path, "tests/err_runtime/on_fn_calls_erroring_on_fn/input-E.grug"));
+}
+
+static void runtime_error_on_fn_errors_after_it_calls_other_on_fn(void) {
+	saved_grug_path = "tests/err_runtime/on_fn_errors_after_it_calls_other_on_fn/input-E.grug";
+
+	assert(game_fn_call_on_b_fn_call_count == 0);
+	assert(game_fn_nothing_call_count == 0);
+	assert(game_fn_cause_game_fn_error_call_count == 0);
+	assert(error_handler_calls == 0);
+	on_fn_dispatcher("on_a", "tests/err_runtime/on_fn_errors_after_it_calls_other_on_fn/input-E.grug");
+	assert(game_fn_call_on_b_fn_call_count == 1);
+	assert(game_fn_nothing_call_count == 1);
+	assert(game_fn_cause_game_fn_error_call_count == 1);
+	assert(error_handler_calls == 1);
+
+	assert(had_runtime_error);
+
+	assert(runtime_error_type == GRUG_ON_FN_GAME_FN_ERROR);
+
+	assert(streq(runtime_error_on_fn_name, "on_b"));
+	assert(streq(runtime_error_on_fn_path, "tests/err_runtime/on_fn_errors_after_it_calls_other_on_fn/input-E.grug"));
+}
+
+static void runtime_error_remainder_by_0(void) {
+    on_fn_dispatcher("on_a", "tests/err_runtime/remainder_by_0/input-D.grug");
+
+	assert(had_runtime_error);
+
+	assert(runtime_error_type == GRUG_ON_FN_DIVISION_BY_ZERO);
+
+	assert(streq(runtime_error_on_fn_name, "on_a"));
+	assert(streq(runtime_error_on_fn_path, "tests/err_runtime/remainder_by_0/input-D.grug"));
+}
+
+static void runtime_error_stack_overflow(void) {
+    on_fn_dispatcher("on_a", "tests/err_runtime/stack_overflow/input-D.grug");
+
+	assert(had_runtime_error);
+
+	assert(runtime_error_type == GRUG_ON_FN_STACK_OVERFLOW);
+
+	assert(streq(runtime_error_on_fn_name, "on_a"));
+	assert(streq(runtime_error_on_fn_path, "tests/err_runtime/stack_overflow/input-D.grug"));
+}
+
+static void runtime_error_time_limit_exceeded(void) {
+    on_fn_dispatcher("on_a", "tests/err_runtime/time_limit_exceeded/input-D.grug");
+
+	assert(had_runtime_error);
+
+	assert(runtime_error_type == GRUG_ON_FN_TIME_LIMIT_EXCEEDED);
+
+	assert(streq(runtime_error_on_fn_name, "on_a"));
+	assert(streq(runtime_error_on_fn_path, "tests/err_runtime/time_limit_exceeded/input-D.grug"));
+}
+
+static void runtime_error_time_limit_exceeded_exponential_calls(void) {
+    on_fn_dispatcher("on_a", "tests/err_runtime/time_limit_exceeded_exponential_calls/input-D.grug");
+
+	assert(had_runtime_error);
+
+	assert(runtime_error_type == GRUG_ON_FN_TIME_LIMIT_EXCEEDED);
+
+	assert(streq(runtime_error_on_fn_name, "on_a"));
+	assert(streq(runtime_error_on_fn_path, "tests/err_runtime/time_limit_exceeded_exponential_calls/input-D.grug"));
+}
+
+static void runtime_error_time_limit_exceeded_fibonacci(void) {
+    on_fn_dispatcher("on_a", "tests/err_runtime/time_limit_exceeded_fibonacci/input-D.grug");
+
+	assert(had_runtime_error);
+
+	assert(runtime_error_type == GRUG_ON_FN_TIME_LIMIT_EXCEEDED);
+
+	assert(streq(runtime_error_on_fn_name, "on_a"));
+	assert(streq(runtime_error_on_fn_path, "tests/err_runtime/time_limit_exceeded_fibonacci/input-D.grug"));
+}
+
 #define CHECK_THAT_EVERY_TEST_DIRECTORY_HAS_A_FUNCTION(test_dirname) {\
 	size_t entries = 0;\
 	\
@@ -3350,29 +3350,6 @@ static void add_error_tests(void) {
 	ADD_TEST_ERROR(wrong_type_global_reassignment, "D");
 	ADD_TEST_ERROR(wrong_type_local_assignment, "D");
 	ADD_TEST_ERROR(wrong_type_local_reassignment, "D");
-}
-
-static void add_runtime_error_tests(void) {
-	ADD_TEST_RUNTIME_ERROR(all, "D", 8);
-	ADD_TEST_RUNTIME_ERROR(division_by_0, "D", 8);
-	ADD_TEST_RUNTIME_ERROR(game_fn_error, "D", 8);
-	ADD_TEST_RUNTIME_ERROR(game_fn_error_once, "E", 8);
-	ADD_TEST_RUNTIME_ERROR(i32_overflow_addition, "D", 8);
-	ADD_TEST_RUNTIME_ERROR(i32_overflow_division, "D", 8);
-	ADD_TEST_RUNTIME_ERROR(i32_overflow_multiplication, "D", 8);
-	ADD_TEST_RUNTIME_ERROR(i32_overflow_negation, "D", 8);
-	ADD_TEST_RUNTIME_ERROR(i32_overflow_remainder, "D", 8);
-	ADD_TEST_RUNTIME_ERROR(i32_overflow_subtraction, "D", 8);
-	ADD_TEST_RUNTIME_ERROR(i32_underflow_addition, "D", 8);
-	ADD_TEST_RUNTIME_ERROR(i32_underflow_multiplication, "D", 8);
-	ADD_TEST_RUNTIME_ERROR(i32_underflow_subtraction, "D", 8);
-	ADD_TEST_RUNTIME_ERROR(on_fn_calls_erroring_on_fn, "E", 8);
-	ADD_TEST_RUNTIME_ERROR(on_fn_errors_after_it_calls_other_on_fn, "E", 8);
-	ADD_TEST_RUNTIME_ERROR(remainder_by_0, "D", 8);
-	ADD_TEST_RUNTIME_ERROR(stack_overflow, "D", 8);
-	ADD_TEST_RUNTIME_ERROR(time_limit_exceeded, "D", 8);
-	ADD_TEST_RUNTIME_ERROR(time_limit_exceeded_exponential_calls, "D", 8);
-	ADD_TEST_RUNTIME_ERROR(time_limit_exceeded_fibonacci, "D", 8);
 }
 
 static void add_ok_tests(void) {
@@ -3590,6 +3567,29 @@ static void add_ok_tests(void) {
 	ADD_TEST_OK(write_to_global_variable, "D", 16);
 }
 
+static void add_runtime_error_tests(void) {
+	ADD_TEST_RUNTIME_ERROR(all, "D", 8);
+	ADD_TEST_RUNTIME_ERROR(division_by_0, "D", 8);
+	ADD_TEST_RUNTIME_ERROR(game_fn_error, "D", 8);
+	ADD_TEST_RUNTIME_ERROR(game_fn_error_once, "E", 8);
+	ADD_TEST_RUNTIME_ERROR(i32_overflow_addition, "D", 8);
+	ADD_TEST_RUNTIME_ERROR(i32_overflow_division, "D", 8);
+	ADD_TEST_RUNTIME_ERROR(i32_overflow_multiplication, "D", 8);
+	ADD_TEST_RUNTIME_ERROR(i32_overflow_negation, "D", 8);
+	ADD_TEST_RUNTIME_ERROR(i32_overflow_remainder, "D", 8);
+	ADD_TEST_RUNTIME_ERROR(i32_overflow_subtraction, "D", 8);
+	ADD_TEST_RUNTIME_ERROR(i32_underflow_addition, "D", 8);
+	ADD_TEST_RUNTIME_ERROR(i32_underflow_multiplication, "D", 8);
+	ADD_TEST_RUNTIME_ERROR(i32_underflow_subtraction, "D", 8);
+	ADD_TEST_RUNTIME_ERROR(on_fn_calls_erroring_on_fn, "E", 8);
+	ADD_TEST_RUNTIME_ERROR(on_fn_errors_after_it_calls_other_on_fn, "E", 8);
+	ADD_TEST_RUNTIME_ERROR(remainder_by_0, "D", 8);
+	ADD_TEST_RUNTIME_ERROR(stack_overflow, "D", 8);
+	ADD_TEST_RUNTIME_ERROR(time_limit_exceeded, "D", 8);
+	ADD_TEST_RUNTIME_ERROR(time_limit_exceeded_exponential_calls, "D", 8);
+	ADD_TEST_RUNTIME_ERROR(time_limit_exceeded_fibonacci, "D", 8);
+}
+
 void grug_tests_run(const char *tests_dir_path_, compile_grug_file_t compile_grug_file_, init_globals_fn_dispatcher_t init_globals_fn_dispatcher_, on_fn_dispatcher_t on_fn_dispatcher_, dump_file_to_json_t dump_file_to_json_, generate_file_from_json_t generate_file_from_json_, game_fn_error_t game_fn_error_, const char *whitelisted_test_) {
 	tests_dir_path = tests_dir_path_;
 	compile_grug_file = compile_grug_file_;
@@ -3606,11 +3606,11 @@ void grug_tests_run(const char *tests_dir_path_, compile_grug_file_t compile_gru
 
 	if (whitelisted_test == NULL) {
 		CHECK_THAT_EVERY_TEST_DIRECTORY_HAS_A_FUNCTION(err);
-		CHECK_THAT_EVERY_TEST_DIRECTORY_HAS_A_FUNCTION(err_runtime);
 		CHECK_THAT_EVERY_TEST_DIRECTORY_HAS_A_FUNCTION(ok);
+		CHECK_THAT_EVERY_TEST_DIRECTORY_HAS_A_FUNCTION(err_runtime);
 	}
 
-	if (err_test_datas_size + err_runtime_test_datas_size + ok_test_datas_size == 0) {
+	if (err_test_datas_size + ok_test_datas_size + err_runtime_test_datas_size == 0) {
 		fprintf(stderr, "No tests to execute\n");
 		exit(EXIT_FAILURE);
 	}
@@ -3623,8 +3623,8 @@ void grug_tests_run(const char *tests_dir_path_, compile_grug_file_t compile_gru
 
 	for (size_t shuffle = 0; shuffle < SHUFFLES; shuffle++) {
 	SHUFFLE(error_test_datas, err_test_datas_size, struct error_test_data);
-	SHUFFLE(runtime_error_test_datas, err_runtime_test_datas_size, struct runtime_error_test_data);
 	SHUFFLE(ok_test_datas, ok_test_datas_size, struct ok_test_data);
+	SHUFFLE(runtime_error_test_datas, err_runtime_test_datas_size, struct runtime_error_test_data);
 #endif
 
 	for (size_t i = 0; i < err_test_datas_size; i++) {
@@ -3638,6 +3638,33 @@ void grug_tests_run(const char *tests_dir_path_, compile_grug_file_t compile_gru
 			fn_data.grug_output_path,
 			fn_data.failed_file_path
 		);
+	}
+
+	for (size_t i = 0; i < ok_test_datas_size; i++) {
+		struct ok_test_data fn_data = ok_test_datas[i];
+
+		if (whitelisted_test == NULL
+		&& failed_file_doesnt_exist(fn_data.failed_file_path)
+		&& shuffles_was_not_defined()
+		&& newer(fn_data.applied_path, fn_data.grug_path)
+		&& newer(fn_data.applied_path, "mod_api.json")
+		&& newer(fn_data.applied_path, "tests.sh")
+		&& newer(fn_data.applied_path, "smoketest")
+		&& newer(fn_data.applied_path, "smoketest.c")
+		) {
+			printf("Skipping tests/ok/%s...\n", fn_data.test_name_str);
+			continue;
+		}
+
+		printf("Running tests/ok/%s...\n", fn_data.test_name_str);
+
+		prologue(fn_data.grug_path, fn_data.results_path, fn_data.failed_file_path, "ok");
+
+		diff_roundtrip(fn_data.grug_path, fn_data.dump_path, fn_data.applied_path);
+
+		fn_data.run();
+
+		unlink(fn_data.failed_file_path);
 	}
 
 	for (size_t i = 0; i < err_runtime_test_datas_size; i++) {
@@ -3677,33 +3704,6 @@ void grug_tests_run(const char *tests_dir_path_, compile_grug_file_t compile_gru
 
 			exit(EXIT_FAILURE);
 		}
-
-		unlink(fn_data.failed_file_path);
-	}
-
-	for (size_t i = 0; i < ok_test_datas_size; i++) {
-		struct ok_test_data fn_data = ok_test_datas[i];
-
-		if (whitelisted_test == NULL
-		&& failed_file_doesnt_exist(fn_data.failed_file_path)
-		&& shuffles_was_not_defined()
-		&& newer(fn_data.applied_path, fn_data.grug_path)
-		&& newer(fn_data.applied_path, "mod_api.json")
-		&& newer(fn_data.applied_path, "tests.sh")
-		&& newer(fn_data.applied_path, "smoketest")
-		&& newer(fn_data.applied_path, "smoketest.c")
-		) {
-			printf("Skipping tests/ok/%s...\n", fn_data.test_name_str);
-			continue;
-		}
-
-		printf("Running tests/ok/%s...\n", fn_data.test_name_str);
-
-		prologue(fn_data.grug_path, fn_data.results_path, fn_data.failed_file_path, "ok");
-
-		diff_roundtrip(fn_data.grug_path, fn_data.dump_path, fn_data.applied_path);
-
-		fn_data.run();
 
 		unlink(fn_data.failed_file_path);
 	}

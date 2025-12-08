@@ -1,0 +1,1 @@
+resource name "resource_can_contain_dot_2/foo." cannot end with .

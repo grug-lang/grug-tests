@@ -1,0 +1,1 @@
+[{"type":"GLOBAL_ON_FN","name":"on_a","statements":[{"type":"CALL_STATEMENT","name":"initialize_bool","arguments":[{"type":"LOGICAL_EXPR","left_expr":{"type":"FALSE_EXPR"},"operator":"OR_TOKEN","right_expr":{"type":"FALSE_EXPR"}}]}]}]

@@ -1,0 +1,1 @@
+[{"type":"GLOBAL_ON_FN","name":"on_a","statements":[{"type":"CALL_STATEMENT","name":"nothing"},{"type":"CALL_STATEMENT","name":"initialize","arguments":[{"type":"I32_EXPR","value":"42"}]}]}]

@@ -1,0 +1,1 @@
+[{"type":"GLOBAL_ON_FN","name":"on_a","arguments":[{"name":"f","type":"f32"}],"statements":[{"type":"CALL_STATEMENT","name":"sin","arguments":[{"type":"IDENTIFIER_EXPR","str":"f"}]}]}]

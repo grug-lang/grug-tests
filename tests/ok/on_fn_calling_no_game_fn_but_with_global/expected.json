@@ -1,0 +1,1 @@
+[{"type":"GLOBAL_VARIABLE","name":"foo","variable_type":"i32","assignment":{"type":"I32_EXPR","value":"42"}},{"type":"GLOBAL_EMPTY_LINE"},{"type":"GLOBAL_ON_FN","name":"on_a","statements":[{"type":"IF_STATEMENT","condition":{"type":"TRUE_EXPR"}}]}]

@@ -1,0 +1,1 @@
+[{"type":"GLOBAL_VARIABLE","name":"foo","variable_type":"BoxedI32","assignment":{"type":"CALL_EXPR","name":"box_i32","arguments":[{"type":"I32_EXPR","value":"42"}]}}]

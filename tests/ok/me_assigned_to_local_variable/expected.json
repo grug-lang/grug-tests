@@ -1,0 +1,1 @@
+[{"type":"GLOBAL_ON_FN","name":"on_a","statements":[{"type":"VARIABLE_STATEMENT","name":"foo","variable_type":"D","assignment":{"type":"IDENTIFIER_EXPR","str":"me"}},{"type":"CALL_STATEMENT","name":"set_d","arguments":[{"type":"IDENTIFIER_EXPR","str":"foo"}]}]}]

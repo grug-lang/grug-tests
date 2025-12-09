@@ -1,0 +1,1 @@
+[{"type":"GLOBAL_ON_FN","name":"on_a","statements":[{"type":"VARIABLE_STATEMENT","name":"x","variable_type":"f32","assignment":{"type":"CALL_EXPR","name":"sin","arguments":[{"type":"F32_EXPR","value":"4.0"}]}},{"type":"CALL_STATEMENT","name":"cos","arguments":[{"type":"IDENTIFIER_EXPR","str":"x"}]}]}]

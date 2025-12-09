@@ -1,0 +1,1 @@
+[{"type":"GLOBAL_VARIABLE","name":"a","variable_type":"i32","assignment":{"type":"I32_EXPR","value":"420"}},{"type":"GLOBAL_COMMENT","comment":"foo"},{"type":"GLOBAL_VARIABLE","name":"b","variable_type":"i32","assignment":{"type":"I32_EXPR","value":"1337"}}]

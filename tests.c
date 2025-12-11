@@ -1098,8 +1098,6 @@ static void prologue(
 
 		exit(EXIT_FAILURE);
 	}
-
-	init_globals_fn_dispatcher(grug_path);
 }
 
 static void ok_addition_as_argument(void) {
@@ -3645,6 +3643,8 @@ void grug_tests_run(const char *tests_dir_path_, compile_grug_file_t compile_gru
 
 		diff_roundtrip(fn_data.grug_path, fn_data.dump_path, fn_data.applied_path);
 
+		init_globals_fn_dispatcher(fn_data.grug_path);
+
 		fn_data.run();
 
 		unlink(fn_data.failed_file_path);
@@ -3672,6 +3672,8 @@ void grug_tests_run(const char *tests_dir_path_, compile_grug_file_t compile_gru
 		prologue(fn_data.grug_path, fn_data.results_path, fn_data.failed_file_path, "err_runtime");
 
 		diff_roundtrip(fn_data.grug_path, fn_data.dump_path, fn_data.applied_path);
+
+		init_globals_fn_dispatcher(fn_data.grug_path);
 
 		fn_data.run();
 

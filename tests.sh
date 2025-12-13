@@ -66,7 +66,7 @@ fi
 # -----------------------------
 # Build tests.so
 # -----------------------------
-if [[ tests.c -nt tests.so ]]; then
+if [[ tests.c -nt tests.so || tests.h -nt tests.so ]]; then
     echo "Recompiling tests.so..."
     "$CC" tests.c \
         -shared -fPIC -o tests.so \

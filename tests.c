@@ -62,7 +62,6 @@ struct error_test_data {
 	const char *expected_error_path;
 	const char *results_path;
 	const char *grug_output_path;
-	const char *failed_file_path;
 };
 static struct error_test_data error_test_datas[420420];
 static size_t err_test_datas_size;
@@ -74,7 +73,6 @@ struct ok_test_data {
 	const char *results_path;
 	const char *dump_path;
 	const char *applied_path;
-	const char *failed_file_path;
 	size_t expected_globals_size_value;
 };
 static struct ok_test_data ok_test_datas[420420];
@@ -88,7 +86,6 @@ struct runtime_error_test_data {
 	const char *results_path;
 	const char *dump_path;
 	const char *applied_path;
-	const char *failed_file_path;
 	size_t expected_globals_size_value;
 };
 static struct runtime_error_test_data runtime_error_test_datas[420420];
@@ -781,8 +778,7 @@ static bool is_whitelisted_test(const char *name) {
 			.grug_path = "err/"#test_name"/input-"entity_type".grug",\
 			.expected_error_path = "err/"#test_name"/expected_error.txt",\
 			.results_path = "err/"#test_name"/results",\
-			.grug_output_path = "err/"#test_name"/results/grug_output.txt",\
-			.failed_file_path = "err/"#test_name"/results/failed"\
+			.grug_output_path = "err/"#test_name"/results/grug_output.txt"\
 		};\
 	}\
 }
@@ -796,7 +792,6 @@ static bool is_whitelisted_test(const char *name) {
 			.results_path = "ok/"#test_name"/results",\
 			.dump_path = "ok/"#test_name"/results/dump.json",\
 			.applied_path = "ok/"#test_name"/results/applied.grug",\
-			.failed_file_path = "ok/"#test_name"/results/failed",\
 			.expected_globals_size_value = expected_globals_size\
 		};\
 	}\
@@ -812,7 +807,6 @@ static bool is_whitelisted_test(const char *name) {
 			.results_path = "err_runtime/"#test_name"/results",\
 			.dump_path = "err_runtime/"#test_name"/results/dump.json",\
 			.applied_path = "err_runtime/"#test_name"/results/applied.grug",\
-			.failed_file_path = "err_runtime/"#test_name"/results/failed",\
 			.expected_globals_size_value = expected_globals_size\
 		};\
 	}\
@@ -876,7 +870,7 @@ static size_t read_file(const char *path, uint8_t *bytes) {
 	check(fseek(f, 0, SEEK_SET), "fseek", NULL);
 
 	if (fread(bytes, len, 1, f) < len && ferror(f)) {
-		fprintf(stderr, "fread error\n");
+		fprintf(stderr, "Error: fread error\n");
 		exit(EXIT_FAILURE);
 	}
 
@@ -886,27 +880,6 @@ static size_t read_file(const char *path, uint8_t *bytes) {
 	}
 
 	return len;
-}
-
-static bool newer(const char *path1, const char *path2) {
-	struct stat s1;
-	if (stat(path1, &s1) == -1) {
-		if (errno != ENOENT) {
-			fprintf(stderr, "path1: \"%s\"\n", path1);
-			perror("stat");
-			exit(EXIT_FAILURE);
-		}
-		return false;
-	}
-
-	struct stat s2;
-	if (stat(path2, &s2) < 0) {
-		fprintf(stderr, "path2: \"%s\"\n", path2);
-		perror("stat");
-		exit(EXIT_FAILURE);
-	}
-
-	return s1.st_mtime >= s2.st_mtime;
 }
 
 static const char *get_expected_error(const char *expected_error_path) {
@@ -923,17 +896,6 @@ static const char *get_expected_error(const char *expected_error_path) {
 	expected_error[expected_error_len] = '\0';
 
 	return expected_error;
-}
-
-static void create_failed_file(const char *failed_file_path) {
-	int fd = open(prefix(failed_file_path), O_RDWR | O_CREAT | O_TRUNC, 0644);
-	check(fd, "open", prefix(failed_file_path));
-	close(fd);
-}
-
-static bool failed_file_doesnt_exist(const char *failed_file_path) {
-	errno = 0;
-	return access(failed_file_path, F_OK) == -1 && errno == ENOENT;
 }
 
 static void make_results_dir(const char *results_path) {
@@ -959,48 +921,24 @@ static int rm_rf(const char *path) {
 	return nftw(path, remove_callback, 42, FTW_DEPTH | FTW_PHYS);
 }
 
-static bool shuffles_was_not_defined(void) {
-#ifdef SHUFFLES
-	return false;
-#endif
-	return true;
-}
-
 static void test_error(
 	const char *test_name,
 	const char *grug_path,
 	const char *expected_error_path,
 	const char *results_path,
-	const char *grug_output_path,
-	const char *failed_file_path
+	const char *grug_output_path
 ) {
-	if (whitelisted_test == NULL
-	 && failed_file_doesnt_exist(failed_file_path)
-	 && shuffles_was_not_defined()
-	 && newer(grug_output_path, grug_path)
-	 && newer(grug_output_path, expected_error_path)
-	 && newer(grug_output_path, "mod_api.json")
-	 && newer(grug_output_path, "tests.sh")
-	 && newer(grug_output_path, "smoketest")
-     && newer(grug_output_path, "smoketest.c")
-	) {
-		fprintf(stderr, "Skipping tests/err/%s...\n", test_name);
-		return;
-	}
-
-	fprintf(stderr, "Running tests/err/%s...\n", test_name);
+	printf("Running tests/err/%s...\n", test_name);
 
 	rm_rf(results_path);
 	make_results_dir(results_path);
-
-	create_failed_file(failed_file_path);
 
 	const char *msg = compile_grug_file(prefix(grug_path), "err");
 
 	const char *expected_error = get_expected_error(expected_error_path);
 
 	if (!msg) {
-		fprintf(stderr, "\nCompilation succeeded, but expected this error message:\n");
+		fprintf(stderr, "\nError: Compilation succeeded, but expected this error message:\n");
 		fprintf(stderr, "%s\n", expected_error);
 		exit(EXIT_FAILURE);
 	}
@@ -1010,7 +948,7 @@ static void test_error(
 	size_t msg_len = strlen(msg);
 
 	if (fwrite(msg, msg_len, 1, f) == 0) {
-		fprintf(stderr, "fwrite error\n");
+		fprintf(stderr, "Error: fwrite error\n");
 		exit(EXIT_FAILURE);
 	}
 
@@ -1020,7 +958,7 @@ static void test_error(
 	}
 
 	if (!streq(msg, expected_error)) {
-		fprintf(stderr, "\nThe output differs from the expected output.\n");
+		fprintf(stderr, "\nError: The output differs from the expected output.\n");
 		fprintf(stderr, "Output:\n");
 		fprintf(stderr, "%s\n", msg);
 
@@ -1029,8 +967,6 @@ static void test_error(
 
 		exit(EXIT_FAILURE);
 	}
-
-	unlink(failed_file_path);
 }
 
 static void diff_roundtrip(
@@ -1040,12 +976,12 @@ static void diff_roundtrip(
 ) {
 	static char buf[4096];
 	if (dump_file_to_json(prefix(grug_path), prefix_buf(dump_path, buf))) {
-		fprintf(stderr, "Failed to dump file AST\n");
+		fprintf(stderr, "Error: Failed to dump file AST\n");
 		exit(EXIT_FAILURE);
 	}
 
 	if (generate_file_from_json(prefix(dump_path), prefix_buf(applied_path, buf))) {
-		fprintf(stderr, "Failed to apply file AST\n");
+		fprintf(stderr, "Error: Failed to apply file AST\n");
 		exit(EXIT_FAILURE);
 	}
 
@@ -1058,7 +994,7 @@ static void diff_roundtrip(
 	applied_path_bytes[applied_path_bytes_len] = '\0';
 
 	if (!streq((const char *)grug_path_bytes, (const char *)applied_path_bytes)) {
-		fprintf(stderr, "\nThe output differs from the expected output.\n");
+		fprintf(stderr, "\nError: The output differs from the expected output.\n");
 		fprintf(stderr, "Output:\n");
 		fprintf(stderr, "%s\n", applied_path_bytes);
 
@@ -1072,7 +1008,6 @@ static void diff_roundtrip(
 static void prologue(
 	const char *grug_path,
 	const char *results_path,
-	const char *failed_file_path,
 	const char *mod_name
 ) {
 	reset_call_counts();
@@ -1087,11 +1022,9 @@ static void prologue(
 	rm_rf(results_path);
 	make_results_dir(results_path);
 
-	create_failed_file(failed_file_path);
-
 	const char *msg = compile_grug_file(prefix(grug_path), mod_name);
 	if (msg) {
-		fprintf(stderr, "The test wasn't supposed to print anything, but did:\n");
+		fprintf(stderr, "Error: The test wasn't supposed to print anything, but did:\n");
 		fprintf(stderr, "----\n");
 		fprintf(stderr, "%s\n", msg);
 		fprintf(stderr, "----\n");
@@ -3152,7 +3085,7 @@ static void runtime_error_time_limit_exceeded_fibonacci(void) {
 	}\
 	\
 	if (entries != test_dirname ## _test_datas_size) {\
-		fprintf(stderr, "The tests/" #test_dirname "/ directory contains %zu entries, which doesn't match it having %zu test functions\n", entries, test_dirname ## _test_datas_size);\
+		fprintf(stderr, "Error: The tests/" #test_dirname "/ directory contains %zu entries, which doesn't match it having %zu test functions\n", entries, test_dirname ## _test_datas_size);\
 		exit(EXIT_FAILURE);\
 	}\
 	\
@@ -3592,7 +3525,7 @@ void grug_tests_run(const char *tests_dir_path_, compile_grug_file_t compile_gru
 	}
 
 	if (err_test_datas_size + ok_test_datas_size + err_runtime_test_datas_size == 0) {
-		fprintf(stderr, "No tests to execute\n");
+		fprintf(stderr, "Error: No tests to execute\n");
 		exit(EXIT_FAILURE);
 	}
 
@@ -3616,60 +3549,30 @@ void grug_tests_run(const char *tests_dir_path_, compile_grug_file_t compile_gru
 			fn_data.grug_path,
 			fn_data.expected_error_path,
 			fn_data.results_path,
-			fn_data.grug_output_path,
-			fn_data.failed_file_path
+			fn_data.grug_output_path
 		);
 	}
 
 	for (size_t i = 0; i < ok_test_datas_size; i++) {
 		struct ok_test_data fn_data = ok_test_datas[i];
 
-		if (whitelisted_test == NULL
-		&& failed_file_doesnt_exist(fn_data.failed_file_path)
-		&& shuffles_was_not_defined()
-		&& newer(fn_data.applied_path, fn_data.grug_path)
-		&& newer(fn_data.applied_path, "mod_api.json")
-		&& newer(fn_data.applied_path, "tests.sh")
-		&& newer(fn_data.applied_path, "smoketest")
-		&& newer(fn_data.applied_path, "smoketest.c")
-		) {
-			printf("Skipping tests/ok/%s...\n", fn_data.test_name_str);
-			continue;
-		}
-
 		printf("Running tests/ok/%s...\n", fn_data.test_name_str);
 
-		prologue(fn_data.grug_path, fn_data.results_path, fn_data.failed_file_path, "ok");
+		prologue(fn_data.grug_path, fn_data.results_path, "ok");
 
 		diff_roundtrip(fn_data.grug_path, fn_data.dump_path, fn_data.applied_path);
 
 		init_globals_fn_dispatcher(prefix(fn_data.grug_path));
 
 		fn_data.run();
-
-		unlink(fn_data.failed_file_path);
 	}
 
 	for (size_t i = 0; i < err_runtime_test_datas_size; i++) {
 		struct runtime_error_test_data fn_data = runtime_error_test_datas[i];
 
-		if (whitelisted_test == NULL
-		&& failed_file_doesnt_exist(fn_data.failed_file_path)
-		&& shuffles_was_not_defined()
-		&& newer(fn_data.applied_path, fn_data.grug_path)
-		&& newer(fn_data.applied_path, fn_data.expected_error_path)
-		&& newer(fn_data.applied_path, "mod_api.json")
-		&& newer(fn_data.applied_path, "tests.sh")
-		&& newer(fn_data.applied_path, "smoketest")
-		&& newer(fn_data.applied_path, "smoketest.c")
-		) {
-			printf("Skipping tests/err_runtime/%s...\n", fn_data.test_name_str);
-			continue;
-		}
-
 		printf("Running tests/err_runtime/%s...\n", fn_data.test_name_str);
 
-		prologue(fn_data.grug_path, fn_data.results_path, fn_data.failed_file_path, "err_runtime");
+		prologue(fn_data.grug_path, fn_data.results_path, "err_runtime");
 
 		diff_roundtrip(fn_data.grug_path, fn_data.dump_path, fn_data.applied_path);
 
@@ -3680,7 +3583,7 @@ void grug_tests_run(const char *tests_dir_path_, compile_grug_file_t compile_gru
 		const char *expected_error = get_expected_error(fn_data.expected_error_path);
 
 		if (!streq(runtime_error_reason, expected_error)) {
-			fprintf(stderr, "\nThe error message differs from the expected error message.\n");
+			fprintf(stderr, "\nError: The error message differs from the expected error message.\n");
 			fprintf(stderr, "Output:\n");
 			fprintf(stderr, "%s\n", runtime_error_reason);
 
@@ -3689,8 +3592,6 @@ void grug_tests_run(const char *tests_dir_path_, compile_grug_file_t compile_gru
 
 			exit(EXIT_FAILURE);
 		}
-
-		unlink(fn_data.failed_file_path);
 	}
 
 #ifdef SHUFFLES

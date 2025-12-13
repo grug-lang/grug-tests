@@ -3643,7 +3643,7 @@ void grug_tests_run(const char *tests_dir_path_, compile_grug_file_t compile_gru
 
 		diff_roundtrip(fn_data.grug_path, fn_data.dump_path, fn_data.applied_path);
 
-		init_globals_fn_dispatcher(fn_data.grug_path);
+		init_globals_fn_dispatcher(prefix(fn_data.grug_path));
 
 		fn_data.run();
 
@@ -3673,7 +3673,7 @@ void grug_tests_run(const char *tests_dir_path_, compile_grug_file_t compile_gru
 
 		diff_roundtrip(fn_data.grug_path, fn_data.dump_path, fn_data.applied_path);
 
-		init_globals_fn_dispatcher(fn_data.grug_path);
+		init_globals_fn_dispatcher(prefix(fn_data.grug_path));
 
 		fn_data.run();
 

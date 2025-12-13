@@ -6,10 +6,6 @@
 #include <string.h>
 #include <dlfcn.h>
 
-/* ------------------------------------------------------------------------- */
-/* Function pointers resolved from tests.so */
-/* ------------------------------------------------------------------------- */
-
 static void (*p_grug_tests_run)(
     const char *,
     compile_grug_file_t,
@@ -95,10 +91,6 @@ static void (*p_game_fn_store)(uint64_t);
 static uint64_t (*p_game_fn_retrieve)(void);
 static uint64_t (*p_game_fn_box_i32)(int32_t);
 
-/* ------------------------------------------------------------------------- */
-/* preserve original static variables and helpers */
-/* ------------------------------------------------------------------------- */
-
 static const char *saved_on_fn_name;
 static const char *saved_grug_file_path;
 
@@ -109,10 +101,6 @@ static bool streq(const char *a, const char *b) {
 static bool starts_with(const char *haystack, const char *needle) {
     return strncmp(haystack, needle, strlen(needle)) == 0;
 }
-
-/* ------------------------------------------------------------------------- */
-/* Calls updated to use p_... pointers */
-/* ------------------------------------------------------------------------- */
 
 static const char *compile_grug_file(const char *grug_file_path, const char *mod_name) {
     (void)mod_name;
@@ -137,7 +125,14 @@ static const char *compile_grug_file(const char *grug_file_path, const char *mod
         buf[nread] = '\0';
         fclose(f);
         return buf;
-    } else if (starts_with(grug_file_path, "tests/ok/custom_id_transfer_between_globals/")) {
+    }
+
+    // No error happened, so no error message to return.
+    return NULL;
+}
+
+static void init_globals_fn_dispatcher(const char *grug_file_path) {
+    if (starts_with(grug_file_path, "tests/ok/custom_id_transfer_between_globals/")) {
         p_game_fn_get_opponent();
     } else if (starts_with(grug_file_path, "tests/ok/custom_id_with_digits/")) {
         p_game_fn_box_i32(42);
@@ -150,12 +145,6 @@ static const char *compile_grug_file(const char *grug_file_path, const char *mod
     } else if (starts_with(grug_file_path, "tests/ok/id_global_with_opponent_to_new_id/")) {
         p_game_fn_get_opponent();
     }
-
-    return NULL;
-}
-
-static void init_globals_fn_dispatcher(const char *grug_file_path) {
-    (void)grug_file_path;
 }
 
 static void on_fn_dispatcher(const char *on_fn_name, const char *grug_file_path, struct grug_value values[], size_t value_count) {
@@ -734,10 +723,6 @@ static void game_fn_error(const char *message) {
     p_grug_tests_runtime_error_handler(message, GRUG_ON_FN_GAME_FN_ERROR, saved_on_fn_name, saved_grug_file_path);
 }
 
-/* ------------------------------------------------------------------------- */
-/* Dynamic Loader */
-/* ------------------------------------------------------------------------- */
-
 static void *load_sym(void *h, const char *name) {
     void *p = dlsym(h, name);
     assert(p && "Failed to load required symbol from tests.so");
@@ -791,8 +776,6 @@ static void load_tests_so(void) {
     p_game_fn_box_i32 = load_sym(h, "game_fn_box_i32");
     #pragma GCC diagnostic pop
 }
-
-/* ------------------------------------------------------------------------- */
 
 int main(int argc, const char *argv[]) {
     load_tests_so();

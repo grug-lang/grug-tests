@@ -147,7 +147,7 @@ static void init_globals_fn_dispatcher(const char *grug_file_path) {
     }
 }
 
-static void on_fn_dispatcher(const char *on_fn_name, const char *grug_file_path, struct grug_value values[]) {
+static void on_fn_dispatcher(const char *on_fn_name, const char *grug_file_path, const union grug_value args[]) {
     saved_on_fn_name = on_fn_name;
     saved_grug_file_path = grug_file_path;
 
@@ -456,7 +456,7 @@ static void on_fn_dispatcher(const char *on_fn_name, const char *grug_file_path,
         p_game_fn_retrieve();
         p_game_fn_initialize_bool(true);
     } else if (starts_with(grug_file_path, "tests/ok/id_on_fn_param/")) {
-        p_game_fn_store(values[0].id);
+        p_game_fn_store(args[0]._id);
     } else if (starts_with(grug_file_path, "tests/ok/id_returned_from_helper/")) {
         p_game_fn_store(42);
     } else if (starts_with(grug_file_path, "tests/ok/id_with_d_to_new_id_and_id_to_old_id/")) {

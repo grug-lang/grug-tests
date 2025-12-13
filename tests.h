@@ -25,19 +25,42 @@
 #include <stddef.h> // Provides size_t
 #include <stdint.h> // Provides uint32_t
 
-enum grug_type {
-    grug_type_i32,
-    grug_type_f32,
-    grug_type_id,
-};
+#ifndef GRUG_TYPE_INT
+    #define GRUG_TYPE_INT int32_t
+#endif
+#ifndef GRUG_TYPE_FLOAT
+    #define GRUG_TYPE_FLOAT float
+#endif
+#ifndef GRUG_TYPE_BOOL
+    #define GRUG_TYPE_BOOL bool
+#endif
+#ifndef GRUG_TYPE_STRING
+    #define GRUG_TYPE_STRING const char*
+#endif
+#ifndef GRUG_TYPE_ID
+    #define GRUG_TYPE_ID uint64_t
+#endif
 
-struct grug_value {
-    enum grug_type type;
-    union {
-        int32_t i32;
-        float f32;
-        uint64_t id;
-    };
+#ifndef GRUG_TYPE_ON_FN_ID
+    #define GRUG_TYPE_ON_FN_ID uint32_t
+#endif
+
+union grug_value {
+#ifndef GRUG_NO_INT
+    GRUG_TYPE_INT _int;
+#endif
+#ifndef GRUG_NO_FLOAT
+    GRUG_TYPE_FLOAT _float;
+#endif
+#ifndef GRUG_NO_BOOL
+    GRUG_TYPE_BOOL _bool;
+#endif
+#ifndef GRUG_NO_STRING
+    GRUG_TYPE_STRING _string;
+#endif
+#ifndef GRUG_NO_ID
+    GRUG_TYPE_ID _id;
+#endif
 };
 
 enum grug_runtime_error_type {
@@ -81,9 +104,9 @@ typedef void (*init_globals_fn_dispatcher_t)(const char *grug_file_path);
  *
  * @param on_fn_name Name of the grug function to invoke.
  * @param grug_file_path Path to the grug source file containing the function.
- * @param values Array of `grug_value` arguments to pass to the function.
+ * @param args Array of `grug_value` arguments to pass to the function.
  */
-typedef void (*on_fn_dispatcher_t)(const char *on_fn_name, const char *grug_file_path, struct grug_value values[]);
+typedef void (*on_fn_dispatcher_t)(const char *on_fn_name, const char *grug_file_path, const union grug_value args[]);
 
 /**
  * @typedef dump_file_to_json_t

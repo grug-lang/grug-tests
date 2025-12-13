@@ -140,7 +140,7 @@ static bool streq(const char *a, const char *b) {
 }
 
 static void on_fn_dispatcher(const char *on_fn_name, const char *grug_path) {
-	on_fn_args_dispatcher(on_fn_name, grug_path, NULL, 0);
+	on_fn_args_dispatcher(on_fn_name, grug_path, NULL);
 }
 
 void game_fn_nothing(void) {
@@ -1579,7 +1579,7 @@ static void ok_f32_passed_to_helper_fn(void) {
 
 static void ok_f32_passed_to_on_fn(void) {
 	assert(game_fn_sin_call_count == 0);
-    on_fn_args_dispatcher("on_a", "tests/ok/f32_passed_to_on_fn/input-R.grug", (struct grug_value[]){{.type=grug_type_f32, .f32=42.0f}}, 1);
+    on_fn_args_dispatcher("on_a", "tests/ok/f32_passed_to_on_fn/input-R.grug", (struct grug_value[]){{.type=grug_type_f32, .f32=42.0f}});
 	assert(game_fn_sin_call_count == 1);
 
 	assert(game_fn_sin_x == 42.0f);
@@ -1894,7 +1894,7 @@ static void ok_id_ne_2(void) {
 
 static void ok_id_on_fn_param(void) {
 	assert(game_fn_store_call_count == 0);
-    on_fn_args_dispatcher("on_a", "tests/ok/id_on_fn_param/input-U.grug", (struct grug_value[]){{.type=grug_type_id, .id=77}}, 1);
+    on_fn_args_dispatcher("on_a", "tests/ok/id_on_fn_param/input-U.grug", (struct grug_value[]){{.type=grug_type_id, .id=77}});
 	assert(game_fn_store_call_count == 1);
 
 	assert(game_fn_store_id == 77);
@@ -2169,7 +2169,7 @@ static void ok_on_fn_calling_no_game_fn_but_with_global(void) {
 static void ok_on_fn_overwriting_param(void) {
 	assert(game_fn_initialize_call_count == 0);
 	assert(game_fn_sin_call_count == 0);
-    on_fn_args_dispatcher("on_a", "tests/ok/on_fn_overwriting_param/input-S.grug", (struct grug_value[]){{.type=grug_type_i32, .i32=2}, {.type=grug_type_f32, .f32=3.0f}}, 2);
+    on_fn_args_dispatcher("on_a", "tests/ok/on_fn_overwriting_param/input-S.grug", (struct grug_value[]){{.type=grug_type_i32, .i32=2}, {.type=grug_type_f32, .f32=3.0f}});
 	assert(game_fn_initialize_call_count == 1);
 	assert(game_fn_sin_call_count == 1);
 

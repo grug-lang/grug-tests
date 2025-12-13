@@ -147,8 +147,7 @@ static void init_globals_fn_dispatcher(const char *grug_file_path) {
     }
 }
 
-static void on_fn_dispatcher(const char *on_fn_name, const char *grug_file_path, struct grug_value values[], size_t value_count) {
-    (void)value_count;
+static void on_fn_dispatcher(const char *on_fn_name, const char *grug_file_path, struct grug_value values[]) {
     saved_on_fn_name = on_fn_name;
     saved_grug_file_path = grug_file_path;
 

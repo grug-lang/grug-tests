@@ -82,9 +82,8 @@ typedef void (*init_globals_fn_dispatcher_t)(const char *grug_file_path);
  * @param on_fn_name Name of the grug function to invoke.
  * @param grug_file_path Path to the grug source file containing the function.
  * @param values Array of `grug_value` arguments to pass to the function.
- * @param value_count Number of values in the `values` array parameter.
  */
-typedef void (*on_fn_dispatcher_t)(const char *on_fn_name, const char *grug_file_path, struct grug_value values[], size_t value_count);
+typedef void (*on_fn_dispatcher_t)(const char *on_fn_name, const char *grug_file_path, struct grug_value values[]);
 
 /**
  * @typedef dump_file_to_json_t

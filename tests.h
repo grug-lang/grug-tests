@@ -69,7 +69,6 @@ static inline union grug_value grug_id(GRUG_TYPE_ID v) { union grug_value r; r._
 enum grug_runtime_error_type {
 	GRUG_ON_FN_STACK_OVERFLOW,
 	GRUG_ON_FN_TIME_LIMIT_EXCEEDED,
-	GRUG_ON_FN_OVERFLOW,
 	GRUG_ON_FN_GAME_FN_ERROR,
 };
 

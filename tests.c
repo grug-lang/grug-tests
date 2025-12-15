@@ -2827,94 +2827,6 @@ static void runtime_error_game_fn_error_once(void) {
 	assert(!had_runtime_error);
 }
 
-static void runtime_error_i32_overflow_addition(void) {
-	on_fn_dispatcher("on_a", "tests/err_runtime/i32_overflow_addition/input-D.grug");
-
-	assert(had_runtime_error);
-
-	assert(runtime_error_type == GRUG_ON_FN_OVERFLOW);
-
-	assert(streq(runtime_error_on_fn_name, "on_a"));
-	assert(streq(runtime_error_on_fn_path, "tests/err_runtime/i32_overflow_addition/input-D.grug"));
-}
-
-static void runtime_error_i32_overflow_division(void) {
-	on_fn_dispatcher("on_a", "tests/err_runtime/i32_overflow_division/input-D.grug");
-
-	assert(had_runtime_error);
-
-	assert(runtime_error_type == GRUG_ON_FN_OVERFLOW);
-
-	assert(streq(runtime_error_on_fn_name, "on_a"));
-	assert(streq(runtime_error_on_fn_path, "tests/err_runtime/i32_overflow_division/input-D.grug"));
-}
-
-static void runtime_error_i32_overflow_multiplication(void) {
-	on_fn_dispatcher("on_a", "tests/err_runtime/i32_overflow_multiplication/input-D.grug");
-
-	assert(had_runtime_error);
-
-	assert(runtime_error_type == GRUG_ON_FN_OVERFLOW);
-
-	assert(streq(runtime_error_on_fn_name, "on_a"));
-	assert(streq(runtime_error_on_fn_path, "tests/err_runtime/i32_overflow_multiplication/input-D.grug"));
-}
-
-static void runtime_error_i32_overflow_negation(void) {
-	on_fn_dispatcher("on_a", "tests/err_runtime/i32_overflow_negation/input-D.grug");
-
-	assert(had_runtime_error);
-
-	assert(runtime_error_type == GRUG_ON_FN_OVERFLOW);
-
-	assert(streq(runtime_error_on_fn_name, "on_a"));
-	assert(streq(runtime_error_on_fn_path, "tests/err_runtime/i32_overflow_negation/input-D.grug"));
-}
-
-static void runtime_error_i32_overflow_subtraction(void) {
-	on_fn_dispatcher("on_a", "tests/err_runtime/i32_overflow_subtraction/input-D.grug");
-
-	assert(had_runtime_error);
-
-	assert(runtime_error_type == GRUG_ON_FN_OVERFLOW);
-
-	assert(streq(runtime_error_on_fn_name, "on_a"));
-	assert(streq(runtime_error_on_fn_path, "tests/err_runtime/i32_overflow_subtraction/input-D.grug"));
-}
-
-static void runtime_error_i32_underflow_addition(void) {
-	on_fn_dispatcher("on_a", "tests/err_runtime/i32_underflow_addition/input-D.grug");
-
-	assert(had_runtime_error);
-
-	assert(runtime_error_type == GRUG_ON_FN_OVERFLOW);
-
-	assert(streq(runtime_error_on_fn_name, "on_a"));
-	assert(streq(runtime_error_on_fn_path, "tests/err_runtime/i32_underflow_addition/input-D.grug"));
-}
-
-static void runtime_error_i32_underflow_multiplication(void) {
-	on_fn_dispatcher("on_a", "tests/err_runtime/i32_underflow_multiplication/input-D.grug");
-
-	assert(had_runtime_error);
-
-	assert(runtime_error_type == GRUG_ON_FN_OVERFLOW);
-
-	assert(streq(runtime_error_on_fn_name, "on_a"));
-	assert(streq(runtime_error_on_fn_path, "tests/err_runtime/i32_underflow_multiplication/input-D.grug"));
-}
-
-static void runtime_error_i32_underflow_subtraction(void) {
-	on_fn_dispatcher("on_a", "tests/err_runtime/i32_underflow_subtraction/input-D.grug");
-
-	assert(had_runtime_error);
-
-	assert(runtime_error_type == GRUG_ON_FN_OVERFLOW);
-
-	assert(streq(runtime_error_on_fn_name, "on_a"));
-	assert(streq(runtime_error_on_fn_path, "tests/err_runtime/i32_underflow_subtraction/input-D.grug"));
-}
-
 static void runtime_error_on_fn_calls_erroring_on_fn(void) {
 	saved_grug_path = "tests/err_runtime/on_fn_calls_erroring_on_fn/input-E.grug";
 
@@ -3415,14 +3327,6 @@ static void add_runtime_error_tests(void) {
 	ADD_TEST_RUNTIME_ERROR(all, "D", 8);
 	ADD_TEST_RUNTIME_ERROR(game_fn_error, "D", 8);
 	ADD_TEST_RUNTIME_ERROR(game_fn_error_once, "E", 8);
-	ADD_TEST_RUNTIME_ERROR(i32_overflow_addition, "D", 8);
-	ADD_TEST_RUNTIME_ERROR(i32_overflow_division, "D", 8);
-	ADD_TEST_RUNTIME_ERROR(i32_overflow_multiplication, "D", 8);
-	ADD_TEST_RUNTIME_ERROR(i32_overflow_negation, "D", 8);
-	ADD_TEST_RUNTIME_ERROR(i32_overflow_subtraction, "D", 8);
-	ADD_TEST_RUNTIME_ERROR(i32_underflow_addition, "D", 8);
-	ADD_TEST_RUNTIME_ERROR(i32_underflow_multiplication, "D", 8);
-	ADD_TEST_RUNTIME_ERROR(i32_underflow_subtraction, "D", 8);
 	ADD_TEST_RUNTIME_ERROR(on_fn_calls_erroring_on_fn, "E", 8);
 	ADD_TEST_RUNTIME_ERROR(on_fn_errors_after_it_calls_other_on_fn, "E", 8);
 	ADD_TEST_RUNTIME_ERROR(stack_overflow, "D", 8);

@@ -131,22 +131,6 @@ static void on_fn_dispatcher(const char *on_fn_name, const char *grug_file_path,
         } else {
             CALL_ARGLESS(nothing);
         }
-    } else if (starts_with(grug_file_path, "tests/err_runtime/i32_overflow_addition/")) {
-        p_grug_tests_runtime_error_handler("i32 overflow", GRUG_ON_FN_OVERFLOW, on_fn_name, grug_file_path);
-    } else if (starts_with(grug_file_path, "tests/err_runtime/i32_overflow_division/")) {
-        p_grug_tests_runtime_error_handler("i32 overflow", GRUG_ON_FN_OVERFLOW, on_fn_name, grug_file_path);
-    } else if (starts_with(grug_file_path, "tests/err_runtime/i32_overflow_multiplication/")) {
-        p_grug_tests_runtime_error_handler("i32 overflow", GRUG_ON_FN_OVERFLOW, on_fn_name, grug_file_path);
-    } else if (starts_with(grug_file_path, "tests/err_runtime/i32_overflow_negation/")) {
-        p_grug_tests_runtime_error_handler("i32 overflow", GRUG_ON_FN_OVERFLOW, on_fn_name, grug_file_path);
-    } else if (starts_with(grug_file_path, "tests/err_runtime/i32_overflow_subtraction/")) {
-        p_grug_tests_runtime_error_handler("i32 overflow", GRUG_ON_FN_OVERFLOW, on_fn_name, grug_file_path);
-    } else if (starts_with(grug_file_path, "tests/err_runtime/i32_underflow_addition/")) {
-        p_grug_tests_runtime_error_handler("i32 overflow", GRUG_ON_FN_OVERFLOW, on_fn_name, grug_file_path);
-    } else if (starts_with(grug_file_path, "tests/err_runtime/i32_underflow_multiplication/")) {
-        p_grug_tests_runtime_error_handler("i32 overflow", GRUG_ON_FN_OVERFLOW, on_fn_name, grug_file_path);
-    } else if (starts_with(grug_file_path, "tests/err_runtime/i32_underflow_subtraction/")) {
-        p_grug_tests_runtime_error_handler("i32 overflow", GRUG_ON_FN_OVERFLOW, on_fn_name, grug_file_path);
     } else if (starts_with(grug_file_path, "tests/err_runtime/on_fn_calls_erroring_on_fn/")) {
         if (streq(on_fn_name, "on_a")) {
             CALL_ARGLESS(call_on_b_fn);

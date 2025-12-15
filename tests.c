@@ -2278,38 +2278,6 @@ static void ok_pass_string_argument_to_helper_fn(void) {
 	assert(streq(game_fn_say_message, "foo"));
 }
 
-static void ok_remainder_negative_negative(void) {
-	assert(game_fn_initialize_call_count == 0);
-    on_fn_dispatcher("on_a", "tests/ok/remainder_negative_negative/input-J.grug");
-	assert(game_fn_initialize_call_count == 1);
-
-	assert(game_fn_initialize_x == -1);
-}
-
-static void ok_remainder_negative_positive(void) {
-	assert(game_fn_initialize_call_count == 0);
-    on_fn_dispatcher("on_a", "tests/ok/remainder_negative_positive/input-J.grug");
-	assert(game_fn_initialize_call_count == 1);
-
-	assert(game_fn_initialize_x == -1);
-}
-
-static void ok_remainder_positive_negative(void) {
-	assert(game_fn_initialize_call_count == 0);
-    on_fn_dispatcher("on_a", "tests/ok/remainder_positive_negative/input-J.grug");
-	assert(game_fn_initialize_call_count == 1);
-
-	assert(game_fn_initialize_x == 1);
-}
-
-static void ok_remainder_positive_positive(void) {
-	assert(game_fn_initialize_call_count == 0);
-    on_fn_dispatcher("on_a", "tests/ok/remainder_positive_positive/input-J.grug");
-	assert(game_fn_initialize_call_count == 1);
-
-	assert(game_fn_initialize_x == 1);
-}
-
 static void ok_resource_and_entity(void) {
 	assert(game_fn_draw_call_count == 0);
 	assert(game_fn_spawn_call_count == 0);
@@ -2811,21 +2779,10 @@ static void runtime_error_all(void) {
 
 	assert(had_runtime_error);
 
-	assert(runtime_error_type == GRUG_ON_FN_DIVISION_BY_ZERO);
+	assert(runtime_error_type == GRUG_ON_FN_STACK_OVERFLOW);
 
 	assert(streq(runtime_error_on_fn_name, "on_a"));
 	assert(streq(runtime_error_on_fn_path, "tests/err_runtime/all/input-D.grug"));
-}
-
-static void runtime_error_division_by_0(void) {
-	on_fn_dispatcher("on_a", "tests/err_runtime/division_by_0/input-D.grug");
-
-	assert(had_runtime_error);
-
-	assert(runtime_error_type == GRUG_ON_FN_DIVISION_BY_ZERO);
-
-	assert(streq(runtime_error_on_fn_name, "on_a"));
-	assert(streq(runtime_error_on_fn_path, "tests/err_runtime/division_by_0/input-D.grug"));
 }
 
 static void runtime_error_game_fn_error(void) {
@@ -2914,17 +2871,6 @@ static void runtime_error_i32_overflow_negation(void) {
 	assert(streq(runtime_error_on_fn_path, "tests/err_runtime/i32_overflow_negation/input-D.grug"));
 }
 
-static void runtime_error_i32_overflow_remainder(void) {
-	on_fn_dispatcher("on_a", "tests/err_runtime/i32_overflow_remainder/input-D.grug");
-
-	assert(had_runtime_error);
-
-	assert(runtime_error_type == GRUG_ON_FN_OVERFLOW);
-
-	assert(streq(runtime_error_on_fn_name, "on_a"));
-	assert(streq(runtime_error_on_fn_path, "tests/err_runtime/i32_overflow_remainder/input-D.grug"));
-}
-
 static void runtime_error_i32_overflow_subtraction(void) {
 	on_fn_dispatcher("on_a", "tests/err_runtime/i32_overflow_subtraction/input-D.grug");
 
@@ -3009,17 +2955,6 @@ static void runtime_error_on_fn_errors_after_it_calls_other_on_fn(void) {
 
 	assert(streq(runtime_error_on_fn_name, "on_b"));
 	assert(streq(runtime_error_on_fn_path, "tests/err_runtime/on_fn_errors_after_it_calls_other_on_fn/input-E.grug"));
-}
-
-static void runtime_error_remainder_by_0(void) {
-    on_fn_dispatcher("on_a", "tests/err_runtime/remainder_by_0/input-D.grug");
-
-	assert(had_runtime_error);
-
-	assert(runtime_error_type == GRUG_ON_FN_DIVISION_BY_ZERO);
-
-	assert(streq(runtime_error_on_fn_name, "on_a"));
-	assert(streq(runtime_error_on_fn_path, "tests/err_runtime/remainder_by_0/input-D.grug"));
 }
 
 static void runtime_error_stack_overflow(void) {
@@ -3225,7 +3160,6 @@ static void add_error_tests(void) {
 	ADD_TEST_ERROR(on_function_no_return_value_expected, "D");
 	ADD_TEST_ERROR(pass_bool_to_i32_game_param, "D");
 	ADD_TEST_ERROR(pass_bool_to_i32_helper_param, "D");
-	ADD_TEST_ERROR(remainder_by_float, "D");
 	ADD_TEST_ERROR(resource_cant_be_empty_string, "D");
 	ADD_TEST_ERROR(resource_cant_be_passed_to_helper_fn, "D");
 	ADD_TEST_ERROR(resource_cant_contain_backslash, "D");
@@ -3434,10 +3368,6 @@ static void add_ok_tests(void) {
 	ADD_TEST_OK(or_true_3, "D", 8);
 	ADD_TEST_OK(pass_string_argument_to_game_fn, "D", 8);
 	ADD_TEST_OK(pass_string_argument_to_helper_fn, "D", 8);
-	ADD_TEST_OK(remainder_negative_negative, "D", 8);
-	ADD_TEST_OK(remainder_negative_positive, "D", 8);
-	ADD_TEST_OK(remainder_positive_negative, "D", 8);
-	ADD_TEST_OK(remainder_positive_positive, "D", 8);
 	ADD_TEST_OK(resource_and_entity, "D", 8);
 	ADD_TEST_OK(resource_can_contain_dot_1, "D", 8);
 	ADD_TEST_OK(resource_can_contain_dot_3, "D", 8);
@@ -3483,21 +3413,18 @@ static void add_ok_tests(void) {
 
 static void add_runtime_error_tests(void) {
 	ADD_TEST_RUNTIME_ERROR(all, "D", 8);
-	ADD_TEST_RUNTIME_ERROR(division_by_0, "D", 8);
 	ADD_TEST_RUNTIME_ERROR(game_fn_error, "D", 8);
 	ADD_TEST_RUNTIME_ERROR(game_fn_error_once, "E", 8);
 	ADD_TEST_RUNTIME_ERROR(i32_overflow_addition, "D", 8);
 	ADD_TEST_RUNTIME_ERROR(i32_overflow_division, "D", 8);
 	ADD_TEST_RUNTIME_ERROR(i32_overflow_multiplication, "D", 8);
 	ADD_TEST_RUNTIME_ERROR(i32_overflow_negation, "D", 8);
-	ADD_TEST_RUNTIME_ERROR(i32_overflow_remainder, "D", 8);
 	ADD_TEST_RUNTIME_ERROR(i32_overflow_subtraction, "D", 8);
 	ADD_TEST_RUNTIME_ERROR(i32_underflow_addition, "D", 8);
 	ADD_TEST_RUNTIME_ERROR(i32_underflow_multiplication, "D", 8);
 	ADD_TEST_RUNTIME_ERROR(i32_underflow_subtraction, "D", 8);
 	ADD_TEST_RUNTIME_ERROR(on_fn_calls_erroring_on_fn, "E", 8);
 	ADD_TEST_RUNTIME_ERROR(on_fn_errors_after_it_calls_other_on_fn, "E", 8);
-	ADD_TEST_RUNTIME_ERROR(remainder_by_0, "D", 8);
 	ADD_TEST_RUNTIME_ERROR(stack_overflow, "D", 8);
 	ADD_TEST_RUNTIME_ERROR(time_limit_exceeded, "D", 8);
 	ADD_TEST_RUNTIME_ERROR(time_limit_exceeded_exponential_calls, "D", 8);

@@ -122,9 +122,7 @@ static void on_fn_dispatcher(const char *on_fn_name, const char *grug_file_path,
     saved_grug_file_path = grug_file_path;
 
     if (starts_with(grug_file_path, "tests/err_runtime/all/")) {
-        p_grug_tests_runtime_error_handler("Division of an i32 by 0", GRUG_ON_FN_DIVISION_BY_ZERO, on_fn_name, grug_file_path);
-    } else if (starts_with(grug_file_path, "tests/err_runtime/division_by_0/")) {
-        p_grug_tests_runtime_error_handler("Division of an i32 by 0", GRUG_ON_FN_DIVISION_BY_ZERO, on_fn_name, grug_file_path);
+        p_grug_tests_runtime_error_handler("Stack overflow, so check for accidental infinite recursion", GRUG_ON_FN_STACK_OVERFLOW, on_fn_name, grug_file_path);
     } else if (starts_with(grug_file_path, "tests/err_runtime/game_fn_error/")) {
         CALL_ARGLESS(cause_game_fn_error);
     } else if (starts_with(grug_file_path, "tests/err_runtime/game_fn_error_once/")) {
@@ -140,8 +138,6 @@ static void on_fn_dispatcher(const char *on_fn_name, const char *grug_file_path,
     } else if (starts_with(grug_file_path, "tests/err_runtime/i32_overflow_multiplication/")) {
         p_grug_tests_runtime_error_handler("i32 overflow", GRUG_ON_FN_OVERFLOW, on_fn_name, grug_file_path);
     } else if (starts_with(grug_file_path, "tests/err_runtime/i32_overflow_negation/")) {
-        p_grug_tests_runtime_error_handler("i32 overflow", GRUG_ON_FN_OVERFLOW, on_fn_name, grug_file_path);
-    } else if (starts_with(grug_file_path, "tests/err_runtime/i32_overflow_remainder/")) {
         p_grug_tests_runtime_error_handler("i32 overflow", GRUG_ON_FN_OVERFLOW, on_fn_name, grug_file_path);
     } else if (starts_with(grug_file_path, "tests/err_runtime/i32_overflow_subtraction/")) {
         p_grug_tests_runtime_error_handler("i32 overflow", GRUG_ON_FN_OVERFLOW, on_fn_name, grug_file_path);
@@ -164,8 +160,6 @@ static void on_fn_dispatcher(const char *on_fn_name, const char *grug_file_path,
         } else {
             CALL_ARGLESS(nothing);
         }
-    } else if (starts_with(grug_file_path, "tests/err_runtime/remainder_by_0/")) {
-        p_grug_tests_runtime_error_handler("Division of an i32 by 0", GRUG_ON_FN_DIVISION_BY_ZERO, on_fn_name, grug_file_path);
     } else if (starts_with(grug_file_path, "tests/err_runtime/stack_overflow/")) {
         p_grug_tests_runtime_error_handler("Stack overflow, so check for accidental infinite recursion", GRUG_ON_FN_STACK_OVERFLOW, on_fn_name, grug_file_path);
     } else if (starts_with(grug_file_path, "tests/err_runtime/time_limit_exceeded/")) {
@@ -537,14 +531,6 @@ static void on_fn_dispatcher(const char *on_fn_name, const char *grug_file_path,
         CALL(say, grug_string("foo"));
     } else if (starts_with(grug_file_path, "tests/ok/pass_string_argument_to_helper_fn/")) {
         CALL(say, grug_string("foo"));
-    } else if (starts_with(grug_file_path, "tests/ok/remainder_negative_negative/")) {
-        CALL(initialize, grug_number(-1.0));
-    } else if (starts_with(grug_file_path, "tests/ok/remainder_negative_positive/")) {
-        CALL(initialize, grug_number(-1.0));
-    } else if (starts_with(grug_file_path, "tests/ok/remainder_positive_negative/")) {
-        CALL(initialize, grug_number(1.0));
-    } else if (starts_with(grug_file_path, "tests/ok/remainder_positive_positive/")) {
-        CALL(initialize, grug_number(1.0));
     } else if (starts_with(grug_file_path, "tests/ok/resource_and_entity/")) {
         CALL(draw, grug_string("tests/ok/resource_and_entity/foo.txt"));
         CALL(spawn, grug_string("ok:foo"));

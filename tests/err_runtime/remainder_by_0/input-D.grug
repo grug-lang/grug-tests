@@ -1,3 +1,0 @@
-on_a() {
-    initialize(1 % 0)
-}

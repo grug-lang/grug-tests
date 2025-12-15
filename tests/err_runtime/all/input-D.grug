@@ -1,6 +1,4 @@
 on_a() {
-    initialize(1 / 0)
-
     helper_foo()
 
     while true {

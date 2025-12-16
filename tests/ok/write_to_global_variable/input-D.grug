@@ -1,5 +1,5 @@
-foo: i32 = 42
-bar: i32 = 69
+foo: number = 42
+bar: number = 69
 
 on_a() {
     foo = foo + 1

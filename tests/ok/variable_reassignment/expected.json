@@ -1,1 +1,41 @@
-[{"type":"GLOBAL_ON_FN","name":"on_a","statements":[{"type":"VARIABLE_STATEMENT","name":"foo","variable_type":"i32","assignment":{"type":"I32_EXPR","value":"42"}},{"type":"EMPTY_LINE_STATEMENT"},{"type":"VARIABLE_STATEMENT","name":"foo","assignment":{"type":"I32_EXPR","value":"69"}},{"type":"EMPTY_LINE_STATEMENT"},{"type":"CALL_STATEMENT","name":"initialize","arguments":[{"type":"IDENTIFIER_EXPR","str":"foo"}]}]}]
+[
+    {
+        "type": "GLOBAL_ON_FN",
+        "name": "on_a",
+        "statements": [
+            {
+                "type": "VARIABLE_STATEMENT",
+                "name": "foo",
+                "variable_type": "number",
+                "assignment": {
+                    "type": "NUMBER_EXPR",
+                    "value": "42"
+                }
+            },
+            {
+                "type": "EMPTY_LINE_STATEMENT"
+            },
+            {
+                "type": "VARIABLE_STATEMENT",
+                "name": "foo",
+                "assignment": {
+                    "type": "NUMBER_EXPR",
+                    "value": "69"
+                }
+            },
+            {
+                "type": "EMPTY_LINE_STATEMENT"
+            },
+            {
+                "type": "CALL_STATEMENT",
+                "name": "initialize",
+                "arguments": [
+                    {
+                        "type": "IDENTIFIER_EXPR",
+                        "str": "foo"
+                    }
+                ]
+            }
+        ]
+    }
+]

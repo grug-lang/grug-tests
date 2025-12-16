@@ -1,1 +1,1 @@
-Function call 'nothing' got an unexpected extra argument with type i32
+Function call 'nothing' got an unexpected extra argument with type number

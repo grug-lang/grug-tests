@@ -1,1 +1,1 @@
-Found 'not' before i32, but it can only be put before a bool
+Found 'not' before number, but it can only be put before a bool

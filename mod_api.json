@@ -1041,9 +1041,9 @@
 			"description": "foo",
 			"return_type": "id"
 		},
-		"box_i32": {
+		"box_number": {
 			"description": "foo",
-			"return_type": "BoxedI32",
+			"return_type": "BoxedNumber",
 			"arguments": [
 				{
 					"name": "n",

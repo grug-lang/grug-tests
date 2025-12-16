@@ -1,1 +1,1 @@
-Function call 'max' expected the argument 'y' with type i32
+Function call 'max' expected the argument 'y' with type number

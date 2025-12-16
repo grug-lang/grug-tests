@@ -1,1 +1,68 @@
-[{"type":"GLOBAL_ON_FN","name":"on_a","statements":[{"type":"CALL_STATEMENT","name":"mega","arguments":[{"type":"F32_EXPR","value":"1.0"},{"type":"I32_EXPR","value":"21"},{"type":"TRUE_EXPR"},{"type":"F32_EXPR","value":"2.0"},{"type":"F32_EXPR","value":"3.0"},{"type":"F32_EXPR","value":"4.0"},{"type":"FALSE_EXPR"},{"type":"I32_EXPR","value":"1337"},{"type":"F32_EXPR","value":"5.0"},{"type":"F32_EXPR","value":"6.0"},{"type":"F32_EXPR","value":"7.0"},{"type":"F32_EXPR","value":"8.0"},{"type":"IDENTIFIER_EXPR","str":"me"},{"type":"STRING_EXPR","str":"foo"}]}]}]
+[
+    {
+        "type": "GLOBAL_ON_FN",
+        "name": "on_a",
+        "statements": [
+            {
+                "type": "CALL_STATEMENT",
+                "name": "mega",
+                "arguments": [
+                    {
+                        "type": "NUMBER_EXPR",
+                        "value": "1.0"
+                    },
+                    {
+                        "type": "NUMBER_EXPR",
+                        "value": "21"
+                    },
+                    {
+                        "type": "TRUE_EXPR"
+                    },
+                    {
+                        "type": "NUMBER_EXPR",
+                        "value": "2.0"
+                    },
+                    {
+                        "type": "NUMBER_EXPR",
+                        "value": "3.0"
+                    },
+                    {
+                        "type": "NUMBER_EXPR",
+                        "value": "4.0"
+                    },
+                    {
+                        "type": "FALSE_EXPR"
+                    },
+                    {
+                        "type": "NUMBER_EXPR",
+                        "value": "1337"
+                    },
+                    {
+                        "type": "NUMBER_EXPR",
+                        "value": "5.0"
+                    },
+                    {
+                        "type": "NUMBER_EXPR",
+                        "value": "6.0"
+                    },
+                    {
+                        "type": "NUMBER_EXPR",
+                        "value": "7.0"
+                    },
+                    {
+                        "type": "NUMBER_EXPR",
+                        "value": "8.0"
+                    },
+                    {
+                        "type": "IDENTIFIER_EXPR",
+                        "str": "me"
+                    },
+                    {
+                        "type": "STRING_EXPR",
+                        "str": "foo"
+                    }
+                ]
+            }
+        ]
+    }
+]

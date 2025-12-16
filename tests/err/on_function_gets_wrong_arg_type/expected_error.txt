@@ -1,1 +1,1 @@
-Function 'on_a' its 'x' parameter was supposed to have the type i32, but got string
+Function 'on_a' its 'x' parameter was supposed to have the type number, but got string

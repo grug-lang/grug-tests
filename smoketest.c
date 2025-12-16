@@ -59,7 +59,7 @@ static void (*p_game_fn_cause_game_fn_error)(void);
 static void (*p_game_fn_call_on_b_fn)(void);
 static void (*p_game_fn_store)(const union grug_value args[]);
 static union grug_value (*p_game_fn_retrieve)(void);
-static union grug_value (*p_game_fn_box_i32)(const union grug_value args[]);
+static union grug_value (*p_game_fn_box_number)(const union grug_value args[]);
 
 static const char *saved_on_fn_name;
 static const char *saved_grug_file_path;
@@ -105,7 +105,7 @@ static void init_globals_fn_dispatcher(const char *grug_file_path) {
     if (starts_with(grug_file_path, "tests/ok/custom_id_transfer_between_globals/")) {
         CALL_ARGLESS(get_opponent);
     } else if (starts_with(grug_file_path, "tests/ok/custom_id_with_digits/")) {
-        CALL(box_i32, grug_number(42.0));
+        CALL(box_number, grug_number(42.0));
     } else if (starts_with(grug_file_path, "tests/ok/global_call_using_me/")) {
         CALL(get_position, grug_id(42));
     } else if (starts_with(grug_file_path, "tests/ok/global_id/")) {
@@ -718,7 +718,7 @@ static void load_tests_so(void) {
     p_game_fn_call_on_b_fn = load_sym(h, "game_fn_call_on_b_fn");
     p_game_fn_store = load_sym(h, "game_fn_store");
     p_game_fn_retrieve = load_sym(h, "game_fn_retrieve");
-    p_game_fn_box_i32 = load_sym(h, "game_fn_box_i32");
+    p_game_fn_box_number = load_sym(h, "game_fn_box_number");
     #pragma GCC diagnostic pop
 }
 

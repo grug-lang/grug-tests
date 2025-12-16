@@ -1,1 +1,18 @@
-[{"type":"GLOBAL_ON_FN","name":"on_a","statements":[{"type":"CALL_STATEMENT","name":"sin","arguments":[{"type":"F32_EXPR","value":"4.0"}]}]}]
+[
+    {
+        "type": "GLOBAL_ON_FN",
+        "name": "on_a",
+        "statements": [
+            {
+                "type": "CALL_STATEMENT",
+                "name": "sin",
+                "arguments": [
+                    {
+                        "type": "NUMBER_EXPR",
+                        "value": "4.0"
+                    }
+                ]
+            }
+        ]
+    }
+]

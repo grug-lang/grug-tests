@@ -1,1 +1,24 @@
-[{"type":"GLOBAL_VARIABLE","name":"g1","variable_type":"i32","assignment":{"type":"UNARY_EXPR","operator":"MINUS_TOKEN","expr":{"type":"I32_EXPR","value":"1"}}},{"type":"GLOBAL_VARIABLE","name":"g","variable_type":"i32","assignment":{"type":"I32_EXPR","value":"0"}}]
+[
+    {
+        "type": "GLOBAL_VARIABLE",
+        "name": "g1",
+        "variable_type": "number",
+        "assignment": {
+            "type": "UNARY_EXPR",
+            "operator": "MINUS_TOKEN",
+            "expr": {
+                "type": "NUMBER_EXPR",
+                "value": "1"
+            }
+        }
+    },
+    {
+        "type": "GLOBAL_VARIABLE",
+        "name": "g",
+        "variable_type": "number",
+        "assignment": {
+            "type": "NUMBER_EXPR",
+            "value": "0"
+        }
+    }
+]

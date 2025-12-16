@@ -1,1 +1,30 @@
-[{"type":"GLOBAL_ON_FN","name":"on_a","statements":[{"type":"CALL_STATEMENT","name":"initialize","arguments":[{"type":"BINARY_EXPR","left_expr":{"type":"UNARY_EXPR","operator":"MINUS_TOKEN","expr":{"type":"I32_EXPR","value":"5"}},"operator":"DIVISION_TOKEN","right_expr":{"type":"I32_EXPR","value":"2"}}]}]}]
+[
+    {
+        "type": "GLOBAL_ON_FN",
+        "name": "on_a",
+        "statements": [
+            {
+                "type": "CALL_STATEMENT",
+                "name": "initialize",
+                "arguments": [
+                    {
+                        "type": "BINARY_EXPR",
+                        "left_expr": {
+                            "type": "UNARY_EXPR",
+                            "operator": "MINUS_TOKEN",
+                            "expr": {
+                                "type": "NUMBER_EXPR",
+                                "value": "5"
+                            }
+                        },
+                        "operator": "DIVISION_TOKEN",
+                        "right_expr": {
+                            "type": "NUMBER_EXPR",
+                            "value": "2"
+                        }
+                    }
+                ]
+            }
+        ]
+    }
+]

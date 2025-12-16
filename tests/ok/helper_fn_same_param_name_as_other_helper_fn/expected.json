@@ -1,1 +1,72 @@
-[{"type":"GLOBAL_ON_FN","name":"on_a","arguments":[{"name":"x","type":"i32"}],"statements":[{"type":"CALL_STATEMENT","name":"helper_foo","arguments":[{"type":"I32_EXPR","value":"42"}]},{"type":"CALL_STATEMENT","name":"helper_bar","arguments":[{"type":"I32_EXPR","value":"69"}]}]},{"type":"GLOBAL_EMPTY_LINE"},{"type":"GLOBAL_HELPER_FN","name":"helper_foo","arguments":[{"name":"x","type":"i32"}],"statements":[{"type":"CALL_STATEMENT","name":"nothing"}]},{"type":"GLOBAL_EMPTY_LINE"},{"type":"GLOBAL_HELPER_FN","name":"helper_bar","arguments":[{"name":"x","type":"i32"}],"statements":[{"type":"CALL_STATEMENT","name":"nothing"}]}]
+[
+    {
+        "type": "GLOBAL_ON_FN",
+        "name": "on_a",
+        "arguments": [
+            {
+                "name": "x",
+                "type": "number"
+            }
+        ],
+        "statements": [
+            {
+                "type": "CALL_STATEMENT",
+                "name": "helper_foo",
+                "arguments": [
+                    {
+                        "type": "NUMBER_EXPR",
+                        "value": "42"
+                    }
+                ]
+            },
+            {
+                "type": "CALL_STATEMENT",
+                "name": "helper_bar",
+                "arguments": [
+                    {
+                        "type": "NUMBER_EXPR",
+                        "value": "69"
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "type": "GLOBAL_EMPTY_LINE"
+    },
+    {
+        "type": "GLOBAL_HELPER_FN",
+        "name": "helper_foo",
+        "arguments": [
+            {
+                "name": "x",
+                "type": "number"
+            }
+        ],
+        "statements": [
+            {
+                "type": "CALL_STATEMENT",
+                "name": "nothing"
+            }
+        ]
+    },
+    {
+        "type": "GLOBAL_EMPTY_LINE"
+    },
+    {
+        "type": "GLOBAL_HELPER_FN",
+        "name": "helper_bar",
+        "arguments": [
+            {
+                "name": "x",
+                "type": "number"
+            }
+        ],
+        "statements": [
+            {
+                "type": "CALL_STATEMENT",
+                "name": "nothing"
+            }
+        ]
+    }
+]

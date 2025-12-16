@@ -50,7 +50,7 @@ void game_fn_cause_game_fn_error(void) {}
 void game_fn_call_on_b_fn(void) {}
 void game_fn_store(const union grug_value args[]) {}
 uint64_t game_fn_retrieve(void) { return 0; }
-uint64_t game_fn_box_i32(const union grug_value args[]) { return 0; }
+uint64_t game_fn_box_number(const union grug_value args[]) { return 0; }
 
 // Source: https://github.com/google/security-research-pocs/blob/d10780c3ddb8070dff6c5e5862c93c01392d1727/autofuzz/fuzz_utils.cc#L10
 int ignore_stdout(void) {

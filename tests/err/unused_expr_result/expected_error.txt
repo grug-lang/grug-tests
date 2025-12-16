@@ -1,1 +1,1 @@
-Expected a statement token, but got token type I32_TOKEN on line 2
+Expected a statement token, but got token type NUMBER_TOKEN on line 2

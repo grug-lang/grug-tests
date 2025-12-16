@@ -1,1 +1,1 @@
-Function 'helper_fib' is supposed to return string, not i32
+Function 'helper_fib' is supposed to return string, not number

@@ -1,4 +1,4 @@
 on_a() {
-    a: f32 = 0.0
+    a: number = 0.0
     a = true
 }

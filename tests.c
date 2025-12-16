@@ -126,7 +126,7 @@ static size_t game_fn_cause_game_fn_error_call_count;
 static size_t game_fn_call_on_b_fn_call_count;
 static size_t game_fn_store_call_count;
 static size_t game_fn_retrieve_call_count;
-static size_t game_fn_box_i32_call_count;
+static size_t game_fn_box_number_call_count;
 
 static bool had_runtime_error = false;
 static size_t error_handler_calls = 0;
@@ -705,9 +705,9 @@ union grug_value game_fn_retrieve(void) {
 
 	return grug_id(123);
 }
-union grug_value game_fn_box_i32(const union grug_value args[]) {
+union grug_value game_fn_box_number(const union grug_value args[]) {
 	ASSERT_16_BYTE_STACK_ALIGNED();
-	game_fn_box_i32_call_count++;
+	game_fn_box_number_call_count++;
 
 	return grug_id(args[0]._number);
 }
@@ -748,7 +748,7 @@ static void reset_call_counts(void) {
 	game_fn_call_on_b_fn_call_count = 0;
 	game_fn_store_call_count = 0;
 	game_fn_retrieve_call_count = 0;
-	game_fn_box_i32_call_count = 0;
+	game_fn_box_number_call_count = 0;
 }
 
 static void check(int status, const char *fn_name, const char *msg) {
@@ -1267,7 +1267,7 @@ static void ok_custom_id_transfer_between_globals(void) {
 }
 
 static void ok_custom_id_with_digits(void) {
-	assert(game_fn_box_i32_call_count == 1);
+	assert(game_fn_box_number_call_count == 1);
 }
 
 static void ok_division_negative_result(void) {
@@ -3021,8 +3021,6 @@ static void add_error_tests(void) {
 	ADD_TEST_ERROR(helper_fn_no_return_value_expected, "D");
 	ADD_TEST_ERROR(helper_fn_return_with_comment_after_it, "D");
 	ADD_TEST_ERROR(i32_logical_not, "D");
-	ADD_TEST_ERROR(i32_too_big, "D");
-	ADD_TEST_ERROR(i32_too_small, "D");
 	ADD_TEST_ERROR(id_invalid_binary_op, "D");
 	ADD_TEST_ERROR(id_return, "D");
 	ADD_TEST_ERROR(id_store_in_non_id_global, "A");

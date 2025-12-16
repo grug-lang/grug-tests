@@ -1,5 +1,5 @@
 on_a() {
-    foo: i32
+    foo: number
 
     initialize(foo)
 }

@@ -1,4 +1,4 @@
-a: f32 = false
+a: number = false
 
 on_a() {
     nothing()

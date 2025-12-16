@@ -1,3 +1,3 @@
 on_a() {
-    me: i32 = 0
+    me: number = 0
 }

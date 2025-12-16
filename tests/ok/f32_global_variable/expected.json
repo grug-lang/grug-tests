@@ -1,1 +1,38 @@
-[{"type":"GLOBAL_VARIABLE","name":"x","variable_type":"f32","assignment":{"type":"F32_EXPR","value":"0.0"}},{"type":"GLOBAL_EMPTY_LINE"},{"type":"GLOBAL_ON_FN","name":"on_a","statements":[{"type":"VARIABLE_STATEMENT","name":"x","assignment":{"type":"F32_EXPR","value":"4.0"}},{"type":"CALL_STATEMENT","name":"sin","arguments":[{"type":"IDENTIFIER_EXPR","str":"x"}]}]}]
+[
+    {
+        "type": "GLOBAL_VARIABLE",
+        "name": "x",
+        "variable_type": "number",
+        "assignment": {
+            "type": "NUMBER_EXPR",
+            "value": "0.0"
+        }
+    },
+    {
+        "type": "GLOBAL_EMPTY_LINE"
+    },
+    {
+        "type": "GLOBAL_ON_FN",
+        "name": "on_a",
+        "statements": [
+            {
+                "type": "VARIABLE_STATEMENT",
+                "name": "x",
+                "assignment": {
+                    "type": "NUMBER_EXPR",
+                    "value": "4.0"
+                }
+            },
+            {
+                "type": "CALL_STATEMENT",
+                "name": "sin",
+                "arguments": [
+                    {
+                        "type": "IDENTIFIER_EXPR",
+                        "str": "x"
+                    }
+                ]
+            }
+        ]
+    }
+]

@@ -1,1 +1,1 @@
-Function call 'helper_foo' got an unexpected extra argument with type i32
+Function call 'helper_foo' got an unexpected extra argument with type number

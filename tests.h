@@ -236,4 +236,4 @@ void game_fn_cause_game_fn_error(void);
 void game_fn_call_on_b_fn(void);
 void game_fn_store(const union grug_value args[]);
 union grug_value game_fn_retrieve(void);
-union grug_value game_fn_box_i32(const union grug_value args[]);
+union grug_value game_fn_box_number(const union grug_value args[]);

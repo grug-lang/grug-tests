@@ -1,4 +1,4 @@
-a: i32 = 0
+a: number = 0
 on_a() {
     nothing()
 }

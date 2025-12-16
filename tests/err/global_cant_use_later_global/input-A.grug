@@ -1,2 +1,2 @@
-foo: i32 = bar
-bar: i32 = 42
+foo: number = bar
+bar: number = 42

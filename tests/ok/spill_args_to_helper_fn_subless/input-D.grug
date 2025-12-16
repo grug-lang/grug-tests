@@ -1,9 +1,9 @@
-g: i32 = 7
+g: number = 7
 
 on_a() {
     helper_foo(1, 2, 3, 4, 5, 6, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, me, 10.0)
 }
 
-helper_foo(i1: i32, i2: i32, i3: i32, i4: i32, i5: i32, i6: i32, f1: f32, f2: f32, f3: f32, f4: f32, f5: f32, f6: f32, f7: f32, f8: f32, f9: f32, id: D, f10: f32) {
+helper_foo(i1: number, i2: number, i3: number, i4: number, i5: number, i6: number, f1: number, f2: number, f3: number, f4: number, f5: number, f6: number, f7: number, f8: number, f9: number, id: D, f10: number) {
     motherload_subless(i1, i2, i3, i4, i5, i6, g, f1, f2, f3, f4, f5, f6, f7, f8, f9, id, f10)
 }

@@ -1,1 +1,290 @@
-[{"type":"GLOBAL_VARIABLE","name":"g1","variable_type":"i32","assignment":{"type":"I32_EXPR","value":"1"}},{"type":"GLOBAL_VARIABLE","name":"g2","variable_type":"i32","assignment":{"type":"I32_EXPR","value":"2"}},{"type":"GLOBAL_VARIABLE","name":"g3","variable_type":"i32","assignment":{"type":"I32_EXPR","value":"3"}},{"type":"GLOBAL_VARIABLE","name":"g4","variable_type":"i32","assignment":{"type":"I32_EXPR","value":"4"}},{"type":"GLOBAL_VARIABLE","name":"g5","variable_type":"i32","assignment":{"type":"I32_EXPR","value":"5"}},{"type":"GLOBAL_VARIABLE","name":"g6","variable_type":"i32","assignment":{"type":"I32_EXPR","value":"6"}},{"type":"GLOBAL_VARIABLE","name":"g7","variable_type":"i32","assignment":{"type":"I32_EXPR","value":"7"}},{"type":"GLOBAL_VARIABLE","name":"g8","variable_type":"i32","assignment":{"type":"I32_EXPR","value":"8"}},{"type":"GLOBAL_VARIABLE","name":"g9","variable_type":"i32","assignment":{"type":"I32_EXPR","value":"9"}},{"type":"GLOBAL_VARIABLE","name":"g10","variable_type":"i32","assignment":{"type":"I32_EXPR","value":"10"}},{"type":"GLOBAL_VARIABLE","name":"g11","variable_type":"i32","assignment":{"type":"I32_EXPR","value":"11"}},{"type":"GLOBAL_VARIABLE","name":"g12","variable_type":"i32","assignment":{"type":"I32_EXPR","value":"12"}},{"type":"GLOBAL_VARIABLE","name":"g13","variable_type":"i32","assignment":{"type":"I32_EXPR","value":"13"}},{"type":"GLOBAL_VARIABLE","name":"g14","variable_type":"i32","assignment":{"type":"I32_EXPR","value":"14"}},{"type":"GLOBAL_VARIABLE","name":"g15","variable_type":"i32","assignment":{"type":"I32_EXPR","value":"15"}},{"type":"GLOBAL_VARIABLE","name":"g16","variable_type":"i32","assignment":{"type":"I32_EXPR","value":"16"}},{"type":"GLOBAL_VARIABLE","name":"g17","variable_type":"i32","assignment":{"type":"I32_EXPR","value":"17"}},{"type":"GLOBAL_VARIABLE","name":"g18","variable_type":"i32","assignment":{"type":"I32_EXPR","value":"18"}},{"type":"GLOBAL_VARIABLE","name":"g19","variable_type":"i32","assignment":{"type":"I32_EXPR","value":"19"}},{"type":"GLOBAL_VARIABLE","name":"g20","variable_type":"i32","assignment":{"type":"I32_EXPR","value":"20"}},{"type":"GLOBAL_VARIABLE","name":"g21","variable_type":"i32","assignment":{"type":"I32_EXPR","value":"21"}},{"type":"GLOBAL_VARIABLE","name":"g22","variable_type":"i32","assignment":{"type":"I32_EXPR","value":"22"}},{"type":"GLOBAL_VARIABLE","name":"g23","variable_type":"i32","assignment":{"type":"I32_EXPR","value":"23"}},{"type":"GLOBAL_VARIABLE","name":"g24","variable_type":"i32","assignment":{"type":"I32_EXPR","value":"24"}},{"type":"GLOBAL_VARIABLE","name":"g25","variable_type":"i32","assignment":{"type":"I32_EXPR","value":"25"}},{"type":"GLOBAL_VARIABLE","name":"g26","variable_type":"i32","assignment":{"type":"I32_EXPR","value":"26"}},{"type":"GLOBAL_VARIABLE","name":"g27","variable_type":"i32","assignment":{"type":"I32_EXPR","value":"27"}},{"type":"GLOBAL_VARIABLE","name":"g28","variable_type":"i32","assignment":{"type":"I32_EXPR","value":"28"}},{"type":"GLOBAL_VARIABLE","name":"g29","variable_type":"i32","assignment":{"type":"I32_EXPR","value":"29"}},{"type":"GLOBAL_VARIABLE","name":"g30","variable_type":"i32","assignment":{"type":"I32_EXPR","value":"30"}},{"type":"GLOBAL_VARIABLE","name":"g31","variable_type":"i32","assignment":{"type":"I32_EXPR","value":"31"}},{"type":"GLOBAL_VARIABLE","name":"g32","variable_type":"i32","assignment":{"type":"I32_EXPR","value":"32"}}]
+[
+    {
+        "type": "GLOBAL_VARIABLE",
+        "name": "g1",
+        "variable_type": "number",
+        "assignment": {
+            "type": "NUMBER_EXPR",
+            "value": "1"
+        }
+    },
+    {
+        "type": "GLOBAL_VARIABLE",
+        "name": "g2",
+        "variable_type": "number",
+        "assignment": {
+            "type": "NUMBER_EXPR",
+            "value": "2"
+        }
+    },
+    {
+        "type": "GLOBAL_VARIABLE",
+        "name": "g3",
+        "variable_type": "number",
+        "assignment": {
+            "type": "NUMBER_EXPR",
+            "value": "3"
+        }
+    },
+    {
+        "type": "GLOBAL_VARIABLE",
+        "name": "g4",
+        "variable_type": "number",
+        "assignment": {
+            "type": "NUMBER_EXPR",
+            "value": "4"
+        }
+    },
+    {
+        "type": "GLOBAL_VARIABLE",
+        "name": "g5",
+        "variable_type": "number",
+        "assignment": {
+            "type": "NUMBER_EXPR",
+            "value": "5"
+        }
+    },
+    {
+        "type": "GLOBAL_VARIABLE",
+        "name": "g6",
+        "variable_type": "number",
+        "assignment": {
+            "type": "NUMBER_EXPR",
+            "value": "6"
+        }
+    },
+    {
+        "type": "GLOBAL_VARIABLE",
+        "name": "g7",
+        "variable_type": "number",
+        "assignment": {
+            "type": "NUMBER_EXPR",
+            "value": "7"
+        }
+    },
+    {
+        "type": "GLOBAL_VARIABLE",
+        "name": "g8",
+        "variable_type": "number",
+        "assignment": {
+            "type": "NUMBER_EXPR",
+            "value": "8"
+        }
+    },
+    {
+        "type": "GLOBAL_VARIABLE",
+        "name": "g9",
+        "variable_type": "number",
+        "assignment": {
+            "type": "NUMBER_EXPR",
+            "value": "9"
+        }
+    },
+    {
+        "type": "GLOBAL_VARIABLE",
+        "name": "g10",
+        "variable_type": "number",
+        "assignment": {
+            "type": "NUMBER_EXPR",
+            "value": "10"
+        }
+    },
+    {
+        "type": "GLOBAL_VARIABLE",
+        "name": "g11",
+        "variable_type": "number",
+        "assignment": {
+            "type": "NUMBER_EXPR",
+            "value": "11"
+        }
+    },
+    {
+        "type": "GLOBAL_VARIABLE",
+        "name": "g12",
+        "variable_type": "number",
+        "assignment": {
+            "type": "NUMBER_EXPR",
+            "value": "12"
+        }
+    },
+    {
+        "type": "GLOBAL_VARIABLE",
+        "name": "g13",
+        "variable_type": "number",
+        "assignment": {
+            "type": "NUMBER_EXPR",
+            "value": "13"
+        }
+    },
+    {
+        "type": "GLOBAL_VARIABLE",
+        "name": "g14",
+        "variable_type": "number",
+        "assignment": {
+            "type": "NUMBER_EXPR",
+            "value": "14"
+        }
+    },
+    {
+        "type": "GLOBAL_VARIABLE",
+        "name": "g15",
+        "variable_type": "number",
+        "assignment": {
+            "type": "NUMBER_EXPR",
+            "value": "15"
+        }
+    },
+    {
+        "type": "GLOBAL_VARIABLE",
+        "name": "g16",
+        "variable_type": "number",
+        "assignment": {
+            "type": "NUMBER_EXPR",
+            "value": "16"
+        }
+    },
+    {
+        "type": "GLOBAL_VARIABLE",
+        "name": "g17",
+        "variable_type": "number",
+        "assignment": {
+            "type": "NUMBER_EXPR",
+            "value": "17"
+        }
+    },
+    {
+        "type": "GLOBAL_VARIABLE",
+        "name": "g18",
+        "variable_type": "number",
+        "assignment": {
+            "type": "NUMBER_EXPR",
+            "value": "18"
+        }
+    },
+    {
+        "type": "GLOBAL_VARIABLE",
+        "name": "g19",
+        "variable_type": "number",
+        "assignment": {
+            "type": "NUMBER_EXPR",
+            "value": "19"
+        }
+    },
+    {
+        "type": "GLOBAL_VARIABLE",
+        "name": "g20",
+        "variable_type": "number",
+        "assignment": {
+            "type": "NUMBER_EXPR",
+            "value": "20"
+        }
+    },
+    {
+        "type": "GLOBAL_VARIABLE",
+        "name": "g21",
+        "variable_type": "number",
+        "assignment": {
+            "type": "NUMBER_EXPR",
+            "value": "21"
+        }
+    },
+    {
+        "type": "GLOBAL_VARIABLE",
+        "name": "g22",
+        "variable_type": "number",
+        "assignment": {
+            "type": "NUMBER_EXPR",
+            "value": "22"
+        }
+    },
+    {
+        "type": "GLOBAL_VARIABLE",
+        "name": "g23",
+        "variable_type": "number",
+        "assignment": {
+            "type": "NUMBER_EXPR",
+            "value": "23"
+        }
+    },
+    {
+        "type": "GLOBAL_VARIABLE",
+        "name": "g24",
+        "variable_type": "number",
+        "assignment": {
+            "type": "NUMBER_EXPR",
+            "value": "24"
+        }
+    },
+    {
+        "type": "GLOBAL_VARIABLE",
+        "name": "g25",
+        "variable_type": "number",
+        "assignment": {
+            "type": "NUMBER_EXPR",
+            "value": "25"
+        }
+    },
+    {
+        "type": "GLOBAL_VARIABLE",
+        "name": "g26",
+        "variable_type": "number",
+        "assignment": {
+            "type": "NUMBER_EXPR",
+            "value": "26"
+        }
+    },
+    {
+        "type": "GLOBAL_VARIABLE",
+        "name": "g27",
+        "variable_type": "number",
+        "assignment": {
+            "type": "NUMBER_EXPR",
+            "value": "27"
+        }
+    },
+    {
+        "type": "GLOBAL_VARIABLE",
+        "name": "g28",
+        "variable_type": "number",
+        "assignment": {
+            "type": "NUMBER_EXPR",
+            "value": "28"
+        }
+    },
+    {
+        "type": "GLOBAL_VARIABLE",
+        "name": "g29",
+        "variable_type": "number",
+        "assignment": {
+            "type": "NUMBER_EXPR",
+            "value": "29"
+        }
+    },
+    {
+        "type": "GLOBAL_VARIABLE",
+        "name": "g30",
+        "variable_type": "number",
+        "assignment": {
+            "type": "NUMBER_EXPR",
+            "value": "30"
+        }
+    },
+    {
+        "type": "GLOBAL_VARIABLE",
+        "name": "g31",
+        "variable_type": "number",
+        "assignment": {
+            "type": "NUMBER_EXPR",
+            "value": "31"
+        }
+    },
+    {
+        "type": "GLOBAL_VARIABLE",
+        "name": "g32",
+        "variable_type": "number",
+        "assignment": {
+            "type": "NUMBER_EXPR",
+            "value": "32"
+        }
+    }
+]

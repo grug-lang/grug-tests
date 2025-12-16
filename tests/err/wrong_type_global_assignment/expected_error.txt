@@ -1,1 +1,1 @@
-Can't assign bool to 'a', which has type f32
+Can't assign bool to 'a', which has type number

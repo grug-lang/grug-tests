@@ -1,1 +1,1 @@
-'GREATER_TOKEN' operator expects i32 or f32
+'GREATER_TOKEN' operator expects number

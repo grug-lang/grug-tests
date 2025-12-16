@@ -1,3 +1,3 @@
-on_a(f: f32) {
+on_a(f: number) {
     sin(f)
 }

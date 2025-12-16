@@ -1,4 +1,4 @@
-on_a(i: i32, f: f32) {
+on_a(i: number, f: number) {
     i = 20
     initialize(i)
 

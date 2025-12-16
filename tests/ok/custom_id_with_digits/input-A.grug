@@ -1,1 +1,2 @@
-foo: BoxedI32 = box_i32(42)
+foo: BoxedNumber = box_number(42)
+

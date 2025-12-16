@@ -1,1 +1,1 @@
-Function 'on_a' got an unexpected extra parameter 'foo' with type i32
+Function 'on_a' got an unexpected extra parameter 'foo' with type number

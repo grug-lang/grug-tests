@@ -1,1 +1,589 @@
-[{"type":"GLOBAL_ON_FN","name":"on_a","statements":[{"type":"VARIABLE_STATEMENT","name":"v1","variable_type":"i32","assignment":{"type":"I32_EXPR","value":"1"}},{"type":"CALL_STATEMENT","name":"initialize","arguments":[{"type":"IDENTIFIER_EXPR","str":"v1"}]},{"type":"VARIABLE_STATEMENT","name":"v2","variable_type":"i32","assignment":{"type":"I32_EXPR","value":"2"}},{"type":"CALL_STATEMENT","name":"initialize","arguments":[{"type":"IDENTIFIER_EXPR","str":"v2"}]},{"type":"VARIABLE_STATEMENT","name":"v3","variable_type":"i32","assignment":{"type":"I32_EXPR","value":"3"}},{"type":"CALL_STATEMENT","name":"initialize","arguments":[{"type":"IDENTIFIER_EXPR","str":"v3"}]},{"type":"VARIABLE_STATEMENT","name":"v4","variable_type":"i32","assignment":{"type":"I32_EXPR","value":"4"}},{"type":"CALL_STATEMENT","name":"initialize","arguments":[{"type":"IDENTIFIER_EXPR","str":"v4"}]},{"type":"VARIABLE_STATEMENT","name":"v5","variable_type":"i32","assignment":{"type":"I32_EXPR","value":"5"}},{"type":"CALL_STATEMENT","name":"initialize","arguments":[{"type":"IDENTIFIER_EXPR","str":"v5"}]},{"type":"VARIABLE_STATEMENT","name":"v6","variable_type":"i32","assignment":{"type":"I32_EXPR","value":"6"}},{"type":"CALL_STATEMENT","name":"initialize","arguments":[{"type":"IDENTIFIER_EXPR","str":"v6"}]},{"type":"VARIABLE_STATEMENT","name":"v7","variable_type":"i32","assignment":{"type":"I32_EXPR","value":"7"}},{"type":"CALL_STATEMENT","name":"initialize","arguments":[{"type":"IDENTIFIER_EXPR","str":"v7"}]},{"type":"VARIABLE_STATEMENT","name":"v8","variable_type":"i32","assignment":{"type":"I32_EXPR","value":"8"}},{"type":"CALL_STATEMENT","name":"initialize","arguments":[{"type":"IDENTIFIER_EXPR","str":"v8"}]},{"type":"VARIABLE_STATEMENT","name":"v9","variable_type":"i32","assignment":{"type":"I32_EXPR","value":"9"}},{"type":"CALL_STATEMENT","name":"initialize","arguments":[{"type":"IDENTIFIER_EXPR","str":"v9"}]},{"type":"VARIABLE_STATEMENT","name":"v10","variable_type":"i32","assignment":{"type":"I32_EXPR","value":"10"}},{"type":"CALL_STATEMENT","name":"initialize","arguments":[{"type":"IDENTIFIER_EXPR","str":"v10"}]},{"type":"VARIABLE_STATEMENT","name":"v11","variable_type":"i32","assignment":{"type":"I32_EXPR","value":"11"}},{"type":"CALL_STATEMENT","name":"initialize","arguments":[{"type":"IDENTIFIER_EXPR","str":"v11"}]},{"type":"VARIABLE_STATEMENT","name":"v12","variable_type":"i32","assignment":{"type":"I32_EXPR","value":"12"}},{"type":"CALL_STATEMENT","name":"initialize","arguments":[{"type":"IDENTIFIER_EXPR","str":"v12"}]},{"type":"VARIABLE_STATEMENT","name":"v13","variable_type":"i32","assignment":{"type":"I32_EXPR","value":"13"}},{"type":"CALL_STATEMENT","name":"initialize","arguments":[{"type":"IDENTIFIER_EXPR","str":"v13"}]},{"type":"VARIABLE_STATEMENT","name":"v14","variable_type":"i32","assignment":{"type":"I32_EXPR","value":"14"}},{"type":"CALL_STATEMENT","name":"initialize","arguments":[{"type":"IDENTIFIER_EXPR","str":"v14"}]},{"type":"VARIABLE_STATEMENT","name":"v15","variable_type":"i32","assignment":{"type":"I32_EXPR","value":"15"}},{"type":"CALL_STATEMENT","name":"initialize","arguments":[{"type":"IDENTIFIER_EXPR","str":"v15"}]},{"type":"VARIABLE_STATEMENT","name":"v16","variable_type":"i32","assignment":{"type":"I32_EXPR","value":"16"}},{"type":"CALL_STATEMENT","name":"initialize","arguments":[{"type":"IDENTIFIER_EXPR","str":"v16"}]},{"type":"VARIABLE_STATEMENT","name":"v17","variable_type":"i32","assignment":{"type":"I32_EXPR","value":"17"}},{"type":"CALL_STATEMENT","name":"initialize","arguments":[{"type":"IDENTIFIER_EXPR","str":"v17"}]},{"type":"VARIABLE_STATEMENT","name":"v18","variable_type":"i32","assignment":{"type":"I32_EXPR","value":"18"}},{"type":"CALL_STATEMENT","name":"initialize","arguments":[{"type":"IDENTIFIER_EXPR","str":"v18"}]},{"type":"VARIABLE_STATEMENT","name":"v19","variable_type":"i32","assignment":{"type":"I32_EXPR","value":"19"}},{"type":"CALL_STATEMENT","name":"initialize","arguments":[{"type":"IDENTIFIER_EXPR","str":"v19"}]},{"type":"VARIABLE_STATEMENT","name":"v20","variable_type":"i32","assignment":{"type":"I32_EXPR","value":"20"}},{"type":"CALL_STATEMENT","name":"initialize","arguments":[{"type":"IDENTIFIER_EXPR","str":"v20"}]},{"type":"VARIABLE_STATEMENT","name":"v21","variable_type":"i32","assignment":{"type":"I32_EXPR","value":"21"}},{"type":"CALL_STATEMENT","name":"initialize","arguments":[{"type":"IDENTIFIER_EXPR","str":"v21"}]},{"type":"VARIABLE_STATEMENT","name":"v22","variable_type":"i32","assignment":{"type":"I32_EXPR","value":"22"}},{"type":"CALL_STATEMENT","name":"initialize","arguments":[{"type":"IDENTIFIER_EXPR","str":"v22"}]},{"type":"VARIABLE_STATEMENT","name":"v23","variable_type":"i32","assignment":{"type":"I32_EXPR","value":"23"}},{"type":"CALL_STATEMENT","name":"initialize","arguments":[{"type":"IDENTIFIER_EXPR","str":"v23"}]},{"type":"VARIABLE_STATEMENT","name":"v24","variable_type":"i32","assignment":{"type":"I32_EXPR","value":"24"}},{"type":"CALL_STATEMENT","name":"initialize","arguments":[{"type":"IDENTIFIER_EXPR","str":"v24"}]},{"type":"VARIABLE_STATEMENT","name":"v25","variable_type":"i32","assignment":{"type":"I32_EXPR","value":"25"}},{"type":"CALL_STATEMENT","name":"initialize","arguments":[{"type":"IDENTIFIER_EXPR","str":"v25"}]},{"type":"VARIABLE_STATEMENT","name":"v26","variable_type":"i32","assignment":{"type":"I32_EXPR","value":"26"}},{"type":"CALL_STATEMENT","name":"initialize","arguments":[{"type":"IDENTIFIER_EXPR","str":"v26"}]},{"type":"VARIABLE_STATEMENT","name":"v27","variable_type":"i32","assignment":{"type":"I32_EXPR","value":"27"}},{"type":"CALL_STATEMENT","name":"initialize","arguments":[{"type":"IDENTIFIER_EXPR","str":"v27"}]},{"type":"VARIABLE_STATEMENT","name":"v28","variable_type":"i32","assignment":{"type":"I32_EXPR","value":"28"}},{"type":"CALL_STATEMENT","name":"initialize","arguments":[{"type":"IDENTIFIER_EXPR","str":"v28"}]},{"type":"VARIABLE_STATEMENT","name":"v29","variable_type":"i32","assignment":{"type":"I32_EXPR","value":"29"}},{"type":"CALL_STATEMENT","name":"initialize","arguments":[{"type":"IDENTIFIER_EXPR","str":"v29"}]},{"type":"EMPTY_LINE_STATEMENT"},{"type":"COMMENT_STATEMENT","comment":"This causes SUB_RSP_32_BITS to be used in the function prologue,"},{"type":"COMMENT_STATEMENT","comment":"instead of SUB_RSP_8_BITS, since there are now over 256 variable bytes"},{"type":"VARIABLE_STATEMENT","name":"v30","variable_type":"i32","assignment":{"type":"I32_EXPR","value":"30"}},{"type":"CALL_STATEMENT","name":"initialize","arguments":[{"type":"IDENTIFIER_EXPR","str":"v30"}]}]}]
+[
+    {
+        "type": "GLOBAL_ON_FN",
+        "name": "on_a",
+        "statements": [
+            {
+                "type": "VARIABLE_STATEMENT",
+                "name": "v1",
+                "variable_type": "number",
+                "assignment": {
+                    "type": "NUMBER_EXPR",
+                    "value": "1"
+                }
+            },
+            {
+                "type": "CALL_STATEMENT",
+                "name": "initialize",
+                "arguments": [
+                    {
+                        "type": "IDENTIFIER_EXPR",
+                        "str": "v1"
+                    }
+                ]
+            },
+            {
+                "type": "VARIABLE_STATEMENT",
+                "name": "v2",
+                "variable_type": "number",
+                "assignment": {
+                    "type": "NUMBER_EXPR",
+                    "value": "2"
+                }
+            },
+            {
+                "type": "CALL_STATEMENT",
+                "name": "initialize",
+                "arguments": [
+                    {
+                        "type": "IDENTIFIER_EXPR",
+                        "str": "v2"
+                    }
+                ]
+            },
+            {
+                "type": "VARIABLE_STATEMENT",
+                "name": "v3",
+                "variable_type": "number",
+                "assignment": {
+                    "type": "NUMBER_EXPR",
+                    "value": "3"
+                }
+            },
+            {
+                "type": "CALL_STATEMENT",
+                "name": "initialize",
+                "arguments": [
+                    {
+                        "type": "IDENTIFIER_EXPR",
+                        "str": "v3"
+                    }
+                ]
+            },
+            {
+                "type": "VARIABLE_STATEMENT",
+                "name": "v4",
+                "variable_type": "number",
+                "assignment": {
+                    "type": "NUMBER_EXPR",
+                    "value": "4"
+                }
+            },
+            {
+                "type": "CALL_STATEMENT",
+                "name": "initialize",
+                "arguments": [
+                    {
+                        "type": "IDENTIFIER_EXPR",
+                        "str": "v4"
+                    }
+                ]
+            },
+            {
+                "type": "VARIABLE_STATEMENT",
+                "name": "v5",
+                "variable_type": "number",
+                "assignment": {
+                    "type": "NUMBER_EXPR",
+                    "value": "5"
+                }
+            },
+            {
+                "type": "CALL_STATEMENT",
+                "name": "initialize",
+                "arguments": [
+                    {
+                        "type": "IDENTIFIER_EXPR",
+                        "str": "v5"
+                    }
+                ]
+            },
+            {
+                "type": "VARIABLE_STATEMENT",
+                "name": "v6",
+                "variable_type": "number",
+                "assignment": {
+                    "type": "NUMBER_EXPR",
+                    "value": "6"
+                }
+            },
+            {
+                "type": "CALL_STATEMENT",
+                "name": "initialize",
+                "arguments": [
+                    {
+                        "type": "IDENTIFIER_EXPR",
+                        "str": "v6"
+                    }
+                ]
+            },
+            {
+                "type": "VARIABLE_STATEMENT",
+                "name": "v7",
+                "variable_type": "number",
+                "assignment": {
+                    "type": "NUMBER_EXPR",
+                    "value": "7"
+                }
+            },
+            {
+                "type": "CALL_STATEMENT",
+                "name": "initialize",
+                "arguments": [
+                    {
+                        "type": "IDENTIFIER_EXPR",
+                        "str": "v7"
+                    }
+                ]
+            },
+            {
+                "type": "VARIABLE_STATEMENT",
+                "name": "v8",
+                "variable_type": "number",
+                "assignment": {
+                    "type": "NUMBER_EXPR",
+                    "value": "8"
+                }
+            },
+            {
+                "type": "CALL_STATEMENT",
+                "name": "initialize",
+                "arguments": [
+                    {
+                        "type": "IDENTIFIER_EXPR",
+                        "str": "v8"
+                    }
+                ]
+            },
+            {
+                "type": "VARIABLE_STATEMENT",
+                "name": "v9",
+                "variable_type": "number",
+                "assignment": {
+                    "type": "NUMBER_EXPR",
+                    "value": "9"
+                }
+            },
+            {
+                "type": "CALL_STATEMENT",
+                "name": "initialize",
+                "arguments": [
+                    {
+                        "type": "IDENTIFIER_EXPR",
+                        "str": "v9"
+                    }
+                ]
+            },
+            {
+                "type": "VARIABLE_STATEMENT",
+                "name": "v10",
+                "variable_type": "number",
+                "assignment": {
+                    "type": "NUMBER_EXPR",
+                    "value": "10"
+                }
+            },
+            {
+                "type": "CALL_STATEMENT",
+                "name": "initialize",
+                "arguments": [
+                    {
+                        "type": "IDENTIFIER_EXPR",
+                        "str": "v10"
+                    }
+                ]
+            },
+            {
+                "type": "VARIABLE_STATEMENT",
+                "name": "v11",
+                "variable_type": "number",
+                "assignment": {
+                    "type": "NUMBER_EXPR",
+                    "value": "11"
+                }
+            },
+            {
+                "type": "CALL_STATEMENT",
+                "name": "initialize",
+                "arguments": [
+                    {
+                        "type": "IDENTIFIER_EXPR",
+                        "str": "v11"
+                    }
+                ]
+            },
+            {
+                "type": "VARIABLE_STATEMENT",
+                "name": "v12",
+                "variable_type": "number",
+                "assignment": {
+                    "type": "NUMBER_EXPR",
+                    "value": "12"
+                }
+            },
+            {
+                "type": "CALL_STATEMENT",
+                "name": "initialize",
+                "arguments": [
+                    {
+                        "type": "IDENTIFIER_EXPR",
+                        "str": "v12"
+                    }
+                ]
+            },
+            {
+                "type": "VARIABLE_STATEMENT",
+                "name": "v13",
+                "variable_type": "number",
+                "assignment": {
+                    "type": "NUMBER_EXPR",
+                    "value": "13"
+                }
+            },
+            {
+                "type": "CALL_STATEMENT",
+                "name": "initialize",
+                "arguments": [
+                    {
+                        "type": "IDENTIFIER_EXPR",
+                        "str": "v13"
+                    }
+                ]
+            },
+            {
+                "type": "VARIABLE_STATEMENT",
+                "name": "v14",
+                "variable_type": "number",
+                "assignment": {
+                    "type": "NUMBER_EXPR",
+                    "value": "14"
+                }
+            },
+            {
+                "type": "CALL_STATEMENT",
+                "name": "initialize",
+                "arguments": [
+                    {
+                        "type": "IDENTIFIER_EXPR",
+                        "str": "v14"
+                    }
+                ]
+            },
+            {
+                "type": "VARIABLE_STATEMENT",
+                "name": "v15",
+                "variable_type": "number",
+                "assignment": {
+                    "type": "NUMBER_EXPR",
+                    "value": "15"
+                }
+            },
+            {
+                "type": "CALL_STATEMENT",
+                "name": "initialize",
+                "arguments": [
+                    {
+                        "type": "IDENTIFIER_EXPR",
+                        "str": "v15"
+                    }
+                ]
+            },
+            {
+                "type": "VARIABLE_STATEMENT",
+                "name": "v16",
+                "variable_type": "number",
+                "assignment": {
+                    "type": "NUMBER_EXPR",
+                    "value": "16"
+                }
+            },
+            {
+                "type": "CALL_STATEMENT",
+                "name": "initialize",
+                "arguments": [
+                    {
+                        "type": "IDENTIFIER_EXPR",
+                        "str": "v16"
+                    }
+                ]
+            },
+            {
+                "type": "VARIABLE_STATEMENT",
+                "name": "v17",
+                "variable_type": "number",
+                "assignment": {
+                    "type": "NUMBER_EXPR",
+                    "value": "17"
+                }
+            },
+            {
+                "type": "CALL_STATEMENT",
+                "name": "initialize",
+                "arguments": [
+                    {
+                        "type": "IDENTIFIER_EXPR",
+                        "str": "v17"
+                    }
+                ]
+            },
+            {
+                "type": "VARIABLE_STATEMENT",
+                "name": "v18",
+                "variable_type": "number",
+                "assignment": {
+                    "type": "NUMBER_EXPR",
+                    "value": "18"
+                }
+            },
+            {
+                "type": "CALL_STATEMENT",
+                "name": "initialize",
+                "arguments": [
+                    {
+                        "type": "IDENTIFIER_EXPR",
+                        "str": "v18"
+                    }
+                ]
+            },
+            {
+                "type": "VARIABLE_STATEMENT",
+                "name": "v19",
+                "variable_type": "number",
+                "assignment": {
+                    "type": "NUMBER_EXPR",
+                    "value": "19"
+                }
+            },
+            {
+                "type": "CALL_STATEMENT",
+                "name": "initialize",
+                "arguments": [
+                    {
+                        "type": "IDENTIFIER_EXPR",
+                        "str": "v19"
+                    }
+                ]
+            },
+            {
+                "type": "VARIABLE_STATEMENT",
+                "name": "v20",
+                "variable_type": "number",
+                "assignment": {
+                    "type": "NUMBER_EXPR",
+                    "value": "20"
+                }
+            },
+            {
+                "type": "CALL_STATEMENT",
+                "name": "initialize",
+                "arguments": [
+                    {
+                        "type": "IDENTIFIER_EXPR",
+                        "str": "v20"
+                    }
+                ]
+            },
+            {
+                "type": "VARIABLE_STATEMENT",
+                "name": "v21",
+                "variable_type": "number",
+                "assignment": {
+                    "type": "NUMBER_EXPR",
+                    "value": "21"
+                }
+            },
+            {
+                "type": "CALL_STATEMENT",
+                "name": "initialize",
+                "arguments": [
+                    {
+                        "type": "IDENTIFIER_EXPR",
+                        "str": "v21"
+                    }
+                ]
+            },
+            {
+                "type": "VARIABLE_STATEMENT",
+                "name": "v22",
+                "variable_type": "number",
+                "assignment": {
+                    "type": "NUMBER_EXPR",
+                    "value": "22"
+                }
+            },
+            {
+                "type": "CALL_STATEMENT",
+                "name": "initialize",
+                "arguments": [
+                    {
+                        "type": "IDENTIFIER_EXPR",
+                        "str": "v22"
+                    }
+                ]
+            },
+            {
+                "type": "VARIABLE_STATEMENT",
+                "name": "v23",
+                "variable_type": "number",
+                "assignment": {
+                    "type": "NUMBER_EXPR",
+                    "value": "23"
+                }
+            },
+            {
+                "type": "CALL_STATEMENT",
+                "name": "initialize",
+                "arguments": [
+                    {
+                        "type": "IDENTIFIER_EXPR",
+                        "str": "v23"
+                    }
+                ]
+            },
+            {
+                "type": "VARIABLE_STATEMENT",
+                "name": "v24",
+                "variable_type": "number",
+                "assignment": {
+                    "type": "NUMBER_EXPR",
+                    "value": "24"
+                }
+            },
+            {
+                "type": "CALL_STATEMENT",
+                "name": "initialize",
+                "arguments": [
+                    {
+                        "type": "IDENTIFIER_EXPR",
+                        "str": "v24"
+                    }
+                ]
+            },
+            {
+                "type": "VARIABLE_STATEMENT",
+                "name": "v25",
+                "variable_type": "number",
+                "assignment": {
+                    "type": "NUMBER_EXPR",
+                    "value": "25"
+                }
+            },
+            {
+                "type": "CALL_STATEMENT",
+                "name": "initialize",
+                "arguments": [
+                    {
+                        "type": "IDENTIFIER_EXPR",
+                        "str": "v25"
+                    }
+                ]
+            },
+            {
+                "type": "VARIABLE_STATEMENT",
+                "name": "v26",
+                "variable_type": "number",
+                "assignment": {
+                    "type": "NUMBER_EXPR",
+                    "value": "26"
+                }
+            },
+            {
+                "type": "CALL_STATEMENT",
+                "name": "initialize",
+                "arguments": [
+                    {
+                        "type": "IDENTIFIER_EXPR",
+                        "str": "v26"
+                    }
+                ]
+            },
+            {
+                "type": "VARIABLE_STATEMENT",
+                "name": "v27",
+                "variable_type": "number",
+                "assignment": {
+                    "type": "NUMBER_EXPR",
+                    "value": "27"
+                }
+            },
+            {
+                "type": "CALL_STATEMENT",
+                "name": "initialize",
+                "arguments": [
+                    {
+                        "type": "IDENTIFIER_EXPR",
+                        "str": "v27"
+                    }
+                ]
+            },
+            {
+                "type": "VARIABLE_STATEMENT",
+                "name": "v28",
+                "variable_type": "number",
+                "assignment": {
+                    "type": "NUMBER_EXPR",
+                    "value": "28"
+                }
+            },
+            {
+                "type": "CALL_STATEMENT",
+                "name": "initialize",
+                "arguments": [
+                    {
+                        "type": "IDENTIFIER_EXPR",
+                        "str": "v28"
+                    }
+                ]
+            },
+            {
+                "type": "VARIABLE_STATEMENT",
+                "name": "v29",
+                "variable_type": "number",
+                "assignment": {
+                    "type": "NUMBER_EXPR",
+                    "value": "29"
+                }
+            },
+            {
+                "type": "CALL_STATEMENT",
+                "name": "initialize",
+                "arguments": [
+                    {
+                        "type": "IDENTIFIER_EXPR",
+                        "str": "v29"
+                    }
+                ]
+            },
+            {
+                "type": "EMPTY_LINE_STATEMENT"
+            },
+            {
+                "type": "COMMENT_STATEMENT",
+                "comment": "This causes SUB_RSP_32_BITS to be used in the function prologue,"
+            },
+            {
+                "type": "COMMENT_STATEMENT",
+                "comment": "instead of SUB_RSP_8_BITS, since there are now over 256 variable bytes"
+            },
+            {
+                "type": "VARIABLE_STATEMENT",
+                "name": "v30",
+                "variable_type": "number",
+                "assignment": {
+                    "type": "NUMBER_EXPR",
+                    "value": "30"
+                }
+            },
+            {
+                "type": "CALL_STATEMENT",
+                "name": "initialize",
+                "arguments": [
+                    {
+                        "type": "IDENTIFIER_EXPR",
+                        "str": "v30"
+                    }
+                ]
+            }
+        ]
+    }
+]

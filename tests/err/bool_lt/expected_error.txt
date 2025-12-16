@@ -1,1 +1,1 @@
-'LESS_TOKEN' operator expects i32 or f32
+'LESS_TOKEN' operator expects number

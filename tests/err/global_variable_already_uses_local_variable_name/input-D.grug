@@ -1,7 +1,7 @@
-foo: i32 = 42
+foo: number = 42
 
 on_a() {
-    foo: i32 = 42
+    foo: number = 42
 
     initialize(foo)
 }

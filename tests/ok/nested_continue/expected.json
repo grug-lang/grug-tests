@@ -1,1 +1,95 @@
-[{"type":"GLOBAL_ON_FN","name":"on_a","statements":[{"type":"VARIABLE_STATEMENT","name":"i","variable_type":"i32","assignment":{"type":"I32_EXPR","value":"0"}},{"type":"EMPTY_LINE_STATEMENT"},{"type":"WHILE_STATEMENT","condition":{"type":"TRUE_EXPR"},"statements":[{"type":"CALL_STATEMENT","name":"nothing"},{"type":"WHILE_STATEMENT","condition":{"type":"BINARY_EXPR","left_expr":{"type":"IDENTIFIER_EXPR","str":"i"},"operator":"NOT_EQUALS_TOKEN","right_expr":{"type":"I32_EXPR","value":"2"}},"statements":[{"type":"VARIABLE_STATEMENT","name":"i","assignment":{"type":"BINARY_EXPR","left_expr":{"type":"IDENTIFIER_EXPR","str":"i"},"operator":"PLUS_TOKEN","right_expr":{"type":"I32_EXPR","value":"1"}}},{"type":"IF_STATEMENT","condition":{"type":"PARENTHESIZED_EXPR","expr":{"type":"BINARY_EXPR","left_expr":{"type":"IDENTIFIER_EXPR","str":"i"},"operator":"EQUALS_TOKEN","right_expr":{"type":"I32_EXPR","value":"1"}}},"if_statements":[{"type":"CONTINUE_STATEMENT"}]},{"type":"CALL_STATEMENT","name":"nothing"}]},{"type":"BREAK_STATEMENT"}]}]}]
+[
+    {
+        "type": "GLOBAL_ON_FN",
+        "name": "on_a",
+        "statements": [
+            {
+                "type": "VARIABLE_STATEMENT",
+                "name": "i",
+                "variable_type": "number",
+                "assignment": {
+                    "type": "NUMBER_EXPR",
+                    "value": "0"
+                }
+            },
+            {
+                "type": "EMPTY_LINE_STATEMENT"
+            },
+            {
+                "type": "WHILE_STATEMENT",
+                "condition": {
+                    "type": "TRUE_EXPR"
+                },
+                "statements": [
+                    {
+                        "type": "CALL_STATEMENT",
+                        "name": "nothing"
+                    },
+                    {
+                        "type": "WHILE_STATEMENT",
+                        "condition": {
+                            "type": "BINARY_EXPR",
+                            "left_expr": {
+                                "type": "IDENTIFIER_EXPR",
+                                "str": "i"
+                            },
+                            "operator": "NOT_EQUALS_TOKEN",
+                            "right_expr": {
+                                "type": "NUMBER_EXPR",
+                                "value": "2"
+                            }
+                        },
+                        "statements": [
+                            {
+                                "type": "VARIABLE_STATEMENT",
+                                "name": "i",
+                                "assignment": {
+                                    "type": "BINARY_EXPR",
+                                    "left_expr": {
+                                        "type": "IDENTIFIER_EXPR",
+                                        "str": "i"
+                                    },
+                                    "operator": "PLUS_TOKEN",
+                                    "right_expr": {
+                                        "type": "NUMBER_EXPR",
+                                        "value": "1"
+                                    }
+                                }
+                            },
+                            {
+                                "type": "IF_STATEMENT",
+                                "condition": {
+                                    "type": "PARENTHESIZED_EXPR",
+                                    "expr": {
+                                        "type": "BINARY_EXPR",
+                                        "left_expr": {
+                                            "type": "IDENTIFIER_EXPR",
+                                            "str": "i"
+                                        },
+                                        "operator": "EQUALS_TOKEN",
+                                        "right_expr": {
+                                            "type": "NUMBER_EXPR",
+                                            "value": "1"
+                                        }
+                                    }
+                                },
+                                "if_statements": [
+                                    {
+                                        "type": "CONTINUE_STATEMENT"
+                                    }
+                                ]
+                            },
+                            {
+                                "type": "CALL_STATEMENT",
+                                "name": "nothing"
+                            }
+                        ]
+                    },
+                    {
+                        "type": "BREAK_STATEMENT"
+                    }
+                ]
+            }
+        ]
+    }
+]

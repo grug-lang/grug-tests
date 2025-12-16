@@ -30,7 +30,7 @@
 					"arguments": [
 						{
 							"name": "x",
-							"type": "i32"
+							"type": "number"
 						}
 					]
 				}
@@ -44,11 +44,11 @@
 					"arguments": [
 						{
 							"name": "x",
-							"type": "i32"
+							"type": "number"
 						},
 						{
 							"name": "y",
-							"type": "i32"
+							"type": "number"
 						}
 					]
 				}
@@ -76,7 +76,7 @@
 					"arguments": [
 						{
 							"name": "f",
-							"type": "f32"
+							"type": "number"
 						}
 					]
 				}
@@ -90,11 +90,11 @@
 					"arguments": [
 						{
 							"name": "i",
-							"type": "i32"
+							"type": "number"
 						},
 						{
 							"name": "f",
-							"type": "f32"
+							"type": "number"
 						}
 					]
 				}
@@ -135,14 +135,14 @@
 		},
 		"magic": {
 			"description": "foo",
-			"return_type": "i32"
+			"return_type": "number"
 		},
 		"initialize": {
 			"description": "foo",
 			"arguments": [
 				{
 					"name": "x",
-					"type": "i32"
+					"type": "number"
 				}
 			]
 		},
@@ -157,25 +157,25 @@
 		},
 		"identity": {
 			"description": "foo",
-			"return_type": "i32",
+			"return_type": "number",
 			"arguments": [
 				{
 					"name": "x",
-					"type": "i32"
+					"type": "number"
 				}
 			]
 		},
 		"max": {
 			"description": "foo",
-			"return_type": "i32",
+			"return_type": "number",
 			"arguments": [
 				{
 					"name": "x",
-					"type": "i32"
+					"type": "number"
 				},
 				{
 					"name": "y",
-					"type": "i32"
+					"type": "number"
 				}
 			]
 		},
@@ -190,21 +190,21 @@
 		},
 		"sin": {
 			"description": "foo",
-			"return_type": "f32",
+			"return_type": "number",
 			"arguments": [
 				{
 					"name": "x",
-					"type": "f32"
+					"type": "number"
 				}
 			]
 		},
 		"cos": {
 			"description": "foo",
-			"return_type": "f32",
+			"return_type": "number",
 			"arguments": [
 				{
 					"name": "x",
-					"type": "f32"
+					"type": "number"
 				}
 			]
 		},
@@ -213,11 +213,11 @@
 			"arguments": [
 				{
 					"name": "f1",
-					"type": "f32"
+					"type": "number"
 				},
 				{
 					"name": "i1",
-					"type": "i32"
+					"type": "number"
 				},
 				{
 					"name": "b1",
@@ -225,15 +225,15 @@
 				},
 				{
 					"name": "f2",
-					"type": "f32"
+					"type": "number"
 				},
 				{
 					"name": "f3",
-					"type": "f32"
+					"type": "number"
 				},
 				{
 					"name": "f4",
-					"type": "f32"
+					"type": "number"
 				},
 				{
 					"name": "b2",
@@ -241,23 +241,23 @@
 				},
 				{
 					"name": "i2",
-					"type": "i32"
+					"type": "number"
 				},
 				{
 					"name": "f5",
-					"type": "f32"
+					"type": "number"
 				},
 				{
 					"name": "f6",
-					"type": "f32"
+					"type": "number"
 				},
 				{
 					"name": "f7",
-					"type": "f32"
+					"type": "number"
 				},
 				{
 					"name": "f8",
-					"type": "f32"
+					"type": "number"
 				},
 				{
 					"name": "id",
@@ -287,39 +287,39 @@
 			"arguments": [
 				{
 					"name": "f1",
-					"type": "f32"
+					"type": "number"
 				},
 				{
 					"name": "f2",
-					"type": "f32"
+					"type": "number"
 				},
 				{
 					"name": "f3",
-					"type": "f32"
+					"type": "number"
 				},
 				{
 					"name": "f4",
-					"type": "f32"
+					"type": "number"
 				},
 				{
 					"name": "f5",
-					"type": "f32"
+					"type": "number"
 				},
 				{
 					"name": "f6",
-					"type": "f32"
+					"type": "number"
 				},
 				{
 					"name": "f7",
-					"type": "f32"
+					"type": "number"
 				},
 				{
 					"name": "f8",
-					"type": "f32"
+					"type": "number"
 				},
 				{
 					"name": "f9",
-					"type": "f32"
+					"type": "number"
 				}
 			]
 		},
@@ -328,31 +328,31 @@
 			"arguments": [
 				{
 					"name": "i1",
-					"type": "i32"
+					"type": "number"
 				},
 				{
 					"name": "i2",
-					"type": "i32"
+					"type": "number"
 				},
 				{
 					"name": "i3",
-					"type": "i32"
+					"type": "number"
 				},
 				{
 					"name": "i4",
-					"type": "i32"
+					"type": "number"
 				},
 				{
 					"name": "i5",
-					"type": "i32"
+					"type": "number"
 				},
 				{
 					"name": "i6",
-					"type": "i32"
+					"type": "number"
 				},
 				{
 					"name": "i7",
-					"type": "i32"
+					"type": "number"
 				}
 			]
 		},
@@ -438,63 +438,63 @@
 			"arguments": [
 				{
 					"name": "i1",
-					"type": "i32"
+					"type": "number"
 				},
 				{
 					"name": "i2",
-					"type": "i32"
+					"type": "number"
 				},
 				{
 					"name": "i3",
-					"type": "i32"
+					"type": "number"
 				},
 				{
 					"name": "i4",
-					"type": "i32"
+					"type": "number"
 				},
 				{
 					"name": "i5",
-					"type": "i32"
+					"type": "number"
 				},
 				{
 					"name": "i6",
-					"type": "i32"
+					"type": "number"
 				},
 				{
 					"name": "i7",
-					"type": "i32"
+					"type": "number"
 				},
 				{
 					"name": "f1",
-					"type": "f32"
+					"type": "number"
 				},
 				{
 					"name": "f2",
-					"type": "f32"
+					"type": "number"
 				},
 				{
 					"name": "f3",
-					"type": "f32"
+					"type": "number"
 				},
 				{
 					"name": "f4",
-					"type": "f32"
+					"type": "number"
 				},
 				{
 					"name": "f5",
-					"type": "f32"
+					"type": "number"
 				},
 				{
 					"name": "f6",
-					"type": "f32"
+					"type": "number"
 				},
 				{
 					"name": "f7",
-					"type": "f32"
+					"type": "number"
 				},
 				{
 					"name": "f8",
-					"type": "f32"
+					"type": "number"
 				},
 				{
 					"name": "id",
@@ -502,7 +502,7 @@
 				},
 				{
 					"name": "f9",
-					"type": "f32"
+					"type": "number"
 				}
 			]
 		},
@@ -511,67 +511,67 @@
 			"arguments": [
 				{
 					"name": "i1",
-					"type": "i32"
+					"type": "number"
 				},
 				{
 					"name": "i2",
-					"type": "i32"
+					"type": "number"
 				},
 				{
 					"name": "i3",
-					"type": "i32"
+					"type": "number"
 				},
 				{
 					"name": "i4",
-					"type": "i32"
+					"type": "number"
 				},
 				{
 					"name": "i5",
-					"type": "i32"
+					"type": "number"
 				},
 				{
 					"name": "i6",
-					"type": "i32"
+					"type": "number"
 				},
 				{
 					"name": "i7",
-					"type": "i32"
+					"type": "number"
 				},
 				{
 					"name": "f1",
-					"type": "f32"
+					"type": "number"
 				},
 				{
 					"name": "f2",
-					"type": "f32"
+					"type": "number"
 				},
 				{
 					"name": "f3",
-					"type": "f32"
+					"type": "number"
 				},
 				{
 					"name": "f4",
-					"type": "f32"
+					"type": "number"
 				},
 				{
 					"name": "f5",
-					"type": "f32"
+					"type": "number"
 				},
 				{
 					"name": "f6",
-					"type": "f32"
+					"type": "number"
 				},
 				{
 					"name": "f7",
-					"type": "f32"
+					"type": "number"
 				},
 				{
 					"name": "f8",
-					"type": "f32"
+					"type": "number"
 				},
 				{
 					"name": "f9",
-					"type": "f32"
+					"type": "number"
 				},
 				{
 					"name": "id",
@@ -579,7 +579,7 @@
 				},
 				{
 					"name": "f10",
-					"type": "f32"
+					"type": "number"
 				}
 			]
 		},
@@ -648,39 +648,39 @@
 				},
 				{
 					"name": "f1",
-					"type": "f32"
+					"type": "number"
 				},
 				{
 					"name": "f2",
-					"type": "f32"
+					"type": "number"
 				},
 				{
 					"name": "f3",
-					"type": "f32"
+					"type": "number"
 				},
 				{
 					"name": "f4",
-					"type": "f32"
+					"type": "number"
 				},
 				{
 					"name": "f5",
-					"type": "f32"
+					"type": "number"
 				},
 				{
 					"name": "f6",
-					"type": "f32"
+					"type": "number"
 				},
 				{
 					"name": "f7",
-					"type": "f32"
+					"type": "number"
 				},
 				{
 					"name": "f8",
-					"type": "f32"
+					"type": "number"
 				},
 				{
 					"name": "g",
-					"type": "i32"
+					"type": "number"
 				}
 			]
 		},
@@ -689,147 +689,147 @@
 			"arguments": [
 				{
 					"name": "f1",
-					"type": "f32"
+					"type": "number"
 				},
 				{
 					"name": "f2",
-					"type": "f32"
+					"type": "number"
 				},
 				{
 					"name": "f3",
-					"type": "f32"
+					"type": "number"
 				},
 				{
 					"name": "f4",
-					"type": "f32"
+					"type": "number"
 				},
 				{
 					"name": "f5",
-					"type": "f32"
+					"type": "number"
 				},
 				{
 					"name": "f6",
-					"type": "f32"
+					"type": "number"
 				},
 				{
 					"name": "f7",
-					"type": "f32"
+					"type": "number"
 				},
 				{
 					"name": "f8",
-					"type": "f32"
+					"type": "number"
 				},
 				{
 					"name": "f9",
-					"type": "f32"
+					"type": "number"
 				},
 				{
 					"name": "f10",
-					"type": "f32"
+					"type": "number"
 				},
 				{
 					"name": "f11",
-					"type": "f32"
+					"type": "number"
 				},
 				{
 					"name": "f12",
-					"type": "f32"
+					"type": "number"
 				},
 				{
 					"name": "f13",
-					"type": "f32"
+					"type": "number"
 				},
 				{
 					"name": "f14",
-					"type": "f32"
+					"type": "number"
 				},
 				{
 					"name": "f15",
-					"type": "f32"
+					"type": "number"
 				},
 				{
 					"name": "f16",
-					"type": "f32"
+					"type": "number"
 				},
 				{
 					"name": "f17",
-					"type": "f32"
+					"type": "number"
 				},
 				{
 					"name": "f18",
-					"type": "f32"
+					"type": "number"
 				},
 				{
 					"name": "f19",
-					"type": "f32"
+					"type": "number"
 				},
 				{
 					"name": "f20",
-					"type": "f32"
+					"type": "number"
 				},
 				{
 					"name": "f21",
-					"type": "f32"
+					"type": "number"
 				},
 				{
 					"name": "f22",
-					"type": "f32"
+					"type": "number"
 				},
 				{
 					"name": "f23",
-					"type": "f32"
+					"type": "number"
 				},
 				{
 					"name": "f24",
-					"type": "f32"
+					"type": "number"
 				},
 				{
 					"name": "f25",
-					"type": "f32"
+					"type": "number"
 				},
 				{
 					"name": "f26",
-					"type": "f32"
+					"type": "number"
 				},
 				{
 					"name": "f27",
-					"type": "f32"
+					"type": "number"
 				},
 				{
 					"name": "f28",
-					"type": "f32"
+					"type": "number"
 				},
 				{
 					"name": "f29",
-					"type": "f32"
+					"type": "number"
 				},
 				{
 					"name": "f30",
-					"type": "f32"
+					"type": "number"
 				},
 				{
 					"name": "i1",
-					"type": "i32"
+					"type": "number"
 				},
 				{
 					"name": "i2",
-					"type": "i32"
+					"type": "number"
 				},
 				{
 					"name": "i3",
-					"type": "i32"
+					"type": "number"
 				},
 				{
 					"name": "i4",
-					"type": "i32"
+					"type": "number"
 				},
 				{
 					"name": "i5",
-					"type": "i32"
+					"type": "number"
 				},
 				{
 					"name": "g",
-					"type": "i32"
+					"type": "number"
 				}
 			]
 		},
@@ -838,123 +838,123 @@
 			"arguments": [
 				{
 					"name": "f1",
-					"type": "f32"
+					"type": "number"
 				},
 				{
 					"name": "f2",
-					"type": "f32"
+					"type": "number"
 				},
 				{
 					"name": "f3",
-					"type": "f32"
+					"type": "number"
 				},
 				{
 					"name": "f4",
-					"type": "f32"
+					"type": "number"
 				},
 				{
 					"name": "f5",
-					"type": "f32"
+					"type": "number"
 				},
 				{
 					"name": "f6",
-					"type": "f32"
+					"type": "number"
 				},
 				{
 					"name": "f7",
-					"type": "f32"
+					"type": "number"
 				},
 				{
 					"name": "f8",
-					"type": "f32"
+					"type": "number"
 				},
 				{
 					"name": "f9",
-					"type": "f32"
+					"type": "number"
 				},
 				{
 					"name": "f10",
-					"type": "f32"
+					"type": "number"
 				},
 				{
 					"name": "f11",
-					"type": "f32"
+					"type": "number"
 				},
 				{
 					"name": "f12",
-					"type": "f32"
+					"type": "number"
 				},
 				{
 					"name": "f13",
-					"type": "f32"
+					"type": "number"
 				},
 				{
 					"name": "f14",
-					"type": "f32"
+					"type": "number"
 				},
 				{
 					"name": "f15",
-					"type": "f32"
+					"type": "number"
 				},
 				{
 					"name": "f16",
-					"type": "f32"
+					"type": "number"
 				},
 				{
 					"name": "f17",
-					"type": "f32"
+					"type": "number"
 				},
 				{
 					"name": "f18",
-					"type": "f32"
+					"type": "number"
 				},
 				{
 					"name": "f19",
-					"type": "f32"
+					"type": "number"
 				},
 				{
 					"name": "f20",
-					"type": "f32"
+					"type": "number"
 				},
 				{
 					"name": "f21",
-					"type": "f32"
+					"type": "number"
 				},
 				{
 					"name": "f22",
-					"type": "f32"
+					"type": "number"
 				},
 				{
 					"name": "f23",
-					"type": "f32"
+					"type": "number"
 				},
 				{
 					"name": "f24",
-					"type": "f32"
+					"type": "number"
 				},
 				{
 					"name": "f25",
-					"type": "f32"
+					"type": "number"
 				},
 				{
 					"name": "f26",
-					"type": "f32"
+					"type": "number"
 				},
 				{
 					"name": "f27",
-					"type": "f32"
+					"type": "number"
 				},
 				{
 					"name": "f28",
-					"type": "f32"
+					"type": "number"
 				},
 				{
 					"name": "f29",
-					"type": "f32"
+					"type": "number"
 				},
 				{
 					"name": "f30",
-					"type": "f32"
+					"type": "number"
 				},
 				{
 					"name": "s1",
@@ -978,7 +978,7 @@
 				},
 				{
 					"name": "g",
-					"type": "i32"
+					"type": "number"
 				}
 			]
 		},
@@ -1047,7 +1047,7 @@
 			"arguments": [
 				{
 					"name": "n",
-					"type": "i32"
+					"type": "number"
 				}
 			]
 		}

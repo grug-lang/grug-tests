@@ -39,7 +39,7 @@
 #endif
 
 #ifndef GRUG_TYPE_ON_FN_ID
-    #define GRUG_TYPE_ON_FN_ID uint32_t
+    #define GRUG_TYPE_ON_FN_ID uint64_t
 #endif
 
 union grug_value {

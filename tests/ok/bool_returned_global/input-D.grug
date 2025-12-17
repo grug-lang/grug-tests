@@ -1,6 +1,6 @@
 getting_down: bool = false
 
 on_a() {
-    getting_down = get_evil_false()
+    getting_down = get_false()
     set_is_happy(getting_down)
 }

@@ -25,7 +25,7 @@ void game_fn_say(const union grug_value args[]) {}
 float game_fn_sin(const union grug_value args[]) { return 0.0f; }
 float game_fn_cos(const union grug_value args[]) { return 0.0f; }
 void game_fn_mega(const union grug_value args[]) {}
-int game_fn_get_evil_false(void) { return 0xff00; }
+bool game_fn_get_false(void) { return false; }
 void game_fn_set_is_happy(const union grug_value args[]) {}
 void game_fn_mega_f32(const union grug_value args[]) {}
 void game_fn_mega_i32(const union grug_value args[]) {}

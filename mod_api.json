@@ -269,7 +269,7 @@
 				}
 			]
 		},
-		"get_evil_false": {
+		"get_false": {
 			"description": "foo",
 			"return_type": "bool"
 		},

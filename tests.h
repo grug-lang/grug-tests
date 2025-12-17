@@ -211,7 +211,7 @@ void game_fn_say(const union grug_value args[]);
 union grug_value game_fn_sin(const union grug_value args[]);
 union grug_value game_fn_cos(const union grug_value args[]);
 void game_fn_mega(const union grug_value args[]);
-union grug_value game_fn_get_evil_false(void);
+union grug_value game_fn_get_false(void);
 void game_fn_set_is_happy(const union grug_value args[]);
 void game_fn_mega_f32(const union grug_value args[]);
 void game_fn_mega_i32(const union grug_value args[]);

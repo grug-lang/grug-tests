@@ -101,7 +101,7 @@ static size_t game_fn_say_call_count;
 static size_t game_fn_sin_call_count;
 static size_t game_fn_cos_call_count;
 static size_t game_fn_mega_call_count;
-static size_t game_fn_get_evil_false_call_count;
+static size_t game_fn_get_false_call_count;
 static size_t game_fn_set_is_happy_call_count;
 static size_t game_fn_mega_f32_call_count;
 static size_t game_fn_mega_i32_call_count;
@@ -245,11 +245,11 @@ void game_fn_mega(const union grug_value args[]) {
 	game_fn_mega_id = args[12]._id;
 	game_fn_mega_str = args[13]._string;
 }
-union grug_value game_fn_get_evil_false(void) {
+union grug_value game_fn_get_false(void) {
 	ASSERT_16_BYTE_STACK_ALIGNED();
-	game_fn_get_evil_false_call_count++;
+	game_fn_get_false_call_count++;
 
-	return grug_bool(0xff00);
+	return grug_bool(false);
 }
 static bool game_fn_set_is_happy_is_happy;
 void game_fn_set_is_happy(const union grug_value args[]) {
@@ -723,7 +723,7 @@ static void reset_call_counts(void) {
 	game_fn_sin_call_count = 0;
 	game_fn_cos_call_count = 0;
 	game_fn_mega_call_count = 0;
-	game_fn_get_evil_false_call_count = 0;
+	game_fn_get_false_call_count = 0;
 	game_fn_set_is_happy_call_count = 0;
 	game_fn_mega_f32_call_count = 0;
 	game_fn_mega_i32_call_count = 0;
@@ -1132,30 +1132,30 @@ static void ok_bool_logical_not_true(void) {
 
 static void ok_bool_returned(void) {
 	assert(game_fn_set_is_happy_call_count == 0);
-	assert(game_fn_get_evil_false_call_count == 0);
+	assert(game_fn_get_false_call_count == 0);
     on_fn_dispatcher("on_a", "tests/ok/bool_returned/input-D.grug");
 	assert(game_fn_set_is_happy_call_count == 1);
-	assert(game_fn_get_evil_false_call_count == 1);
+	assert(game_fn_get_false_call_count == 1);
 
 	assert(game_fn_set_is_happy_is_happy == false);
 }
 
 static void ok_bool_returned_global(void) {
 	assert(game_fn_set_is_happy_call_count == 0);
-	assert(game_fn_get_evil_false_call_count == 0);
+	assert(game_fn_get_false_call_count == 0);
     on_fn_dispatcher("on_a", "tests/ok/bool_returned_global/input-D.grug");
 	assert(game_fn_set_is_happy_call_count == 1);
-	assert(game_fn_get_evil_false_call_count == 1);
+	assert(game_fn_get_false_call_count == 1);
 
 	assert(game_fn_set_is_happy_is_happy == false);
 }
 
 static void ok_bool_zero_extended_if_statement(void) {
 	assert(game_fn_nothing_call_count == 0);
-	assert(game_fn_get_evil_false_call_count == 0);
+	assert(game_fn_get_false_call_count == 0);
     on_fn_dispatcher("on_a", "tests/ok/bool_zero_extended_if_statement/input-D.grug");
 	assert(game_fn_nothing_call_count == 2);
-	assert(game_fn_get_evil_false_call_count == 1);
+	assert(game_fn_get_false_call_count == 1);
 }
 
 static void ok_bool_zero_extended_while_statement(void) {

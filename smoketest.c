@@ -34,7 +34,7 @@ static void (*p_game_fn_say)(const union grug_value args[]);
 static union grug_value (*p_game_fn_sin)(const union grug_value args[]);
 static union grug_value (*p_game_fn_cos)(const union grug_value args[]);
 static void (*p_game_fn_mega)(const union grug_value args[]);
-static union grug_value (*p_game_fn_get_evil_false)(void);
+static union grug_value (*p_game_fn_get_false)(void);
 static void (*p_game_fn_set_is_happy)(const union grug_value args[]);
 static void (*p_game_fn_mega_f32)(const union grug_value args[]);
 static void (*p_game_fn_mega_i32)(const union grug_value args[]);
@@ -177,18 +177,18 @@ static void on_fn_dispatcher(const char *on_fn_name, const char *grug_file_path,
     } else if (starts_with(grug_file_path, "tests/ok/bool_logical_not_true/")) {
         CALL(initialize_bool, grug_bool(false));
     } else if (starts_with(grug_file_path, "tests/ok/bool_returned/")) {
-        CALL_ARGLESS(get_evil_false);
+        CALL_ARGLESS(get_false);
         CALL(set_is_happy, grug_bool(false));
     } else if (starts_with(grug_file_path, "tests/ok/bool_returned_global/")) {
-        CALL_ARGLESS(get_evil_false);
+        CALL_ARGLESS(get_false);
         CALL(set_is_happy, grug_bool(false));
     } else if (starts_with(grug_file_path, "tests/ok/bool_zero_extended_if_statement/")) {
         CALL_ARGLESS(nothing);
-        CALL_ARGLESS(get_evil_false);
+        CALL_ARGLESS(get_false);
         CALL_ARGLESS(nothing);
     } else if (starts_with(grug_file_path, "tests/ok/bool_zero_extended_while_statement/")) {
         CALL_ARGLESS(nothing);
-        CALL_ARGLESS(get_evil_false);
+        CALL_ARGLESS(get_false);
         CALL_ARGLESS(nothing);
     } else if (starts_with(grug_file_path, "tests/ok/break/")) {
         CALL_ARGLESS(nothing);
@@ -693,7 +693,7 @@ static void load_tests_so(void) {
     p_game_fn_sin = load_sym(h, "game_fn_sin");
     p_game_fn_cos = load_sym(h, "game_fn_cos");
     p_game_fn_mega = load_sym(h, "game_fn_mega");
-    p_game_fn_get_evil_false = load_sym(h, "game_fn_get_evil_false");
+    p_game_fn_get_false = load_sym(h, "game_fn_get_false");
     p_game_fn_set_is_happy = load_sym(h, "game_fn_set_is_happy");
     p_game_fn_mega_f32 = load_sym(h, "game_fn_mega_f32");
     p_game_fn_mega_i32 = load_sym(h, "game_fn_mega_i32");

@@ -2,6 +2,6 @@ on_a() {
     helper_foo(42)
 }
 
-helper_foo(n: i32) {
+helper_foo(n: number) {
     initialize(n)
 }

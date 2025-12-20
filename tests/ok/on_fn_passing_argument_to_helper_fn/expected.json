@@ -1,0 +1,43 @@
+[
+    {
+        "type": "GLOBAL_ON_FN",
+        "name": "on_a",
+        "statements": [
+            {
+                "type": "CALL_STATEMENT",
+                "name": "helper_foo",
+                "arguments": [
+                    {
+                        "type": "NUMBER_EXPR",
+                        "value": "42"
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "type": "GLOBAL_EMPTY_LINE"
+    },
+    {
+        "type": "GLOBAL_HELPER_FN",
+        "name": "helper_foo",
+        "arguments": [
+            {
+                "name": "n",
+                "type": "number"
+            }
+        ],
+        "statements": [
+            {
+                "type": "CALL_STATEMENT",
+                "name": "initialize",
+                "arguments": [
+                    {
+                        "type": "IDENTIFIER_EXPR",
+                        "str": "n"
+                    }
+                ]
+            }
+        ]
+    }
+]

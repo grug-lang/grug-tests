@@ -1,0 +1,37 @@
+[
+    {
+        "type": "GLOBAL_VARIABLE",
+        "name": "getting_down",
+        "variable_type": "bool",
+        "assignment": {
+            "type": "FALSE_EXPR"
+        }
+    },
+    {
+        "type": "GLOBAL_EMPTY_LINE"
+    },
+    {
+        "type": "GLOBAL_ON_FN",
+        "name": "on_a",
+        "statements": [
+            {
+                "type": "VARIABLE_STATEMENT",
+                "name": "getting_down",
+                "assignment": {
+                    "type": "CALL_EXPR",
+                    "name": "get_false"
+                }
+            },
+            {
+                "type": "CALL_STATEMENT",
+                "name": "set_is_happy",
+                "arguments": [
+                    {
+                        "type": "IDENTIFIER_EXPR",
+                        "str": "getting_down"
+                    }
+                ]
+            }
+        ]
+    }
+]

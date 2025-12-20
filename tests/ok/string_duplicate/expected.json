@@ -1,0 +1,1 @@
+[{"type":"GLOBAL_ON_FN","name":"on_a","statements":[{"type":"CALL_STATEMENT","name":"talk","arguments":[{"type":"STRING_EXPR","str":"foo"},{"type":"STRING_EXPR","str":"bar"},{"type":"STRING_EXPR","str":"bar"},{"type":"STRING_EXPR","str":"baz"}]}]}]

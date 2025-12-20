@@ -1,6 +1,6 @@
 on_a() {
     nothing()
-    if get_evil_false() {
+    if get_false() {
         nothing()
     }
     nothing()

@@ -1,9 +1,9 @@
-g: i32 = 6
+g: number = 6
 
 on_a() {
     helper_foo(1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0, 14.0, 15.0, 16.0, 17.0, 18.0, 19.0, 20.0, 21.0, 22.0, 23.0, 24.0, 25.0, 26.0, 27.0, 28.0, 29.0, 30.0, 1, 2, 3, 4, 5)
 }
 
-helper_foo(f1: f32, f2: f32, f3: f32, f4: f32, f5: f32, f6: f32, f7: f32, f8: f32, f9: f32, f10: f32, f11: f32, f12: f32, f13: f32, f14: f32, f15: f32, f16: f32, f17: f32, f18: f32, f19: f32, f20: f32, f21: f32, f22: f32, f23: f32, f24: f32, f25: f32, f26: f32, f27: f32, f28: f32, f29: f32, f30: f32, i1: i32, i2: i32, i3: i32, i4: i32, i5: i32) {
+helper_foo(f1: number, f2: number, f3: number, f4: number, f5: number, f6: number, f7: number, f8: number, f9: number, f10: number, f11: number, f12: number, f13: number, f14: number, f15: number, f16: number, f17: number, f18: number, f19: number, f20: number, f21: number, f22: number, f23: number, f24: number, f25: number, f26: number, f27: number, f28: number, f29: number, f30: number, i1: number, i2: number, i3: number, i4: number, i5: number) {
     offset_32_bit_i32(f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14, f15, f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26, f27, f28, f29, f30, i1, i2, i3, i4, i5, g)
 }

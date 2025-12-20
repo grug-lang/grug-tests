@@ -1,0 +1,1 @@
+[{"type":"GLOBAL_ON_FN","name":"on_a","arguments":[{"name":"id","type":"id"}],"statements":[{"type":"CALL_STATEMENT","name":"store","arguments":[{"type":"IDENTIFIER_EXPR","str":"id"}]}]}]

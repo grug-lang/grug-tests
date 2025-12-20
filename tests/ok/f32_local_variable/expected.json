@@ -1,0 +1,27 @@
+[
+    {
+        "type": "GLOBAL_ON_FN",
+        "name": "on_a",
+        "statements": [
+            {
+                "type": "VARIABLE_STATEMENT",
+                "name": "x",
+                "variable_type": "number",
+                "assignment": {
+                    "type": "NUMBER_EXPR",
+                    "value": "4.0"
+                }
+            },
+            {
+                "type": "CALL_STATEMENT",
+                "name": "sin",
+                "arguments": [
+                    {
+                        "type": "IDENTIFIER_EXPR",
+                        "str": "x"
+                    }
+                ]
+            }
+        ]
+    }
+]

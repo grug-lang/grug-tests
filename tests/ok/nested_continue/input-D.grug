@@ -1,5 +1,5 @@
 on_a() {
-    i: i32 = 0
+    i: number = 0
 
     while true {
         nothing()

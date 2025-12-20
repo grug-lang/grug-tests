@@ -1,65 +1,65 @@
 on_a() {
-    v1: i32 = 1
+    v1: number = 1
     initialize(v1)
-    v2: i32 = 2
+    v2: number = 2
     initialize(v2)
-    v3: i32 = 3
+    v3: number = 3
     initialize(v3)
-    v4: i32 = 4
+    v4: number = 4
     initialize(v4)
-    v5: i32 = 5
+    v5: number = 5
     initialize(v5)
-    v6: i32 = 6
+    v6: number = 6
     initialize(v6)
-    v7: i32 = 7
+    v7: number = 7
     initialize(v7)
-    v8: i32 = 8
+    v8: number = 8
     initialize(v8)
-    v9: i32 = 9
+    v9: number = 9
     initialize(v9)
-    v10: i32 = 10
+    v10: number = 10
     initialize(v10)
-    v11: i32 = 11
+    v11: number = 11
     initialize(v11)
-    v12: i32 = 12
+    v12: number = 12
     initialize(v12)
-    v13: i32 = 13
+    v13: number = 13
     initialize(v13)
-    v14: i32 = 14
+    v14: number = 14
     initialize(v14)
-    v15: i32 = 15
+    v15: number = 15
     initialize(v15)
-    v16: i32 = 16
+    v16: number = 16
     initialize(v16)
-    v17: i32 = 17
+    v17: number = 17
     initialize(v17)
-    v18: i32 = 18
+    v18: number = 18
     initialize(v18)
-    v19: i32 = 19
+    v19: number = 19
     initialize(v19)
-    v20: i32 = 20
+    v20: number = 20
     initialize(v20)
-    v21: i32 = 21
+    v21: number = 21
     initialize(v21)
-    v22: i32 = 22
+    v22: number = 22
     initialize(v22)
-    v23: i32 = 23
+    v23: number = 23
     initialize(v23)
-    v24: i32 = 24
+    v24: number = 24
     initialize(v24)
-    v25: i32 = 25
+    v25: number = 25
     initialize(v25)
-    v26: i32 = 26
+    v26: number = 26
     initialize(v26)
-    v27: i32 = 27
+    v27: number = 27
     initialize(v27)
-    v28: i32 = 28
+    v28: number = 28
     initialize(v28)
-    v29: i32 = 29
+    v29: number = 29
     initialize(v29)
 
     # This causes SUB_RSP_32_BITS to be used in the function prologue,
     # instead of SUB_RSP_8_BITS, since there are now over 256 variable bytes
-    v30: i32 = 30
+    v30: number = 30
     initialize(v30)
 }

@@ -2,6 +2,6 @@ on_a() {
     helper_foo()
 }
 
-helper_foo() i32 {
+helper_foo() number {
     nothing()
 }

@@ -1,5 +1,5 @@
-a: i32 = 2
-b: i32 = a + 3
+a: number = 2
+b: number = a + 3
 
 on_a() {
     initialize(b)

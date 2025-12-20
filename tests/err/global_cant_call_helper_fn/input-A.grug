@@ -1,5 +1,5 @@
-foo: i32 = helper_bar()
+foo: number = helper_bar()
 
-helper_bar() i32 {
+helper_bar() number {
     return 42
 }

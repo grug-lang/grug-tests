@@ -1,8 +1,8 @@
 on_a() {
-    x: i32 = 42
+    x: number = 42
 
     if true {
-        x: i32 = 69
+        x: number = 69
         initialize(x)
     }
 }

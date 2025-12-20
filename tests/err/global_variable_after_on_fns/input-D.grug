@@ -2,4 +2,4 @@ on_a() {
     nothing()
 }
 
-foo: i32 = 42
+foo: number = 42

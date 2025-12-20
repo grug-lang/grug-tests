@@ -1,4 +1,4 @@
 on_a() {
-    x: f32 = sin(4.0)
+    x: number = sin(4.0)
     cos(x)
 }

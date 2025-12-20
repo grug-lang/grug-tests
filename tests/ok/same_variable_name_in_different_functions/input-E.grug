@@ -1,16 +1,16 @@
 on_a() {
-    foo: i32 = 42
+    foo: number = 42
     initialize(foo)
 
     helper_bar()
 }
 
 on_b() {
-    foo: i32 = 1337
+    foo: number = 1337
     initialize(foo)
 }
 
 helper_bar() {
-    foo: i32 = 69
+    foo: number = 69
     initialize(foo)
 }

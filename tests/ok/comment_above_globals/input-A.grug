@@ -1,7 +1,7 @@
 # foo
-uses: i32 = 420
+uses: number = 420
 
 # bar
 # baz
-armor: i32 = 1337
-health: i32 = 100
+armor: number = 1337
+health: number = 100

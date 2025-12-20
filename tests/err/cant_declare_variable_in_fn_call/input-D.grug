@@ -1,3 +1,3 @@
 on_a() {
-    initialize(a: i32 = 42)
+    initialize(a: number = 42)
 }

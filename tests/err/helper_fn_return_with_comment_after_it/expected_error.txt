@@ -1,1 +1,1 @@
-Function 'helper_foo' is supposed to return i32 as its last line
+Function 'helper_foo' is supposed to return number as its last line

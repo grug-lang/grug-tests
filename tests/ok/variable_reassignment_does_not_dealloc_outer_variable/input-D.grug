@@ -1,5 +1,5 @@
 on_a() {
-    foo: i32 = 42
+    foo: number = 42
 
     if true {
         foo = 69

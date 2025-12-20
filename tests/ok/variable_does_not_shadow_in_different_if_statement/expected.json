@@ -1,0 +1,65 @@
+[
+    {
+        "type": "GLOBAL_ON_FN",
+        "name": "on_a",
+        "statements": [
+            {
+                "type": "IF_STATEMENT",
+                "condition": {
+                    "type": "TRUE_EXPR"
+                },
+                "if_statements": [
+                    {
+                        "type": "VARIABLE_STATEMENT",
+                        "name": "a",
+                        "variable_type": "number",
+                        "assignment": {
+                            "type": "NUMBER_EXPR",
+                            "value": "42"
+                        }
+                    },
+                    {
+                        "type": "CALL_STATEMENT",
+                        "name": "initialize",
+                        "arguments": [
+                            {
+                                "type": "IDENTIFIER_EXPR",
+                                "str": "a"
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                "type": "EMPTY_LINE_STATEMENT"
+            },
+            {
+                "type": "IF_STATEMENT",
+                "condition": {
+                    "type": "TRUE_EXPR"
+                },
+                "if_statements": [
+                    {
+                        "type": "VARIABLE_STATEMENT",
+                        "name": "a",
+                        "variable_type": "number",
+                        "assignment": {
+                            "type": "NUMBER_EXPR",
+                            "value": "69"
+                        }
+                    },
+                    {
+                        "type": "CALL_STATEMENT",
+                        "name": "initialize",
+                        "arguments": [
+                            {
+                                "type": "IDENTIFIER_EXPR",
+                                "str": "a"
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    }
+]

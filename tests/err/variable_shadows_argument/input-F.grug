@@ -1,4 +1,4 @@
-on_a(x: i32) {
-    x: i32 = 42
+on_a(x: number) {
+    x: number = 42
     initialize(x)
 }

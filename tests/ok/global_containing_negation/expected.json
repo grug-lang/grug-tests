@@ -1,0 +1,15 @@
+[
+    {
+        "type": "GLOBAL_VARIABLE",
+        "name": "foo",
+        "variable_type": "number",
+        "assignment": {
+            "type": "UNARY_EXPR",
+            "operator": "MINUS_TOKEN",
+            "expr": {
+                "type": "NUMBER_EXPR",
+                "value": "2"
+            }
+        }
+    }
+]

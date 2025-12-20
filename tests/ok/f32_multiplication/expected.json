@@ -1,0 +1,35 @@
+[
+    {
+        "type": "GLOBAL_ON_FN",
+        "name": "on_a",
+        "statements": [
+            {
+                "type": "VARIABLE_STATEMENT",
+                "name": "x",
+                "variable_type": "number",
+                "assignment": {
+                    "type": "BINARY_EXPR",
+                    "left_expr": {
+                        "type": "NUMBER_EXPR",
+                        "value": "2.0"
+                    },
+                    "operator": "MULTIPLICATION_TOKEN",
+                    "right_expr": {
+                        "type": "NUMBER_EXPR",
+                        "value": "4.0"
+                    }
+                }
+            },
+            {
+                "type": "CALL_STATEMENT",
+                "name": "sin",
+                "arguments": [
+                    {
+                        "type": "IDENTIFIER_EXPR",
+                        "str": "x"
+                    }
+                ]
+            }
+        ]
+    }
+]

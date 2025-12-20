@@ -1,12 +1,10 @@
 on_a() {
-    initialize(1 / 0)
-
     helper_foo()
 
     while true {
     }
 
-    foo: i32 = 1 + 1
+    foo: number = 1 + 1
 }
 
 helper_foo() {

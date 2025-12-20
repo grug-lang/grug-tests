@@ -2,7 +2,7 @@ on_a() {
     initialize(helper_fib(10))
 }
 
-helper_fib(n: i32) i32 {
+helper_fib(n: number) number {
     if n == 0 or n == 1 {
         return n
     }

@@ -1,0 +1,1 @@
+[{"type":"GLOBAL_ON_FN","name":"on_a","statements":[{"type":"CALL_STATEMENT","name":"helper_foo"},{"type":"CALL_STATEMENT","name":"nothing"}]},{"type":"GLOBAL_EMPTY_LINE"},{"type":"GLOBAL_HELPER_FN","name":"helper_foo","statements":[{"type":"RETURN_STATEMENT"}]}]

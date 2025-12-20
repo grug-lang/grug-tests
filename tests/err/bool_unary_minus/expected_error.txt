@@ -1,1 +1,1 @@
-Found '-' before bool, but it can only be put before an i32 or f32
+Found '-' before bool, but it can only be put before a number

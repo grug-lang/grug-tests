@@ -1,1 +1,1 @@
-Division of an i32 by 0
+Stack overflow, so check for accidental infinite recursion

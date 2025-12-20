@@ -1,0 +1,29 @@
+[
+    {
+        "type": "GLOBAL_ON_FN",
+        "name": "on_a",
+        "statements": [
+            {
+                "type": "CALL_STATEMENT",
+                "name": "initialize",
+                "arguments": [
+                    {
+                        "type": "UNARY_EXPR",
+                        "operator": "MINUS_TOKEN",
+                        "expr": {
+                            "type": "PARENTHESIZED_EXPR",
+                            "expr": {
+                                "type": "UNARY_EXPR",
+                                "operator": "MINUS_TOKEN",
+                                "expr": {
+                                    "type": "NUMBER_EXPR",
+                                    "value": "2"
+                                }
+                            }
+                        }
+                    }
+                ]
+            }
+        ]
+    }
+]

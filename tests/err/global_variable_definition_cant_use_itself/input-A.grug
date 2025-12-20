@@ -1,1 +1,1 @@
-foo: i32 = foo
+foo: number = foo

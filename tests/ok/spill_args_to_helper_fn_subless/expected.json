@@ -1,0 +1,251 @@
+[
+    {
+        "type": "GLOBAL_VARIABLE",
+        "name": "g",
+        "variable_type": "number",
+        "assignment": {
+            "type": "NUMBER_EXPR",
+            "value": "7"
+        }
+    },
+    {
+        "type": "GLOBAL_EMPTY_LINE"
+    },
+    {
+        "type": "GLOBAL_ON_FN",
+        "name": "on_a",
+        "statements": [
+            {
+                "type": "CALL_STATEMENT",
+                "name": "helper_foo",
+                "arguments": [
+                    {
+                        "type": "NUMBER_EXPR",
+                        "value": "1"
+                    },
+                    {
+                        "type": "NUMBER_EXPR",
+                        "value": "2"
+                    },
+                    {
+                        "type": "NUMBER_EXPR",
+                        "value": "3"
+                    },
+                    {
+                        "type": "NUMBER_EXPR",
+                        "value": "4"
+                    },
+                    {
+                        "type": "NUMBER_EXPR",
+                        "value": "5"
+                    },
+                    {
+                        "type": "NUMBER_EXPR",
+                        "value": "6"
+                    },
+                    {
+                        "type": "NUMBER_EXPR",
+                        "value": "1.0"
+                    },
+                    {
+                        "type": "NUMBER_EXPR",
+                        "value": "2.0"
+                    },
+                    {
+                        "type": "NUMBER_EXPR",
+                        "value": "3.0"
+                    },
+                    {
+                        "type": "NUMBER_EXPR",
+                        "value": "4.0"
+                    },
+                    {
+                        "type": "NUMBER_EXPR",
+                        "value": "5.0"
+                    },
+                    {
+                        "type": "NUMBER_EXPR",
+                        "value": "6.0"
+                    },
+                    {
+                        "type": "NUMBER_EXPR",
+                        "value": "7.0"
+                    },
+                    {
+                        "type": "NUMBER_EXPR",
+                        "value": "8.0"
+                    },
+                    {
+                        "type": "NUMBER_EXPR",
+                        "value": "9.0"
+                    },
+                    {
+                        "type": "IDENTIFIER_EXPR",
+                        "str": "me"
+                    },
+                    {
+                        "type": "NUMBER_EXPR",
+                        "value": "10.0"
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "type": "GLOBAL_EMPTY_LINE"
+    },
+    {
+        "type": "GLOBAL_HELPER_FN",
+        "name": "helper_foo",
+        "arguments": [
+            {
+                "name": "i1",
+                "type": "number"
+            },
+            {
+                "name": "i2",
+                "type": "number"
+            },
+            {
+                "name": "i3",
+                "type": "number"
+            },
+            {
+                "name": "i4",
+                "type": "number"
+            },
+            {
+                "name": "i5",
+                "type": "number"
+            },
+            {
+                "name": "i6",
+                "type": "number"
+            },
+            {
+                "name": "f1",
+                "type": "number"
+            },
+            {
+                "name": "f2",
+                "type": "number"
+            },
+            {
+                "name": "f3",
+                "type": "number"
+            },
+            {
+                "name": "f4",
+                "type": "number"
+            },
+            {
+                "name": "f5",
+                "type": "number"
+            },
+            {
+                "name": "f6",
+                "type": "number"
+            },
+            {
+                "name": "f7",
+                "type": "number"
+            },
+            {
+                "name": "f8",
+                "type": "number"
+            },
+            {
+                "name": "f9",
+                "type": "number"
+            },
+            {
+                "name": "id",
+                "type": "D"
+            },
+            {
+                "name": "f10",
+                "type": "number"
+            }
+        ],
+        "statements": [
+            {
+                "type": "CALL_STATEMENT",
+                "name": "motherload_subless",
+                "arguments": [
+                    {
+                        "type": "IDENTIFIER_EXPR",
+                        "str": "i1"
+                    },
+                    {
+                        "type": "IDENTIFIER_EXPR",
+                        "str": "i2"
+                    },
+                    {
+                        "type": "IDENTIFIER_EXPR",
+                        "str": "i3"
+                    },
+                    {
+                        "type": "IDENTIFIER_EXPR",
+                        "str": "i4"
+                    },
+                    {
+                        "type": "IDENTIFIER_EXPR",
+                        "str": "i5"
+                    },
+                    {
+                        "type": "IDENTIFIER_EXPR",
+                        "str": "i6"
+                    },
+                    {
+                        "type": "IDENTIFIER_EXPR",
+                        "str": "g"
+                    },
+                    {
+                        "type": "IDENTIFIER_EXPR",
+                        "str": "f1"
+                    },
+                    {
+                        "type": "IDENTIFIER_EXPR",
+                        "str": "f2"
+                    },
+                    {
+                        "type": "IDENTIFIER_EXPR",
+                        "str": "f3"
+                    },
+                    {
+                        "type": "IDENTIFIER_EXPR",
+                        "str": "f4"
+                    },
+                    {
+                        "type": "IDENTIFIER_EXPR",
+                        "str": "f5"
+                    },
+                    {
+                        "type": "IDENTIFIER_EXPR",
+                        "str": "f6"
+                    },
+                    {
+                        "type": "IDENTIFIER_EXPR",
+                        "str": "f7"
+                    },
+                    {
+                        "type": "IDENTIFIER_EXPR",
+                        "str": "f8"
+                    },
+                    {
+                        "type": "IDENTIFIER_EXPR",
+                        "str": "f9"
+                    },
+                    {
+                        "type": "IDENTIFIER_EXPR",
+                        "str": "id"
+                    },
+                    {
+                        "type": "IDENTIFIER_EXPR",
+                        "str": "f10"
+                    }
+                ]
+            }
+        ]
+    }
+]

@@ -1,5 +1,5 @@
 on_a() {
     foo = 1.0
 
-    foo: f32 = 2.0
+    foo: number = 2.0
 }

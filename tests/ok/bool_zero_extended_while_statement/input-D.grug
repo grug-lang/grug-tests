@@ -1,6 +1,6 @@
 on_a() {
     nothing()
-    while get_evil_false() {
+    while get_false() {
         nothing()
     }
     nothing()

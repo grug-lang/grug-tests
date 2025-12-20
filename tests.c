@@ -62,7 +62,6 @@ struct error_test_data {
 	const char *expected_error_path;
 	const char *results_path;
 	const char *grug_output_path;
-	const char *failed_file_path;
 };
 static struct error_test_data error_test_datas[420420];
 static size_t err_test_datas_size;
@@ -74,7 +73,6 @@ struct ok_test_data {
 	const char *results_path;
 	const char *dump_path;
 	const char *applied_path;
-	const char *failed_file_path;
 	size_t expected_globals_size_value;
 };
 static struct ok_test_data ok_test_datas[420420];
@@ -88,7 +86,6 @@ struct runtime_error_test_data {
 	const char *results_path;
 	const char *dump_path;
 	const char *applied_path;
-	const char *failed_file_path;
 	size_t expected_globals_size_value;
 };
 static struct runtime_error_test_data runtime_error_test_datas[420420];
@@ -104,7 +101,7 @@ static size_t game_fn_say_call_count;
 static size_t game_fn_sin_call_count;
 static size_t game_fn_cos_call_count;
 static size_t game_fn_mega_call_count;
-static size_t game_fn_get_evil_false_call_count;
+static size_t game_fn_get_false_call_count;
 static size_t game_fn_set_is_happy_call_count;
 static size_t game_fn_mega_f32_call_count;
 static size_t game_fn_mega_i32_call_count;
@@ -129,7 +126,7 @@ static size_t game_fn_cause_game_fn_error_call_count;
 static size_t game_fn_call_on_b_fn_call_count;
 static size_t game_fn_store_call_count;
 static size_t game_fn_retrieve_call_count;
-static size_t game_fn_box_i32_call_count;
+static size_t game_fn_box_number_call_count;
 
 static bool had_runtime_error = false;
 static size_t error_handler_calls = 0;
@@ -143,146 +140,146 @@ static bool streq(const char *a, const char *b) {
 }
 
 static void on_fn_dispatcher(const char *on_fn_name, const char *grug_path) {
-	on_fn_args_dispatcher(on_fn_name, grug_path, NULL, 0);
+	on_fn_args_dispatcher(on_fn_name, grug_path, NULL);
 }
 
 void game_fn_nothing(void) {
 	ASSERT_16_BYTE_STACK_ALIGNED();
 	game_fn_nothing_call_count++;
 }
-int32_t game_fn_magic(void) {
+union grug_value game_fn_magic(void) {
 	ASSERT_16_BYTE_STACK_ALIGNED();
 	game_fn_magic_call_count++;
 
-	return 42;
+	return grug_number(42.0);
 }
 static int32_t game_fn_initialize_x;
-void game_fn_initialize(int32_t x) {
+void game_fn_initialize(const union grug_value args[]) {
 	ASSERT_16_BYTE_STACK_ALIGNED();
 	game_fn_initialize_call_count++;
 
-	game_fn_initialize_x = x;
+	game_fn_initialize_x = args[0]._number;
 }
 static bool game_fn_initialize_bool_b;
-void game_fn_initialize_bool(bool b) {
+void game_fn_initialize_bool(const union grug_value args[]) {
 	ASSERT_16_BYTE_STACK_ALIGNED();
 	game_fn_initialize_bool_call_count++;
 
-	game_fn_initialize_bool_b = b;
+	game_fn_initialize_bool_b = args[0]._bool;
 }
 static int32_t game_fn_identity_x;
-int32_t game_fn_identity(int32_t x) {
+union grug_value game_fn_identity(const union grug_value args[]) {
 	ASSERT_16_BYTE_STACK_ALIGNED();
 	game_fn_identity_call_count++;
 
-	game_fn_identity_x = x;
+	game_fn_identity_x = args[0]._number;
 
-	return x;
+	return args[0];
 }
 static int32_t game_fn_max_x;
 static int32_t game_fn_max_y;
-int32_t game_fn_max(int32_t x, int32_t y) {
+union grug_value game_fn_max(const union grug_value args[]) {
 	ASSERT_16_BYTE_STACK_ALIGNED();
 	game_fn_max_call_count++;
 
-	game_fn_max_x = x;
-	game_fn_max_y = y;
+	game_fn_max_x = args[0]._number;
+	game_fn_max_y = args[1]._number;
 
-	return x > y ? x : y;
+	return args[0]._number > args[1]._number ? args[0] : args[1];
 }
 static const char *game_fn_say_message;
-void game_fn_say(const char *message) {
+void game_fn_say(const union grug_value args[]) {
 	ASSERT_16_BYTE_STACK_ALIGNED();
 	game_fn_say_call_count++;
 
-	game_fn_say_message = message;
+	game_fn_say_message = args[0]._string;
 }
-static float game_fn_sin_x;
-float game_fn_sin(float x) {
+static double game_fn_sin_x;
+union grug_value game_fn_sin(const union grug_value args[]) {
 	ASSERT_16_BYTE_STACK_ALIGNED();
 	game_fn_sin_call_count++;
 
-	game_fn_sin_x = x;
+	game_fn_sin_x = args[0]._number;
 
-	return sinf(x);
+	return grug_number(sin(args[0]._number));
 }
-static float game_fn_cos_x;
-float game_fn_cos(float x) {
+static double game_fn_cos_x;
+union grug_value game_fn_cos(const union grug_value args[]) {
 	ASSERT_16_BYTE_STACK_ALIGNED();
 	game_fn_cos_call_count++;
 
-	game_fn_cos_x = x;
+	game_fn_cos_x = args[0]._number;
 
-	return cosf(x);
+	return grug_number(cos(args[0]._number));
 }
-static float game_fn_mega_f1;
+static double game_fn_mega_f1;
 static int32_t game_fn_mega_i1;
 static bool game_fn_mega_b1;
-static float game_fn_mega_f2;
-static float game_fn_mega_f3;
-static float game_fn_mega_f4;
+static double game_fn_mega_f2;
+static double game_fn_mega_f3;
+static double game_fn_mega_f4;
 static bool game_fn_mega_b2;
 static int32_t game_fn_mega_i2;
-static float game_fn_mega_f5;
-static float game_fn_mega_f6;
-static float game_fn_mega_f7;
-static float game_fn_mega_f8;
+static double game_fn_mega_f5;
+static double game_fn_mega_f6;
+static double game_fn_mega_f7;
+static double game_fn_mega_f8;
 static int32_t game_fn_mega_id;
 static const char *game_fn_mega_str;
-void game_fn_mega(float f1, int32_t i1, bool b1, float f2, float f3, float f4, bool b2, int32_t i2, float f5, float f6, float f7, float f8, uint64_t id, const char *str) {
+void game_fn_mega(const union grug_value args[]) {
 	ASSERT_16_BYTE_STACK_ALIGNED();
 	game_fn_mega_call_count++;
 
-	game_fn_mega_f1 = f1;
-	game_fn_mega_i1 = i1;
-	game_fn_mega_b1 = b1;
-	game_fn_mega_f2 = f2;
-	game_fn_mega_f3 = f3;
-	game_fn_mega_f4 = f4;
-	game_fn_mega_b2 = b2;
-	game_fn_mega_i2 = i2;
-	game_fn_mega_f5 = f5;
-	game_fn_mega_f6 = f6;
-	game_fn_mega_f7 = f7;
-	game_fn_mega_f8 = f8;
-	game_fn_mega_id = id;
-	game_fn_mega_str = str;
+	game_fn_mega_f1 = args[0]._number;
+	game_fn_mega_i1 = args[1]._number;
+	game_fn_mega_b1 = args[2]._bool;
+	game_fn_mega_f2 = args[3]._number;
+	game_fn_mega_f3 = args[4]._number;
+	game_fn_mega_f4 = args[5]._number;
+	game_fn_mega_b2 = args[6]._bool;
+	game_fn_mega_i2 = args[7]._number;
+	game_fn_mega_f5 = args[8]._number;
+	game_fn_mega_f6 = args[9]._number;
+	game_fn_mega_f7 = args[10]._number;
+	game_fn_mega_f8 = args[11]._number;
+	game_fn_mega_id = args[12]._id;
+	game_fn_mega_str = args[13]._string;
 }
-int game_fn_get_evil_false(void) {
+union grug_value game_fn_get_false(void) {
 	ASSERT_16_BYTE_STACK_ALIGNED();
-	game_fn_get_evil_false_call_count++;
+	game_fn_get_false_call_count++;
 
-	return 0xff00;
+	return grug_bool(false);
 }
 static bool game_fn_set_is_happy_is_happy;
-void game_fn_set_is_happy(bool is_happy) {
+void game_fn_set_is_happy(const union grug_value args[]) {
 	ASSERT_16_BYTE_STACK_ALIGNED();
 	game_fn_set_is_happy_call_count++;
 
-	game_fn_set_is_happy_is_happy = is_happy;
+	game_fn_set_is_happy_is_happy = args[0]._bool;
 }
-static float game_fn_mega_f32_f1;
-static float game_fn_mega_f32_f2;
-static float game_fn_mega_f32_f3;
-static float game_fn_mega_f32_f4;
-static float game_fn_mega_f32_f5;
-static float game_fn_mega_f32_f6;
-static float game_fn_mega_f32_f7;
-static float game_fn_mega_f32_f8;
-static float game_fn_mega_f32_f9;
-void game_fn_mega_f32(float f1, float f2, float f3, float f4, float f5, float f6, float f7, float f8, float f9) {
+static double game_fn_mega_f32_f1;
+static double game_fn_mega_f32_f2;
+static double game_fn_mega_f32_f3;
+static double game_fn_mega_f32_f4;
+static double game_fn_mega_f32_f5;
+static double game_fn_mega_f32_f6;
+static double game_fn_mega_f32_f7;
+static double game_fn_mega_f32_f8;
+static double game_fn_mega_f32_f9;
+void game_fn_mega_f32(const union grug_value args[]) {
 	ASSERT_16_BYTE_STACK_ALIGNED();
 	game_fn_mega_f32_call_count++;
 
-	game_fn_mega_f32_f1 = f1;
-	game_fn_mega_f32_f2 = f2;
-	game_fn_mega_f32_f3 = f3;
-	game_fn_mega_f32_f4 = f4;
-	game_fn_mega_f32_f5 = f5;
-	game_fn_mega_f32_f6 = f6;
-	game_fn_mega_f32_f7 = f7;
-	game_fn_mega_f32_f8 = f8;
-	game_fn_mega_f32_f9 = f9;
+	game_fn_mega_f32_f1 = args[0]._number;
+	game_fn_mega_f32_f2 = args[1]._number;
+	game_fn_mega_f32_f3 = args[2]._number;
+	game_fn_mega_f32_f4 = args[3]._number;
+	game_fn_mega_f32_f5 = args[4]._number;
+	game_fn_mega_f32_f6 = args[5]._number;
+	game_fn_mega_f32_f7 = args[6]._number;
+	game_fn_mega_f32_f8 = args[7]._number;
+	game_fn_mega_f32_f9 = args[8]._number;
 }
 static int32_t game_fn_mega_i32_i1;
 static int32_t game_fn_mega_i32_i2;
@@ -291,81 +288,81 @@ static int32_t game_fn_mega_i32_i4;
 static int32_t game_fn_mega_i32_i5;
 static int32_t game_fn_mega_i32_i6;
 static int32_t game_fn_mega_i32_i7;
-void game_fn_mega_i32(int32_t i1, int32_t i2, int32_t i3, int32_t i4, int32_t i5, int32_t i6, int32_t i7) {
+void game_fn_mega_i32(const union grug_value args[]) {
 	ASSERT_16_BYTE_STACK_ALIGNED();
 	game_fn_mega_i32_call_count++;
 
-	game_fn_mega_i32_i1 = i1;
-	game_fn_mega_i32_i2 = i2;
-	game_fn_mega_i32_i3 = i3;
-	game_fn_mega_i32_i4 = i4;
-	game_fn_mega_i32_i5 = i5;
-	game_fn_mega_i32_i6 = i6;
-	game_fn_mega_i32_i7 = i7;
+	game_fn_mega_i32_i1 = args[0]._number;
+	game_fn_mega_i32_i2 = args[1]._number;
+	game_fn_mega_i32_i3 = args[2]._number;
+	game_fn_mega_i32_i4 = args[3]._number;
+	game_fn_mega_i32_i5 = args[4]._number;
+	game_fn_mega_i32_i6 = args[5]._number;
+	game_fn_mega_i32_i7 = args[6]._number;
 }
 static const char *game_fn_draw_sprite_path;
-void game_fn_draw(const char *sprite_path) {
+void game_fn_draw(const union grug_value args[]) {
 	ASSERT_16_BYTE_STACK_ALIGNED();
 	game_fn_draw_call_count++;
-	game_fn_draw_sprite_path = sprite_path;
+	game_fn_draw_sprite_path = args[0]._string;
 }
 void game_fn_blocked_alrm(void) {
 	ASSERT_16_BYTE_STACK_ALIGNED();
 	game_fn_blocked_alrm_call_count++;
 }
 static const char *game_fn_spawn_name;
-void game_fn_spawn(const char *name) {
+void game_fn_spawn(const union grug_value args[]) {
 	ASSERT_16_BYTE_STACK_ALIGNED();
 	game_fn_spawn_call_count++;
 
-	game_fn_spawn_name = name;
+	game_fn_spawn_name = args[0]._string;
 }
 static const char *game_fn_has_resource_path;
-bool game_fn_has_resource(const char *path) {
+union grug_value game_fn_has_resource(const union grug_value args[]) {
 	ASSERT_16_BYTE_STACK_ALIGNED();
 	game_fn_has_resource_call_count++;
 
-	game_fn_has_resource_path = path;
+	game_fn_has_resource_path = args[0]._string;
 
-	return true;
+	return grug_bool(true);
 }
 static const char *game_fn_has_entity_name;
-bool game_fn_has_entity(const char *name) {
+union grug_value game_fn_has_entity(const union grug_value args[]) {
 	ASSERT_16_BYTE_STACK_ALIGNED();
 	game_fn_has_entity_call_count++;
 
-	game_fn_has_entity_name = name;
+	game_fn_has_entity_name = args[0]._string;
 
-	return true;
+	return grug_bool(true);
 }
 static const char *game_fn_has_string_str;
-bool game_fn_has_string(const char *str) {
+union grug_value game_fn_has_string(const union grug_value args[]) {
 	ASSERT_16_BYTE_STACK_ALIGNED();
 	game_fn_has_string_call_count++;
 
-	game_fn_has_string_str = str;
+	game_fn_has_string_str = args[0]._string;
 
-	return true;
+	return grug_bool(true);
 }
-uint64_t game_fn_get_opponent(void) {
+union grug_value game_fn_get_opponent(void) {
 	ASSERT_16_BYTE_STACK_ALIGNED();
 	game_fn_get_opponent_call_count++;
 
-	return 69;
+	return grug_id(69);
 }
 static uint64_t game_fn_set_d_target;
-void game_fn_set_d(uint64_t target) {
+void game_fn_set_d(const union grug_value args[]) {
 	ASSERT_16_BYTE_STACK_ALIGNED();
 	game_fn_set_d_call_count++;
 
-	game_fn_set_d_target = target;
+	game_fn_set_d_target = args[0]._id;
 }
 static uint64_t game_fn_set_opponent_target;
-void game_fn_set_opponent(uint64_t target) {
+void game_fn_set_opponent(const union grug_value args[]) {
 	ASSERT_16_BYTE_STACK_ALIGNED();
 	game_fn_set_opponent_call_count++;
 
-	game_fn_set_opponent_target = target;
+	game_fn_set_opponent_target = args[0]._id;
 }
 static int32_t game_fn_motherload_i1;
 static int32_t game_fn_motherload_i2;
@@ -374,37 +371,37 @@ static int32_t game_fn_motherload_i4;
 static int32_t game_fn_motherload_i5;
 static int32_t game_fn_motherload_i6;
 static int32_t game_fn_motherload_i7;
-static float game_fn_motherload_f1;
-static float game_fn_motherload_f2;
-static float game_fn_motherload_f3;
-static float game_fn_motherload_f4;
-static float game_fn_motherload_f5;
-static float game_fn_motherload_f6;
-static float game_fn_motherload_f7;
-static float game_fn_motherload_f8;
+static double game_fn_motherload_f1;
+static double game_fn_motherload_f2;
+static double game_fn_motherload_f3;
+static double game_fn_motherload_f4;
+static double game_fn_motherload_f5;
+static double game_fn_motherload_f6;
+static double game_fn_motherload_f7;
+static double game_fn_motherload_f8;
 static uint64_t game_fn_motherload_id;
-static float game_fn_motherload_f9;
-void game_fn_motherload(int32_t i1, int32_t i2, int32_t i3, int32_t i4, int32_t i5, int32_t i6, int32_t i7, float f1, float f2, float f3, float f4, float f5, float f6, float f7, float f8, uint64_t id, float f9) {
+static double game_fn_motherload_f9;
+void game_fn_motherload(const union grug_value args[]) {
 	ASSERT_16_BYTE_STACK_ALIGNED();
 	game_fn_motherload_call_count++;
 
-	game_fn_motherload_i1 = i1;
-	game_fn_motherload_i2 = i2;
-	game_fn_motherload_i3 = i3;
-	game_fn_motherload_i4 = i4;
-	game_fn_motherload_i5 = i5;
-	game_fn_motherload_i6 = i6;
-	game_fn_motherload_i7 = i7;
-	game_fn_motherload_f1 = f1;
-	game_fn_motherload_f2 = f2;
-	game_fn_motherload_f3 = f3;
-	game_fn_motherload_f4 = f4;
-	game_fn_motherload_f5 = f5;
-	game_fn_motherload_f6 = f6;
-	game_fn_motherload_f7 = f7;
-	game_fn_motherload_f8 = f8;
-	game_fn_motherload_id = id;
-	game_fn_motherload_f9 = f9;
+	game_fn_motherload_i1 = args[0]._number;
+	game_fn_motherload_i2 = args[1]._number;
+	game_fn_motherload_i3 = args[2]._number;
+	game_fn_motherload_i4 = args[3]._number;
+	game_fn_motherload_i5 = args[4]._number;
+	game_fn_motherload_i6 = args[5]._number;
+	game_fn_motherload_i7 = args[6]._number;
+	game_fn_motherload_f1 = args[7]._number;
+	game_fn_motherload_f2 = args[8]._number;
+	game_fn_motherload_f3 = args[9]._number;
+	game_fn_motherload_f4 = args[10]._number;
+	game_fn_motherload_f5 = args[11]._number;
+	game_fn_motherload_f6 = args[12]._number;
+	game_fn_motherload_f7 = args[13]._number;
+	game_fn_motherload_f8 = args[14]._number;
+	game_fn_motherload_id = args[15]._id;
+	game_fn_motherload_f9 = args[16]._number;
 }
 static int32_t game_fn_motherload_subless_i1;
 static int32_t game_fn_motherload_subless_i2;
@@ -413,39 +410,39 @@ static int32_t game_fn_motherload_subless_i4;
 static int32_t game_fn_motherload_subless_i5;
 static int32_t game_fn_motherload_subless_i6;
 static int32_t game_fn_motherload_subless_i7;
-static float game_fn_motherload_subless_f1;
-static float game_fn_motherload_subless_f2;
-static float game_fn_motherload_subless_f3;
-static float game_fn_motherload_subless_f4;
-static float game_fn_motherload_subless_f5;
-static float game_fn_motherload_subless_f6;
-static float game_fn_motherload_subless_f7;
-static float game_fn_motherload_subless_f8;
-static float game_fn_motherload_subless_f9;
+static double game_fn_motherload_subless_f1;
+static double game_fn_motherload_subless_f2;
+static double game_fn_motherload_subless_f3;
+static double game_fn_motherload_subless_f4;
+static double game_fn_motherload_subless_f5;
+static double game_fn_motherload_subless_f6;
+static double game_fn_motherload_subless_f7;
+static double game_fn_motherload_subless_f8;
+static double game_fn_motherload_subless_f9;
 static uint64_t game_fn_motherload_subless_id;
-static float game_fn_motherload_subless_f10;
-void game_fn_motherload_subless(int32_t i1, int32_t i2, int32_t i3, int32_t i4, int32_t i5, int32_t i6, int32_t i7, float f1, float f2, float f3, float f4, float f5, float f6, float f7, float f8, float f9, uint64_t id, float f10) {
+static double game_fn_motherload_subless_f10;
+void game_fn_motherload_subless(const union grug_value args[]) {
 	ASSERT_16_BYTE_STACK_ALIGNED();
 	game_fn_motherload_subless_call_count++;
 
-	game_fn_motherload_subless_i1 = i1;
-	game_fn_motherload_subless_i2 = i2;
-	game_fn_motherload_subless_i3 = i3;
-	game_fn_motherload_subless_i4 = i4;
-	game_fn_motherload_subless_i5 = i5;
-	game_fn_motherload_subless_i6 = i6;
-	game_fn_motherload_subless_i7 = i7;
-	game_fn_motherload_subless_f1 = f1;
-	game_fn_motherload_subless_f2 = f2;
-	game_fn_motherload_subless_f3 = f3;
-	game_fn_motherload_subless_f4 = f4;
-	game_fn_motherload_subless_f5 = f5;
-	game_fn_motherload_subless_f6 = f6;
-	game_fn_motherload_subless_f7 = f7;
-	game_fn_motherload_subless_f8 = f8;
-	game_fn_motherload_subless_f9 = f9;
-	game_fn_motherload_subless_id = id;
-	game_fn_motherload_subless_f10 = f10;
+	game_fn_motherload_subless_i1 = args[0]._number;
+	game_fn_motherload_subless_i2 = args[1]._number;
+	game_fn_motherload_subless_i3 = args[2]._number;
+	game_fn_motherload_subless_i4 = args[3]._number;
+	game_fn_motherload_subless_i5 = args[4]._number;
+	game_fn_motherload_subless_i6 = args[5]._number;
+	game_fn_motherload_subless_i7 = args[6]._number;
+	game_fn_motherload_subless_f1 = args[7]._number;
+	game_fn_motherload_subless_f2 = args[8]._number;
+	game_fn_motherload_subless_f3 = args[9]._number;
+	game_fn_motherload_subless_f4 = args[10]._number;
+	game_fn_motherload_subless_f5 = args[11]._number;
+	game_fn_motherload_subless_f6 = args[12]._number;
+	game_fn_motherload_subless_f7 = args[13]._number;
+	game_fn_motherload_subless_f8 = args[14]._number;
+	game_fn_motherload_subless_f9 = args[15]._number;
+	game_fn_motherload_subless_id = args[16]._id;
+	game_fn_motherload_subless_f10 = args[17]._number;
 }
 static const char *game_fn_offset_32_bit_f32_s1;
 static const char *game_fn_offset_32_bit_f32_s2;
@@ -462,225 +459,225 @@ static const char *game_fn_offset_32_bit_f32_s12;
 static const char *game_fn_offset_32_bit_f32_s13;
 static const char *game_fn_offset_32_bit_f32_s14;
 static const char *game_fn_offset_32_bit_f32_s15;
-static float game_fn_offset_32_bit_f32_f1;
-static float game_fn_offset_32_bit_f32_f2;
-static float game_fn_offset_32_bit_f32_f3;
-static float game_fn_offset_32_bit_f32_f4;
-static float game_fn_offset_32_bit_f32_f5;
-static float game_fn_offset_32_bit_f32_f6;
-static float game_fn_offset_32_bit_f32_f7;
-static float game_fn_offset_32_bit_f32_f8;
+static double game_fn_offset_32_bit_f32_f1;
+static double game_fn_offset_32_bit_f32_f2;
+static double game_fn_offset_32_bit_f32_f3;
+static double game_fn_offset_32_bit_f32_f4;
+static double game_fn_offset_32_bit_f32_f5;
+static double game_fn_offset_32_bit_f32_f6;
+static double game_fn_offset_32_bit_f32_f7;
+static double game_fn_offset_32_bit_f32_f8;
 static int32_t game_fn_offset_32_bit_f32_g;
-void game_fn_offset_32_bit_f32(const char *s1, const char *s2, const char *s3, const char *s4, const char *s5, const char *s6, const char *s7, const char *s8, const char *s9, const char *s10, const char *s11, const char *s12, const char *s13, const char *s14, const char *s15, float f1, float f2, float f3, float f4, float f5, float f6, float f7, float f8, int32_t g) {
+void game_fn_offset_32_bit_f32(const union grug_value args[]) {
 	ASSERT_16_BYTE_STACK_ALIGNED();
 	game_fn_offset_32_bit_f32_call_count++;
 
-	game_fn_offset_32_bit_f32_s1 = s1;
-	game_fn_offset_32_bit_f32_s2 = s2;
-	game_fn_offset_32_bit_f32_s3 = s3;
-	game_fn_offset_32_bit_f32_s4 = s4;
-	game_fn_offset_32_bit_f32_s5 = s5;
-	game_fn_offset_32_bit_f32_s6 = s6;
-	game_fn_offset_32_bit_f32_s7 = s7;
-	game_fn_offset_32_bit_f32_s8 = s8;
-	game_fn_offset_32_bit_f32_s9 = s9;
-	game_fn_offset_32_bit_f32_s10 = s10;
-	game_fn_offset_32_bit_f32_s11 = s11;
-	game_fn_offset_32_bit_f32_s12 = s12;
-	game_fn_offset_32_bit_f32_s13 = s13;
-	game_fn_offset_32_bit_f32_s14 = s14;
-	game_fn_offset_32_bit_f32_s15 = s15;
-	game_fn_offset_32_bit_f32_f1 = f1;
-	game_fn_offset_32_bit_f32_f2 = f2;
-	game_fn_offset_32_bit_f32_f3 = f3;
-	game_fn_offset_32_bit_f32_f4 = f4;
-	game_fn_offset_32_bit_f32_f5 = f5;
-	game_fn_offset_32_bit_f32_f6 = f6;
-	game_fn_offset_32_bit_f32_f7 = f7;
-	game_fn_offset_32_bit_f32_f8 = f8;
-	game_fn_offset_32_bit_f32_g = g;
+	game_fn_offset_32_bit_f32_s1 = args[0]._string;
+	game_fn_offset_32_bit_f32_s2 = args[1]._string;
+	game_fn_offset_32_bit_f32_s3 = args[2]._string;
+	game_fn_offset_32_bit_f32_s4 = args[3]._string;
+	game_fn_offset_32_bit_f32_s5 = args[4]._string;
+	game_fn_offset_32_bit_f32_s6 = args[5]._string;
+	game_fn_offset_32_bit_f32_s7 = args[6]._string;
+	game_fn_offset_32_bit_f32_s8 = args[7]._string;
+	game_fn_offset_32_bit_f32_s9 = args[8]._string;
+	game_fn_offset_32_bit_f32_s10 = args[9]._string;
+	game_fn_offset_32_bit_f32_s11 = args[10]._string;
+	game_fn_offset_32_bit_f32_s12 = args[11]._string;
+	game_fn_offset_32_bit_f32_s13 = args[12]._string;
+	game_fn_offset_32_bit_f32_s14 = args[13]._string;
+	game_fn_offset_32_bit_f32_s15 = args[14]._string;
+	game_fn_offset_32_bit_f32_f1 = args[15]._number;
+	game_fn_offset_32_bit_f32_f2 = args[16]._number;
+	game_fn_offset_32_bit_f32_f3 = args[17]._number;
+	game_fn_offset_32_bit_f32_f4 = args[18]._number;
+	game_fn_offset_32_bit_f32_f5 = args[19]._number;
+	game_fn_offset_32_bit_f32_f6 = args[20]._number;
+	game_fn_offset_32_bit_f32_f7 = args[21]._number;
+	game_fn_offset_32_bit_f32_f8 = args[22]._number;
+	game_fn_offset_32_bit_f32_g = args[23]._number;
 }
-static float game_fn_offset_32_bit_i32_f1;
-static float game_fn_offset_32_bit_i32_f2;
-static float game_fn_offset_32_bit_i32_f3;
-static float game_fn_offset_32_bit_i32_f4;
-static float game_fn_offset_32_bit_i32_f5;
-static float game_fn_offset_32_bit_i32_f6;
-static float game_fn_offset_32_bit_i32_f7;
-static float game_fn_offset_32_bit_i32_f8;
-static float game_fn_offset_32_bit_i32_f9;
-static float game_fn_offset_32_bit_i32_f10;
-static float game_fn_offset_32_bit_i32_f11;
-static float game_fn_offset_32_bit_i32_f12;
-static float game_fn_offset_32_bit_i32_f13;
-static float game_fn_offset_32_bit_i32_f14;
-static float game_fn_offset_32_bit_i32_f15;
-static float game_fn_offset_32_bit_i32_f16;
-static float game_fn_offset_32_bit_i32_f17;
-static float game_fn_offset_32_bit_i32_f18;
-static float game_fn_offset_32_bit_i32_f19;
-static float game_fn_offset_32_bit_i32_f20;
-static float game_fn_offset_32_bit_i32_f21;
-static float game_fn_offset_32_bit_i32_f22;
-static float game_fn_offset_32_bit_i32_f23;
-static float game_fn_offset_32_bit_i32_f24;
-static float game_fn_offset_32_bit_i32_f25;
-static float game_fn_offset_32_bit_i32_f26;
-static float game_fn_offset_32_bit_i32_f27;
-static float game_fn_offset_32_bit_i32_f28;
-static float game_fn_offset_32_bit_i32_f29;
-static float game_fn_offset_32_bit_i32_f30;
+static double game_fn_offset_32_bit_i32_f1;
+static double game_fn_offset_32_bit_i32_f2;
+static double game_fn_offset_32_bit_i32_f3;
+static double game_fn_offset_32_bit_i32_f4;
+static double game_fn_offset_32_bit_i32_f5;
+static double game_fn_offset_32_bit_i32_f6;
+static double game_fn_offset_32_bit_i32_f7;
+static double game_fn_offset_32_bit_i32_f8;
+static double game_fn_offset_32_bit_i32_f9;
+static double game_fn_offset_32_bit_i32_f10;
+static double game_fn_offset_32_bit_i32_f11;
+static double game_fn_offset_32_bit_i32_f12;
+static double game_fn_offset_32_bit_i32_f13;
+static double game_fn_offset_32_bit_i32_f14;
+static double game_fn_offset_32_bit_i32_f15;
+static double game_fn_offset_32_bit_i32_f16;
+static double game_fn_offset_32_bit_i32_f17;
+static double game_fn_offset_32_bit_i32_f18;
+static double game_fn_offset_32_bit_i32_f19;
+static double game_fn_offset_32_bit_i32_f20;
+static double game_fn_offset_32_bit_i32_f21;
+static double game_fn_offset_32_bit_i32_f22;
+static double game_fn_offset_32_bit_i32_f23;
+static double game_fn_offset_32_bit_i32_f24;
+static double game_fn_offset_32_bit_i32_f25;
+static double game_fn_offset_32_bit_i32_f26;
+static double game_fn_offset_32_bit_i32_f27;
+static double game_fn_offset_32_bit_i32_f28;
+static double game_fn_offset_32_bit_i32_f29;
+static double game_fn_offset_32_bit_i32_f30;
 static int32_t game_fn_offset_32_bit_i32_i1;
 static int32_t game_fn_offset_32_bit_i32_i2;
 static int32_t game_fn_offset_32_bit_i32_i3;
 static int32_t game_fn_offset_32_bit_i32_i4;
 static int32_t game_fn_offset_32_bit_i32_i5;
 static int32_t game_fn_offset_32_bit_i32_g;
-void game_fn_offset_32_bit_i32(float f1, float f2, float f3, float f4, float f5, float f6, float f7, float f8, float f9, float f10, float f11, float f12, float f13, float f14, float f15, float f16, float f17, float f18, float f19, float f20, float f21, float f22, float f23, float f24, float f25, float f26, float f27, float f28, float f29, float f30, int32_t i1, int32_t i2, int32_t i3, int32_t i4, int32_t i5, int32_t g) {
+void game_fn_offset_32_bit_i32(const union grug_value args[]) {
 	ASSERT_16_BYTE_STACK_ALIGNED();
 	game_fn_offset_32_bit_i32_call_count++;
 
-	game_fn_offset_32_bit_i32_f1 = f1;
-	game_fn_offset_32_bit_i32_f2 = f2;
-	game_fn_offset_32_bit_i32_f3 = f3;
-	game_fn_offset_32_bit_i32_f4 = f4;
-	game_fn_offset_32_bit_i32_f5 = f5;
-	game_fn_offset_32_bit_i32_f6 = f6;
-	game_fn_offset_32_bit_i32_f7 = f7;
-	game_fn_offset_32_bit_i32_f8 = f8;
-	game_fn_offset_32_bit_i32_f9 = f9;
-	game_fn_offset_32_bit_i32_f10 = f10;
-	game_fn_offset_32_bit_i32_f11 = f11;
-	game_fn_offset_32_bit_i32_f12 = f12;
-	game_fn_offset_32_bit_i32_f13 = f13;
-	game_fn_offset_32_bit_i32_f14 = f14;
-	game_fn_offset_32_bit_i32_f15 = f15;
-	game_fn_offset_32_bit_i32_f16 = f16;
-	game_fn_offset_32_bit_i32_f17 = f17;
-	game_fn_offset_32_bit_i32_f18 = f18;
-	game_fn_offset_32_bit_i32_f19 = f19;
-	game_fn_offset_32_bit_i32_f20 = f20;
-	game_fn_offset_32_bit_i32_f21 = f21;
-	game_fn_offset_32_bit_i32_f22 = f22;
-	game_fn_offset_32_bit_i32_f23 = f23;
-	game_fn_offset_32_bit_i32_f24 = f24;
-	game_fn_offset_32_bit_i32_f25 = f25;
-	game_fn_offset_32_bit_i32_f26 = f26;
-	game_fn_offset_32_bit_i32_f27 = f27;
-	game_fn_offset_32_bit_i32_f28 = f28;
-	game_fn_offset_32_bit_i32_f29 = f29;
-	game_fn_offset_32_bit_i32_f30 = f30;
-	game_fn_offset_32_bit_i32_i1 = i1;
-	game_fn_offset_32_bit_i32_i2 = i2;
-	game_fn_offset_32_bit_i32_i3 = i3;
-	game_fn_offset_32_bit_i32_i4 = i4;
-	game_fn_offset_32_bit_i32_i5 = i5;
-	game_fn_offset_32_bit_i32_g = g;
+	game_fn_offset_32_bit_i32_f1 = args[0]._number;
+	game_fn_offset_32_bit_i32_f2 = args[1]._number;
+	game_fn_offset_32_bit_i32_f3 = args[2]._number;
+	game_fn_offset_32_bit_i32_f4 = args[3]._number;
+	game_fn_offset_32_bit_i32_f5 = args[4]._number;
+	game_fn_offset_32_bit_i32_f6 = args[5]._number;
+	game_fn_offset_32_bit_i32_f7 = args[6]._number;
+	game_fn_offset_32_bit_i32_f8 = args[7]._number;
+	game_fn_offset_32_bit_i32_f9 = args[8]._number;
+	game_fn_offset_32_bit_i32_f10 = args[9]._number;
+	game_fn_offset_32_bit_i32_f11 = args[10]._number;
+	game_fn_offset_32_bit_i32_f12 = args[11]._number;
+	game_fn_offset_32_bit_i32_f13 = args[12]._number;
+	game_fn_offset_32_bit_i32_f14 = args[13]._number;
+	game_fn_offset_32_bit_i32_f15 = args[14]._number;
+	game_fn_offset_32_bit_i32_f16 = args[15]._number;
+	game_fn_offset_32_bit_i32_f17 = args[16]._number;
+	game_fn_offset_32_bit_i32_f18 = args[17]._number;
+	game_fn_offset_32_bit_i32_f19 = args[18]._number;
+	game_fn_offset_32_bit_i32_f20 = args[19]._number;
+	game_fn_offset_32_bit_i32_f21 = args[20]._number;
+	game_fn_offset_32_bit_i32_f22 = args[21]._number;
+	game_fn_offset_32_bit_i32_f23 = args[22]._number;
+	game_fn_offset_32_bit_i32_f24 = args[23]._number;
+	game_fn_offset_32_bit_i32_f25 = args[24]._number;
+	game_fn_offset_32_bit_i32_f26 = args[25]._number;
+	game_fn_offset_32_bit_i32_f27 = args[26]._number;
+	game_fn_offset_32_bit_i32_f28 = args[27]._number;
+	game_fn_offset_32_bit_i32_f29 = args[28]._number;
+	game_fn_offset_32_bit_i32_f30 = args[29]._number;
+	game_fn_offset_32_bit_i32_i1 = args[30]._number;
+	game_fn_offset_32_bit_i32_i2 = args[31]._number;
+	game_fn_offset_32_bit_i32_i3 = args[32]._number;
+	game_fn_offset_32_bit_i32_i4 = args[33]._number;
+	game_fn_offset_32_bit_i32_i5 = args[34]._number;
+	game_fn_offset_32_bit_i32_g = args[35]._number;
 }
-static float game_fn_offset_32_bit_string_f1;
-static float game_fn_offset_32_bit_string_f2;
-static float game_fn_offset_32_bit_string_f3;
-static float game_fn_offset_32_bit_string_f4;
-static float game_fn_offset_32_bit_string_f5;
-static float game_fn_offset_32_bit_string_f6;
-static float game_fn_offset_32_bit_string_f7;
-static float game_fn_offset_32_bit_string_f8;
-static float game_fn_offset_32_bit_string_f9;
-static float game_fn_offset_32_bit_string_f10;
-static float game_fn_offset_32_bit_string_f11;
-static float game_fn_offset_32_bit_string_f12;
-static float game_fn_offset_32_bit_string_f13;
-static float game_fn_offset_32_bit_string_f14;
-static float game_fn_offset_32_bit_string_f15;
-static float game_fn_offset_32_bit_string_f16;
-static float game_fn_offset_32_bit_string_f17;
-static float game_fn_offset_32_bit_string_f18;
-static float game_fn_offset_32_bit_string_f19;
-static float game_fn_offset_32_bit_string_f20;
-static float game_fn_offset_32_bit_string_f21;
-static float game_fn_offset_32_bit_string_f22;
-static float game_fn_offset_32_bit_string_f23;
-static float game_fn_offset_32_bit_string_f24;
-static float game_fn_offset_32_bit_string_f25;
-static float game_fn_offset_32_bit_string_f26;
-static float game_fn_offset_32_bit_string_f27;
-static float game_fn_offset_32_bit_string_f28;
-static float game_fn_offset_32_bit_string_f29;
-static float game_fn_offset_32_bit_string_f30;
+static double game_fn_offset_32_bit_string_f1;
+static double game_fn_offset_32_bit_string_f2;
+static double game_fn_offset_32_bit_string_f3;
+static double game_fn_offset_32_bit_string_f4;
+static double game_fn_offset_32_bit_string_f5;
+static double game_fn_offset_32_bit_string_f6;
+static double game_fn_offset_32_bit_string_f7;
+static double game_fn_offset_32_bit_string_f8;
+static double game_fn_offset_32_bit_string_f9;
+static double game_fn_offset_32_bit_string_f10;
+static double game_fn_offset_32_bit_string_f11;
+static double game_fn_offset_32_bit_string_f12;
+static double game_fn_offset_32_bit_string_f13;
+static double game_fn_offset_32_bit_string_f14;
+static double game_fn_offset_32_bit_string_f15;
+static double game_fn_offset_32_bit_string_f16;
+static double game_fn_offset_32_bit_string_f17;
+static double game_fn_offset_32_bit_string_f18;
+static double game_fn_offset_32_bit_string_f19;
+static double game_fn_offset_32_bit_string_f20;
+static double game_fn_offset_32_bit_string_f21;
+static double game_fn_offset_32_bit_string_f22;
+static double game_fn_offset_32_bit_string_f23;
+static double game_fn_offset_32_bit_string_f24;
+static double game_fn_offset_32_bit_string_f25;
+static double game_fn_offset_32_bit_string_f26;
+static double game_fn_offset_32_bit_string_f27;
+static double game_fn_offset_32_bit_string_f28;
+static double game_fn_offset_32_bit_string_f29;
+static double game_fn_offset_32_bit_string_f30;
 static const char *game_fn_offset_32_bit_string_s1;
 static const char *game_fn_offset_32_bit_string_s2;
 static const char *game_fn_offset_32_bit_string_s3;
 static const char *game_fn_offset_32_bit_string_s4;
 static const char *game_fn_offset_32_bit_string_s5;
 static int32_t game_fn_offset_32_bit_string_g;
-void game_fn_offset_32_bit_string(float f1, float f2, float f3, float f4, float f5, float f6, float f7, float f8, float f9, float f10, float f11, float f12, float f13, float f14, float f15, float f16, float f17, float f18, float f19, float f20, float f21, float f22, float f23, float f24, float f25, float f26, float f27, float f28, float f29, float f30, const char *s1, const char *s2, const char *s3, const char *s4, const char *s5, int32_t g) {
+void game_fn_offset_32_bit_string(const union grug_value args[]) {
 	ASSERT_16_BYTE_STACK_ALIGNED();
 	game_fn_offset_32_bit_string_call_count++;
 
-	game_fn_offset_32_bit_string_f1 = f1;
-	game_fn_offset_32_bit_string_f2 = f2;
-	game_fn_offset_32_bit_string_f3 = f3;
-	game_fn_offset_32_bit_string_f4 = f4;
-	game_fn_offset_32_bit_string_f5 = f5;
-	game_fn_offset_32_bit_string_f6 = f6;
-	game_fn_offset_32_bit_string_f7 = f7;
-	game_fn_offset_32_bit_string_f8 = f8;
-	game_fn_offset_32_bit_string_f9 = f9;
-	game_fn_offset_32_bit_string_f10 = f10;
-	game_fn_offset_32_bit_string_f11 = f11;
-	game_fn_offset_32_bit_string_f12 = f12;
-	game_fn_offset_32_bit_string_f13 = f13;
-	game_fn_offset_32_bit_string_f14 = f14;
-	game_fn_offset_32_bit_string_f15 = f15;
-	game_fn_offset_32_bit_string_f16 = f16;
-	game_fn_offset_32_bit_string_f17 = f17;
-	game_fn_offset_32_bit_string_f18 = f18;
-	game_fn_offset_32_bit_string_f19 = f19;
-	game_fn_offset_32_bit_string_f20 = f20;
-	game_fn_offset_32_bit_string_f21 = f21;
-	game_fn_offset_32_bit_string_f22 = f22;
-	game_fn_offset_32_bit_string_f23 = f23;
-	game_fn_offset_32_bit_string_f24 = f24;
-	game_fn_offset_32_bit_string_f25 = f25;
-	game_fn_offset_32_bit_string_f26 = f26;
-	game_fn_offset_32_bit_string_f27 = f27;
-	game_fn_offset_32_bit_string_f28 = f28;
-	game_fn_offset_32_bit_string_f29 = f29;
-	game_fn_offset_32_bit_string_f30 = f30;
-	game_fn_offset_32_bit_string_s1 = s1;
-	game_fn_offset_32_bit_string_s2 = s2;
-	game_fn_offset_32_bit_string_s3 = s3;
-	game_fn_offset_32_bit_string_s4 = s4;
-	game_fn_offset_32_bit_string_s5 = s5;
-	game_fn_offset_32_bit_string_g = g;
+	game_fn_offset_32_bit_string_f1 = args[0]._number;
+	game_fn_offset_32_bit_string_f2 = args[1]._number;
+	game_fn_offset_32_bit_string_f3 = args[2]._number;
+	game_fn_offset_32_bit_string_f4 = args[3]._number;
+	game_fn_offset_32_bit_string_f5 = args[4]._number;
+	game_fn_offset_32_bit_string_f6 = args[5]._number;
+	game_fn_offset_32_bit_string_f7 = args[6]._number;
+	game_fn_offset_32_bit_string_f8 = args[7]._number;
+	game_fn_offset_32_bit_string_f9 = args[8]._number;
+	game_fn_offset_32_bit_string_f10 = args[9]._number;
+	game_fn_offset_32_bit_string_f11 = args[10]._number;
+	game_fn_offset_32_bit_string_f12 = args[11]._number;
+	game_fn_offset_32_bit_string_f13 = args[12]._number;
+	game_fn_offset_32_bit_string_f14 = args[13]._number;
+	game_fn_offset_32_bit_string_f15 = args[14]._number;
+	game_fn_offset_32_bit_string_f16 = args[15]._number;
+	game_fn_offset_32_bit_string_f17 = args[16]._number;
+	game_fn_offset_32_bit_string_f18 = args[17]._number;
+	game_fn_offset_32_bit_string_f19 = args[18]._number;
+	game_fn_offset_32_bit_string_f20 = args[19]._number;
+	game_fn_offset_32_bit_string_f21 = args[20]._number;
+	game_fn_offset_32_bit_string_f22 = args[21]._number;
+	game_fn_offset_32_bit_string_f23 = args[22]._number;
+	game_fn_offset_32_bit_string_f24 = args[23]._number;
+	game_fn_offset_32_bit_string_f25 = args[24]._number;
+	game_fn_offset_32_bit_string_f26 = args[25]._number;
+	game_fn_offset_32_bit_string_f27 = args[26]._number;
+	game_fn_offset_32_bit_string_f28 = args[27]._number;
+	game_fn_offset_32_bit_string_f29 = args[28]._number;
+	game_fn_offset_32_bit_string_f30 = args[29]._number;
+	game_fn_offset_32_bit_string_s1 = args[30]._string;
+	game_fn_offset_32_bit_string_s2 = args[31]._string;
+	game_fn_offset_32_bit_string_s3 = args[32]._string;
+	game_fn_offset_32_bit_string_s4 = args[33]._string;
+	game_fn_offset_32_bit_string_s5 = args[34]._string;
+	game_fn_offset_32_bit_string_g = args[35]._number;
 }
 static const char *game_fn_talk_message1;
 static const char *game_fn_talk_message2;
 static const char *game_fn_talk_message3;
 static const char *game_fn_talk_message4;
-void game_fn_talk(const char *message1, const char *message2, const char *message3, const char *message4) {
+void game_fn_talk(const union grug_value args[]) {
 	ASSERT_16_BYTE_STACK_ALIGNED();
 	game_fn_talk_call_count++;
 
-	game_fn_talk_message1 = message1;
-	game_fn_talk_message2 = message2;
-	game_fn_talk_message3 = message3;
-	game_fn_talk_message4 = message4;
+	game_fn_talk_message1 = args[0]._string;
+	game_fn_talk_message2 = args[1]._string;
+	game_fn_talk_message3 = args[2]._string;
+	game_fn_talk_message4 = args[3]._string;
 }
-uint64_t game_fn_get_position(uint64_t id) {
+union grug_value game_fn_get_position(const union grug_value args[]) {
 	ASSERT_16_BYTE_STACK_ALIGNED();
 	game_fn_get_position_call_count++;
 
-	(void)id;
+	(void)args;
 
-	return 1337;
+	return grug_id(1337);
 }
 static uint64_t game_fn_set_position_pos;
-void game_fn_set_position(uint64_t pos) {
+void game_fn_set_position(const union grug_value args[]) {
 	ASSERT_16_BYTE_STACK_ALIGNED();
 	game_fn_set_position_call_count++;
 
-	game_fn_set_position_pos = pos;
+	game_fn_set_position_pos = args[0]._id;
 }
 void game_fn_cause_game_fn_error(void) {
 	ASSERT_16_BYTE_STACK_ALIGNED();
@@ -696,23 +693,23 @@ void game_fn_call_on_b_fn(void) {
 	on_fn_dispatcher("on_b", saved_grug_path);
 }
 static uint64_t game_fn_store_id;
-void game_fn_store(uint64_t id) {
+void game_fn_store(const union grug_value args[]) {
 	ASSERT_16_BYTE_STACK_ALIGNED();
 	game_fn_store_call_count++;
 
-	game_fn_store_id = id;
+	game_fn_store_id = args[0]._id;
 }
-uint64_t game_fn_retrieve(void) {
+union grug_value game_fn_retrieve(void) {
 	ASSERT_16_BYTE_STACK_ALIGNED();
 	game_fn_retrieve_call_count++;
 
-	return 123;
+	return grug_id(123);
 }
-uint64_t game_fn_box_i32(int32_t n) {
+union grug_value game_fn_box_number(const union grug_value args[]) {
 	ASSERT_16_BYTE_STACK_ALIGNED();
-	game_fn_box_i32_call_count++;
+	game_fn_box_number_call_count++;
 
-	return n;
+	return grug_id(args[0]._number);
 }
 
 static void reset_call_counts(void) {
@@ -726,7 +723,7 @@ static void reset_call_counts(void) {
 	game_fn_sin_call_count = 0;
 	game_fn_cos_call_count = 0;
 	game_fn_mega_call_count = 0;
-	game_fn_get_evil_false_call_count = 0;
+	game_fn_get_false_call_count = 0;
 	game_fn_set_is_happy_call_count = 0;
 	game_fn_mega_f32_call_count = 0;
 	game_fn_mega_i32_call_count = 0;
@@ -751,7 +748,7 @@ static void reset_call_counts(void) {
 	game_fn_call_on_b_fn_call_count = 0;
 	game_fn_store_call_count = 0;
 	game_fn_retrieve_call_count = 0;
-	game_fn_box_i32_call_count = 0;
+	game_fn_box_number_call_count = 0;
 }
 
 static void check(int status, const char *fn_name, const char *msg) {
@@ -781,8 +778,7 @@ static bool is_whitelisted_test(const char *name) {
 			.grug_path = "err/"#test_name"/input-"entity_type".grug",\
 			.expected_error_path = "err/"#test_name"/expected_error.txt",\
 			.results_path = "err/"#test_name"/results",\
-			.grug_output_path = "err/"#test_name"/results/grug_output.txt",\
-			.failed_file_path = "err/"#test_name"/results/failed"\
+			.grug_output_path = "err/"#test_name"/results/grug_output.txt"\
 		};\
 	}\
 }
@@ -796,7 +792,6 @@ static bool is_whitelisted_test(const char *name) {
 			.results_path = "ok/"#test_name"/results",\
 			.dump_path = "ok/"#test_name"/results/dump.json",\
 			.applied_path = "ok/"#test_name"/results/applied.grug",\
-			.failed_file_path = "ok/"#test_name"/results/failed",\
 			.expected_globals_size_value = expected_globals_size\
 		};\
 	}\
@@ -812,7 +807,6 @@ static bool is_whitelisted_test(const char *name) {
 			.results_path = "err_runtime/"#test_name"/results",\
 			.dump_path = "err_runtime/"#test_name"/results/dump.json",\
 			.applied_path = "err_runtime/"#test_name"/results/applied.grug",\
-			.failed_file_path = "err_runtime/"#test_name"/results/failed",\
 			.expected_globals_size_value = expected_globals_size\
 		};\
 	}\
@@ -876,7 +870,7 @@ static size_t read_file(const char *path, uint8_t *bytes) {
 	check(fseek(f, 0, SEEK_SET), "fseek", NULL);
 
 	if (fread(bytes, len, 1, f) < len && ferror(f)) {
-		fprintf(stderr, "fread error\n");
+		fprintf(stderr, "Error: fread error\n");
 		exit(EXIT_FAILURE);
 	}
 
@@ -886,27 +880,6 @@ static size_t read_file(const char *path, uint8_t *bytes) {
 	}
 
 	return len;
-}
-
-static bool newer(const char *path1, const char *path2) {
-	struct stat s1;
-	if (stat(path1, &s1) == -1) {
-		if (errno != ENOENT) {
-			fprintf(stderr, "path1: \"%s\"\n", path1);
-			perror("stat");
-			exit(EXIT_FAILURE);
-		}
-		return false;
-	}
-
-	struct stat s2;
-	if (stat(path2, &s2) < 0) {
-		fprintf(stderr, "path2: \"%s\"\n", path2);
-		perror("stat");
-		exit(EXIT_FAILURE);
-	}
-
-	return s1.st_mtime >= s2.st_mtime;
 }
 
 static const char *get_expected_error(const char *expected_error_path) {
@@ -923,17 +896,6 @@ static const char *get_expected_error(const char *expected_error_path) {
 	expected_error[expected_error_len] = '\0';
 
 	return expected_error;
-}
-
-static void create_failed_file(const char *failed_file_path) {
-	int fd = open(prefix(failed_file_path), O_RDWR | O_CREAT | O_TRUNC, 0644);
-	check(fd, "open", prefix(failed_file_path));
-	close(fd);
-}
-
-static bool failed_file_doesnt_exist(const char *failed_file_path) {
-	errno = 0;
-	return access(failed_file_path, F_OK) == -1 && errno == ENOENT;
 }
 
 static void make_results_dir(const char *results_path) {
@@ -959,48 +921,24 @@ static int rm_rf(const char *path) {
 	return nftw(path, remove_callback, 42, FTW_DEPTH | FTW_PHYS);
 }
 
-static bool shuffles_was_not_defined(void) {
-#ifdef SHUFFLES
-	return false;
-#endif
-	return true;
-}
-
 static void test_error(
 	const char *test_name,
 	const char *grug_path,
 	const char *expected_error_path,
 	const char *results_path,
-	const char *grug_output_path,
-	const char *failed_file_path
+	const char *grug_output_path
 ) {
-	if (whitelisted_test == NULL
-	 && failed_file_doesnt_exist(failed_file_path)
-	 && shuffles_was_not_defined()
-	 && newer(grug_output_path, grug_path)
-	 && newer(grug_output_path, expected_error_path)
-	 && newer(grug_output_path, "mod_api.json")
-	 && newer(grug_output_path, "tests.sh")
-	 && newer(grug_output_path, "smoketest")
-     && newer(grug_output_path, "smoketest.c")
-	) {
-		fprintf(stderr, "Skipping tests/err/%s...\n", test_name);
-		return;
-	}
-
-	fprintf(stderr, "Running tests/err/%s...\n", test_name);
+	printf("Running tests/err/%s...\n", test_name);
 
 	rm_rf(results_path);
 	make_results_dir(results_path);
-
-	create_failed_file(failed_file_path);
 
 	const char *msg = compile_grug_file(prefix(grug_path), "err");
 
 	const char *expected_error = get_expected_error(expected_error_path);
 
 	if (!msg) {
-		fprintf(stderr, "\nCompilation succeeded, but expected this error message:\n");
+		fprintf(stderr, "\nError: Compilation succeeded, but expected this error message:\n");
 		fprintf(stderr, "%s\n", expected_error);
 		exit(EXIT_FAILURE);
 	}
@@ -1010,7 +948,7 @@ static void test_error(
 	size_t msg_len = strlen(msg);
 
 	if (fwrite(msg, msg_len, 1, f) == 0) {
-		fprintf(stderr, "fwrite error\n");
+		fprintf(stderr, "Error: fwrite error\n");
 		exit(EXIT_FAILURE);
 	}
 
@@ -1020,7 +958,7 @@ static void test_error(
 	}
 
 	if (!streq(msg, expected_error)) {
-		fprintf(stderr, "\nThe output differs from the expected output.\n");
+		fprintf(stderr, "\nError: The output differs from the expected output.\n");
 		fprintf(stderr, "Output:\n");
 		fprintf(stderr, "%s\n", msg);
 
@@ -1029,8 +967,6 @@ static void test_error(
 
 		exit(EXIT_FAILURE);
 	}
-
-	unlink(failed_file_path);
 }
 
 static void diff_roundtrip(
@@ -1040,12 +976,12 @@ static void diff_roundtrip(
 ) {
 	static char buf[4096];
 	if (dump_file_to_json(prefix(grug_path), prefix_buf(dump_path, buf))) {
-		fprintf(stderr, "Failed to dump file AST\n");
+		fprintf(stderr, "Error: Failed to dump file AST\n");
 		exit(EXIT_FAILURE);
 	}
 
 	if (generate_file_from_json(prefix(dump_path), prefix_buf(applied_path, buf))) {
-		fprintf(stderr, "Failed to apply file AST\n");
+		fprintf(stderr, "Error: Failed to apply file AST\n");
 		exit(EXIT_FAILURE);
 	}
 
@@ -1058,7 +994,7 @@ static void diff_roundtrip(
 	applied_path_bytes[applied_path_bytes_len] = '\0';
 
 	if (!streq((const char *)grug_path_bytes, (const char *)applied_path_bytes)) {
-		fprintf(stderr, "\nThe output differs from the expected output.\n");
+		fprintf(stderr, "\nError: The output differs from the expected output.\n");
 		fprintf(stderr, "Output:\n");
 		fprintf(stderr, "%s\n", applied_path_bytes);
 
@@ -1072,7 +1008,6 @@ static void diff_roundtrip(
 static void prologue(
 	const char *grug_path,
 	const char *results_path,
-	const char *failed_file_path,
 	const char *mod_name
 ) {
 	reset_call_counts();
@@ -1087,19 +1022,15 @@ static void prologue(
 	rm_rf(results_path);
 	make_results_dir(results_path);
 
-	create_failed_file(failed_file_path);
-
 	const char *msg = compile_grug_file(prefix(grug_path), mod_name);
 	if (msg) {
-		fprintf(stderr, "The test wasn't supposed to print anything, but did:\n");
+		fprintf(stderr, "Error: The test wasn't supposed to print anything, but did:\n");
 		fprintf(stderr, "----\n");
 		fprintf(stderr, "%s\n", msg);
 		fprintf(stderr, "----\n");
 
 		exit(EXIT_FAILURE);
 	}
-
-	init_globals_fn_dispatcher(grug_path);
 }
 
 static void ok_addition_as_argument(void) {
@@ -1201,30 +1132,30 @@ static void ok_bool_logical_not_true(void) {
 
 static void ok_bool_returned(void) {
 	assert(game_fn_set_is_happy_call_count == 0);
-	assert(game_fn_get_evil_false_call_count == 0);
+	assert(game_fn_get_false_call_count == 0);
     on_fn_dispatcher("on_a", "tests/ok/bool_returned/input-D.grug");
 	assert(game_fn_set_is_happy_call_count == 1);
-	assert(game_fn_get_evil_false_call_count == 1);
+	assert(game_fn_get_false_call_count == 1);
 
 	assert(game_fn_set_is_happy_is_happy == false);
 }
 
 static void ok_bool_returned_global(void) {
 	assert(game_fn_set_is_happy_call_count == 0);
-	assert(game_fn_get_evil_false_call_count == 0);
+	assert(game_fn_get_false_call_count == 0);
     on_fn_dispatcher("on_a", "tests/ok/bool_returned_global/input-D.grug");
 	assert(game_fn_set_is_happy_call_count == 1);
-	assert(game_fn_get_evil_false_call_count == 1);
+	assert(game_fn_get_false_call_count == 1);
 
 	assert(game_fn_set_is_happy_is_happy == false);
 }
 
 static void ok_bool_zero_extended_if_statement(void) {
 	assert(game_fn_nothing_call_count == 0);
-	assert(game_fn_get_evil_false_call_count == 0);
+	assert(game_fn_get_false_call_count == 0);
     on_fn_dispatcher("on_a", "tests/ok/bool_zero_extended_if_statement/input-D.grug");
 	assert(game_fn_nothing_call_count == 2);
-	assert(game_fn_get_evil_false_call_count == 1);
+	assert(game_fn_get_false_call_count == 1);
 }
 
 static void ok_bool_zero_extended_while_statement(void) {
@@ -1336,7 +1267,7 @@ static void ok_custom_id_transfer_between_globals(void) {
 }
 
 static void ok_custom_id_with_digits(void) {
-	assert(game_fn_box_i32_call_count == 1);
+	assert(game_fn_box_number_call_count == 1);
 }
 
 static void ok_division_negative_result(void) {
@@ -1475,7 +1406,7 @@ static void ok_f32_addition(void) {
     on_fn_dispatcher("on_a", "tests/ok/f32_addition/input-D.grug");
 	assert(game_fn_sin_call_count == 1);
 
-	assert(game_fn_sin_x == 6.0f);
+	assert(game_fn_sin_x == 6.0);
 }
 
 static void ok_f32_argument(void) {
@@ -1483,7 +1414,7 @@ static void ok_f32_argument(void) {
     on_fn_dispatcher("on_a", "tests/ok/f32_argument/input-D.grug");
 	assert(game_fn_sin_call_count == 1);
 
-	assert(game_fn_sin_x == 4.0f);
+	assert(game_fn_sin_x == 4.0);
 }
 
 static void ok_f32_division(void) {
@@ -1491,7 +1422,7 @@ static void ok_f32_division(void) {
     on_fn_dispatcher("on_a", "tests/ok/f32_division/input-D.grug");
 	assert(game_fn_sin_call_count == 1);
 
-	assert(game_fn_sin_x == 0.5f);
+	assert(game_fn_sin_x == 0.5);
 }
 
 static void ok_f32_eq_false(void) {
@@ -1539,7 +1470,7 @@ static void ok_f32_global_variable(void) {
     on_fn_dispatcher("on_a", "tests/ok/f32_global_variable/input-D.grug");
 	assert(game_fn_sin_call_count == 1);
 
-	assert(game_fn_sin_x == 4.0f);
+	assert(game_fn_sin_x == 4.0);
 }
 
 static void ok_f32_gt_false(void) {
@@ -1587,7 +1518,7 @@ static void ok_f32_local_variable(void) {
     on_fn_dispatcher("on_a", "tests/ok/f32_local_variable/input-D.grug");
 	assert(game_fn_sin_call_count == 1);
 
-	assert(game_fn_sin_x == 4.0f);
+	assert(game_fn_sin_x == 4.0);
 }
 
 static void ok_f32_lt_false(void) {
@@ -1611,7 +1542,7 @@ static void ok_f32_multiplication(void) {
     on_fn_dispatcher("on_a", "tests/ok/f32_multiplication/input-D.grug");
 	assert(game_fn_sin_call_count == 1);
 
-	assert(game_fn_sin_x == 8.0f);
+	assert(game_fn_sin_x == 8.0);
 }
 
 static void ok_f32_ne_false(void) {
@@ -1627,7 +1558,7 @@ static void ok_f32_negated(void) {
     on_fn_dispatcher("on_a", "tests/ok/f32_negated/input-D.grug");
 	assert(game_fn_sin_call_count == 1);
 
-	assert(game_fn_sin_x == -4.0f);
+	assert(game_fn_sin_x == -4.0);
 }
 
 static void ok_f32_ne_true(void) {
@@ -1643,15 +1574,15 @@ static void ok_f32_passed_to_helper_fn(void) {
     on_fn_dispatcher("on_a", "tests/ok/f32_passed_to_helper_fn/input-D.grug");
 	assert(game_fn_sin_call_count == 1);
 
-	assert(game_fn_sin_x == 42.0f);
+	assert(game_fn_sin_x == 42.0);
 }
 
 static void ok_f32_passed_to_on_fn(void) {
 	assert(game_fn_sin_call_count == 0);
-    on_fn_args_dispatcher("on_a", "tests/ok/f32_passed_to_on_fn/input-R.grug", (struct grug_value[]){{.type=grug_type_f32, .f32=42.0f}}, 1);
+    on_fn_args_dispatcher("on_a", "tests/ok/f32_passed_to_on_fn/input-R.grug", (const union grug_value[]){{._number=42.0}});
 	assert(game_fn_sin_call_count == 1);
 
-	assert(game_fn_sin_x == 42.0f);
+	assert(game_fn_sin_x == 42.0);
 }
 
 static void ok_f32_passing_sin_to_cos(void) {
@@ -1661,8 +1592,8 @@ static void ok_f32_passing_sin_to_cos(void) {
 	assert(game_fn_sin_call_count == 1);
 	assert(game_fn_cos_call_count == 1);
 
-	assert(game_fn_sin_x == 4.0f);
-	assert(game_fn_cos_x == sinf(4.0f));
+	assert(game_fn_sin_x == 4.0);
+	assert(game_fn_cos_x == sin(4.0));
 }
 
 static void ok_f32_subtraction(void) {
@@ -1670,7 +1601,7 @@ static void ok_f32_subtraction(void) {
     on_fn_dispatcher("on_a", "tests/ok/f32_subtraction/input-D.grug");
 	assert(game_fn_sin_call_count == 1);
 
-	assert(game_fn_sin_x == -2.0f);
+	assert(game_fn_sin_x == -2.0);
 }
 
 static void ok_fibonacci(void) {
@@ -1806,7 +1737,7 @@ static void ok_helper_fn_overwriting_param(void) {
 	assert(game_fn_sin_call_count == 1);
 
 	assert(game_fn_initialize_x == 20);
-	assert(game_fn_sin_x == 30.0f);
+	assert(game_fn_sin_x == 30.0);
 }
 
 static void ok_helper_fn_returning_void_has_no_return(void) {
@@ -1963,7 +1894,7 @@ static void ok_id_ne_2(void) {
 
 static void ok_id_on_fn_param(void) {
 	assert(game_fn_store_call_count == 0);
-    on_fn_args_dispatcher("on_a", "tests/ok/id_on_fn_param/input-U.grug", (struct grug_value[]){{.type=grug_type_id, .id=77}}, 1);
+    on_fn_args_dispatcher("on_a", "tests/ok/id_on_fn_param/input-U.grug", (const union grug_value[]){{._id=77}});
 	assert(game_fn_store_call_count == 1);
 
 	assert(game_fn_store_id == 77);
@@ -2068,18 +1999,18 @@ static void ok_max_args(void) {
     on_fn_dispatcher("on_a", "tests/ok/max_args/input-D.grug");
 	assert(game_fn_mega_call_count == 1);
 
-	assert(game_fn_mega_f1 == 1.0f);
+	assert(game_fn_mega_f1 == 1.0);
 	assert(game_fn_mega_i1 == 21);
 	assert(game_fn_mega_b1 == true);
-	assert(game_fn_mega_f2 == 2.0f);
-	assert(game_fn_mega_f3 == 3.0f);
-	assert(game_fn_mega_f4 == 4.0f);
+	assert(game_fn_mega_f2 == 2.0);
+	assert(game_fn_mega_f3 == 3.0);
+	assert(game_fn_mega_f4 == 4.0);
 	assert(game_fn_mega_b2 == false);
 	assert(game_fn_mega_i2 == 1337);
-	assert(game_fn_mega_f5 == 5.0f);
-	assert(game_fn_mega_f6 == 6.0f);
-	assert(game_fn_mega_f7 == 7.0f);
-	assert(game_fn_mega_f8 == 8.0f);
+	assert(game_fn_mega_f5 == 5.0);
+	assert(game_fn_mega_f6 == 6.0);
+	assert(game_fn_mega_f7 == 7.0);
+	assert(game_fn_mega_f8 == 8.0);
 	assert(game_fn_mega_id == 42);
 	assert(streq(game_fn_mega_str, "foo"));
 }
@@ -2238,12 +2169,12 @@ static void ok_on_fn_calling_no_game_fn_but_with_global(void) {
 static void ok_on_fn_overwriting_param(void) {
 	assert(game_fn_initialize_call_count == 0);
 	assert(game_fn_sin_call_count == 0);
-    on_fn_args_dispatcher("on_a", "tests/ok/on_fn_overwriting_param/input-S.grug", (struct grug_value[]){{.type=grug_type_i32, .i32=2}, {.type=grug_type_f32, .f32=3.0f}}, 2);
+    on_fn_args_dispatcher("on_a", "tests/ok/on_fn_overwriting_param/input-S.grug", (const union grug_value[]){{._number=2.0}, {._number=3.0}});
 	assert(game_fn_initialize_call_count == 1);
 	assert(game_fn_sin_call_count == 1);
 
 	assert(game_fn_initialize_x == 20);
-	assert(game_fn_sin_x == 30.0f);
+	assert(game_fn_sin_x == 30.0);
 }
 
 static void ok_on_fn_passing_argument_to_helper_fn(void) {
@@ -2347,38 +2278,6 @@ static void ok_pass_string_argument_to_helper_fn(void) {
 	assert(streq(game_fn_say_message, "foo"));
 }
 
-static void ok_remainder_negative_negative(void) {
-	assert(game_fn_initialize_call_count == 0);
-    on_fn_dispatcher("on_a", "tests/ok/remainder_negative_negative/input-J.grug");
-	assert(game_fn_initialize_call_count == 1);
-
-	assert(game_fn_initialize_x == -1);
-}
-
-static void ok_remainder_negative_positive(void) {
-	assert(game_fn_initialize_call_count == 0);
-    on_fn_dispatcher("on_a", "tests/ok/remainder_negative_positive/input-J.grug");
-	assert(game_fn_initialize_call_count == 1);
-
-	assert(game_fn_initialize_x == -1);
-}
-
-static void ok_remainder_positive_negative(void) {
-	assert(game_fn_initialize_call_count == 0);
-    on_fn_dispatcher("on_a", "tests/ok/remainder_positive_negative/input-J.grug");
-	assert(game_fn_initialize_call_count == 1);
-
-	assert(game_fn_initialize_x == 1);
-}
-
-static void ok_remainder_positive_positive(void) {
-	assert(game_fn_initialize_call_count == 0);
-    on_fn_dispatcher("on_a", "tests/ok/remainder_positive_positive/input-J.grug");
-	assert(game_fn_initialize_call_count == 1);
-
-	assert(game_fn_initialize_x == 1);
-}
-
 static void ok_resource_and_entity(void) {
 	assert(game_fn_draw_call_count == 0);
 	assert(game_fn_spawn_call_count == 0);
@@ -2474,16 +2373,16 @@ static void ok_spill_args_to_game_fn(void) {
 	assert(game_fn_motherload_i5 == 5);
 	assert(game_fn_motherload_i6 == 6);
 	assert(game_fn_motherload_i7 == 7);
-	assert(game_fn_motherload_f1 == 1.0f);
-	assert(game_fn_motherload_f2 == 2.0f);
-	assert(game_fn_motherload_f3 == 3.0f);
-	assert(game_fn_motherload_f4 == 4.0f);
-	assert(game_fn_motherload_f5 == 5.0f);
-	assert(game_fn_motherload_f6 == 6.0f);
-	assert(game_fn_motherload_f7 == 7.0f);
-	assert(game_fn_motherload_f8 == 8.0f);
+	assert(game_fn_motherload_f1 == 1.0);
+	assert(game_fn_motherload_f2 == 2.0);
+	assert(game_fn_motherload_f3 == 3.0);
+	assert(game_fn_motherload_f4 == 4.0);
+	assert(game_fn_motherload_f5 == 5.0);
+	assert(game_fn_motherload_f6 == 6.0);
+	assert(game_fn_motherload_f7 == 7.0);
+	assert(game_fn_motherload_f8 == 8.0);
 	assert(game_fn_motherload_id == 42);
-	assert(game_fn_motherload_f9 == 9.0f);
+	assert(game_fn_motherload_f9 == 9.0);
 }
 
 static void ok_spill_args_to_game_fn_subless(void) {
@@ -2498,17 +2397,17 @@ static void ok_spill_args_to_game_fn_subless(void) {
 	assert(game_fn_motherload_subless_i5 == 5);
 	assert(game_fn_motherload_subless_i6 == 6);
 	assert(game_fn_motherload_subless_i7 == 7);
-	assert(game_fn_motherload_subless_f1 == 1.0f);
-	assert(game_fn_motherload_subless_f2 == 2.0f);
-	assert(game_fn_motherload_subless_f3 == 3.0f);
-	assert(game_fn_motherload_subless_f4 == 4.0f);
-	assert(game_fn_motherload_subless_f5 == 5.0f);
-	assert(game_fn_motherload_subless_f6 == 6.0f);
-	assert(game_fn_motherload_subless_f7 == 7.0f);
-	assert(game_fn_motherload_subless_f8 == 8.0f);
-	assert(game_fn_motherload_subless_f9 == 9.0f);
+	assert(game_fn_motherload_subless_f1 == 1.0);
+	assert(game_fn_motherload_subless_f2 == 2.0);
+	assert(game_fn_motherload_subless_f3 == 3.0);
+	assert(game_fn_motherload_subless_f4 == 4.0);
+	assert(game_fn_motherload_subless_f5 == 5.0);
+	assert(game_fn_motherload_subless_f6 == 6.0);
+	assert(game_fn_motherload_subless_f7 == 7.0);
+	assert(game_fn_motherload_subless_f8 == 8.0);
+	assert(game_fn_motherload_subless_f9 == 9.0);
 	assert(game_fn_motherload_subless_id == 42);
-	assert(game_fn_motherload_subless_f10 == 10.0f);
+	assert(game_fn_motherload_subless_f10 == 10.0);
 }
 
 static void ok_spill_args_to_helper_fn(void) {
@@ -2523,16 +2422,16 @@ static void ok_spill_args_to_helper_fn(void) {
 	assert(game_fn_motherload_i5 == 5);
 	assert(game_fn_motherload_i6 == 6);
 	assert(game_fn_motherload_i7 == 7);
-	assert(game_fn_motherload_f1 == 1.0f);
-	assert(game_fn_motherload_f2 == 2.0f);
-	assert(game_fn_motherload_f3 == 3.0f);
-	assert(game_fn_motherload_f4 == 4.0f);
-	assert(game_fn_motherload_f5 == 5.0f);
-	assert(game_fn_motherload_f6 == 6.0f);
-	assert(game_fn_motherload_f7 == 7.0f);
-	assert(game_fn_motherload_f8 == 8.0f);
+	assert(game_fn_motherload_f1 == 1.0);
+	assert(game_fn_motherload_f2 == 2.0);
+	assert(game_fn_motherload_f3 == 3.0);
+	assert(game_fn_motherload_f4 == 4.0);
+	assert(game_fn_motherload_f5 == 5.0);
+	assert(game_fn_motherload_f6 == 6.0);
+	assert(game_fn_motherload_f7 == 7.0);
+	assert(game_fn_motherload_f8 == 8.0);
 	assert(game_fn_motherload_id == 42);
-	assert(game_fn_motherload_f9 == 9.0f);
+	assert(game_fn_motherload_f9 == 9.0);
 }
 
 static void ok_spill_args_to_helper_fn_32_bit_f32(void) {
@@ -2555,14 +2454,14 @@ static void ok_spill_args_to_helper_fn_32_bit_f32(void) {
 	assert(streq(game_fn_offset_32_bit_f32_s13, "13"));
 	assert(streq(game_fn_offset_32_bit_f32_s14, "14"));
 	assert(streq(game_fn_offset_32_bit_f32_s15, "15"));
-	assert(game_fn_offset_32_bit_f32_f1 == 1.0f);
-	assert(game_fn_offset_32_bit_f32_f2 == 2.0f);
-	assert(game_fn_offset_32_bit_f32_f3 == 3.0f);
-	assert(game_fn_offset_32_bit_f32_f4 == 4.0f);
-	assert(game_fn_offset_32_bit_f32_f5 == 5.0f);
-	assert(game_fn_offset_32_bit_f32_f6 == 6.0f);
-	assert(game_fn_offset_32_bit_f32_f7 == 7.0f);
-	assert(game_fn_offset_32_bit_f32_f8 == 8.0f);
+	assert(game_fn_offset_32_bit_f32_f1 == 1.0);
+	assert(game_fn_offset_32_bit_f32_f2 == 2.0);
+	assert(game_fn_offset_32_bit_f32_f3 == 3.0);
+	assert(game_fn_offset_32_bit_f32_f4 == 4.0);
+	assert(game_fn_offset_32_bit_f32_f5 == 5.0);
+	assert(game_fn_offset_32_bit_f32_f6 == 6.0);
+	assert(game_fn_offset_32_bit_f32_f7 == 7.0);
+	assert(game_fn_offset_32_bit_f32_f8 == 8.0);
 	assert(game_fn_offset_32_bit_f32_g == 1);
 }
 
@@ -2571,36 +2470,36 @@ static void ok_spill_args_to_helper_fn_32_bit_i32(void) {
     on_fn_dispatcher("on_a", "tests/ok/spill_args_to_helper_fn_32_bit_i32/input-D.grug");
 	assert(game_fn_offset_32_bit_i32_call_count == 1);
 
-	assert(game_fn_offset_32_bit_i32_f1 == 1.0f);
-	assert(game_fn_offset_32_bit_i32_f2 == 2.0f);
-	assert(game_fn_offset_32_bit_i32_f3 == 3.0f);
-	assert(game_fn_offset_32_bit_i32_f4 == 4.0f);
-	assert(game_fn_offset_32_bit_i32_f5 == 5.0f);
-	assert(game_fn_offset_32_bit_i32_f6 == 6.0f);
-	assert(game_fn_offset_32_bit_i32_f7 == 7.0f);
-	assert(game_fn_offset_32_bit_i32_f8 == 8.0f);
-	assert(game_fn_offset_32_bit_i32_f9 == 9.0f);
-	assert(game_fn_offset_32_bit_i32_f10 == 10.0f);
-	assert(game_fn_offset_32_bit_i32_f11 == 11.0f);
-	assert(game_fn_offset_32_bit_i32_f12 == 12.0f);
-	assert(game_fn_offset_32_bit_i32_f13 == 13.0f);
-	assert(game_fn_offset_32_bit_i32_f14 == 14.0f);
-	assert(game_fn_offset_32_bit_i32_f15 == 15.0f);
-	assert(game_fn_offset_32_bit_i32_f16 == 16.0f);
-	assert(game_fn_offset_32_bit_i32_f17 == 17.0f);
-	assert(game_fn_offset_32_bit_i32_f18 == 18.0f);
-	assert(game_fn_offset_32_bit_i32_f19 == 19.0f);
-	assert(game_fn_offset_32_bit_i32_f20 == 20.0f);
-	assert(game_fn_offset_32_bit_i32_f21 == 21.0f);
-	assert(game_fn_offset_32_bit_i32_f22 == 22.0f);
-	assert(game_fn_offset_32_bit_i32_f23 == 23.0f);
-	assert(game_fn_offset_32_bit_i32_f24 == 24.0f);
-	assert(game_fn_offset_32_bit_i32_f25 == 25.0f);
-	assert(game_fn_offset_32_bit_i32_f26 == 26.0f);
-	assert(game_fn_offset_32_bit_i32_f27 == 27.0f);
-	assert(game_fn_offset_32_bit_i32_f28 == 28.0f);
-	assert(game_fn_offset_32_bit_i32_f29 == 29.0f);
-	assert(game_fn_offset_32_bit_i32_f30 == 30.0f);
+	assert(game_fn_offset_32_bit_i32_f1 == 1.0);
+	assert(game_fn_offset_32_bit_i32_f2 == 2.0);
+	assert(game_fn_offset_32_bit_i32_f3 == 3.0);
+	assert(game_fn_offset_32_bit_i32_f4 == 4.0);
+	assert(game_fn_offset_32_bit_i32_f5 == 5.0);
+	assert(game_fn_offset_32_bit_i32_f6 == 6.0);
+	assert(game_fn_offset_32_bit_i32_f7 == 7.0);
+	assert(game_fn_offset_32_bit_i32_f8 == 8.0);
+	assert(game_fn_offset_32_bit_i32_f9 == 9.0);
+	assert(game_fn_offset_32_bit_i32_f10 == 10.0);
+	assert(game_fn_offset_32_bit_i32_f11 == 11.0);
+	assert(game_fn_offset_32_bit_i32_f12 == 12.0);
+	assert(game_fn_offset_32_bit_i32_f13 == 13.0);
+	assert(game_fn_offset_32_bit_i32_f14 == 14.0);
+	assert(game_fn_offset_32_bit_i32_f15 == 15.0);
+	assert(game_fn_offset_32_bit_i32_f16 == 16.0);
+	assert(game_fn_offset_32_bit_i32_f17 == 17.0);
+	assert(game_fn_offset_32_bit_i32_f18 == 18.0);
+	assert(game_fn_offset_32_bit_i32_f19 == 19.0);
+	assert(game_fn_offset_32_bit_i32_f20 == 20.0);
+	assert(game_fn_offset_32_bit_i32_f21 == 21.0);
+	assert(game_fn_offset_32_bit_i32_f22 == 22.0);
+	assert(game_fn_offset_32_bit_i32_f23 == 23.0);
+	assert(game_fn_offset_32_bit_i32_f24 == 24.0);
+	assert(game_fn_offset_32_bit_i32_f25 == 25.0);
+	assert(game_fn_offset_32_bit_i32_f26 == 26.0);
+	assert(game_fn_offset_32_bit_i32_f27 == 27.0);
+	assert(game_fn_offset_32_bit_i32_f28 == 28.0);
+	assert(game_fn_offset_32_bit_i32_f29 == 29.0);
+	assert(game_fn_offset_32_bit_i32_f30 == 30.0);
 	assert(game_fn_offset_32_bit_i32_i1 == 1);
 	assert(game_fn_offset_32_bit_i32_i2 == 2);
 	assert(game_fn_offset_32_bit_i32_i3 == 3);
@@ -2614,36 +2513,36 @@ static void ok_spill_args_to_helper_fn_32_bit_string(void) {
     on_fn_dispatcher("on_a", "tests/ok/spill_args_to_helper_fn_32_bit_string/input-D.grug");
 	assert(game_fn_offset_32_bit_string_call_count == 1);
 
-	assert(game_fn_offset_32_bit_string_f1 == 1.0f);
-	assert(game_fn_offset_32_bit_string_f2 == 2.0f);
-	assert(game_fn_offset_32_bit_string_f3 == 3.0f);
-	assert(game_fn_offset_32_bit_string_f4 == 4.0f);
-	assert(game_fn_offset_32_bit_string_f5 == 5.0f);
-	assert(game_fn_offset_32_bit_string_f6 == 6.0f);
-	assert(game_fn_offset_32_bit_string_f7 == 7.0f);
-	assert(game_fn_offset_32_bit_string_f8 == 8.0f);
-	assert(game_fn_offset_32_bit_string_f9 == 9.0f);
-	assert(game_fn_offset_32_bit_string_f10 == 10.0f);
-	assert(game_fn_offset_32_bit_string_f11 == 11.0f);
-	assert(game_fn_offset_32_bit_string_f12 == 12.0f);
-	assert(game_fn_offset_32_bit_string_f13 == 13.0f);
-	assert(game_fn_offset_32_bit_string_f14 == 14.0f);
-	assert(game_fn_offset_32_bit_string_f15 == 15.0f);
-	assert(game_fn_offset_32_bit_string_f16 == 16.0f);
-	assert(game_fn_offset_32_bit_string_f17 == 17.0f);
-	assert(game_fn_offset_32_bit_string_f18 == 18.0f);
-	assert(game_fn_offset_32_bit_string_f19 == 19.0f);
-	assert(game_fn_offset_32_bit_string_f20 == 20.0f);
-	assert(game_fn_offset_32_bit_string_f21 == 21.0f);
-	assert(game_fn_offset_32_bit_string_f22 == 22.0f);
-	assert(game_fn_offset_32_bit_string_f23 == 23.0f);
-	assert(game_fn_offset_32_bit_string_f24 == 24.0f);
-	assert(game_fn_offset_32_bit_string_f25 == 25.0f);
-	assert(game_fn_offset_32_bit_string_f26 == 26.0f);
-	assert(game_fn_offset_32_bit_string_f27 == 27.0f);
-	assert(game_fn_offset_32_bit_string_f28 == 28.0f);
-	assert(game_fn_offset_32_bit_string_f29 == 29.0f);
-	assert(game_fn_offset_32_bit_string_f30 == 30.0f);
+	assert(game_fn_offset_32_bit_string_f1 == 1.0);
+	assert(game_fn_offset_32_bit_string_f2 == 2.0);
+	assert(game_fn_offset_32_bit_string_f3 == 3.0);
+	assert(game_fn_offset_32_bit_string_f4 == 4.0);
+	assert(game_fn_offset_32_bit_string_f5 == 5.0);
+	assert(game_fn_offset_32_bit_string_f6 == 6.0);
+	assert(game_fn_offset_32_bit_string_f7 == 7.0);
+	assert(game_fn_offset_32_bit_string_f8 == 8.0);
+	assert(game_fn_offset_32_bit_string_f9 == 9.0);
+	assert(game_fn_offset_32_bit_string_f10 == 10.0);
+	assert(game_fn_offset_32_bit_string_f11 == 11.0);
+	assert(game_fn_offset_32_bit_string_f12 == 12.0);
+	assert(game_fn_offset_32_bit_string_f13 == 13.0);
+	assert(game_fn_offset_32_bit_string_f14 == 14.0);
+	assert(game_fn_offset_32_bit_string_f15 == 15.0);
+	assert(game_fn_offset_32_bit_string_f16 == 16.0);
+	assert(game_fn_offset_32_bit_string_f17 == 17.0);
+	assert(game_fn_offset_32_bit_string_f18 == 18.0);
+	assert(game_fn_offset_32_bit_string_f19 == 19.0);
+	assert(game_fn_offset_32_bit_string_f20 == 20.0);
+	assert(game_fn_offset_32_bit_string_f21 == 21.0);
+	assert(game_fn_offset_32_bit_string_f22 == 22.0);
+	assert(game_fn_offset_32_bit_string_f23 == 23.0);
+	assert(game_fn_offset_32_bit_string_f24 == 24.0);
+	assert(game_fn_offset_32_bit_string_f25 == 25.0);
+	assert(game_fn_offset_32_bit_string_f26 == 26.0);
+	assert(game_fn_offset_32_bit_string_f27 == 27.0);
+	assert(game_fn_offset_32_bit_string_f28 == 28.0);
+	assert(game_fn_offset_32_bit_string_f29 == 29.0);
+	assert(game_fn_offset_32_bit_string_f30 == 30.0);
 	assert(streq(game_fn_offset_32_bit_string_s1, "1"));
 	assert(streq(game_fn_offset_32_bit_string_s2, "2"));
 	assert(streq(game_fn_offset_32_bit_string_s3, "3"));
@@ -2664,17 +2563,17 @@ static void ok_spill_args_to_helper_fn_subless(void) {
 	assert(game_fn_motherload_subless_i5 == 5);
 	assert(game_fn_motherload_subless_i6 == 6);
 	assert(game_fn_motherload_subless_i7 == 7);
-	assert(game_fn_motherload_subless_f1 == 1.0f);
-	assert(game_fn_motherload_subless_f2 == 2.0f);
-	assert(game_fn_motherload_subless_f3 == 3.0f);
-	assert(game_fn_motherload_subless_f4 == 4.0f);
-	assert(game_fn_motherload_subless_f5 == 5.0f);
-	assert(game_fn_motherload_subless_f6 == 6.0f);
-	assert(game_fn_motherload_subless_f7 == 7.0f);
-	assert(game_fn_motherload_subless_f8 == 8.0f);
-	assert(game_fn_motherload_subless_f9 == 9.0f);
+	assert(game_fn_motherload_subless_f1 == 1.0);
+	assert(game_fn_motherload_subless_f2 == 2.0);
+	assert(game_fn_motherload_subless_f3 == 3.0);
+	assert(game_fn_motherload_subless_f4 == 4.0);
+	assert(game_fn_motherload_subless_f5 == 5.0);
+	assert(game_fn_motherload_subless_f6 == 6.0);
+	assert(game_fn_motherload_subless_f7 == 7.0);
+	assert(game_fn_motherload_subless_f8 == 8.0);
+	assert(game_fn_motherload_subless_f9 == 9.0);
 	assert(game_fn_motherload_subless_id == 42);
-	assert(game_fn_motherload_subless_f10 == 10.0f);
+	assert(game_fn_motherload_subless_f10 == 10.0);
 }
 
 static void ok_stack_16_byte_alignment(void) {
@@ -2880,21 +2779,10 @@ static void runtime_error_all(void) {
 
 	assert(had_runtime_error);
 
-	assert(runtime_error_type == GRUG_ON_FN_DIVISION_BY_ZERO);
+	assert(runtime_error_type == GRUG_ON_FN_STACK_OVERFLOW);
 
 	assert(streq(runtime_error_on_fn_name, "on_a"));
 	assert(streq(runtime_error_on_fn_path, "tests/err_runtime/all/input-D.grug"));
-}
-
-static void runtime_error_division_by_0(void) {
-	on_fn_dispatcher("on_a", "tests/err_runtime/division_by_0/input-D.grug");
-
-	assert(had_runtime_error);
-
-	assert(runtime_error_type == GRUG_ON_FN_DIVISION_BY_ZERO);
-
-	assert(streq(runtime_error_on_fn_name, "on_a"));
-	assert(streq(runtime_error_on_fn_path, "tests/err_runtime/division_by_0/input-D.grug"));
 }
 
 static void runtime_error_game_fn_error(void) {
@@ -2939,105 +2827,6 @@ static void runtime_error_game_fn_error_once(void) {
 	assert(!had_runtime_error);
 }
 
-static void runtime_error_i32_overflow_addition(void) {
-	on_fn_dispatcher("on_a", "tests/err_runtime/i32_overflow_addition/input-D.grug");
-
-	assert(had_runtime_error);
-
-	assert(runtime_error_type == GRUG_ON_FN_OVERFLOW);
-
-	assert(streq(runtime_error_on_fn_name, "on_a"));
-	assert(streq(runtime_error_on_fn_path, "tests/err_runtime/i32_overflow_addition/input-D.grug"));
-}
-
-static void runtime_error_i32_overflow_division(void) {
-	on_fn_dispatcher("on_a", "tests/err_runtime/i32_overflow_division/input-D.grug");
-
-	assert(had_runtime_error);
-
-	assert(runtime_error_type == GRUG_ON_FN_OVERFLOW);
-
-	assert(streq(runtime_error_on_fn_name, "on_a"));
-	assert(streq(runtime_error_on_fn_path, "tests/err_runtime/i32_overflow_division/input-D.grug"));
-}
-
-static void runtime_error_i32_overflow_multiplication(void) {
-	on_fn_dispatcher("on_a", "tests/err_runtime/i32_overflow_multiplication/input-D.grug");
-
-	assert(had_runtime_error);
-
-	assert(runtime_error_type == GRUG_ON_FN_OVERFLOW);
-
-	assert(streq(runtime_error_on_fn_name, "on_a"));
-	assert(streq(runtime_error_on_fn_path, "tests/err_runtime/i32_overflow_multiplication/input-D.grug"));
-}
-
-static void runtime_error_i32_overflow_negation(void) {
-	on_fn_dispatcher("on_a", "tests/err_runtime/i32_overflow_negation/input-D.grug");
-
-	assert(had_runtime_error);
-
-	assert(runtime_error_type == GRUG_ON_FN_OVERFLOW);
-
-	assert(streq(runtime_error_on_fn_name, "on_a"));
-	assert(streq(runtime_error_on_fn_path, "tests/err_runtime/i32_overflow_negation/input-D.grug"));
-}
-
-static void runtime_error_i32_overflow_remainder(void) {
-	on_fn_dispatcher("on_a", "tests/err_runtime/i32_overflow_remainder/input-D.grug");
-
-	assert(had_runtime_error);
-
-	assert(runtime_error_type == GRUG_ON_FN_OVERFLOW);
-
-	assert(streq(runtime_error_on_fn_name, "on_a"));
-	assert(streq(runtime_error_on_fn_path, "tests/err_runtime/i32_overflow_remainder/input-D.grug"));
-}
-
-static void runtime_error_i32_overflow_subtraction(void) {
-	on_fn_dispatcher("on_a", "tests/err_runtime/i32_overflow_subtraction/input-D.grug");
-
-	assert(had_runtime_error);
-
-	assert(runtime_error_type == GRUG_ON_FN_OVERFLOW);
-
-	assert(streq(runtime_error_on_fn_name, "on_a"));
-	assert(streq(runtime_error_on_fn_path, "tests/err_runtime/i32_overflow_subtraction/input-D.grug"));
-}
-
-static void runtime_error_i32_underflow_addition(void) {
-	on_fn_dispatcher("on_a", "tests/err_runtime/i32_underflow_addition/input-D.grug");
-
-	assert(had_runtime_error);
-
-	assert(runtime_error_type == GRUG_ON_FN_OVERFLOW);
-
-	assert(streq(runtime_error_on_fn_name, "on_a"));
-	assert(streq(runtime_error_on_fn_path, "tests/err_runtime/i32_underflow_addition/input-D.grug"));
-}
-
-static void runtime_error_i32_underflow_multiplication(void) {
-	on_fn_dispatcher("on_a", "tests/err_runtime/i32_underflow_multiplication/input-D.grug");
-
-	assert(had_runtime_error);
-
-	assert(runtime_error_type == GRUG_ON_FN_OVERFLOW);
-
-	assert(streq(runtime_error_on_fn_name, "on_a"));
-	assert(streq(runtime_error_on_fn_path, "tests/err_runtime/i32_underflow_multiplication/input-D.grug"));
-}
-
-static void runtime_error_i32_underflow_subtraction(void) {
-	on_fn_dispatcher("on_a", "tests/err_runtime/i32_underflow_subtraction/input-D.grug");
-
-	assert(had_runtime_error);
-
-	assert(runtime_error_type == GRUG_ON_FN_OVERFLOW);
-
-	assert(streq(runtime_error_on_fn_name, "on_a"));
-	assert(streq(runtime_error_on_fn_path, "tests/err_runtime/i32_underflow_subtraction/input-D.grug"));
-}
-
 static void runtime_error_on_fn_calls_erroring_on_fn(void) {
 	saved_grug_path = "tests/err_runtime/on_fn_calls_erroring_on_fn/input-E.grug";
 
@@ -3078,17 +2867,6 @@ static void runtime_error_on_fn_errors_after_it_calls_other_on_fn(void) {
 
 	assert(streq(runtime_error_on_fn_name, "on_b"));
 	assert(streq(runtime_error_on_fn_path, "tests/err_runtime/on_fn_errors_after_it_calls_other_on_fn/input-E.grug"));
-}
-
-static void runtime_error_remainder_by_0(void) {
-    on_fn_dispatcher("on_a", "tests/err_runtime/remainder_by_0/input-D.grug");
-
-	assert(had_runtime_error);
-
-	assert(runtime_error_type == GRUG_ON_FN_DIVISION_BY_ZERO);
-
-	assert(streq(runtime_error_on_fn_name, "on_a"));
-	assert(streq(runtime_error_on_fn_path, "tests/err_runtime/remainder_by_0/input-D.grug"));
 }
 
 static void runtime_error_stack_overflow(void) {
@@ -3154,7 +2932,7 @@ static void runtime_error_time_limit_exceeded_fibonacci(void) {
 	}\
 	\
 	if (entries != test_dirname ## _test_datas_size) {\
-		fprintf(stderr, "The tests/" #test_dirname "/ directory contains %zu entries, which doesn't match it having %zu test functions\n", entries, test_dirname ## _test_datas_size);\
+		fprintf(stderr, "Error: The tests/" #test_dirname "/ directory contains %zu entries, which doesn't match it having %zu test functions\n", entries, test_dirname ## _test_datas_size);\
 		exit(EXIT_FAILURE);\
 	}\
 	\
@@ -3243,8 +3021,6 @@ static void add_error_tests(void) {
 	ADD_TEST_ERROR(helper_fn_no_return_value_expected, "D");
 	ADD_TEST_ERROR(helper_fn_return_with_comment_after_it, "D");
 	ADD_TEST_ERROR(i32_logical_not, "D");
-	ADD_TEST_ERROR(i32_too_big, "D");
-	ADD_TEST_ERROR(i32_too_small, "D");
 	ADD_TEST_ERROR(id_invalid_binary_op, "D");
 	ADD_TEST_ERROR(id_return, "D");
 	ADD_TEST_ERROR(id_store_in_non_id_global, "A");
@@ -3294,7 +3070,6 @@ static void add_error_tests(void) {
 	ADD_TEST_ERROR(on_function_no_return_value_expected, "D");
 	ADD_TEST_ERROR(pass_bool_to_i32_game_param, "D");
 	ADD_TEST_ERROR(pass_bool_to_i32_helper_param, "D");
-	ADD_TEST_ERROR(remainder_by_float, "D");
 	ADD_TEST_ERROR(resource_cant_be_empty_string, "D");
 	ADD_TEST_ERROR(resource_cant_be_passed_to_helper_fn, "D");
 	ADD_TEST_ERROR(resource_cant_contain_backslash, "D");
@@ -3503,10 +3278,6 @@ static void add_ok_tests(void) {
 	ADD_TEST_OK(or_true_3, "D", 8);
 	ADD_TEST_OK(pass_string_argument_to_game_fn, "D", 8);
 	ADD_TEST_OK(pass_string_argument_to_helper_fn, "D", 8);
-	ADD_TEST_OK(remainder_negative_negative, "D", 8);
-	ADD_TEST_OK(remainder_negative_positive, "D", 8);
-	ADD_TEST_OK(remainder_positive_negative, "D", 8);
-	ADD_TEST_OK(remainder_positive_positive, "D", 8);
 	ADD_TEST_OK(resource_and_entity, "D", 8);
 	ADD_TEST_OK(resource_can_contain_dot_1, "D", 8);
 	ADD_TEST_OK(resource_can_contain_dot_3, "D", 8);
@@ -3552,21 +3323,10 @@ static void add_ok_tests(void) {
 
 static void add_runtime_error_tests(void) {
 	ADD_TEST_RUNTIME_ERROR(all, "D", 8);
-	ADD_TEST_RUNTIME_ERROR(division_by_0, "D", 8);
 	ADD_TEST_RUNTIME_ERROR(game_fn_error, "D", 8);
 	ADD_TEST_RUNTIME_ERROR(game_fn_error_once, "E", 8);
-	ADD_TEST_RUNTIME_ERROR(i32_overflow_addition, "D", 8);
-	ADD_TEST_RUNTIME_ERROR(i32_overflow_division, "D", 8);
-	ADD_TEST_RUNTIME_ERROR(i32_overflow_multiplication, "D", 8);
-	ADD_TEST_RUNTIME_ERROR(i32_overflow_negation, "D", 8);
-	ADD_TEST_RUNTIME_ERROR(i32_overflow_remainder, "D", 8);
-	ADD_TEST_RUNTIME_ERROR(i32_overflow_subtraction, "D", 8);
-	ADD_TEST_RUNTIME_ERROR(i32_underflow_addition, "D", 8);
-	ADD_TEST_RUNTIME_ERROR(i32_underflow_multiplication, "D", 8);
-	ADD_TEST_RUNTIME_ERROR(i32_underflow_subtraction, "D", 8);
 	ADD_TEST_RUNTIME_ERROR(on_fn_calls_erroring_on_fn, "E", 8);
 	ADD_TEST_RUNTIME_ERROR(on_fn_errors_after_it_calls_other_on_fn, "E", 8);
-	ADD_TEST_RUNTIME_ERROR(remainder_by_0, "D", 8);
 	ADD_TEST_RUNTIME_ERROR(stack_overflow, "D", 8);
 	ADD_TEST_RUNTIME_ERROR(time_limit_exceeded, "D", 8);
 	ADD_TEST_RUNTIME_ERROR(time_limit_exceeded_exponential_calls, "D", 8);
@@ -3594,7 +3354,7 @@ void grug_tests_run(const char *tests_dir_path_, compile_grug_file_t compile_gru
 	}
 
 	if (err_test_datas_size + ok_test_datas_size + err_runtime_test_datas_size == 0) {
-		fprintf(stderr, "No tests to execute\n");
+		fprintf(stderr, "Error: No tests to execute\n");
 		exit(EXIT_FAILURE);
 	}
 
@@ -3618,67 +3378,41 @@ void grug_tests_run(const char *tests_dir_path_, compile_grug_file_t compile_gru
 			fn_data.grug_path,
 			fn_data.expected_error_path,
 			fn_data.results_path,
-			fn_data.grug_output_path,
-			fn_data.failed_file_path
+			fn_data.grug_output_path
 		);
 	}
 
 	for (size_t i = 0; i < ok_test_datas_size; i++) {
 		struct ok_test_data fn_data = ok_test_datas[i];
 
-		if (whitelisted_test == NULL
-		&& failed_file_doesnt_exist(fn_data.failed_file_path)
-		&& shuffles_was_not_defined()
-		&& newer(fn_data.applied_path, fn_data.grug_path)
-		&& newer(fn_data.applied_path, "mod_api.json")
-		&& newer(fn_data.applied_path, "tests.sh")
-		&& newer(fn_data.applied_path, "smoketest")
-		&& newer(fn_data.applied_path, "smoketest.c")
-		) {
-			printf("Skipping tests/ok/%s...\n", fn_data.test_name_str);
-			continue;
-		}
-
 		printf("Running tests/ok/%s...\n", fn_data.test_name_str);
 
-		prologue(fn_data.grug_path, fn_data.results_path, fn_data.failed_file_path, "ok");
+		prologue(fn_data.grug_path, fn_data.results_path, "ok");
 
 		diff_roundtrip(fn_data.grug_path, fn_data.dump_path, fn_data.applied_path);
 
-		fn_data.run();
+		init_globals_fn_dispatcher(prefix(fn_data.grug_path));
 
-		unlink(fn_data.failed_file_path);
+		fn_data.run();
 	}
 
 	for (size_t i = 0; i < err_runtime_test_datas_size; i++) {
 		struct runtime_error_test_data fn_data = runtime_error_test_datas[i];
 
-		if (whitelisted_test == NULL
-		&& failed_file_doesnt_exist(fn_data.failed_file_path)
-		&& shuffles_was_not_defined()
-		&& newer(fn_data.applied_path, fn_data.grug_path)
-		&& newer(fn_data.applied_path, fn_data.expected_error_path)
-		&& newer(fn_data.applied_path, "mod_api.json")
-		&& newer(fn_data.applied_path, "tests.sh")
-		&& newer(fn_data.applied_path, "smoketest")
-		&& newer(fn_data.applied_path, "smoketest.c")
-		) {
-			printf("Skipping tests/err_runtime/%s...\n", fn_data.test_name_str);
-			continue;
-		}
-
 		printf("Running tests/err_runtime/%s...\n", fn_data.test_name_str);
 
-		prologue(fn_data.grug_path, fn_data.results_path, fn_data.failed_file_path, "err_runtime");
+		prologue(fn_data.grug_path, fn_data.results_path, "err_runtime");
 
 		diff_roundtrip(fn_data.grug_path, fn_data.dump_path, fn_data.applied_path);
+
+		init_globals_fn_dispatcher(prefix(fn_data.grug_path));
 
 		fn_data.run();
 
 		const char *expected_error = get_expected_error(fn_data.expected_error_path);
 
 		if (!streq(runtime_error_reason, expected_error)) {
-			fprintf(stderr, "\nThe error message differs from the expected error message.\n");
+			fprintf(stderr, "\nError: The error message differs from the expected error message.\n");
 			fprintf(stderr, "Output:\n");
 			fprintf(stderr, "%s\n", runtime_error_reason);
 
@@ -3687,8 +3421,6 @@ void grug_tests_run(const char *tests_dir_path_, compile_grug_file_t compile_gru
 
 			exit(EXIT_FAILURE);
 		}
-
-		unlink(fn_data.failed_file_path);
 	}
 
 #ifdef SHUFFLES

@@ -1,1 +1,1 @@
-Function 'on_a' expected the parameter 'y' with type i32
+Function 'on_a' expected the parameter 'y' with type number

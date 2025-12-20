@@ -1,9 +1,9 @@
-g: i32 = 1
+g: number = 1
 
 on_a() {
     helper_foo("1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0)
 }
 
-helper_foo(s1: string, s2: string, s3: string, s4: string, s5: string, s6: string, s7: string, s8: string, s9: string, s10: string, s11: string, s12: string, s13: string, s14: string, s15: string, f1: f32, f2: f32, f3: f32, f4: f32, f5: f32, f6: f32, f7: f32, f8: f32) {
+helper_foo(s1: string, s2: string, s3: string, s4: string, s5: string, s6: string, s7: string, s8: string, s9: string, s10: string, s11: string, s12: string, s13: string, s14: string, s15: string, f1: number, f2: number, f3: number, f4: number, f5: number, f6: number, f7: number, f8: number) {
     offset_32_bit_f32(s1, s2, s3, s4, s5, s6, s7, s8, s9, s10, s11, s12, s13, s14, s15, f1, f2, f3, f4, f5, f6, f7, f8, g)
 }

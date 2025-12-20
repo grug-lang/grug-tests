@@ -1,6 +1,6 @@
 on_a() {
     if true {
-        a: i32 = 42
+        a: number = 42
     }
     a = 69
 }

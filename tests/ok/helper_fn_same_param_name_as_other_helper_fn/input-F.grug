@@ -1,12 +1,12 @@
-on_a(x: i32) {
+on_a(x: number) {
     helper_foo(42)
     helper_bar(69)
 }
 
-helper_foo(x: i32) {
+helper_foo(x: number) {
     nothing()
 }
 
-helper_bar(x: i32) {
+helper_bar(x: number) {
     nothing()
 }

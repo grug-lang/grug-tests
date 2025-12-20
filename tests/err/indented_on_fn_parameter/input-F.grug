@@ -1,4 +1,4 @@
 on_a(
-    x: i32
+    x: number
 ) {
 }

@@ -4,7 +4,24 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
+#if defined(__linux__)
+
 #include <dlfcn.h>
+
+typedef void* DllLib;
+#define load_library(name) dlopen(name, RTLD_NOW | RTLD_LOCAL)
+#define load_symbol(lib, name) dlsym(lib, name)
+
+#elif defined(WIN32) 
+
+#include <windows.h>
+
+typedef HMODULE DllLib;
+#define load_library(name) LoadLibrary(name)
+#define load_symbol(lib, name) (void*)GetProcAddress(lib, name);
+
+#endif
 
 static void (*p_grug_tests_run)(
     const char *,
@@ -488,7 +505,7 @@ static void on_fn_dispatcher(const char *on_fn_name, const char *grug_file_path,
     } else if (starts_with(grug_file_path, "tests/ok/on_fn_calling_no_game_fn_but_with_global/")) {
     } else if (starts_with(grug_file_path, "tests/ok/on_fn_overwriting_param/")) {
         CALL(initialize, grug_number(20.0));
-        CALL(sin, 30.0);
+        CALL(sin, grug_number(30));
     } else if (starts_with(grug_file_path, "tests/ok/on_fn_passing_argument_to_helper_fn/")) {
         CALL(initialize, grug_number(42.0));
     } else if (starts_with(grug_file_path, "tests/ok/on_fn_passing_magic_to_initialize/")) {
@@ -611,7 +628,7 @@ static void on_fn_dispatcher(const char *on_fn_name, const char *grug_file_path,
         CALL_ARGLESS(nothing);
         CALL_ARGLESS(nothing);
     } else if (starts_with(grug_file_path, "tests/ok/write_to_global_variable/")) {
-        CALL(max, 43.0, 69.0);
+        CALL(max, grug_number(43.0), grug_number(69.0));
     } else {
         assert(false);
     }
@@ -668,18 +685,30 @@ static void game_fn_error(const char *message) {
     p_grug_tests_runtime_error_handler(message, GRUG_ON_FN_GAME_FN_ERROR, saved_on_fn_name, saved_grug_file_path);
 }
 
-static void *load_sym(void *h, const char *name) {
-    void *p = dlsym(h, name);
+static void* load_sym(void *h, const char *name) {
+    #pragma GCC diagnostic push
+    #pragma GCC diagnostic ignored "-Wpedantic"
+    #pragma GCC diagnostic ignored "-Wint-conversion"
+    void* p = load_symbol(h, name);
     assert(p && "Failed to load required symbol from tests.so");
     return p;
+    #pragma GCC diagnostic pop
 }
 
 static void load_tests_so(void) {
-    void *h = dlopen("./tests.so", RTLD_NOW | RTLD_LOCAL);
-    assert(h && "Could not load tests.so");
+
+	#if defined(__linux__)
+	#define LIBNAME "libtests.so"
+	#elif defined(WIN32)
+	#define LIBNAME "tests.dll"
+	#endif
+
+    DllLib h = load_library(LIBNAME);
+    assert(h && "Could not load shared library");
 
     #pragma GCC diagnostic push
     #pragma GCC diagnostic ignored "-Wpedantic"
+	#pragma GCC diagnostic ignored "-Wincompatible-pointer-types"
     p_grug_tests_run = load_sym(h, "grug_tests_run");
     p_grug_tests_runtime_error_handler = load_sym(h, "grug_tests_runtime_error_handler");
 

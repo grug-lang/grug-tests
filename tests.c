@@ -9,9 +9,15 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <sys/stat.h>
+/* #include <sys/stat.h> */
 #include <time.h>
 #include <unistd.h>
+
+#if defined(_WIN32)
+#define mkdir(dir_path) mkdir(dir_path)
+#elif defined(__linux__)
+#define mkdir(dir_path) mkdir(dir_path, 755)
+#endif
 
 // From https://stackoverflow.com/a/2114249/13279557
 #ifdef __x86_64__
@@ -899,7 +905,7 @@ static const char *get_expected_error(const char *expected_error_path) {
 }
 
 static void make_results_dir(const char *results_path) {
-	if (mkdir(prefix(results_path), 0755) == -1 && errno != EEXIST) {
+	if (mkdir(prefix(results_path)) == -1 && errno != EEXIST) {
 		perror("mkdir");
 		fprintf(stderr, "prefix(results_path): \"%s\"\n", prefix(results_path));\
 		exit(EXIT_FAILURE);
@@ -3021,6 +3027,8 @@ static void add_error_tests(void) {
 	ADD_TEST_ERROR(helper_fn_no_return_value_expected, "D");
 	ADD_TEST_ERROR(helper_fn_return_with_comment_after_it, "D");
 	ADD_TEST_ERROR(i32_logical_not, "D");
+	ADD_TEST_ERROR(i32_too_big, "D");
+	ADD_TEST_ERROR(i32_too_small, "D");
 	ADD_TEST_ERROR(id_invalid_binary_op, "D");
 	ADD_TEST_ERROR(id_return, "D");
 	ADD_TEST_ERROR(id_store_in_non_id_global, "A");
@@ -3070,6 +3078,7 @@ static void add_error_tests(void) {
 	ADD_TEST_ERROR(on_function_no_return_value_expected, "D");
 	ADD_TEST_ERROR(pass_bool_to_i32_game_param, "D");
 	ADD_TEST_ERROR(pass_bool_to_i32_helper_param, "D");
+	ADD_TEST_ERROR(remainder_by_float, "D");
 	ADD_TEST_ERROR(resource_cant_be_empty_string, "D");
 	ADD_TEST_ERROR(resource_cant_be_passed_to_helper_fn, "D");
 	ADD_TEST_ERROR(resource_cant_contain_backslash, "D");

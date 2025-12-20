@@ -8,7 +8,11 @@ This is the test suite of [my programming language called grug](https://github.c
 
 1. Clone this repository, and clone [grug](https://github.com/MyNameIsTrez/grug) next to it.
 2. Run `cd grug-tests`.
-3. Run the tests using VS Code's debugger by hitting F5, or running `./tests.sh ../grug`.
+3. If you're on linux, run
+    `cmake -S . -B ./build`
+   On windows, run
+    `cmake -S . -B ./build -G 'MinGW Makefile' -DCMAKE_C_COMPILER=gcc`
+4. Build the tests with `cmake --build ./build`
 
 You can get more info in the test its generated `results` directory (from objdump, readelf and xxd) by running `./tests.sh ../grug`.
 

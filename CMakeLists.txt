@@ -19,10 +19,8 @@ set(BASE_WARNINGS
     -g
     -Wall
     -Wextra
-    -pedantic
-    -Wconversion
     -Werror
-    -Wfatal-errors
+    -Wpedantic
     -Wstrict-prototypes
     -Wmissing-prototypes
     -Wshadow

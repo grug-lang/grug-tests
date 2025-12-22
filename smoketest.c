@@ -703,7 +703,7 @@ static void load_tests_so(void) {
 	#define LIBNAME "tests.dll"
 	#endif
 
-    DllLib h = load_library(LIBNAME);
+    DllLib h = load_library("./build/" LIBNAME);
     assert(h && "Could not load shared library");
 
     #pragma GCC diagnostic push

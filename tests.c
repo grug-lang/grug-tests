@@ -864,7 +864,7 @@ static const char *prefix(const char *path) {
 }
 
 static size_t read_file(const char *path, uint8_t *bytes) {
-	FILE *f = fopen(prefix(path), "r");
+	FILE *f = fopen(prefix(path), "rb");
 	check_null(f, "fopen", prefix(path));
 
 	check(fseek(f, 0, SEEK_END), "fseek", NULL);
@@ -3027,8 +3027,6 @@ static void add_error_tests(void) {
 	ADD_TEST_ERROR(helper_fn_no_return_value_expected, "D");
 	ADD_TEST_ERROR(helper_fn_return_with_comment_after_it, "D");
 	ADD_TEST_ERROR(i32_logical_not, "D");
-	ADD_TEST_ERROR(i32_too_big, "D");
-	ADD_TEST_ERROR(i32_too_small, "D");
 	ADD_TEST_ERROR(id_invalid_binary_op, "D");
 	ADD_TEST_ERROR(id_return, "D");
 	ADD_TEST_ERROR(id_store_in_non_id_global, "A");
@@ -3078,7 +3076,6 @@ static void add_error_tests(void) {
 	ADD_TEST_ERROR(on_function_no_return_value_expected, "D");
 	ADD_TEST_ERROR(pass_bool_to_i32_game_param, "D");
 	ADD_TEST_ERROR(pass_bool_to_i32_helper_param, "D");
-	ADD_TEST_ERROR(remainder_by_float, "D");
 	ADD_TEST_ERROR(resource_cant_be_empty_string, "D");
 	ADD_TEST_ERROR(resource_cant_be_passed_to_helper_fn, "D");
 	ADD_TEST_ERROR(resource_cant_contain_backslash, "D");

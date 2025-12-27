@@ -15,7 +15,7 @@
 #if defined(_WIN32)
 #define mkdir(dir_path) mkdir(dir_path)
 #elif defined(__linux__)
-#define mkdir(dir_path) mkdir(dir_path, 755)
+#define mkdir(dir_path) mkdir(dir_path, 0755)
 #endif
 
 // From https://stackoverflow.com/a/2114249/13279557

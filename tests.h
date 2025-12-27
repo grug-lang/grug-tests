@@ -1,22 +1,3 @@
-// TODO: Move this to the readme?
-// The goal is for every language's grug bindings to check their correctness using tests.c.
-//
-// It should be made as easy as possible for bindings to use tests.c, which means:
-// 1. None of the bindings nor backend code should contain anything related to tests.c.
-// 2. All test game function definitions should be kept in tests.c,
-//    so they don't need to be copied into every language's bindings.
-// 3. The tests in tests.c should only assert the values of its own static global variables.
-//    This means that rather than having tests.c inspect the globals pointer directly,
-//    the grug file needs to pass the global variable into a game function of tests.c,
-//    which will save the value into its own static global.
-//
-// The README and CI of every language's grug bindings repository should state it's tested
-// by cloning the grug-tests repository next to it.
-// Every language's grug bindings repository should contain a small bindings_tester.c
-// that passes the path of the grug-tests repository its tests/ directory
-// to the bindings its init(). This allows tests to be treated as mods.
-// bindings_tester.c should then call grug_tests_run() from grug-tests its tests.h.
-
 #pragma once
 
 #define _XOPEN_SOURCE 700 // This is required to get struct FTW from ftw.h
@@ -76,38 +57,27 @@ enum grug_runtime_error_type {
  * @typedef compile_grug_file_t
  * @brief Function pointer type for compiling a grug file.
  *
- * This function is provided by `bindings_tester.c`.
- *
  * @param grug_file_path Path to the grug source file to compile.
- * @param mod_name Name of the mod which the grug source file is in.
  * @return `NULL` on success, or an error message string on failure.
  */
-typedef const char *(*compile_grug_file_t)(const char *grug_file_path, const char *mod_name);
+typedef const char *(*compile_grug_file_t)(const char *grug_file_path);
 
 /**
  * @typedef init_globals_fn_dispatcher_t
  * @brief Function pointer type for initializing global variables for a grug file.
- *
- * This function is provided by `bindings_tester.c`.
- *
- * @param grug_file_path Path to the grug source file whose globals should be initialized.
  */
-typedef void (*init_globals_fn_dispatcher_t)(const char *grug_file_path);
+typedef void (*init_globals_fn_dispatcher_t)(void);
 
 /**
  * @typedef on_fn_dispatcher_t
  * @brief Function pointer type for invoking a grug function handler.
  *
- * This function is provided by `bindings_tester.c`.
- *
- * It should call the specified function `on_fn_name` in the grug file at `grug_file_path`,
- * passing along the provided array of `values`.
+ * It should call the specified function `on_fn_name`, passing `args`.
  *
  * @param on_fn_name Name of the grug function to invoke.
- * @param grug_file_path Path to the grug source file containing the function.
  * @param args Array of `grug_value` arguments to pass to the function.
  */
-typedef void (*on_fn_dispatcher_t)(const char *on_fn_name, const char *grug_file_path, const union grug_value args[]);
+typedef void (*on_fn_dispatcher_t)(const char *on_fn_name, const union grug_value args[]);
 
 /**
  * @typedef dump_file_to_json_t
@@ -115,8 +85,6 @@ typedef void (*on_fn_dispatcher_t)(const char *on_fn_name, const char *grug_file
  *
  * All tests verify round-trip fidelity: reading a JSON representation of a
  * grug AST and generating a textual `.grug` source file from it.
- *
- * This function is provided by `bindings_tester.c`.
  *
  * It should parse the grug file at `input_grug_path`, produce a JSON
  * representation of its AST, and write it to `output_json_path`.
@@ -134,8 +102,6 @@ typedef bool (*dump_file_to_json_t)(const char *input_grug_path, const char *out
  * All tests verify round-trip fidelity: reading a JSON representation of a
  * grug AST and generating a textual `.grug` source file from it.
  *
- * This function is provided by `bindings_tester.c`.
- *
  * It should read the AST at `input_json_path`, generate the `.grug` text for it,
  * and write it to `output_grug_path`.
  *
@@ -148,8 +114,6 @@ typedef bool (*generate_file_from_json_t)(const char *input_json_path, const cha
 /**
  * @typedef game_fn_error_t
  * @brief Function pointer type for throwing a game function error.
- *
- * This function is provided by `bindings_tester.c`.
  *
  * @param message The error message.
  */

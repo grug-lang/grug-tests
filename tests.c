@@ -2827,10 +2827,10 @@ void grug_tests_runtime_error_handler(const char *reason, enum grug_runtime_erro
 	had_runtime_error = true;
 	error_handler_call_count++;
 
-	runtime_error_reason = reason;
+	runtime_error_reason = strdup(reason);
 	runtime_error_type = type;
-	runtime_error_on_fn_name = on_fn_name;
-	runtime_error_on_fn_path = on_fn_path;
+	runtime_error_on_fn_name = strdup(on_fn_name);
+	runtime_error_on_fn_path = strdup(on_fn_path);
 }
 
 static void runtime_error_all(void) {

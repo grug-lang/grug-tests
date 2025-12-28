@@ -256,9 +256,9 @@ static void on_fn_dispatcher(const char *on_fn_name, const union grug_value args
     } else if (starts_with(grug_file_path, "ok/custom_id_transfer_between_globals/")) {
         CALL(set_opponent, grug_id(69));
     } else if (starts_with(grug_file_path, "ok/division_negative_result/")) {
-        CALL(initialize, grug_number(-2.0));
+        CALL(initialize, grug_number(-2.5));
     } else if (starts_with(grug_file_path, "ok/division_positive_result/")) {
-        CALL(initialize, grug_number(2.0));
+        CALL(initialize, grug_number(2.5));
     } else if (starts_with(grug_file_path, "ok/double_negation_with_parentheses/")) {
         CALL(initialize, grug_number(2.0));
     } else if (starts_with(grug_file_path, "ok/double_not_with_parentheses/")) {
@@ -290,7 +290,7 @@ static void on_fn_dispatcher(const char *on_fn_name, const union grug_value args
     } else if (starts_with(grug_file_path, "ok/entity_and_resource_as_subexpression/")) {
         CALL(initialize_bool,
             grug_bool(
-                CALL(has_resource, grug_string("entity_and_resource_as_subexpression/foo.txt"))._bool
+                CALL(has_resource, grug_string("ok/entity_and_resource_as_subexpression/foo.txt"))._bool
                 && CALL(has_string, grug_string("bar"))._bool
                 && CALL(has_entity, grug_string("ok:baz"))._bool
             )
@@ -373,7 +373,7 @@ static void on_fn_dispatcher(const char *on_fn_name, const union grug_value args
     } else if (starts_with(grug_file_path, "ok/global_containing_negation/")) {
         CALL(initialize, grug_number(-2.0));
     } else if (starts_with(grug_file_path, "ok/global_id/")) {
-        CALL(set_position, grug_id(69));
+        CALL(set_opponent, grug_id(69));
     } else if (starts_with(grug_file_path, "ok/globals/")) {
         CALL(initialize, grug_number(420.0));
         CALL(initialize, grug_number(1337.0));

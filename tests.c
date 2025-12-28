@@ -1334,7 +1334,7 @@ static void ok_division_negative_result(void) {
     on_fn_dispatcher("on_a");
 	assert_call_count(initialize, 1);
 
-	assert_number(game_fn_initialize_x, -2.0);
+	assert_number(game_fn_initialize_x, -2.5);
 }
 
 static void ok_division_positive_result(void) {
@@ -1342,7 +1342,7 @@ static void ok_division_positive_result(void) {
     on_fn_dispatcher("on_a");
 	assert_call_count(initialize, 1);
 
-	assert_number(game_fn_initialize_x, 2.0);
+	assert_number(game_fn_initialize_x, 2.5);
 }
 
 static void ok_double_negation_with_parentheses(void) {
@@ -1415,7 +1415,7 @@ static void ok_entity_and_resource_as_subexpression(void) {
 	assert_call_count(has_entity, 1);
 	assert_call_count(has_string, 1);
 
-	assert_string(game_fn_has_resource_path, "entity_and_resource_as_subexpression/foo.txt");
+	assert_string(game_fn_has_resource_path, "ok/entity_and_resource_as_subexpression/foo.txt");
 	assert_string(game_fn_has_entity_name, "ok:baz");
 	assert_string(game_fn_has_string_str, "bar");
 }
@@ -1727,11 +1727,11 @@ static void ok_global_containing_negation(void) {
 static void ok_global_id(void) {
 	assert_call_count(get_opponent, 1);
 
-	assert_call_count(set_position, 0);
+	assert_call_count(set_opponent, 0);
     on_fn_dispatcher("on_a");
-	assert_call_count(set_position, 1);
+	assert_call_count(set_opponent, 1);
 
-	assert_id(game_fn_set_position_pos, 69);
+	assert_id(game_fn_set_opponent_target, 69);
 }
 
 static void ok_globals(void) {

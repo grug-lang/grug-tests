@@ -1009,7 +1009,7 @@
 			"arguments": [
 				{
 					"name": "id",
-					"type": "A"
+					"type": "D"
 				}
 			]
 		},

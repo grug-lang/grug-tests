@@ -1,1 +1,1 @@
-Took longer than 10 milliseconds to run
+Took longer than 100 milliseconds to run

@@ -1,5 +1,5 @@
 on_a() {
-    initialize(helper_fib(100))
+    initialize(helper_fib(50))
 }
 
 helper_fib(n: number) number {

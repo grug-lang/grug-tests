@@ -97,14 +97,13 @@ static const char *compile_grug_file(const char *grug_file_path) {
         const char *last_slash = strrchr(grug_file_path, '/');
         assert(last_slash);
         char expected_relative_path[4096];
-        size_t dir_len = last_slash - grug_file_path + 1;
+        size_t dir_len = (size_t)(last_slash - grug_file_path + 1);
         memcpy(expected_relative_path, grug_file_path, dir_len);
         expected_relative_path[dir_len] = '\0';
         strcat(expected_relative_path, "expected_error.txt");
 
         char expected_path[4096] = "tests/";
         strcat(expected_path, expected_relative_path);
-        printf("expected_path: %s\n", expected_path); // TODO: REMOVE!
         FILE *f = fopen(expected_path, "r");
         assert(f);
 
@@ -291,7 +290,7 @@ static void on_fn_dispatcher(const char *on_fn_name, const union grug_value args
     } else if (starts_with(grug_file_path, "ok/entity_and_resource_as_subexpression/")) {
         CALL(initialize_bool,
             grug_bool(
-                CALL(has_resource, grug_string("ok/entity_and_resource_as_subexpression/foo.txt"))._bool
+                CALL(has_resource, grug_string("entity_and_resource_as_subexpression/foo.txt"))._bool
                 && CALL(has_string, grug_string("bar"))._bool
                 && CALL(has_entity, grug_string("ok:baz"))._bool
             )
@@ -421,7 +420,7 @@ static void on_fn_dispatcher(const char *on_fn_name, const union grug_value args
         CALL_ARGLESS(retrieve);
         CALL(initialize_bool, grug_bool(false));
     } else if (starts_with(grug_file_path, "ok/id_global_with_id_to_new_id/")) {
-        CALL(store, grug_id(123.0));
+        CALL(store, grug_id(123));
     } else if (starts_with(grug_file_path, "ok/id_global_with_opponent_to_new_id/")) {
         CALL(store, grug_id(69));
     } else if (starts_with(grug_file_path, "ok/id_helper_fn_param/")) {

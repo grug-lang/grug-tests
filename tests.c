@@ -1,6 +1,5 @@
 #include "tests.h"
 
-#include <assert.h>
 #include <dirent.h>
 #include <errno.h>
 #include <fcntl.h>
@@ -12,6 +11,69 @@
 #include <time.h>
 #include <unistd.h>
 
+#define assert_call_count(game_fn_name, expected_count) do { \
+	size_t count = game_fn_ ## game_fn_name ## _call_count; \
+	if (count != expected_count) { \
+		fprintf(stderr, "%s:%d: Assertion call count %zu (%s) == %d failed.\n", __FILE__, __LINE__, count, #game_fn_name, expected_count); \
+		exit(EXIT_FAILURE); \
+	} \
+} while (0)
+
+#define assert_error_handler_call_count(expected_count) do { \
+	if (error_handler_call_count != expected_count) { \
+		fprintf(stderr, "%s:%d: Assertion error handler call count %zu == %d failed.\n", __FILE__, __LINE__, error_handler_call_count, expected_count); \
+		exit(EXIT_FAILURE); \
+	} \
+} while (0)
+
+#define assert_number(d, expected_number) do { \
+	if (d != expected_number) { \
+		fprintf(stderr, "%s:%d: Assertion %f (%s) == %f failed.\n", __FILE__, __LINE__, d, #d, expected_number); \
+		exit(EXIT_FAILURE); \
+	} \
+} while (0)
+
+#define assert_true(b) do { \
+	if (!b) { \
+		fprintf(stderr, "%s:%d: Assertion %s == true failed.\n", __FILE__, __LINE__, #b); \
+		exit(EXIT_FAILURE); \
+	} \
+} while (0)
+
+#define assert_false(b) do { \
+	if (b) { \
+		fprintf(stderr, "%s:%d: Assertion %s == false failed.\n", __FILE__, __LINE__, #b); \
+		exit(EXIT_FAILURE); \
+	} \
+} while (0)
+
+#define assert_string(str, expected_str) do { \
+	if (!streq(str, expected_str)) { \
+		fprintf(stderr, "%s:%d: Assertion '%s' (%s) == '%s' failed.\n", __FILE__, __LINE__, str, #str, expected_str); \
+		exit(EXIT_FAILURE); \
+	} \
+} while (0)
+
+#define assert_id(id, expected_id) do { \
+	if (id != expected_id) { \
+		fprintf(stderr, "%s:%d: Assertion ID %lu (%s) == %d failed.\n", __FILE__, __LINE__, id, #id, expected_id); \
+		exit(EXIT_FAILURE); \
+	} \
+} while (0)
+
+static const char *get_type_name[] = {
+	[GRUG_ON_FN_STACK_OVERFLOW] = "GRUG_ON_FN_STACK_OVERFLOW",
+	[GRUG_ON_FN_TIME_LIMIT_EXCEEDED] = "GRUG_ON_FN_TIME_LIMIT_EXCEEDED",
+	[GRUG_ON_FN_GAME_FN_ERROR] = "GRUG_ON_FN_GAME_FN_ERROR",
+};
+
+#define assert_runtime_error_type(expected_type) do { \
+	if (runtime_error_type != expected_type) { \
+		fprintf(stderr, "%s:%d: Assertion runtime error type %s == %s failed.\n", __FILE__, __LINE__, get_type_name[runtime_error_type], get_type_name[expected_type]); \
+		exit(EXIT_FAILURE); \
+	} \
+} while (0)
+
 #if defined(_WIN32)
 #define mkdir(dir_path) mkdir(dir_path)
 #elif defined(__linux__)
@@ -20,7 +82,7 @@
 
 // From https://stackoverflow.com/a/2114249/13279557
 #ifdef __x86_64__
-#define ASSERT_16_BYTE_STACK_ALIGNED() {\
+#define ASSERT_16_BYTE_STACK_ALIGNED() do {\
 	int64_t rsp;\
 	\
 	__asm__ volatile("mov %%rsp, %0\n\t" : "=r" (rsp));\
@@ -30,9 +92,9 @@
 		write(STDERR_FILENO, msg, sizeof(msg) - 1);\
 		abort();\
 	}\
-}
+} while (0)
 #elif __aarch64__
-#define ASSERT_16_BYTE_STACK_ALIGNED() {\
+#define ASSERT_16_BYTE_STACK_ALIGNED() do {\
 	int64_t rsp;\
 	\
 	__asm__ volatile("mov %0, sp\n\t" : "=r" (rsp));\
@@ -42,15 +104,10 @@
 		write(STDERR_FILENO, msg, sizeof(msg) - 1);\
 		abort();\
 	}\
-}
+} while (0)
 #else
 #error Unrecognized architecture
 #endif
-
-typedef int64_t i64;
-typedef uint16_t u16;
-typedef uint32_t u32;
-typedef uint64_t u64;
 
 static const char *tests_dir_path;
 static compile_grug_file_t compile_grug_file;
@@ -134,7 +191,7 @@ static size_t game_fn_retrieve_call_count;
 static size_t game_fn_box_number_call_count;
 
 static bool had_runtime_error = false;
-static size_t error_handler_calls = 0;
+static size_t error_handler_call_count = 0;
 static const char *runtime_error_reason = NULL;
 static enum grug_runtime_error_type runtime_error_type = -1;
 static const char *runtime_error_on_fn_name = NULL;
@@ -158,7 +215,7 @@ union grug_value game_fn_magic(void) {
 
 	return grug_number(42.0);
 }
-static int32_t game_fn_initialize_x;
+static double game_fn_initialize_x;
 void game_fn_initialize(const union grug_value args[]) {
 	ASSERT_16_BYTE_STACK_ALIGNED();
 	game_fn_initialize_call_count++;
@@ -172,7 +229,7 @@ void game_fn_initialize_bool(const union grug_value args[]) {
 
 	game_fn_initialize_bool_b = args[0]._bool;
 }
-static int32_t game_fn_identity_x;
+static double game_fn_identity_x;
 union grug_value game_fn_identity(const union grug_value args[]) {
 	ASSERT_16_BYTE_STACK_ALIGNED();
 	game_fn_identity_call_count++;
@@ -181,8 +238,8 @@ union grug_value game_fn_identity(const union grug_value args[]) {
 
 	return args[0];
 }
-static int32_t game_fn_max_x;
-static int32_t game_fn_max_y;
+static double game_fn_max_x;
+static double game_fn_max_y;
 union grug_value game_fn_max(const union grug_value args[]) {
 	ASSERT_16_BYTE_STACK_ALIGNED();
 	game_fn_max_call_count++;
@@ -197,7 +254,7 @@ void game_fn_say(const union grug_value args[]) {
 	ASSERT_16_BYTE_STACK_ALIGNED();
 	game_fn_say_call_count++;
 
-	game_fn_say_message = args[0]._string;
+	game_fn_say_message = strdup(args[0]._string);
 }
 static double game_fn_sin_x;
 union grug_value game_fn_sin(const union grug_value args[]) {
@@ -218,18 +275,18 @@ union grug_value game_fn_cos(const union grug_value args[]) {
 	return grug_number(cos(args[0]._number));
 }
 static double game_fn_mega_f1;
-static int32_t game_fn_mega_i1;
+static double game_fn_mega_i1;
 static bool game_fn_mega_b1;
 static double game_fn_mega_f2;
 static double game_fn_mega_f3;
 static double game_fn_mega_f4;
 static bool game_fn_mega_b2;
-static int32_t game_fn_mega_i2;
+static double game_fn_mega_i2;
 static double game_fn_mega_f5;
 static double game_fn_mega_f6;
 static double game_fn_mega_f7;
 static double game_fn_mega_f8;
-static int32_t game_fn_mega_id;
+static uint64_t game_fn_mega_id;
 static const char *game_fn_mega_str;
 void game_fn_mega(const union grug_value args[]) {
 	ASSERT_16_BYTE_STACK_ALIGNED();
@@ -248,7 +305,7 @@ void game_fn_mega(const union grug_value args[]) {
 	game_fn_mega_f7 = args[10]._number;
 	game_fn_mega_f8 = args[11]._number;
 	game_fn_mega_id = args[12]._id;
-	game_fn_mega_str = args[13]._string;
+	game_fn_mega_str = strdup(args[13]._string);
 }
 union grug_value game_fn_get_false(void) {
 	ASSERT_16_BYTE_STACK_ALIGNED();
@@ -286,13 +343,13 @@ void game_fn_mega_f32(const union grug_value args[]) {
 	game_fn_mega_f32_f8 = args[7]._number;
 	game_fn_mega_f32_f9 = args[8]._number;
 }
-static int32_t game_fn_mega_i32_i1;
-static int32_t game_fn_mega_i32_i2;
-static int32_t game_fn_mega_i32_i3;
-static int32_t game_fn_mega_i32_i4;
-static int32_t game_fn_mega_i32_i5;
-static int32_t game_fn_mega_i32_i6;
-static int32_t game_fn_mega_i32_i7;
+static double game_fn_mega_i32_i1;
+static double game_fn_mega_i32_i2;
+static double game_fn_mega_i32_i3;
+static double game_fn_mega_i32_i4;
+static double game_fn_mega_i32_i5;
+static double game_fn_mega_i32_i6;
+static double game_fn_mega_i32_i7;
 void game_fn_mega_i32(const union grug_value args[]) {
 	ASSERT_16_BYTE_STACK_ALIGNED();
 	game_fn_mega_i32_call_count++;
@@ -309,7 +366,7 @@ static const char *game_fn_draw_sprite_path;
 void game_fn_draw(const union grug_value args[]) {
 	ASSERT_16_BYTE_STACK_ALIGNED();
 	game_fn_draw_call_count++;
-	game_fn_draw_sprite_path = args[0]._string;
+	game_fn_draw_sprite_path = strdup(args[0]._string);
 }
 void game_fn_blocked_alrm(void) {
 	ASSERT_16_BYTE_STACK_ALIGNED();
@@ -320,14 +377,14 @@ void game_fn_spawn(const union grug_value args[]) {
 	ASSERT_16_BYTE_STACK_ALIGNED();
 	game_fn_spawn_call_count++;
 
-	game_fn_spawn_name = args[0]._string;
+	game_fn_spawn_name = strdup(args[0]._string);
 }
 static const char *game_fn_has_resource_path;
 union grug_value game_fn_has_resource(const union grug_value args[]) {
 	ASSERT_16_BYTE_STACK_ALIGNED();
 	game_fn_has_resource_call_count++;
 
-	game_fn_has_resource_path = args[0]._string;
+	game_fn_has_resource_path = strdup(args[0]._string);
 
 	return grug_bool(true);
 }
@@ -336,7 +393,7 @@ union grug_value game_fn_has_entity(const union grug_value args[]) {
 	ASSERT_16_BYTE_STACK_ALIGNED();
 	game_fn_has_entity_call_count++;
 
-	game_fn_has_entity_name = args[0]._string;
+	game_fn_has_entity_name = strdup(args[0]._string);
 
 	return grug_bool(true);
 }
@@ -345,7 +402,7 @@ union grug_value game_fn_has_string(const union grug_value args[]) {
 	ASSERT_16_BYTE_STACK_ALIGNED();
 	game_fn_has_string_call_count++;
 
-	game_fn_has_string_str = args[0]._string;
+	game_fn_has_string_str = strdup(args[0]._string);
 
 	return grug_bool(true);
 }
@@ -369,13 +426,13 @@ void game_fn_set_opponent(const union grug_value args[]) {
 
 	game_fn_set_opponent_target = args[0]._id;
 }
-static int32_t game_fn_motherload_i1;
-static int32_t game_fn_motherload_i2;
-static int32_t game_fn_motherload_i3;
-static int32_t game_fn_motherload_i4;
-static int32_t game_fn_motherload_i5;
-static int32_t game_fn_motherload_i6;
-static int32_t game_fn_motherload_i7;
+static double game_fn_motherload_i1;
+static double game_fn_motherload_i2;
+static double game_fn_motherload_i3;
+static double game_fn_motherload_i4;
+static double game_fn_motherload_i5;
+static double game_fn_motherload_i6;
+static double game_fn_motherload_i7;
 static double game_fn_motherload_f1;
 static double game_fn_motherload_f2;
 static double game_fn_motherload_f3;
@@ -408,13 +465,13 @@ void game_fn_motherload(const union grug_value args[]) {
 	game_fn_motherload_id = args[15]._id;
 	game_fn_motherload_f9 = args[16]._number;
 }
-static int32_t game_fn_motherload_subless_i1;
-static int32_t game_fn_motherload_subless_i2;
-static int32_t game_fn_motherload_subless_i3;
-static int32_t game_fn_motherload_subless_i4;
-static int32_t game_fn_motherload_subless_i5;
-static int32_t game_fn_motherload_subless_i6;
-static int32_t game_fn_motherload_subless_i7;
+static double game_fn_motherload_subless_i1;
+static double game_fn_motherload_subless_i2;
+static double game_fn_motherload_subless_i3;
+static double game_fn_motherload_subless_i4;
+static double game_fn_motherload_subless_i5;
+static double game_fn_motherload_subless_i6;
+static double game_fn_motherload_subless_i7;
 static double game_fn_motherload_subless_f1;
 static double game_fn_motherload_subless_f2;
 static double game_fn_motherload_subless_f3;
@@ -472,26 +529,26 @@ static double game_fn_offset_32_bit_f32_f5;
 static double game_fn_offset_32_bit_f32_f6;
 static double game_fn_offset_32_bit_f32_f7;
 static double game_fn_offset_32_bit_f32_f8;
-static int32_t game_fn_offset_32_bit_f32_g;
+static double game_fn_offset_32_bit_f32_g;
 void game_fn_offset_32_bit_f32(const union grug_value args[]) {
 	ASSERT_16_BYTE_STACK_ALIGNED();
 	game_fn_offset_32_bit_f32_call_count++;
 
-	game_fn_offset_32_bit_f32_s1 = args[0]._string;
-	game_fn_offset_32_bit_f32_s2 = args[1]._string;
-	game_fn_offset_32_bit_f32_s3 = args[2]._string;
-	game_fn_offset_32_bit_f32_s4 = args[3]._string;
-	game_fn_offset_32_bit_f32_s5 = args[4]._string;
-	game_fn_offset_32_bit_f32_s6 = args[5]._string;
-	game_fn_offset_32_bit_f32_s7 = args[6]._string;
-	game_fn_offset_32_bit_f32_s8 = args[7]._string;
-	game_fn_offset_32_bit_f32_s9 = args[8]._string;
-	game_fn_offset_32_bit_f32_s10 = args[9]._string;
-	game_fn_offset_32_bit_f32_s11 = args[10]._string;
-	game_fn_offset_32_bit_f32_s12 = args[11]._string;
-	game_fn_offset_32_bit_f32_s13 = args[12]._string;
-	game_fn_offset_32_bit_f32_s14 = args[13]._string;
-	game_fn_offset_32_bit_f32_s15 = args[14]._string;
+	game_fn_offset_32_bit_f32_s1 = strdup(args[0]._string);
+	game_fn_offset_32_bit_f32_s2 = strdup(args[1]._string);
+	game_fn_offset_32_bit_f32_s3 = strdup(args[2]._string);
+	game_fn_offset_32_bit_f32_s4 = strdup(args[3]._string);
+	game_fn_offset_32_bit_f32_s5 = strdup(args[4]._string);
+	game_fn_offset_32_bit_f32_s6 = strdup(args[5]._string);
+	game_fn_offset_32_bit_f32_s7 = strdup(args[6]._string);
+	game_fn_offset_32_bit_f32_s8 = strdup(args[7]._string);
+	game_fn_offset_32_bit_f32_s9 = strdup(args[8]._string);
+	game_fn_offset_32_bit_f32_s10 = strdup(args[9]._string);
+	game_fn_offset_32_bit_f32_s11 = strdup(args[10]._string);
+	game_fn_offset_32_bit_f32_s12 = strdup(args[11]._string);
+	game_fn_offset_32_bit_f32_s13 = strdup(args[12]._string);
+	game_fn_offset_32_bit_f32_s14 = strdup(args[13]._string);
+	game_fn_offset_32_bit_f32_s15 = strdup(args[14]._string);
 	game_fn_offset_32_bit_f32_f1 = args[15]._number;
 	game_fn_offset_32_bit_f32_f2 = args[16]._number;
 	game_fn_offset_32_bit_f32_f3 = args[17]._number;
@@ -532,12 +589,12 @@ static double game_fn_offset_32_bit_i32_f27;
 static double game_fn_offset_32_bit_i32_f28;
 static double game_fn_offset_32_bit_i32_f29;
 static double game_fn_offset_32_bit_i32_f30;
-static int32_t game_fn_offset_32_bit_i32_i1;
-static int32_t game_fn_offset_32_bit_i32_i2;
-static int32_t game_fn_offset_32_bit_i32_i3;
-static int32_t game_fn_offset_32_bit_i32_i4;
-static int32_t game_fn_offset_32_bit_i32_i5;
-static int32_t game_fn_offset_32_bit_i32_g;
+static double game_fn_offset_32_bit_i32_i1;
+static double game_fn_offset_32_bit_i32_i2;
+static double game_fn_offset_32_bit_i32_i3;
+static double game_fn_offset_32_bit_i32_i4;
+static double game_fn_offset_32_bit_i32_i5;
+static double game_fn_offset_32_bit_i32_g;
 void game_fn_offset_32_bit_i32(const union grug_value args[]) {
 	ASSERT_16_BYTE_STACK_ALIGNED();
 	game_fn_offset_32_bit_i32_call_count++;
@@ -614,7 +671,7 @@ static const char *game_fn_offset_32_bit_string_s2;
 static const char *game_fn_offset_32_bit_string_s3;
 static const char *game_fn_offset_32_bit_string_s4;
 static const char *game_fn_offset_32_bit_string_s5;
-static int32_t game_fn_offset_32_bit_string_g;
+static double game_fn_offset_32_bit_string_g;
 void game_fn_offset_32_bit_string(const union grug_value args[]) {
 	ASSERT_16_BYTE_STACK_ALIGNED();
 	game_fn_offset_32_bit_string_call_count++;
@@ -649,11 +706,11 @@ void game_fn_offset_32_bit_string(const union grug_value args[]) {
 	game_fn_offset_32_bit_string_f28 = args[27]._number;
 	game_fn_offset_32_bit_string_f29 = args[28]._number;
 	game_fn_offset_32_bit_string_f30 = args[29]._number;
-	game_fn_offset_32_bit_string_s1 = args[30]._string;
-	game_fn_offset_32_bit_string_s2 = args[31]._string;
-	game_fn_offset_32_bit_string_s3 = args[32]._string;
-	game_fn_offset_32_bit_string_s4 = args[33]._string;
-	game_fn_offset_32_bit_string_s5 = args[34]._string;
+	game_fn_offset_32_bit_string_s1 = strdup(args[30]._string);
+	game_fn_offset_32_bit_string_s2 = strdup(args[31]._string);
+	game_fn_offset_32_bit_string_s3 = strdup(args[32]._string);
+	game_fn_offset_32_bit_string_s4 = strdup(args[33]._string);
+	game_fn_offset_32_bit_string_s5 = strdup(args[34]._string);
 	game_fn_offset_32_bit_string_g = args[35]._number;
 }
 static const char *game_fn_talk_message1;
@@ -664,10 +721,10 @@ void game_fn_talk(const union grug_value args[]) {
 	ASSERT_16_BYTE_STACK_ALIGNED();
 	game_fn_talk_call_count++;
 
-	game_fn_talk_message1 = args[0]._string;
-	game_fn_talk_message2 = args[1]._string;
-	game_fn_talk_message3 = args[2]._string;
-	game_fn_talk_message4 = args[3]._string;
+	game_fn_talk_message1 = strdup(args[0]._string);
+	game_fn_talk_message2 = strdup(args[1]._string);
+	game_fn_talk_message3 = strdup(args[2]._string);
+	game_fn_talk_message4 = strdup(args[3]._string);
 }
 union grug_value game_fn_get_position(const union grug_value args[]) {
 	ASSERT_16_BYTE_STACK_ALIGNED();
@@ -714,7 +771,7 @@ union grug_value game_fn_box_number(const union grug_value args[]) {
 	ASSERT_16_BYTE_STACK_ALIGNED();
 	game_fn_box_number_call_count++;
 
-	return grug_id(args[0]._number);
+	return grug_id((uint64_t)args[0]._number);
 }
 
 static void reset_call_counts(void) {
@@ -776,7 +833,7 @@ static bool is_whitelisted_test(const char *name) {
 	return whitelisted_test == NULL || streq(name, whitelisted_test);
 }
 
-#define ADD_TEST_ERROR(test_name, entity_type) {\
+#define ADD_TEST_ERROR(test_name, entity_type) do {\
 	if (is_whitelisted_test(#test_name)) {\
 		error_test_datas[err_test_datas_size++] = (struct error_test_data){\
 			.test_name_str = #test_name,\
@@ -786,9 +843,9 @@ static bool is_whitelisted_test(const char *name) {
 			.grug_output_path = "err/"#test_name"/results/grug_output.txt"\
 		};\
 	}\
-}
+} while (0)
 
-#define ADD_TEST_OK(test_name, entity_type, expected_globals_size) {\
+#define ADD_TEST_OK(test_name, entity_type, expected_globals_size) do {\
 	if (is_whitelisted_test(#test_name)) {\
 		ok_test_datas[ok_test_datas_size++] = (struct ok_test_data){\
 			.run = ok_##test_name,\
@@ -800,9 +857,9 @@ static bool is_whitelisted_test(const char *name) {
 			.expected_globals_size_value = expected_globals_size\
 		};\
 	}\
-}
+} while (0)
 
-#define ADD_TEST_RUNTIME_ERROR(test_name, entity_type, expected_globals_size) {\
+#define ADD_TEST_RUNTIME_ERROR(test_name, entity_type, expected_globals_size) do {\
 	if (is_whitelisted_test(#test_name)) {\
 		runtime_error_test_datas[err_runtime_test_datas_size++] = (struct runtime_error_test_data){\
 			.run = runtime_error_##test_name,\
@@ -815,13 +872,13 @@ static bool is_whitelisted_test(const char *name) {
 			.expected_globals_size_value = expected_globals_size\
 		};\
 	}\
-}
+} while (0)
 
 // This is the Fisher-Yates shuffle:
 // https://en.wikipedia.org/wiki/Fisher%E2%80%93Yates_shuffle
 // https://blog.codinghorror.com/the-danger-of-naivete/
 #ifdef SHUFFLES
-#define SHUFFLE(arr, size, T) {\
+#define SHUFFLE(arr, size, T) do {\
 	for (int i = size; i > 0; i--) {\
 		int n = rand() % i;\
 		\
@@ -829,7 +886,7 @@ static bool is_whitelisted_test(const char *name) {
 		arr[i-1] = arr[n];\
 		arr[n] = old;\
 	}\
-}
+} while (0)
 #endif
 
 // Fill `buf` with `path` prefixed by `tests_dir_path`. 
@@ -869,8 +926,8 @@ static size_t read_file(const char *path, uint8_t *bytes) {
 	check(fseek(f, 0, SEEK_END), "fseek", NULL);
 
 	long ftell_result = ftell(f);
-	check(ftell_result, "ftell", NULL);
-	size_t len = ftell_result;
+	check((int)ftell_result, "ftell", NULL);
+	size_t len = (size_t)ftell_result;
 
 	check(fseek(f, 0, SEEK_SET), "fseek", NULL);
 
@@ -1016,7 +1073,7 @@ static void prologue(const char *grug_path, const char *results_path) {
 
 	runtime_error_reason = NULL;
 	had_runtime_error = false;
-	error_handler_calls = 0;
+	error_handler_call_count = 0;
 	runtime_error_type = -1;
 	runtime_error_on_fn_name = NULL;
 	runtime_error_on_fn_path = NULL;
@@ -1036,185 +1093,185 @@ static void prologue(const char *grug_path, const char *results_path) {
 }
 
 static void ok_addition_as_argument(void) {
-	assert(game_fn_initialize_call_count == 0);
+	assert_call_count(initialize, 0);
     on_fn_dispatcher("on_a");
-	assert(game_fn_initialize_call_count == 1);
+	assert_call_count(initialize, 1);
 
-	assert(!had_runtime_error);
+	assert_false(had_runtime_error);
 
-	assert(game_fn_initialize_x == 3);
+	assert_number(game_fn_initialize_x, 3.0);
 }
 
 static void ok_addition_as_two_arguments(void) {
-	assert(game_fn_max_call_count == 0);
+	assert_call_count(max, 0);
     on_fn_dispatcher("on_a");
-	assert(game_fn_max_call_count == 1);
+	assert_call_count(max, 1);
 
-	assert(game_fn_max_x == 3);
-	assert(game_fn_max_y == 9);
+	assert_number(game_fn_max_x, 3.0);
+	assert_number(game_fn_max_y, 9.0);
 }
 
 static void ok_addition_with_multiplication(void) {
-	assert(game_fn_initialize_call_count == 0);
+	assert_call_count(initialize, 0);
     on_fn_dispatcher("on_a");
-	assert(game_fn_initialize_call_count == 1);
+	assert_call_count(initialize, 1);
 
-	assert(game_fn_initialize_x == 14);
+	assert_number(game_fn_initialize_x, 14.0);
 }
 
 static void ok_addition_with_multiplication_2(void) {
-	assert(game_fn_initialize_call_count == 0);
+	assert_call_count(initialize, 0);
     on_fn_dispatcher("on_a");
-	assert(game_fn_initialize_call_count == 1);
+	assert_call_count(initialize, 1);
 
-	assert(game_fn_initialize_x == 10);
+	assert_number(game_fn_initialize_x, 10.0);
 }
 
 static void ok_and_false_1(void) {
-	assert(game_fn_initialize_bool_call_count == 0);
+	assert_call_count(initialize_bool, 0);
     on_fn_dispatcher("on_a");
-	assert(game_fn_initialize_bool_call_count == 1);
+	assert_call_count(initialize_bool, 1);
 
-	assert(game_fn_initialize_bool_b == false);
+	assert_false(game_fn_initialize_bool_b);
 }
 
 static void ok_and_false_2(void) {
-	assert(game_fn_initialize_bool_call_count == 0);
+	assert_call_count(initialize_bool, 0);
     on_fn_dispatcher("on_a");
-	assert(game_fn_initialize_bool_call_count == 1);
+	assert_call_count(initialize_bool, 1);
 
-	assert(game_fn_initialize_bool_b == false);
+	assert_false(game_fn_initialize_bool_b);
 }
 
 static void ok_and_false_3(void) {
-	assert(game_fn_initialize_bool_call_count == 0);
+	assert_call_count(initialize_bool, 0);
     on_fn_dispatcher("on_a");
-	assert(game_fn_initialize_bool_call_count == 1);
+	assert_call_count(initialize_bool, 1);
 
-	assert(game_fn_initialize_bool_b == false);
+	assert_false(game_fn_initialize_bool_b);
 }
 
 static void ok_and_short_circuit(void) {
-	assert(game_fn_initialize_bool_call_count == 0);
+	assert_call_count(initialize_bool, 0);
     on_fn_dispatcher("on_a");
-	assert(game_fn_initialize_bool_call_count == 1);
+	assert_call_count(initialize_bool, 1);
 
-	assert(game_fn_initialize_bool_b == false);
+	assert_false(game_fn_initialize_bool_b);
 }
 
 static void ok_and_true(void) {
-	assert(game_fn_initialize_bool_call_count == 0);
+	assert_call_count(initialize_bool, 0);
     on_fn_dispatcher("on_a");
-	assert(game_fn_initialize_bool_call_count == 1);
+	assert_call_count(initialize_bool, 1);
 
-	assert(game_fn_initialize_bool_b == true);
+	assert_true(game_fn_initialize_bool_b);
 }
 
 static void ok_blocked_alrm(void) {
-	assert(game_fn_blocked_alrm_call_count == 0);
+	assert_call_count(blocked_alrm, 0);
     on_fn_dispatcher("on_a");
-	assert(game_fn_blocked_alrm_call_count == 1);
+	assert_call_count(blocked_alrm, 1);
 }
 
 static void ok_bool_logical_not_false(void) {
-	assert(game_fn_initialize_bool_call_count == 0);
+	assert_call_count(initialize_bool, 0);
     on_fn_dispatcher("on_a");
-	assert(game_fn_initialize_bool_call_count == 1);
+	assert_call_count(initialize_bool, 1);
 
-	assert(game_fn_initialize_bool_b == true);
+	assert_true(game_fn_initialize_bool_b);
 }
 
 static void ok_bool_logical_not_true(void) {
-	assert(game_fn_initialize_bool_call_count == 0);
+	assert_call_count(initialize_bool, 0);
     on_fn_dispatcher("on_a");
-	assert(game_fn_initialize_bool_call_count == 1);
+	assert_call_count(initialize_bool, 1);
 
-	assert(game_fn_initialize_bool_b == false);
+	assert_false(game_fn_initialize_bool_b);
 }
 
 static void ok_bool_returned(void) {
-	assert(game_fn_set_is_happy_call_count == 0);
-	assert(game_fn_get_false_call_count == 0);
+	assert_call_count(set_is_happy, 0);
+	assert_call_count(get_false, 0);
     on_fn_dispatcher("on_a");
-	assert(game_fn_set_is_happy_call_count == 1);
-	assert(game_fn_get_false_call_count == 1);
+	assert_call_count(set_is_happy, 1);
+	assert_call_count(get_false, 1);
 
-	assert(game_fn_set_is_happy_is_happy == false);
+	assert_false(game_fn_set_is_happy_is_happy);
 }
 
 static void ok_bool_returned_global(void) {
-	assert(game_fn_set_is_happy_call_count == 0);
-	assert(game_fn_get_false_call_count == 0);
+	assert_call_count(set_is_happy, 0);
+	assert_call_count(get_false, 0);
     on_fn_dispatcher("on_a");
-	assert(game_fn_set_is_happy_call_count == 1);
-	assert(game_fn_get_false_call_count == 1);
+	assert_call_count(set_is_happy, 1);
+	assert_call_count(get_false, 1);
 
-	assert(game_fn_set_is_happy_is_happy == false);
+	assert_false(game_fn_set_is_happy_is_happy);
 }
 
 static void ok_bool_zero_extended_if_statement(void) {
-	assert(game_fn_nothing_call_count == 0);
-	assert(game_fn_get_false_call_count == 0);
+	assert_call_count(nothing, 0);
+	assert_call_count(get_false, 0);
     on_fn_dispatcher("on_a");
-	assert(game_fn_nothing_call_count == 2);
-	assert(game_fn_get_false_call_count == 1);
+	assert_call_count(nothing, 2);
+	assert_call_count(get_false, 1);
 }
 
 static void ok_bool_zero_extended_while_statement(void) {
-	assert(game_fn_nothing_call_count == 0);
+	assert_call_count(nothing, 0);
     on_fn_dispatcher("on_a");
-	assert(game_fn_nothing_call_count == 2);
+	assert_call_count(nothing, 2);
 }
 
 static void ok_break(void) {
-	assert(game_fn_nothing_call_count == 0);
+	assert_call_count(nothing, 0);
     on_fn_dispatcher("on_a");
-	assert(game_fn_nothing_call_count == 3);
+	assert_call_count(nothing, 3);
 }
 
 static void ok_calls_100(void) {
-	assert(game_fn_nothing_call_count == 0);
+	assert_call_count(nothing, 0);
     on_fn_dispatcher("on_a");
-	assert(game_fn_nothing_call_count == 100);
+	assert_call_count(nothing, 100);
 }
 
 static void ok_calls_1000(void) {
-	assert(game_fn_nothing_call_count == 0);
+	assert_call_count(nothing, 0);
     on_fn_dispatcher("on_a");
-	assert(game_fn_nothing_call_count == 1000);
+	assert_call_count(nothing, 1000);
 }
 
 static void ok_calls_in_call(void) {
-	assert(game_fn_max_call_count == 0);
-	assert(game_fn_initialize_call_count == 0);
+	assert_call_count(max, 0);
+	assert_call_count(initialize, 0);
     on_fn_dispatcher("on_a");
-	assert(game_fn_max_call_count == 3);
-	assert(game_fn_initialize_call_count == 1);
+	assert_call_count(max, 3);
+	assert_call_count(initialize, 1);
 
-	assert(game_fn_max_x == 2);
-	assert(game_fn_max_y == 4);
-	assert(game_fn_initialize_x == 4);
+	assert_number(game_fn_max_x, 2.0);
+	assert_number(game_fn_max_y, 4.0);
+	assert_number(game_fn_initialize_x, 4.0);
 }
 
 static void ok_comment_above_block(void) {
-	assert(game_fn_nothing_call_count == 0);
+	assert_call_count(nothing, 0);
     on_fn_dispatcher("on_a");
-	assert(game_fn_nothing_call_count == 1);
+	assert_call_count(nothing, 1);
 }
 
 static void ok_comment_above_block_twice(void) {
-	assert(game_fn_nothing_call_count == 0);
+	assert_call_count(nothing, 0);
     on_fn_dispatcher("on_a");
-	assert(game_fn_nothing_call_count == 1);
+	assert_call_count(nothing, 1);
 }
 
 static void ok_comment_above_globals(void) {
 }
 
 static void ok_comment_above_helper_fn(void) {
-	assert(game_fn_nothing_call_count == 0);
+	assert_call_count(nothing, 0);
     on_fn_dispatcher("on_a");
-	assert(game_fn_nothing_call_count == 1);
+	assert_call_count(nothing, 1);
 }
 
 static void ok_comment_above_on_fn(void) {
@@ -1225,15 +1282,15 @@ static void ok_comment_between_globals(void) {
 }
 
 static void ok_comment_between_statements(void) {
-	assert(game_fn_nothing_call_count == 0);
+	assert_call_count(nothing, 0);
     on_fn_dispatcher("on_a");
-	assert(game_fn_nothing_call_count == 2);
+	assert_call_count(nothing, 2);
 }
 
 static void ok_comment_lone_block(void) {
-	assert(game_fn_nothing_call_count == 0);
+	assert_call_count(nothing, 0);
     on_fn_dispatcher("on_a");
-	assert(game_fn_nothing_call_count == 1);
+	assert_call_count(nothing, 1);
 }
 
 static void ok_comment_lone_block_at_end(void) {
@@ -1245,444 +1302,444 @@ static void ok_comment_lone_global(void) {
 }
 
 static void ok_continue(void) {
-	assert(game_fn_nothing_call_count == 0);
+	assert_call_count(nothing, 0);
     on_fn_dispatcher("on_a");
-	assert(game_fn_nothing_call_count == 2);
+	assert_call_count(nothing, 2);
 }
 
 static void ok_custom_id_decays_to_id(void) {
-	assert(game_fn_store_call_count == 0);
+	assert_call_count(store, 0);
     on_fn_dispatcher("on_a");
-	assert(game_fn_store_call_count == 1);
+	assert_call_count(store, 1);
 
-	assert(game_fn_store_id == 42);
+	assert_id(game_fn_store_id, 42);
 }
 
 static void ok_custom_id_transfer_between_globals(void) {
-	assert(game_fn_get_opponent_call_count == 1); // Called by init_globals()
-	assert(game_fn_set_opponent_call_count == 0);
+	assert_call_count(get_opponent, 1); // Called by init_globals()
+	assert_call_count(set_opponent, 0);
     on_fn_dispatcher("on_a");
-	assert(game_fn_get_opponent_call_count == 1);
-	assert(game_fn_set_opponent_call_count == 1);
+	assert_call_count(get_opponent, 1);
+	assert_call_count(set_opponent, 1);
 
-	assert(game_fn_set_opponent_target == 69);
+	assert_id(game_fn_set_opponent_target, 69);
 }
 
 static void ok_custom_id_with_digits(void) {
-	assert(game_fn_box_number_call_count == 1);
+	assert_call_count(box_number, 1);
 }
 
 static void ok_division_negative_result(void) {
-	assert(game_fn_initialize_call_count == 0);
+	assert_call_count(initialize, 0);
     on_fn_dispatcher("on_a");
-	assert(game_fn_initialize_call_count == 1);
+	assert_call_count(initialize, 1);
 
-	assert(game_fn_initialize_x == -2);
+	assert_number(game_fn_initialize_x, -2.0);
 }
 
 static void ok_division_positive_result(void) {
-	assert(game_fn_initialize_call_count == 0);
+	assert_call_count(initialize, 0);
     on_fn_dispatcher("on_a");
-	assert(game_fn_initialize_call_count == 1);
+	assert_call_count(initialize, 1);
 
-	assert(game_fn_initialize_x == 2);
+	assert_number(game_fn_initialize_x, 2.0);
 }
 
 static void ok_double_negation_with_parentheses(void) {
-	assert(game_fn_initialize_call_count == 0);
+	assert_call_count(initialize, 0);
     on_fn_dispatcher("on_a");
-	assert(game_fn_initialize_call_count == 1);
+	assert_call_count(initialize, 1);
 
-	assert(game_fn_initialize_x == 2);
+	assert_number(game_fn_initialize_x, 2.0);
 }
 
 static void ok_double_not_with_parentheses(void) {
-	assert(game_fn_initialize_bool_call_count == 0);
+	assert_call_count(initialize_bool, 0);
     on_fn_dispatcher("on_a");
-	assert(game_fn_initialize_bool_call_count == 1);
+	assert_call_count(initialize_bool, 1);
 
-	assert(game_fn_initialize_bool_b == true);
+	assert_true(game_fn_initialize_bool_b);
 }
 
 static void ok_else_after_else_if_false(void) {
-	assert(game_fn_nothing_call_count == 0);
+	assert_call_count(nothing, 0);
     on_fn_dispatcher("on_a");
-	assert(game_fn_nothing_call_count == 2);
+	assert_call_count(nothing, 2);
 }
 
 static void ok_else_after_else_if_true(void) {
-	assert(game_fn_nothing_call_count == 0);
+	assert_call_count(nothing, 0);
     on_fn_dispatcher("on_a");
-	assert(game_fn_nothing_call_count == 3);
+	assert_call_count(nothing, 3);
 }
 
 static void ok_else_false(void) {
-	assert(game_fn_nothing_call_count == 0);
+	assert_call_count(nothing, 0);
     on_fn_dispatcher("on_a");
-	assert(game_fn_nothing_call_count == 2);
+	assert_call_count(nothing, 2);
 }
 
 static void ok_else_if_false(void) {
-	assert(game_fn_nothing_call_count == 0);
+	assert_call_count(nothing, 0);
     on_fn_dispatcher("on_a");
-	assert(game_fn_nothing_call_count == 2);
+	assert_call_count(nothing, 2);
 }
 
 static void ok_else_if_true(void) {
-	assert(game_fn_nothing_call_count == 0);
+	assert_call_count(nothing, 0);
     on_fn_dispatcher("on_a");
-	assert(game_fn_nothing_call_count == 3);
+	assert_call_count(nothing, 3);
 }
 
 static void ok_else_true(void) {
-	assert(game_fn_nothing_call_count == 0);
+	assert_call_count(nothing, 0);
     on_fn_dispatcher("on_a");
-	assert(game_fn_nothing_call_count == 3);
+	assert_call_count(nothing, 3);
 }
 
 static void ok_empty_file(void) {
 }
 
 static void ok_empty_line(void) {
-	assert(game_fn_nothing_call_count == 0);
+	assert_call_count(nothing, 0);
     on_fn_dispatcher("on_a");
-	assert(game_fn_nothing_call_count == 2);
+	assert_call_count(nothing, 2);
 }
 
 static void ok_entity_and_resource_as_subexpression(void) {
-	assert(game_fn_has_resource_call_count == 0);
-	assert(game_fn_has_entity_call_count == 0);
-	assert(game_fn_has_string_call_count == 0);
+	assert_call_count(has_resource, 0);
+	assert_call_count(has_entity, 0);
+	assert_call_count(has_string, 0);
     on_fn_dispatcher("on_a");
-	assert(game_fn_has_resource_call_count == 1);
-	assert(game_fn_has_entity_call_count == 1);
-	assert(game_fn_has_string_call_count == 1);
+	assert_call_count(has_resource, 1);
+	assert_call_count(has_entity, 1);
+	assert_call_count(has_string, 1);
 
-	assert(streq(game_fn_has_resource_path, "ok/entity_and_resource_as_subexpression/foo.txt"));
-	assert(streq(game_fn_has_entity_name, "ok:baz"));
-	assert(streq(game_fn_has_string_str, "bar"));
+	assert_string(game_fn_has_resource_path, "entity_and_resource_as_subexpression/foo.txt");
+	assert_string(game_fn_has_entity_name, "ok:baz");
+	assert_string(game_fn_has_string_str, "bar");
 }
 
 static void ok_entity_duplicate(void) {
-	assert(game_fn_spawn_call_count == 0);
+	assert_call_count(spawn, 0);
     on_fn_dispatcher("on_a");
-	assert(game_fn_spawn_call_count == 4);
+	assert_call_count(spawn, 4);
 
-	assert(streq(game_fn_spawn_name, "ok:baz"));
+	assert_string(game_fn_spawn_name, "ok:baz");
 }
 
 static void ok_entity_in_on_fn(void) {
-	assert(game_fn_spawn_call_count == 0);
+	assert_call_count(spawn, 0);
     on_fn_dispatcher("on_a");
-	assert(game_fn_spawn_call_count == 1);
+	assert_call_count(spawn, 1);
 
-	assert(streq(game_fn_spawn_name, "ok:foo"));
+	assert_string(game_fn_spawn_name, "ok:foo");
 }
 
 static void ok_entity_in_on_fn_with_mod_specified(void) {
-	assert(game_fn_spawn_call_count == 0);
+	assert_call_count(spawn, 0);
     on_fn_dispatcher("on_a");
-	assert(game_fn_spawn_call_count == 1);
+	assert_call_count(spawn, 1);
 
-	assert(streq(game_fn_spawn_name, "wow:foo"));
+	assert_string(game_fn_spawn_name, "wow:foo");
 }
 
 static void ok_eq_false(void) {
-	assert(game_fn_initialize_bool_call_count == 0);
+	assert_call_count(initialize_bool, 0);
     on_fn_dispatcher("on_a");
-	assert(game_fn_initialize_bool_call_count == 1);
+	assert_call_count(initialize_bool, 1);
 
-	assert(game_fn_initialize_bool_b == false);
+	assert_false(game_fn_initialize_bool_b);
 }
 
 static void ok_eq_true(void) {
-	assert(game_fn_initialize_bool_call_count == 0);
+	assert_call_count(initialize_bool, 0);
     on_fn_dispatcher("on_a");
-	assert(game_fn_initialize_bool_call_count == 1);
+	assert_call_count(initialize_bool, 1);
 
-	assert(game_fn_initialize_bool_b == true);
+	assert_true(game_fn_initialize_bool_b);
 }
 
 static void ok_f32_addition(void) {
-	assert(game_fn_sin_call_count == 0);
+	assert_call_count(sin, 0);
     on_fn_dispatcher("on_a");
-	assert(game_fn_sin_call_count == 1);
+	assert_call_count(sin, 1);
 
-	assert(game_fn_sin_x == 6.0);
+	assert_number(game_fn_sin_x, 6.0);
 }
 
 static void ok_f32_argument(void) {
-	assert(game_fn_sin_call_count == 0);
+	assert_call_count(sin, 0);
     on_fn_dispatcher("on_a");
-	assert(game_fn_sin_call_count == 1);
+	assert_call_count(sin, 1);
 
-	assert(game_fn_sin_x == 4.0);
+	assert_number(game_fn_sin_x, 4.0);
 }
 
 static void ok_f32_division(void) {
-	assert(game_fn_sin_call_count == 0);
+	assert_call_count(sin, 0);
     on_fn_dispatcher("on_a");
-	assert(game_fn_sin_call_count == 1);
+	assert_call_count(sin, 1);
 
-	assert(game_fn_sin_x == 0.5);
+	assert_number(game_fn_sin_x, 0.5);
 }
 
 static void ok_f32_eq_false(void) {
-	assert(game_fn_initialize_bool_call_count == 0);
+	assert_call_count(initialize_bool, 0);
     on_fn_dispatcher("on_a");
-	assert(game_fn_initialize_bool_call_count == 1);
+	assert_call_count(initialize_bool, 1);
 
-	assert(game_fn_initialize_bool_b == false);
+	assert_false(game_fn_initialize_bool_b);
 }
 
 static void ok_f32_eq_true(void) {
-	assert(game_fn_initialize_bool_call_count == 0);
+	assert_call_count(initialize_bool, 0);
     on_fn_dispatcher("on_a");
-	assert(game_fn_initialize_bool_call_count == 1);
+	assert_call_count(initialize_bool, 1);
 
-	assert(game_fn_initialize_bool_b == true);
+	assert_true(game_fn_initialize_bool_b);
 }
 
 static void ok_f32_ge_false(void) {
-	assert(game_fn_initialize_bool_call_count == 0);
+	assert_call_count(initialize_bool, 0);
     on_fn_dispatcher("on_a");
-	assert(game_fn_initialize_bool_call_count == 1);
+	assert_call_count(initialize_bool, 1);
 
-	assert(game_fn_initialize_bool_b == false);
+	assert_false(game_fn_initialize_bool_b);
 }
 
 static void ok_f32_ge_true_1(void) {
-	assert(game_fn_initialize_bool_call_count == 0);
+	assert_call_count(initialize_bool, 0);
     on_fn_dispatcher("on_a");
-	assert(game_fn_initialize_bool_call_count == 1);
+	assert_call_count(initialize_bool, 1);
 
-	assert(game_fn_initialize_bool_b == true);
+	assert_true(game_fn_initialize_bool_b);
 }
 
 static void ok_f32_ge_true_2(void) {
-	assert(game_fn_initialize_bool_call_count == 0);
+	assert_call_count(initialize_bool, 0);
     on_fn_dispatcher("on_a");
-	assert(game_fn_initialize_bool_call_count == 1);
+	assert_call_count(initialize_bool, 1);
 
-	assert(game_fn_initialize_bool_b == true);
+	assert_true(game_fn_initialize_bool_b);
 }
 
 static void ok_f32_global_variable(void) {
-	assert(game_fn_sin_call_count == 0);
+	assert_call_count(sin, 0);
     on_fn_dispatcher("on_a");
-	assert(game_fn_sin_call_count == 1);
+	assert_call_count(sin, 1);
 
-	assert(game_fn_sin_x == 4.0);
+	assert_number(game_fn_sin_x, 4.0);
 }
 
 static void ok_f32_gt_false(void) {
-	assert(game_fn_initialize_bool_call_count == 0);
+	assert_call_count(initialize_bool, 0);
     on_fn_dispatcher("on_a");
-	assert(game_fn_initialize_bool_call_count == 1);
+	assert_call_count(initialize_bool, 1);
 
-	assert(game_fn_initialize_bool_b == false);
+	assert_false(game_fn_initialize_bool_b);
 }
 
 static void ok_f32_gt_true(void) {
-	assert(game_fn_initialize_bool_call_count == 0);
+	assert_call_count(initialize_bool, 0);
     on_fn_dispatcher("on_a");
-	assert(game_fn_initialize_bool_call_count == 1);
+	assert_call_count(initialize_bool, 1);
 
-	assert(game_fn_initialize_bool_b == true);
+	assert_true(game_fn_initialize_bool_b);
 }
 
 static void ok_f32_le_false(void) {
-	assert(game_fn_initialize_bool_call_count == 0);
+	assert_call_count(initialize_bool, 0);
     on_fn_dispatcher("on_a");
-	assert(game_fn_initialize_bool_call_count == 1);
+	assert_call_count(initialize_bool, 1);
 
-	assert(game_fn_initialize_bool_b == false);
+	assert_false(game_fn_initialize_bool_b);
 }
 
 static void ok_f32_le_true_1(void) {
-	assert(game_fn_initialize_bool_call_count == 0);
+	assert_call_count(initialize_bool, 0);
     on_fn_dispatcher("on_a");
-	assert(game_fn_initialize_bool_call_count == 1);
+	assert_call_count(initialize_bool, 1);
 
-	assert(game_fn_initialize_bool_b == true);
+	assert_true(game_fn_initialize_bool_b);
 }
 
 static void ok_f32_le_true_2(void) {
-	assert(game_fn_initialize_bool_call_count == 0);
+	assert_call_count(initialize_bool, 0);
     on_fn_dispatcher("on_a");
-	assert(game_fn_initialize_bool_call_count == 1);
+	assert_call_count(initialize_bool, 1);
 
-	assert(game_fn_initialize_bool_b == true);
+	assert_true(game_fn_initialize_bool_b);
 }
 
 static void ok_f32_local_variable(void) {
-	assert(game_fn_sin_call_count == 0);
+	assert_call_count(sin, 0);
     on_fn_dispatcher("on_a");
-	assert(game_fn_sin_call_count == 1);
+	assert_call_count(sin, 1);
 
-	assert(game_fn_sin_x == 4.0);
+	assert_number(game_fn_sin_x, 4.0);
 }
 
 static void ok_f32_lt_false(void) {
-	assert(game_fn_initialize_bool_call_count == 0);
+	assert_call_count(initialize_bool, 0);
     on_fn_dispatcher("on_a");
-	assert(game_fn_initialize_bool_call_count == 1);
+	assert_call_count(initialize_bool, 1);
 
-	assert(game_fn_initialize_bool_b == false);
+	assert_false(game_fn_initialize_bool_b);
 }
 
 static void ok_f32_lt_true(void) {
-	assert(game_fn_initialize_bool_call_count == 0);
+	assert_call_count(initialize_bool, 0);
     on_fn_dispatcher("on_a");
-	assert(game_fn_initialize_bool_call_count == 1);
+	assert_call_count(initialize_bool, 1);
 
-	assert(game_fn_initialize_bool_b == true);
+	assert_true(game_fn_initialize_bool_b);
 }
 
 static void ok_f32_multiplication(void) {
-	assert(game_fn_sin_call_count == 0);
+	assert_call_count(sin, 0);
     on_fn_dispatcher("on_a");
-	assert(game_fn_sin_call_count == 1);
+	assert_call_count(sin, 1);
 
-	assert(game_fn_sin_x == 8.0);
+	assert_number(game_fn_sin_x, 8.0);
 }
 
 static void ok_f32_ne_false(void) {
-	assert(game_fn_initialize_bool_call_count == 0);
+	assert_call_count(initialize_bool, 0);
     on_fn_dispatcher("on_a");
-	assert(game_fn_initialize_bool_call_count == 1);
+	assert_call_count(initialize_bool, 1);
 
-	assert(game_fn_initialize_bool_b == false);
+	assert_false(game_fn_initialize_bool_b);
 }
 
 static void ok_f32_negated(void) {
-	assert(game_fn_sin_call_count == 0);
+	assert_call_count(sin, 0);
     on_fn_dispatcher("on_a");
-	assert(game_fn_sin_call_count == 1);
+	assert_call_count(sin, 1);
 
-	assert(game_fn_sin_x == -4.0);
+	assert_number(game_fn_sin_x, -4.0);
 }
 
 static void ok_f32_ne_true(void) {
-	assert(game_fn_initialize_bool_call_count == 0);
+	assert_call_count(initialize_bool, 0);
     on_fn_dispatcher("on_a");
-	assert(game_fn_initialize_bool_call_count == 1);
+	assert_call_count(initialize_bool, 1);
 
-	assert(game_fn_initialize_bool_b == true);
+	assert_true(game_fn_initialize_bool_b);
 }
 
 static void ok_f32_passed_to_helper_fn(void) {
-	assert(game_fn_sin_call_count == 0);
+	assert_call_count(sin, 0);
     on_fn_dispatcher("on_a");
-	assert(game_fn_sin_call_count == 1);
+	assert_call_count(sin, 1);
 
-	assert(game_fn_sin_x == 42.0);
+	assert_number(game_fn_sin_x, 42.0);
 }
 
 static void ok_f32_passed_to_on_fn(void) {
-	assert(game_fn_sin_call_count == 0);
+	assert_call_count(sin, 0);
     on_fn_args_dispatcher("on_a", (const union grug_value[]){{._number=42.0}});
-	assert(game_fn_sin_call_count == 1);
+	assert_call_count(sin, 1);
 
-	assert(game_fn_sin_x == 42.0);
+	assert_number(game_fn_sin_x, 42.0);
 }
 
 static void ok_f32_passing_sin_to_cos(void) {
-	assert(game_fn_sin_call_count == 0);
-	assert(game_fn_cos_call_count == 0);
+	assert_call_count(sin, 0);
+	assert_call_count(cos, 0);
     on_fn_dispatcher("on_a");
-	assert(game_fn_sin_call_count == 1);
-	assert(game_fn_cos_call_count == 1);
+	assert_call_count(sin, 1);
+	assert_call_count(cos, 1);
 
-	assert(game_fn_sin_x == 4.0);
-	assert(game_fn_cos_x == sin(4.0));
+	assert_number(game_fn_sin_x, 4.0);
+	assert_number(game_fn_cos_x, sin(4.0));
 }
 
 static void ok_f32_subtraction(void) {
-	assert(game_fn_sin_call_count == 0);
+	assert_call_count(sin, 0);
     on_fn_dispatcher("on_a");
-	assert(game_fn_sin_call_count == 1);
+	assert_call_count(sin, 1);
 
-	assert(game_fn_sin_x == -2.0);
+	assert_number(game_fn_sin_x, -2.0);
 }
 
 static void ok_fibonacci(void) {
-	assert(game_fn_initialize_call_count == 0);
+	assert_call_count(initialize, 0);
     on_fn_dispatcher("on_a");
-	assert(game_fn_initialize_call_count == 1);
+	assert_call_count(initialize, 1);
 
-	assert(game_fn_initialize_x == 55);
+	assert_number(game_fn_initialize_x, 55.0);
 }
 
 static void ok_ge_false(void) {
-	assert(game_fn_initialize_bool_call_count == 0);
+	assert_call_count(initialize_bool, 0);
     on_fn_dispatcher("on_a");
-	assert(game_fn_initialize_bool_call_count == 1);
+	assert_call_count(initialize_bool, 1);
 
-	assert(game_fn_initialize_bool_b == false);
+	assert_false(game_fn_initialize_bool_b);
 }
 
 static void ok_ge_true_1(void) {
-	assert(game_fn_initialize_bool_call_count == 0);
+	assert_call_count(initialize_bool, 0);
     on_fn_dispatcher("on_a");
-	assert(game_fn_initialize_bool_call_count == 1);
+	assert_call_count(initialize_bool, 1);
 
-	assert(game_fn_initialize_bool_b == true);
+	assert_true(game_fn_initialize_bool_b);
 }
 
 static void ok_ge_true_2(void) {
-	assert(game_fn_initialize_bool_call_count == 0);
+	assert_call_count(initialize_bool, 0);
     on_fn_dispatcher("on_a");
-	assert(game_fn_initialize_bool_call_count == 1);
+	assert_call_count(initialize_bool, 1);
 
-	assert(game_fn_initialize_bool_b == true);
+	assert_true(game_fn_initialize_bool_b);
 }
 
 static void ok_global_2_does_not_have_error_handling(void) {
 }
 
 static void ok_global_call_using_me(void) {
-	assert(game_fn_get_position_call_count == 1);
+	assert_call_count(get_position, 1);
 
-	assert(game_fn_set_position_call_count == 0);
+	assert_call_count(set_position, 0);
     on_fn_dispatcher("on_a");
-	assert(game_fn_set_position_call_count == 1);
+	assert_call_count(set_position, 1);
 
-	assert(game_fn_set_position_pos == 1337);
+	assert_id(game_fn_set_position_pos, 1337);
 }
 
 static void ok_global_can_use_earlier_global(void) {
-	assert(game_fn_initialize_call_count == 0);
+	assert_call_count(initialize, 0);
     on_fn_dispatcher("on_a");
-	assert(game_fn_initialize_call_count == 1);
+	assert_call_count(initialize, 1);
 
-	assert(game_fn_initialize_x == 5);
+	assert_number(game_fn_initialize_x, 5.0);
 }
 
 static void ok_global_containing_negation(void) {
-	assert(game_fn_initialize_call_count == 0);
+	assert_call_count(initialize, 0);
     on_fn_dispatcher("on_a");
-	assert(game_fn_initialize_call_count == 1);
+	assert_call_count(initialize, 1);
 
-	assert(game_fn_initialize_x == -2);
+	assert_number(game_fn_initialize_x, -2.0);
 }
 
 static void ok_global_id(void) {
-	assert(game_fn_get_opponent_call_count == 1);
+	assert_call_count(get_opponent, 1);
 
-	assert(game_fn_set_position_call_count == 0);
+	assert_call_count(set_position, 0);
     on_fn_dispatcher("on_a");
-	assert(game_fn_set_position_call_count == 1);
+	assert_call_count(set_position, 1);
 
-	assert(game_fn_set_position_pos == 69);
+	assert_id(game_fn_set_position_pos, 69);
 }
 
 static void ok_globals(void) {
-	assert(game_fn_initialize_call_count == 0);
+	assert_call_count(initialize, 0);
     on_fn_dispatcher("on_a");
-	assert(game_fn_initialize_call_count == 2);
+	assert_call_count(initialize, 2);
 
-	assert(game_fn_initialize_x == 1337);
+	assert_number(game_fn_initialize_x, 1337.0);
 }
 
 static void ok_globals_1000(void) {
@@ -1698,347 +1755,347 @@ static void ok_globals_64(void) {
 }
 
 static void ok_gt_false(void) {
-	assert(game_fn_initialize_bool_call_count == 0);
+	assert_call_count(initialize_bool, 0);
     on_fn_dispatcher("on_a");
-	assert(game_fn_initialize_bool_call_count == 1);
+	assert_call_count(initialize_bool, 1);
 
-	assert(game_fn_initialize_bool_b == false);
+	assert_false(game_fn_initialize_bool_b);
 }
 
 static void ok_gt_true(void) {
-	assert(game_fn_initialize_bool_call_count == 0);
+	assert_call_count(initialize_bool, 0);
     on_fn_dispatcher("on_a");
-	assert(game_fn_initialize_bool_call_count == 1);
+	assert_call_count(initialize_bool, 1);
 
-	assert(game_fn_initialize_bool_b == true);
+	assert_true(game_fn_initialize_bool_b);
 }
 
 static void ok_helper_fn(void) {
-	assert(game_fn_nothing_call_count == 0);
+	assert_call_count(nothing, 0);
     on_fn_dispatcher("on_a");
-	assert(game_fn_nothing_call_count == 1);
+	assert_call_count(nothing, 1);
 }
 
 static void ok_helper_fn_called_in_if(void) {
-	assert(game_fn_nothing_call_count == 0);
+	assert_call_count(nothing, 0);
     on_fn_dispatcher("on_a");
-	assert(game_fn_nothing_call_count == 1);
+	assert_call_count(nothing, 1);
 }
 
 static void ok_helper_fn_called_indirectly(void) {
-	assert(game_fn_nothing_call_count == 0);
+	assert_call_count(nothing, 0);
     on_fn_dispatcher("on_a");
-	assert(game_fn_nothing_call_count == 1);
+	assert_call_count(nothing, 1);
 }
 
 static void ok_helper_fn_overwriting_param(void) {
-	assert(game_fn_initialize_call_count == 0);
-	assert(game_fn_sin_call_count == 0);
+	assert_call_count(initialize, 0);
+	assert_call_count(sin, 0);
     on_fn_dispatcher("on_a");
-	assert(game_fn_initialize_call_count == 1);
-	assert(game_fn_sin_call_count == 1);
+	assert_call_count(initialize, 1);
+	assert_call_count(sin, 1);
 
-	assert(game_fn_initialize_x == 20);
-	assert(game_fn_sin_x == 30.0);
+	assert_number(game_fn_initialize_x, 20.0);
+	assert_number(game_fn_sin_x, 30.0);
 }
 
 static void ok_helper_fn_returning_void_has_no_return(void) {
-	assert(game_fn_nothing_call_count == 0);
+	assert_call_count(nothing, 0);
     on_fn_dispatcher("on_a");
-	assert(game_fn_nothing_call_count == 2);
+	assert_call_count(nothing, 2);
 }
 
 static void ok_helper_fn_returning_void_returns_void(void) {
-	assert(game_fn_nothing_call_count == 0);
+	assert_call_count(nothing, 0);
     on_fn_dispatcher("on_a");
-	assert(game_fn_nothing_call_count == 2);
+	assert_call_count(nothing, 2);
 }
 
 static void ok_helper_fn_same_param_name_as_on_fn(void) {
-	assert(game_fn_nothing_call_count == 0);
+	assert_call_count(nothing, 0);
     on_fn_dispatcher("on_a");
-	assert(game_fn_nothing_call_count == 1);
+	assert_call_count(nothing, 1);
 }
 
 static void ok_helper_fn_same_param_name_as_other_helper_fn(void) {
-	assert(game_fn_nothing_call_count == 0);
+	assert_call_count(nothing, 0);
     on_fn_dispatcher("on_a");
-	assert(game_fn_nothing_call_count == 2);
+	assert_call_count(nothing, 2);
 }
 
 static void ok_i32_max(void) {
-	assert(game_fn_initialize_call_count == 0);
+	assert_call_count(initialize, 0);
     on_fn_dispatcher("on_a");
-	assert(game_fn_initialize_call_count == 1);
+	assert_call_count(initialize, 1);
 
-	assert(game_fn_initialize_x == 2147483647);
+	assert_number(game_fn_initialize_x, 2147483647.0);
 }
 
 static void ok_i32_min(void) {
-	assert(game_fn_initialize_call_count == 0);
+	assert_call_count(initialize, 0);
     on_fn_dispatcher("on_a");
-	assert(game_fn_initialize_call_count == 1);
+	assert_call_count(initialize, 1);
 
-	assert(game_fn_initialize_x == -2147483648);
+	assert_number(game_fn_initialize_x, -2147483648.0);
 }
 
 static void ok_i32_negated(void) {
-	assert(game_fn_initialize_call_count == 0);
+	assert_call_count(initialize, 0);
     on_fn_dispatcher("on_a");
-	assert(game_fn_initialize_call_count == 1);
+	assert_call_count(initialize, 1);
 
-	assert(game_fn_initialize_x == -42);
+	assert_number(game_fn_initialize_x, -42.0);
 }
 
 static void ok_i32_negative_is_smaller_than_positive(void) {
-	assert(game_fn_initialize_bool_call_count == 0);
+	assert_call_count(initialize_bool, 0);
     on_fn_dispatcher("on_a");
-	assert(game_fn_initialize_bool_call_count == 1);
+	assert_call_count(initialize_bool, 1);
 
-	assert(game_fn_initialize_bool_b == true);
+	assert_true(game_fn_initialize_bool_b);
 }
 
 static void ok_id_binary_expr_false(void) {
-	assert(game_fn_initialize_bool_call_count == 0);
+	assert_call_count(initialize_bool, 0);
     on_fn_dispatcher("on_a");
-	assert(game_fn_initialize_bool_call_count == 1);
+	assert_call_count(initialize_bool, 1);
 
-	assert(game_fn_initialize_bool_b == false);
+	assert_false(game_fn_initialize_bool_b);
 }
 
 static void ok_id_binary_expr_true(void) {
-	assert(game_fn_initialize_bool_call_count == 0);
+	assert_call_count(initialize_bool, 0);
     on_fn_dispatcher("on_a");
-	assert(game_fn_initialize_bool_call_count == 1);
+	assert_call_count(initialize_bool, 1);
 
-	assert(game_fn_initialize_bool_b == true);
+	assert_true(game_fn_initialize_bool_b);
 }
 
 static void ok_id_eq_1(void) {
-	assert(game_fn_initialize_bool_call_count == 0);
-	assert(game_fn_retrieve_call_count == 0);
+	assert_call_count(initialize_bool, 0);
+	assert_call_count(retrieve, 0);
     on_fn_dispatcher("on_a");
-	assert(game_fn_initialize_bool_call_count == 1);
-	assert(game_fn_retrieve_call_count == 1);
+	assert_call_count(initialize_bool, 1);
+	assert_call_count(retrieve, 1);
 
-	assert(game_fn_initialize_bool_b == false);
+	assert_false(game_fn_initialize_bool_b);
 }
 
 static void ok_id_eq_2(void) {
-	assert(game_fn_initialize_bool_call_count == 0);
-	assert(game_fn_retrieve_call_count == 0);
+	assert_call_count(initialize_bool, 0);
+	assert_call_count(retrieve, 0);
     on_fn_dispatcher("on_a");
-	assert(game_fn_initialize_bool_call_count == 1);
-	assert(game_fn_retrieve_call_count == 1);
+	assert_call_count(initialize_bool, 1);
+	assert_call_count(retrieve, 1);
 
-	assert(game_fn_initialize_bool_b == false);
+	assert_false(game_fn_initialize_bool_b);
 }
 
 static void ok_id_global_with_id_to_new_id(void) {
-	assert(game_fn_retrieve_call_count == 1); // Called by init_globals()
-	assert(game_fn_store_call_count == 0);
+	assert_call_count(retrieve, 1); // Called by init_globals()
+	assert_call_count(store, 0);
     on_fn_dispatcher("on_a");
-	assert(game_fn_retrieve_call_count == 1);
-	assert(game_fn_store_call_count == 1);
+	assert_call_count(retrieve, 1);
+	assert_call_count(store, 1);
 
-	assert(game_fn_store_id == 123);
+	assert_id(game_fn_store_id, 123);
 }
 
 static void ok_id_global_with_opponent_to_new_id(void) {
-	assert(game_fn_get_opponent_call_count == 1); // Called by init_globals()
-	assert(game_fn_store_call_count == 0);
+	assert_call_count(get_opponent, 1); // Called by init_globals()
+	assert_call_count(store, 0);
     on_fn_dispatcher("on_a");
-	assert(game_fn_get_opponent_call_count == 1);
-	assert(game_fn_store_call_count == 1);
+	assert_call_count(get_opponent, 1);
+	assert_call_count(store, 1);
 
-	assert(game_fn_store_id == 69);
+	assert_id(game_fn_store_id, 69);
 }
 
 static void ok_id_helper_fn_param(void) {
-	assert(game_fn_retrieve_call_count == 0);
-	assert(game_fn_store_call_count == 0);
+	assert_call_count(retrieve, 0);
+	assert_call_count(store, 0);
     on_fn_dispatcher("on_a");
-	assert(game_fn_retrieve_call_count == 1);
-	assert(game_fn_store_call_count == 1);
+	assert_call_count(retrieve, 1);
+	assert_call_count(store, 1);
 
-	assert(game_fn_store_id == 123);
+	assert_id(game_fn_store_id, 123);
 }
 
 static void ok_id_local_variable_get_and_set(void) {
-	assert(game_fn_get_opponent_call_count == 0);
-	assert(game_fn_set_opponent_call_count == 0);
+	assert_call_count(get_opponent, 0);
+	assert_call_count(set_opponent, 0);
     on_fn_dispatcher("on_a");
-	assert(game_fn_get_opponent_call_count == 1);
-	assert(game_fn_set_opponent_call_count == 1);
+	assert_call_count(get_opponent, 1);
+	assert_call_count(set_opponent, 1);
 
-	assert(game_fn_set_opponent_target == 69);
+	assert_id(game_fn_set_opponent_target, 69);
 }
 
 static void ok_id_ne_1(void) {
-	assert(game_fn_initialize_bool_call_count == 0);
-	assert(game_fn_retrieve_call_count == 0);
+	assert_call_count(initialize_bool, 0);
+	assert_call_count(retrieve, 0);
     on_fn_dispatcher("on_a");
-	assert(game_fn_initialize_bool_call_count == 1);
-	assert(game_fn_retrieve_call_count == 1);
+	assert_call_count(initialize_bool, 1);
+	assert_call_count(retrieve, 1);
 
-	assert(game_fn_initialize_bool_b == true);
+	assert_true(game_fn_initialize_bool_b);
 }
 
 static void ok_id_ne_2(void) {
-	assert(game_fn_initialize_bool_call_count == 0);
-	assert(game_fn_retrieve_call_count == 0);
+	assert_call_count(initialize_bool, 0);
+	assert_call_count(retrieve, 0);
     on_fn_dispatcher("on_a");
-	assert(game_fn_initialize_bool_call_count == 1);
-	assert(game_fn_retrieve_call_count == 1);
+	assert_call_count(initialize_bool, 1);
+	assert_call_count(retrieve, 1);
 
-	assert(game_fn_initialize_bool_b == true);
+	assert_true(game_fn_initialize_bool_b);
 }
 
 static void ok_id_on_fn_param(void) {
-	assert(game_fn_store_call_count == 0);
+	assert_call_count(store, 0);
     on_fn_args_dispatcher("on_a", (const union grug_value[]){{._id=77}});
-	assert(game_fn_store_call_count == 1);
+	assert_call_count(store, 1);
 
-	assert(game_fn_store_id == 77);
+	assert_id(game_fn_store_id, 77);
 }
 
 static void ok_id_returned_from_helper(void) {
-	assert(game_fn_store_call_count == 0);
+	assert_call_count(store, 0);
     on_fn_dispatcher("on_a");
-	assert(game_fn_store_call_count == 1);
+	assert_call_count(store, 1);
 
-	assert(game_fn_store_id == 42);
+	assert_id(game_fn_store_id, 42);
 }
 
 static void ok_id_with_d_to_new_id_and_id_to_old_id(void) {
-	assert(game_fn_retrieve_call_count == 0);
-	assert(game_fn_store_call_count == 0);
+	assert_call_count(retrieve, 0);
+	assert_call_count(store, 0);
     on_fn_dispatcher("on_a");
-	assert(game_fn_retrieve_call_count == 1);
-	assert(game_fn_store_call_count == 1);
+	assert_call_count(retrieve, 1);
+	assert_call_count(store, 1);
 
-	assert(game_fn_store_id == 123);
+	assert_id(game_fn_store_id, 123);
 }
 
 static void ok_id_with_d_to_old_id(void) {
-	assert(game_fn_store_call_count == 0);
+	assert_call_count(store, 0);
     on_fn_dispatcher("on_a");
-	assert(game_fn_store_call_count == 1);
+	assert_call_count(store, 1);
 
-	assert(game_fn_store_id == 42);
+	assert_id(game_fn_store_id, 42);
 }
 
 static void ok_id_with_id_to_new_id(void) {
-	assert(game_fn_retrieve_call_count == 0);
-	assert(game_fn_store_call_count == 0);
+	assert_call_count(retrieve, 0);
+	assert_call_count(store, 0);
     on_fn_dispatcher("on_a");
-	assert(game_fn_retrieve_call_count == 1);
-	assert(game_fn_store_call_count == 1);
+	assert_call_count(retrieve, 1);
+	assert_call_count(store, 1);
 
-	assert(game_fn_store_id == 123);
+	assert_id(game_fn_store_id, 123);
 }
 
 static void ok_if_false(void) {
-	assert(game_fn_nothing_call_count == 0);
+	assert_call_count(nothing, 0);
     on_fn_dispatcher("on_a");
-	assert(game_fn_nothing_call_count == 2);
+	assert_call_count(nothing, 2);
 }
 
 static void ok_if_true(void) {
-	assert(game_fn_nothing_call_count == 0);
+	assert_call_count(nothing, 0);
     on_fn_dispatcher("on_a");
-	assert(game_fn_nothing_call_count == 3);
+	assert_call_count(nothing, 3);
 }
 
 static void ok_le_false(void) {
-	assert(game_fn_initialize_bool_call_count == 0);
+	assert_call_count(initialize_bool, 0);
     on_fn_dispatcher("on_a");
-	assert(game_fn_initialize_bool_call_count == 1);
+	assert_call_count(initialize_bool, 1);
 
-	assert(game_fn_initialize_bool_b == false);
+	assert_false(game_fn_initialize_bool_b);
 }
 
 static void ok_le_true_1(void) {
-	assert(game_fn_initialize_bool_call_count == 0);
+	assert_call_count(initialize_bool, 0);
     on_fn_dispatcher("on_a");
-	assert(game_fn_initialize_bool_call_count == 1);
+	assert_call_count(initialize_bool, 1);
 
-	assert(game_fn_initialize_bool_b == true);
+	assert_true(game_fn_initialize_bool_b);
 }
 
 static void ok_le_true_2(void) {
-	assert(game_fn_initialize_bool_call_count == 0);
+	assert_call_count(initialize_bool, 0);
     on_fn_dispatcher("on_a");
-	assert(game_fn_initialize_bool_call_count == 1);
+	assert_call_count(initialize_bool, 1);
 
-	assert(game_fn_initialize_bool_b == true);
+	assert_true(game_fn_initialize_bool_b);
 }
 
 static void ok_local_id_can_be_reassigned(void) {
-	assert(game_fn_get_opponent_call_count == 0);
+	assert_call_count(get_opponent, 0);
     on_fn_dispatcher("on_a");
-	assert(game_fn_get_opponent_call_count == 2);
+	assert_call_count(get_opponent, 2);
 }
 
 static void ok_lt_false(void) {
-	assert(game_fn_initialize_bool_call_count == 0);
+	assert_call_count(initialize_bool, 0);
     on_fn_dispatcher("on_a");
-	assert(game_fn_initialize_bool_call_count == 1);
+	assert_call_count(initialize_bool, 1);
 
-	assert(game_fn_initialize_bool_b == false);
+	assert_false(game_fn_initialize_bool_b);
 }
 
 static void ok_lt_true(void) {
-	assert(game_fn_initialize_bool_call_count == 0);
+	assert_call_count(initialize_bool, 0);
     on_fn_dispatcher("on_a");
-	assert(game_fn_initialize_bool_call_count == 1);
+	assert_call_count(initialize_bool, 1);
 
-	assert(game_fn_initialize_bool_b == true);
+	assert_true(game_fn_initialize_bool_b);
 }
 
 static void ok_max_args(void) {
-	assert(game_fn_mega_call_count == 0);
+	assert_call_count(mega, 0);
     on_fn_dispatcher("on_a");
-	assert(game_fn_mega_call_count == 1);
+	assert_call_count(mega, 1);
 
-	assert(game_fn_mega_f1 == 1.0);
-	assert(game_fn_mega_i1 == 21);
-	assert(game_fn_mega_b1 == true);
-	assert(game_fn_mega_f2 == 2.0);
-	assert(game_fn_mega_f3 == 3.0);
-	assert(game_fn_mega_f4 == 4.0);
-	assert(game_fn_mega_b2 == false);
-	assert(game_fn_mega_i2 == 1337);
-	assert(game_fn_mega_f5 == 5.0);
-	assert(game_fn_mega_f6 == 6.0);
-	assert(game_fn_mega_f7 == 7.0);
-	assert(game_fn_mega_f8 == 8.0);
-	assert(game_fn_mega_id == 42);
-	assert(streq(game_fn_mega_str, "foo"));
+	assert_number(game_fn_mega_f1, 1.0);
+	assert_number(game_fn_mega_i1, 21.0);
+	assert_true(game_fn_mega_b1);
+	assert_number(game_fn_mega_f2, 2.0);
+	assert_number(game_fn_mega_f3, 3.0);
+	assert_number(game_fn_mega_f4, 4.0);
+	assert_false(game_fn_mega_b2);
+	assert_number(game_fn_mega_i2, 1337.0);
+	assert_number(game_fn_mega_f5, 5.0);
+	assert_number(game_fn_mega_f6, 6.0);
+	assert_number(game_fn_mega_f7, 7.0);
+	assert_number(game_fn_mega_f8, 8.0);
+	assert_id(game_fn_mega_id, 42);
+	assert_string(game_fn_mega_str, "foo");
 }
 
 static void ok_me(void) {
-	assert(game_fn_set_d_call_count == 0);
+	assert_call_count(set_d, 0);
     on_fn_dispatcher("on_a");
-	assert(game_fn_set_d_call_count == 1);
+	assert_call_count(set_d, 1);
 
-	assert(game_fn_set_d_target == 42);
+	assert_id(game_fn_set_d_target, 42);
 }
 
 static void ok_me_assigned_to_local_variable(void) {
-	assert(game_fn_set_d_call_count == 0);
+	assert_call_count(set_d, 0);
     on_fn_dispatcher("on_a");
-	assert(game_fn_set_d_call_count == 1);
+	assert_call_count(set_d, 1);
 
-	assert(game_fn_set_d_target == 42);
+	assert_id(game_fn_set_d_target, 42);
 }
 
 static void ok_me_passed_to_helper_fn(void) {
-	assert(game_fn_set_d_call_count == 0);
+	assert_call_count(set_d, 0);
     on_fn_dispatcher("on_a");
-	assert(game_fn_set_d_call_count == 1);
+	assert_call_count(set_d, 1);
 
-	assert(game_fn_set_d_target == 42);
+	assert_id(game_fn_set_d_target, 42);
 }
 
 static void ok_mov_32_bits_global_i32(void) {
@@ -2048,112 +2105,112 @@ static void ok_mov_32_bits_global_id(void) {
 }
 
 static void ok_multiplication_as_two_arguments(void) {
-	assert(game_fn_max_call_count == 0);
+	assert_call_count(max, 0);
     on_fn_dispatcher("on_a");
-	assert(game_fn_max_call_count == 1);
+	assert_call_count(max, 1);
 
-	assert(game_fn_max_x == 6);
-	assert(game_fn_max_y == 20);
+	assert_number(game_fn_max_x, 6.0);
+	assert_number(game_fn_max_y, 20.0);
 }
 
 static void ok_ne_false(void) {
-	assert(game_fn_initialize_bool_call_count == 0);
+	assert_call_count(initialize_bool, 0);
     on_fn_dispatcher("on_a");
-	assert(game_fn_initialize_bool_call_count == 1);
+	assert_call_count(initialize_bool, 1);
 
-	assert(game_fn_initialize_bool_b == false);
+	assert_false(game_fn_initialize_bool_b);
 }
 
 static void ok_ne_true(void) {
-	assert(game_fn_initialize_bool_call_count == 0);
+	assert_call_count(initialize_bool, 0);
     on_fn_dispatcher("on_a");
-	assert(game_fn_initialize_bool_call_count == 1);
+	assert_call_count(initialize_bool, 1);
 
-	assert(game_fn_initialize_bool_b == true);
+	assert_true(game_fn_initialize_bool_b);
 }
 
 static void ok_negate_parenthesized_expr(void) {
-	assert(game_fn_initialize_call_count == 0);
+	assert_call_count(initialize, 0);
     on_fn_dispatcher("on_a");
-	assert(game_fn_initialize_call_count == 1);
+	assert_call_count(initialize, 1);
 
-	assert(game_fn_initialize_x == -5);
+	assert_number(game_fn_initialize_x, -5.0);
 }
 
 static void ok_negative_literal(void) {
-	assert(game_fn_initialize_call_count == 0);
+	assert_call_count(initialize, 0);
     on_fn_dispatcher("on_a");
-	assert(game_fn_initialize_call_count == 1);
+	assert_call_count(initialize, 1);
 
-	assert(game_fn_initialize_x == -42);
+	assert_number(game_fn_initialize_x, -42.0);
 }
 
 static void ok_nested_break(void) {
-	assert(game_fn_nothing_call_count == 0);
+	assert_call_count(nothing, 0);
     on_fn_dispatcher("on_a");
-	assert(game_fn_nothing_call_count == 3);
+	assert_call_count(nothing, 3);
 }
 
 static void ok_nested_continue(void) {
-	assert(game_fn_nothing_call_count == 0);
+	assert_call_count(nothing, 0);
     on_fn_dispatcher("on_a");
-	assert(game_fn_nothing_call_count == 2);
+	assert_call_count(nothing, 2);
 }
 
 static void ok_no_empty_line_between_globals(void) {
 }
 
 static void ok_no_empty_line_between_statements(void) {
-	assert(game_fn_nothing_call_count == 0);
+	assert_call_count(nothing, 0);
     on_fn_dispatcher("on_a");
-	assert(game_fn_nothing_call_count == 2);
+	assert_call_count(nothing, 2);
 }
 
 static void ok_on_fn(void) {
-	assert(game_fn_nothing_call_count == 0);
+	assert_call_count(nothing, 0);
     on_fn_dispatcher("on_a");
-	assert(game_fn_nothing_call_count == 1);
+	assert_call_count(nothing, 1);
 }
 
 static void ok_on_fn_calling_game_fn_nothing(void) {
-	assert(game_fn_nothing_call_count == 0);
+	assert_call_count(nothing, 0);
     on_fn_dispatcher("on_a");
-	assert(game_fn_nothing_call_count == 1);
+	assert_call_count(nothing, 1);
 }
 
 static void ok_on_fn_calling_game_fn_nothing_twice(void) {
-	assert(game_fn_nothing_call_count == 0);
+	assert_call_count(nothing, 0);
     on_fn_dispatcher("on_a");
-	assert(game_fn_nothing_call_count == 2);
+	assert_call_count(nothing, 2);
 }
 
 static void ok_on_fn_calling_game_fn_plt_order(void) {
-	assert(game_fn_nothing_call_count == 0);
-	assert(game_fn_magic_call_count == 0);
-	assert(game_fn_initialize_call_count == 0);
-	assert(game_fn_identity_call_count == 0);
-	assert(game_fn_max_call_count == 0);
+	assert_call_count(nothing, 0);
+	assert_call_count(magic, 0);
+	assert_call_count(initialize, 0);
+	assert_call_count(identity, 0);
+	assert_call_count(max, 0);
     on_fn_dispatcher("on_a");
-	assert(game_fn_nothing_call_count == 1);
-	assert(game_fn_magic_call_count == 1);
-	assert(game_fn_initialize_call_count == 1);
-	assert(game_fn_identity_call_count == 1);
-	assert(game_fn_max_call_count == 1);
+	assert_call_count(nothing, 1);
+	assert_call_count(magic, 1);
+	assert_call_count(initialize, 1);
+	assert_call_count(identity, 1);
+	assert_call_count(max, 1);
 
-	assert(game_fn_initialize_x == 42);
-	assert(game_fn_identity_x == 69);
-	assert(game_fn_max_x == 1337);
-	assert(game_fn_max_y == 8192);
+	assert_number(game_fn_initialize_x, 42.0);
+	assert_number(game_fn_identity_x, 69.0);
+	assert_number(game_fn_max_x, 1337.0);
+	assert_number(game_fn_max_y, 8192.0);
 }
 
 static void ok_on_fn_calling_helper_fns(void) {
-	assert(game_fn_nothing_call_count == 0);
-	assert(game_fn_initialize_call_count == 0);
+	assert_call_count(nothing, 0);
+	assert_call_count(initialize, 0);
     on_fn_dispatcher("on_a");
-	assert(game_fn_nothing_call_count == 1);
-	assert(game_fn_initialize_call_count == 1);
+	assert_call_count(nothing, 1);
+	assert_call_count(initialize, 1);
 
-	assert(game_fn_initialize_x == 42);
+	assert_number(game_fn_initialize_x, 42.0);
 }
 
 static void ok_on_fn_calling_no_game_fn(void) {
@@ -2169,180 +2226,180 @@ static void ok_on_fn_calling_no_game_fn_but_with_global(void) {
 }
 
 static void ok_on_fn_overwriting_param(void) {
-	assert(game_fn_initialize_call_count == 0);
-	assert(game_fn_sin_call_count == 0);
+	assert_call_count(initialize, 0);
+	assert_call_count(sin, 0);
     on_fn_args_dispatcher("on_a", (const union grug_value[]){{._number=2.0}, {._number=3.0}});
-	assert(game_fn_initialize_call_count == 1);
-	assert(game_fn_sin_call_count == 1);
+	assert_call_count(initialize, 1);
+	assert_call_count(sin, 1);
 
-	assert(game_fn_initialize_x == 20);
-	assert(game_fn_sin_x == 30.0);
+	assert_number(game_fn_initialize_x, 20.0);
+	assert_number(game_fn_sin_x, 30.0);
 }
 
 static void ok_on_fn_passing_argument_to_helper_fn(void) {
-	assert(game_fn_initialize_call_count == 0);
+	assert_call_count(initialize, 0);
     on_fn_dispatcher("on_a");
-	assert(game_fn_initialize_call_count == 1);
+	assert_call_count(initialize, 1);
 
-	assert(game_fn_initialize_x == 42);
+	assert_number(game_fn_initialize_x, 42.0);
 }
 
 static void ok_on_fn_passing_magic_to_initialize(void) {
-	assert(game_fn_magic_call_count == 0);
-	assert(game_fn_initialize_call_count == 0);
+	assert_call_count(magic, 0);
+	assert_call_count(initialize, 0);
     on_fn_dispatcher("on_a");
-	assert(game_fn_magic_call_count == 1);
-	assert(game_fn_initialize_call_count == 1);
+	assert_call_count(magic, 1);
+	assert_call_count(initialize, 1);
 }
 
 static void ok_on_fn_three(void) {
-	assert(game_fn_nothing_call_count == 0);
+	assert_call_count(nothing, 0);
     on_fn_dispatcher("on_a");
     on_fn_dispatcher("on_b");
     on_fn_dispatcher("on_c");
-	assert(game_fn_nothing_call_count == 3);
+	assert_call_count(nothing, 3);
 }
 
 static void ok_on_fn_three_unused_first(void) {
-	assert(game_fn_nothing_call_count == 0);
+	assert_call_count(nothing, 0);
     on_fn_dispatcher("on_b");
     on_fn_dispatcher("on_c");
-	assert(game_fn_nothing_call_count == 2);
+	assert_call_count(nothing, 2);
 }
 
 static void ok_on_fn_three_unused_second(void) {
-	assert(game_fn_nothing_call_count == 0);
+	assert_call_count(nothing, 0);
     on_fn_dispatcher("on_a");
     on_fn_dispatcher("on_c");
-	assert(game_fn_nothing_call_count == 2);
+	assert_call_count(nothing, 2);
 }
 
 static void ok_on_fn_three_unused_third(void) {
-	assert(game_fn_nothing_call_count == 0);
+	assert_call_count(nothing, 0);
     on_fn_dispatcher("on_a");
     on_fn_dispatcher("on_b");
-	assert(game_fn_nothing_call_count == 2);
+	assert_call_count(nothing, 2);
 }
 
 static void ok_or_false(void) {
-	assert(game_fn_initialize_bool_call_count == 0);
+	assert_call_count(initialize_bool, 0);
     on_fn_dispatcher("on_a");
-	assert(game_fn_initialize_bool_call_count == 1);
+	assert_call_count(initialize_bool, 1);
 
-	assert(game_fn_initialize_bool_b == false);
+	assert_false(game_fn_initialize_bool_b);
 }
 
 static void ok_or_short_circuit(void) {
-	assert(game_fn_initialize_bool_call_count == 0);
+	assert_call_count(initialize_bool, 0);
     on_fn_dispatcher("on_a");
-	assert(game_fn_initialize_bool_call_count == 1);
+	assert_call_count(initialize_bool, 1);
 
-	assert(game_fn_initialize_bool_b == true);
+	assert_true(game_fn_initialize_bool_b);
 }
 
 static void ok_or_true_1(void) {
-	assert(game_fn_initialize_bool_call_count == 0);
+	assert_call_count(initialize_bool, 0);
     on_fn_dispatcher("on_a");
-	assert(game_fn_initialize_bool_call_count == 1);
+	assert_call_count(initialize_bool, 1);
 
-	assert(game_fn_initialize_bool_b == true);
+	assert_true(game_fn_initialize_bool_b);
 }
 
 static void ok_or_true_2(void) {
-	assert(game_fn_initialize_bool_call_count == 0);
+	assert_call_count(initialize_bool, 0);
     on_fn_dispatcher("on_a");
-	assert(game_fn_initialize_bool_call_count == 1);
+	assert_call_count(initialize_bool, 1);
 
-	assert(game_fn_initialize_bool_b == true);
+	assert_true(game_fn_initialize_bool_b);
 }
 
 static void ok_or_true_3(void) {
-	assert(game_fn_initialize_bool_call_count == 0);
+	assert_call_count(initialize_bool, 0);
     on_fn_dispatcher("on_a");
-	assert(game_fn_initialize_bool_call_count == 1);
+	assert_call_count(initialize_bool, 1);
 
-	assert(game_fn_initialize_bool_b == true);
+	assert_true(game_fn_initialize_bool_b);
 }
 
 static void ok_pass_string_argument_to_game_fn(void) {
-	assert(game_fn_say_call_count == 0);
+	assert_call_count(say, 0);
     on_fn_dispatcher("on_a");
-	assert(game_fn_say_call_count == 1);
+	assert_call_count(say, 1);
 
-	assert(streq(game_fn_say_message, "foo"));
+	assert_string(game_fn_say_message, "foo");
 }
 
 static void ok_pass_string_argument_to_helper_fn(void) {
-	assert(game_fn_say_call_count == 0);
+	assert_call_count(say, 0);
     on_fn_dispatcher("on_a");
-	assert(game_fn_say_call_count == 1);
+	assert_call_count(say, 1);
 
-	assert(streq(game_fn_say_message, "foo"));
+	assert_string(game_fn_say_message, "foo");
 }
 
 static void ok_resource_and_entity(void) {
-	assert(game_fn_draw_call_count == 0);
-	assert(game_fn_spawn_call_count == 0);
+	assert_call_count(draw, 0);
+	assert_call_count(spawn, 0);
     on_fn_dispatcher("on_a");
-	assert(game_fn_draw_call_count == 1);
-	assert(game_fn_spawn_call_count == 1);
+	assert_call_count(draw, 1);
+	assert_call_count(spawn, 1);
 
-	assert(streq(game_fn_draw_sprite_path, "ok/resource_and_entity/foo.txt"));
-	assert(streq(game_fn_spawn_name, "ok:foo"));
+	assert_string(game_fn_draw_sprite_path, "ok/resource_and_entity/foo.txt");
+	assert_string(game_fn_spawn_name, "ok:foo");
 }
 
 static void ok_resource_can_contain_dot_1(void) {
-	assert(game_fn_draw_call_count == 0);
+	assert_call_count(draw, 0);
     on_fn_dispatcher("on_a");
-	assert(game_fn_draw_call_count == 1);
+	assert_call_count(draw, 1);
 
-	assert(streq(game_fn_draw_sprite_path, "ok/resource_can_contain_dot_1/.foo"));
+	assert_string(game_fn_draw_sprite_path, "ok/resource_can_contain_dot_1/.foo");
 }
 
 static void ok_resource_can_contain_dot_3(void) {
-	assert(game_fn_draw_call_count == 0);
+	assert_call_count(draw, 0);
     on_fn_dispatcher("on_a");
-	assert(game_fn_draw_call_count == 1);
+	assert_call_count(draw, 1);
 
-	assert(streq(game_fn_draw_sprite_path, "ok/resource_can_contain_dot_3/foo.bar"));
+	assert_string(game_fn_draw_sprite_path, "ok/resource_can_contain_dot_3/foo.bar");
 }
 
 static void ok_resource_can_contain_dot_dot_1(void) {
-	assert(game_fn_draw_call_count == 0);
+	assert_call_count(draw, 0);
     on_fn_dispatcher("on_a");
-	assert(game_fn_draw_call_count == 1);
+	assert_call_count(draw, 1);
 
-	assert(streq(game_fn_draw_sprite_path, "ok/resource_can_contain_dot_dot_1/..foo"));
+	assert_string(game_fn_draw_sprite_path, "ok/resource_can_contain_dot_dot_1/..foo");
 }
 
 static void ok_resource_can_contain_dot_dot_3(void) {
-	assert(game_fn_draw_call_count == 0);
+	assert_call_count(draw, 0);
     on_fn_dispatcher("on_a");
-	assert(game_fn_draw_call_count == 1);
+	assert_call_count(draw, 1);
 
-	assert(streq(game_fn_draw_sprite_path, "ok/resource_can_contain_dot_dot_3/foo..bar"));
+	assert_string(game_fn_draw_sprite_path, "ok/resource_can_contain_dot_dot_3/foo..bar");
 }
 
 static void ok_resource_duplicate(void) {
-	assert(game_fn_draw_call_count == 0);
+	assert_call_count(draw, 0);
     on_fn_dispatcher("on_a");
-	assert(game_fn_draw_call_count == 4);
+	assert_call_count(draw, 4);
 
-	assert(streq(game_fn_draw_sprite_path, "ok/resource_duplicate/baz.txt"));
+	assert_string(game_fn_draw_sprite_path, "ok/resource_duplicate/baz.txt");
 }
 
 static void ok_return(void) {
-	assert(game_fn_initialize_call_count == 0);
+	assert_call_count(initialize, 0);
     on_fn_dispatcher("on_a");
-	assert(game_fn_initialize_call_count == 1);
+	assert_call_count(initialize, 1);
 
-	assert(game_fn_initialize_x == 42);
+	assert_number(game_fn_initialize_x, 42.0);
 }
 
 static void ok_return_from_on_fn(void) {
-	assert(game_fn_nothing_call_count == 0);
+	assert_call_count(nothing, 0);
     on_fn_dispatcher("on_a");
-	assert(game_fn_nothing_call_count == 1);
+	assert_call_count(nothing, 1);
 }
 
 static void ok_return_from_on_fn_minimal(void) {
@@ -2350,425 +2407,425 @@ static void ok_return_from_on_fn_minimal(void) {
 }
 
 static void ok_return_with_no_value(void) {
-	assert(game_fn_nothing_call_count == 0);
+	assert_call_count(nothing, 0);
     on_fn_dispatcher("on_a");
-	assert(game_fn_nothing_call_count == 1);
+	assert_call_count(nothing, 1);
 }
 
 static void ok_same_variable_name_in_different_functions(void) {
-	assert(game_fn_initialize_call_count == 0);
+	assert_call_count(initialize, 0);
     on_fn_dispatcher("on_a");
-	assert(game_fn_initialize_call_count == 2);
+	assert_call_count(initialize, 2);
 
-	assert(game_fn_initialize_x == 69);
+	assert_number(game_fn_initialize_x, 69.0);
 }
 
 static void ok_spill_args_to_game_fn(void) {
-	assert(game_fn_motherload_call_count == 0);
+	assert_call_count(motherload, 0);
     on_fn_dispatcher("on_a");
-	assert(game_fn_motherload_call_count == 1);
+	assert_call_count(motherload, 1);
 
-	assert(game_fn_motherload_i1 == 1);
-	assert(game_fn_motherload_i2 == 2);
-	assert(game_fn_motherload_i3 == 3);
-	assert(game_fn_motherload_i4 == 4);
-	assert(game_fn_motherload_i5 == 5);
-	assert(game_fn_motherload_i6 == 6);
-	assert(game_fn_motherload_i7 == 7);
-	assert(game_fn_motherload_f1 == 1.0);
-	assert(game_fn_motherload_f2 == 2.0);
-	assert(game_fn_motherload_f3 == 3.0);
-	assert(game_fn_motherload_f4 == 4.0);
-	assert(game_fn_motherload_f5 == 5.0);
-	assert(game_fn_motherload_f6 == 6.0);
-	assert(game_fn_motherload_f7 == 7.0);
-	assert(game_fn_motherload_f8 == 8.0);
-	assert(game_fn_motherload_id == 42);
-	assert(game_fn_motherload_f9 == 9.0);
+	assert_number(game_fn_motherload_i1, 1.0);
+	assert_number(game_fn_motherload_i2, 2.0);
+	assert_number(game_fn_motherload_i3, 3.0);
+	assert_number(game_fn_motherload_i4, 4.0);
+	assert_number(game_fn_motherload_i5, 5.0);
+	assert_number(game_fn_motherload_i6, 6.0);
+	assert_number(game_fn_motherload_i7, 7.0);
+	assert_number(game_fn_motherload_f1, 1.0);
+	assert_number(game_fn_motherload_f2, 2.0);
+	assert_number(game_fn_motherload_f3, 3.0);
+	assert_number(game_fn_motherload_f4, 4.0);
+	assert_number(game_fn_motherload_f5, 5.0);
+	assert_number(game_fn_motherload_f6, 6.0);
+	assert_number(game_fn_motherload_f7, 7.0);
+	assert_number(game_fn_motherload_f8, 8.0);
+	assert_id(game_fn_motherload_id, 42);
+	assert_number(game_fn_motherload_f9, 9.0);
 }
 
 static void ok_spill_args_to_game_fn_subless(void) {
-	assert(game_fn_motherload_subless_call_count == 0);
+	assert_call_count(motherload_subless, 0);
     on_fn_dispatcher("on_a");
-	assert(game_fn_motherload_subless_call_count == 1);
+	assert_call_count(motherload_subless, 1);
 
-	assert(game_fn_motherload_subless_i1 == 1);
-	assert(game_fn_motherload_subless_i2 == 2);
-	assert(game_fn_motherload_subless_i3 == 3);
-	assert(game_fn_motherload_subless_i4 == 4);
-	assert(game_fn_motherload_subless_i5 == 5);
-	assert(game_fn_motherload_subless_i6 == 6);
-	assert(game_fn_motherload_subless_i7 == 7);
-	assert(game_fn_motherload_subless_f1 == 1.0);
-	assert(game_fn_motherload_subless_f2 == 2.0);
-	assert(game_fn_motherload_subless_f3 == 3.0);
-	assert(game_fn_motherload_subless_f4 == 4.0);
-	assert(game_fn_motherload_subless_f5 == 5.0);
-	assert(game_fn_motherload_subless_f6 == 6.0);
-	assert(game_fn_motherload_subless_f7 == 7.0);
-	assert(game_fn_motherload_subless_f8 == 8.0);
-	assert(game_fn_motherload_subless_f9 == 9.0);
-	assert(game_fn_motherload_subless_id == 42);
-	assert(game_fn_motherload_subless_f10 == 10.0);
+	assert_number(game_fn_motherload_subless_i1, 1.0);
+	assert_number(game_fn_motherload_subless_i2, 2.0);
+	assert_number(game_fn_motherload_subless_i3, 3.0);
+	assert_number(game_fn_motherload_subless_i4, 4.0);
+	assert_number(game_fn_motherload_subless_i5, 5.0);
+	assert_number(game_fn_motherload_subless_i6, 6.0);
+	assert_number(game_fn_motherload_subless_i7, 7.0);
+	assert_number(game_fn_motherload_subless_f1, 1.0);
+	assert_number(game_fn_motherload_subless_f2, 2.0);
+	assert_number(game_fn_motherload_subless_f3, 3.0);
+	assert_number(game_fn_motherload_subless_f4, 4.0);
+	assert_number(game_fn_motherload_subless_f5, 5.0);
+	assert_number(game_fn_motherload_subless_f6, 6.0);
+	assert_number(game_fn_motherload_subless_f7, 7.0);
+	assert_number(game_fn_motherload_subless_f8, 8.0);
+	assert_number(game_fn_motherload_subless_f9, 9.0);
+	assert_id(game_fn_motherload_subless_id, 42);
+	assert_number(game_fn_motherload_subless_f10, 10.0);
 }
 
 static void ok_spill_args_to_helper_fn(void) {
-	assert(game_fn_motherload_call_count == 0);
+	assert_call_count(motherload, 0);
     on_fn_dispatcher("on_a");
-	assert(game_fn_motherload_call_count == 1);
+	assert_call_count(motherload, 1);
 
-	assert(game_fn_motherload_i1 == 1);
-	assert(game_fn_motherload_i2 == 2);
-	assert(game_fn_motherload_i3 == 3);
-	assert(game_fn_motherload_i4 == 4);
-	assert(game_fn_motherload_i5 == 5);
-	assert(game_fn_motherload_i6 == 6);
-	assert(game_fn_motherload_i7 == 7);
-	assert(game_fn_motherload_f1 == 1.0);
-	assert(game_fn_motherload_f2 == 2.0);
-	assert(game_fn_motherload_f3 == 3.0);
-	assert(game_fn_motherload_f4 == 4.0);
-	assert(game_fn_motherload_f5 == 5.0);
-	assert(game_fn_motherload_f6 == 6.0);
-	assert(game_fn_motherload_f7 == 7.0);
-	assert(game_fn_motherload_f8 == 8.0);
-	assert(game_fn_motherload_id == 42);
-	assert(game_fn_motherload_f9 == 9.0);
+	assert_number(game_fn_motherload_i1, 1.0);
+	assert_number(game_fn_motherload_i2, 2.0);
+	assert_number(game_fn_motherload_i3, 3.0);
+	assert_number(game_fn_motherload_i4, 4.0);
+	assert_number(game_fn_motherload_i5, 5.0);
+	assert_number(game_fn_motherload_i6, 6.0);
+	assert_number(game_fn_motherload_i7, 7.0);
+	assert_number(game_fn_motherload_f1, 1.0);
+	assert_number(game_fn_motherload_f2, 2.0);
+	assert_number(game_fn_motherload_f3, 3.0);
+	assert_number(game_fn_motherload_f4, 4.0);
+	assert_number(game_fn_motherload_f5, 5.0);
+	assert_number(game_fn_motherload_f6, 6.0);
+	assert_number(game_fn_motherload_f7, 7.0);
+	assert_number(game_fn_motherload_f8, 8.0);
+	assert_id(game_fn_motherload_id, 42);
+	assert_number(game_fn_motherload_f9, 9.0);
 }
 
 static void ok_spill_args_to_helper_fn_32_bit_f32(void) {
-	assert(game_fn_offset_32_bit_f32_call_count == 0);
+	assert_call_count(offset_32_bit_f32, 0);
     on_fn_dispatcher("on_a");
-	assert(game_fn_offset_32_bit_f32_call_count == 1);
+	assert_call_count(offset_32_bit_f32, 1);
 
-	assert(streq(game_fn_offset_32_bit_f32_s1, "1"));
-	assert(streq(game_fn_offset_32_bit_f32_s2, "2"));
-	assert(streq(game_fn_offset_32_bit_f32_s3, "3"));
-	assert(streq(game_fn_offset_32_bit_f32_s4, "4"));
-	assert(streq(game_fn_offset_32_bit_f32_s5, "5"));
-	assert(streq(game_fn_offset_32_bit_f32_s6, "6"));
-	assert(streq(game_fn_offset_32_bit_f32_s7, "7"));
-	assert(streq(game_fn_offset_32_bit_f32_s8, "8"));
-	assert(streq(game_fn_offset_32_bit_f32_s9, "9"));
-	assert(streq(game_fn_offset_32_bit_f32_s10, "10"));
-	assert(streq(game_fn_offset_32_bit_f32_s11, "11"));
-	assert(streq(game_fn_offset_32_bit_f32_s12, "12"));
-	assert(streq(game_fn_offset_32_bit_f32_s13, "13"));
-	assert(streq(game_fn_offset_32_bit_f32_s14, "14"));
-	assert(streq(game_fn_offset_32_bit_f32_s15, "15"));
-	assert(game_fn_offset_32_bit_f32_f1 == 1.0);
-	assert(game_fn_offset_32_bit_f32_f2 == 2.0);
-	assert(game_fn_offset_32_bit_f32_f3 == 3.0);
-	assert(game_fn_offset_32_bit_f32_f4 == 4.0);
-	assert(game_fn_offset_32_bit_f32_f5 == 5.0);
-	assert(game_fn_offset_32_bit_f32_f6 == 6.0);
-	assert(game_fn_offset_32_bit_f32_f7 == 7.0);
-	assert(game_fn_offset_32_bit_f32_f8 == 8.0);
-	assert(game_fn_offset_32_bit_f32_g == 1);
+	assert_string(game_fn_offset_32_bit_f32_s1, "1");
+	assert_string(game_fn_offset_32_bit_f32_s2, "2");
+	assert_string(game_fn_offset_32_bit_f32_s3, "3");
+	assert_string(game_fn_offset_32_bit_f32_s4, "4");
+	assert_string(game_fn_offset_32_bit_f32_s5, "5");
+	assert_string(game_fn_offset_32_bit_f32_s6, "6");
+	assert_string(game_fn_offset_32_bit_f32_s7, "7");
+	assert_string(game_fn_offset_32_bit_f32_s8, "8");
+	assert_string(game_fn_offset_32_bit_f32_s9, "9");
+	assert_string(game_fn_offset_32_bit_f32_s10, "10");
+	assert_string(game_fn_offset_32_bit_f32_s11, "11");
+	assert_string(game_fn_offset_32_bit_f32_s12, "12");
+	assert_string(game_fn_offset_32_bit_f32_s13, "13");
+	assert_string(game_fn_offset_32_bit_f32_s14, "14");
+	assert_string(game_fn_offset_32_bit_f32_s15, "15");
+	assert_number(game_fn_offset_32_bit_f32_f1, 1.0);
+	assert_number(game_fn_offset_32_bit_f32_f2, 2.0);
+	assert_number(game_fn_offset_32_bit_f32_f3, 3.0);
+	assert_number(game_fn_offset_32_bit_f32_f4, 4.0);
+	assert_number(game_fn_offset_32_bit_f32_f5, 5.0);
+	assert_number(game_fn_offset_32_bit_f32_f6, 6.0);
+	assert_number(game_fn_offset_32_bit_f32_f7, 7.0);
+	assert_number(game_fn_offset_32_bit_f32_f8, 8.0);
+	assert_number(game_fn_offset_32_bit_f32_g, 1.0);
 }
 
 static void ok_spill_args_to_helper_fn_32_bit_i32(void) {
-	assert(game_fn_offset_32_bit_i32_call_count == 0);
+	assert_call_count(offset_32_bit_i32, 0);
     on_fn_dispatcher("on_a");
-	assert(game_fn_offset_32_bit_i32_call_count == 1);
+	assert_call_count(offset_32_bit_i32, 1);
 
-	assert(game_fn_offset_32_bit_i32_f1 == 1.0);
-	assert(game_fn_offset_32_bit_i32_f2 == 2.0);
-	assert(game_fn_offset_32_bit_i32_f3 == 3.0);
-	assert(game_fn_offset_32_bit_i32_f4 == 4.0);
-	assert(game_fn_offset_32_bit_i32_f5 == 5.0);
-	assert(game_fn_offset_32_bit_i32_f6 == 6.0);
-	assert(game_fn_offset_32_bit_i32_f7 == 7.0);
-	assert(game_fn_offset_32_bit_i32_f8 == 8.0);
-	assert(game_fn_offset_32_bit_i32_f9 == 9.0);
-	assert(game_fn_offset_32_bit_i32_f10 == 10.0);
-	assert(game_fn_offset_32_bit_i32_f11 == 11.0);
-	assert(game_fn_offset_32_bit_i32_f12 == 12.0);
-	assert(game_fn_offset_32_bit_i32_f13 == 13.0);
-	assert(game_fn_offset_32_bit_i32_f14 == 14.0);
-	assert(game_fn_offset_32_bit_i32_f15 == 15.0);
-	assert(game_fn_offset_32_bit_i32_f16 == 16.0);
-	assert(game_fn_offset_32_bit_i32_f17 == 17.0);
-	assert(game_fn_offset_32_bit_i32_f18 == 18.0);
-	assert(game_fn_offset_32_bit_i32_f19 == 19.0);
-	assert(game_fn_offset_32_bit_i32_f20 == 20.0);
-	assert(game_fn_offset_32_bit_i32_f21 == 21.0);
-	assert(game_fn_offset_32_bit_i32_f22 == 22.0);
-	assert(game_fn_offset_32_bit_i32_f23 == 23.0);
-	assert(game_fn_offset_32_bit_i32_f24 == 24.0);
-	assert(game_fn_offset_32_bit_i32_f25 == 25.0);
-	assert(game_fn_offset_32_bit_i32_f26 == 26.0);
-	assert(game_fn_offset_32_bit_i32_f27 == 27.0);
-	assert(game_fn_offset_32_bit_i32_f28 == 28.0);
-	assert(game_fn_offset_32_bit_i32_f29 == 29.0);
-	assert(game_fn_offset_32_bit_i32_f30 == 30.0);
-	assert(game_fn_offset_32_bit_i32_i1 == 1);
-	assert(game_fn_offset_32_bit_i32_i2 == 2);
-	assert(game_fn_offset_32_bit_i32_i3 == 3);
-	assert(game_fn_offset_32_bit_i32_i4 == 4);
-	assert(game_fn_offset_32_bit_i32_i5 == 5);
-	assert(game_fn_offset_32_bit_i32_g == 6);
+	assert_number(game_fn_offset_32_bit_i32_f1, 1.0);
+	assert_number(game_fn_offset_32_bit_i32_f2, 2.0);
+	assert_number(game_fn_offset_32_bit_i32_f3, 3.0);
+	assert_number(game_fn_offset_32_bit_i32_f4, 4.0);
+	assert_number(game_fn_offset_32_bit_i32_f5, 5.0);
+	assert_number(game_fn_offset_32_bit_i32_f6, 6.0);
+	assert_number(game_fn_offset_32_bit_i32_f7, 7.0);
+	assert_number(game_fn_offset_32_bit_i32_f8, 8.0);
+	assert_number(game_fn_offset_32_bit_i32_f9, 9.0);
+	assert_number(game_fn_offset_32_bit_i32_f10, 10.0);
+	assert_number(game_fn_offset_32_bit_i32_f11, 11.0);
+	assert_number(game_fn_offset_32_bit_i32_f12, 12.0);
+	assert_number(game_fn_offset_32_bit_i32_f13, 13.0);
+	assert_number(game_fn_offset_32_bit_i32_f14, 14.0);
+	assert_number(game_fn_offset_32_bit_i32_f15, 15.0);
+	assert_number(game_fn_offset_32_bit_i32_f16, 16.0);
+	assert_number(game_fn_offset_32_bit_i32_f17, 17.0);
+	assert_number(game_fn_offset_32_bit_i32_f18, 18.0);
+	assert_number(game_fn_offset_32_bit_i32_f19, 19.0);
+	assert_number(game_fn_offset_32_bit_i32_f20, 20.0);
+	assert_number(game_fn_offset_32_bit_i32_f21, 21.0);
+	assert_number(game_fn_offset_32_bit_i32_f22, 22.0);
+	assert_number(game_fn_offset_32_bit_i32_f23, 23.0);
+	assert_number(game_fn_offset_32_bit_i32_f24, 24.0);
+	assert_number(game_fn_offset_32_bit_i32_f25, 25.0);
+	assert_number(game_fn_offset_32_bit_i32_f26, 26.0);
+	assert_number(game_fn_offset_32_bit_i32_f27, 27.0);
+	assert_number(game_fn_offset_32_bit_i32_f28, 28.0);
+	assert_number(game_fn_offset_32_bit_i32_f29, 29.0);
+	assert_number(game_fn_offset_32_bit_i32_f30, 30.0);
+	assert_number(game_fn_offset_32_bit_i32_i1, 1.0);
+	assert_number(game_fn_offset_32_bit_i32_i2, 2.0);
+	assert_number(game_fn_offset_32_bit_i32_i3, 3.0);
+	assert_number(game_fn_offset_32_bit_i32_i4, 4.0);
+	assert_number(game_fn_offset_32_bit_i32_i5, 5.0);
+	assert_number(game_fn_offset_32_bit_i32_g, 6.0);
 }
 
 static void ok_spill_args_to_helper_fn_32_bit_string(void) {
-	assert(game_fn_offset_32_bit_string_call_count == 0);
+	assert_call_count(offset_32_bit_string, 0);
     on_fn_dispatcher("on_a");
-	assert(game_fn_offset_32_bit_string_call_count == 1);
+	assert_call_count(offset_32_bit_string, 1);
 
-	assert(game_fn_offset_32_bit_string_f1 == 1.0);
-	assert(game_fn_offset_32_bit_string_f2 == 2.0);
-	assert(game_fn_offset_32_bit_string_f3 == 3.0);
-	assert(game_fn_offset_32_bit_string_f4 == 4.0);
-	assert(game_fn_offset_32_bit_string_f5 == 5.0);
-	assert(game_fn_offset_32_bit_string_f6 == 6.0);
-	assert(game_fn_offset_32_bit_string_f7 == 7.0);
-	assert(game_fn_offset_32_bit_string_f8 == 8.0);
-	assert(game_fn_offset_32_bit_string_f9 == 9.0);
-	assert(game_fn_offset_32_bit_string_f10 == 10.0);
-	assert(game_fn_offset_32_bit_string_f11 == 11.0);
-	assert(game_fn_offset_32_bit_string_f12 == 12.0);
-	assert(game_fn_offset_32_bit_string_f13 == 13.0);
-	assert(game_fn_offset_32_bit_string_f14 == 14.0);
-	assert(game_fn_offset_32_bit_string_f15 == 15.0);
-	assert(game_fn_offset_32_bit_string_f16 == 16.0);
-	assert(game_fn_offset_32_bit_string_f17 == 17.0);
-	assert(game_fn_offset_32_bit_string_f18 == 18.0);
-	assert(game_fn_offset_32_bit_string_f19 == 19.0);
-	assert(game_fn_offset_32_bit_string_f20 == 20.0);
-	assert(game_fn_offset_32_bit_string_f21 == 21.0);
-	assert(game_fn_offset_32_bit_string_f22 == 22.0);
-	assert(game_fn_offset_32_bit_string_f23 == 23.0);
-	assert(game_fn_offset_32_bit_string_f24 == 24.0);
-	assert(game_fn_offset_32_bit_string_f25 == 25.0);
-	assert(game_fn_offset_32_bit_string_f26 == 26.0);
-	assert(game_fn_offset_32_bit_string_f27 == 27.0);
-	assert(game_fn_offset_32_bit_string_f28 == 28.0);
-	assert(game_fn_offset_32_bit_string_f29 == 29.0);
-	assert(game_fn_offset_32_bit_string_f30 == 30.0);
-	assert(streq(game_fn_offset_32_bit_string_s1, "1"));
-	assert(streq(game_fn_offset_32_bit_string_s2, "2"));
-	assert(streq(game_fn_offset_32_bit_string_s3, "3"));
-	assert(streq(game_fn_offset_32_bit_string_s4, "4"));
-	assert(streq(game_fn_offset_32_bit_string_s5, "5"));
-	assert(game_fn_offset_32_bit_string_g == 1);
+	assert_number(game_fn_offset_32_bit_string_f1, 1.0);
+	assert_number(game_fn_offset_32_bit_string_f2, 2.0);
+	assert_number(game_fn_offset_32_bit_string_f3, 3.0);
+	assert_number(game_fn_offset_32_bit_string_f4, 4.0);
+	assert_number(game_fn_offset_32_bit_string_f5, 5.0);
+	assert_number(game_fn_offset_32_bit_string_f6, 6.0);
+	assert_number(game_fn_offset_32_bit_string_f7, 7.0);
+	assert_number(game_fn_offset_32_bit_string_f8, 8.0);
+	assert_number(game_fn_offset_32_bit_string_f9, 9.0);
+	assert_number(game_fn_offset_32_bit_string_f10, 10.0);
+	assert_number(game_fn_offset_32_bit_string_f11, 11.0);
+	assert_number(game_fn_offset_32_bit_string_f12, 12.0);
+	assert_number(game_fn_offset_32_bit_string_f13, 13.0);
+	assert_number(game_fn_offset_32_bit_string_f14, 14.0);
+	assert_number(game_fn_offset_32_bit_string_f15, 15.0);
+	assert_number(game_fn_offset_32_bit_string_f16, 16.0);
+	assert_number(game_fn_offset_32_bit_string_f17, 17.0);
+	assert_number(game_fn_offset_32_bit_string_f18, 18.0);
+	assert_number(game_fn_offset_32_bit_string_f19, 19.0);
+	assert_number(game_fn_offset_32_bit_string_f20, 20.0);
+	assert_number(game_fn_offset_32_bit_string_f21, 21.0);
+	assert_number(game_fn_offset_32_bit_string_f22, 22.0);
+	assert_number(game_fn_offset_32_bit_string_f23, 23.0);
+	assert_number(game_fn_offset_32_bit_string_f24, 24.0);
+	assert_number(game_fn_offset_32_bit_string_f25, 25.0);
+	assert_number(game_fn_offset_32_bit_string_f26, 26.0);
+	assert_number(game_fn_offset_32_bit_string_f27, 27.0);
+	assert_number(game_fn_offset_32_bit_string_f28, 28.0);
+	assert_number(game_fn_offset_32_bit_string_f29, 29.0);
+	assert_number(game_fn_offset_32_bit_string_f30, 30.0);
+	assert_string(game_fn_offset_32_bit_string_s1, "1");
+	assert_string(game_fn_offset_32_bit_string_s2, "2");
+	assert_string(game_fn_offset_32_bit_string_s3, "3");
+	assert_string(game_fn_offset_32_bit_string_s4, "4");
+	assert_string(game_fn_offset_32_bit_string_s5, "5");
+	assert_number(game_fn_offset_32_bit_string_g, 1.0);
 }
 
 static void ok_spill_args_to_helper_fn_subless(void) {
-	assert(game_fn_motherload_subless_call_count == 0);
+	assert_call_count(motherload_subless, 0);
     on_fn_dispatcher("on_a");
-	assert(game_fn_motherload_subless_call_count == 1);
+	assert_call_count(motherload_subless, 1);
 
-	assert(game_fn_motherload_subless_i1 == 1);
-	assert(game_fn_motherload_subless_i2 == 2);
-	assert(game_fn_motherload_subless_i3 == 3);
-	assert(game_fn_motherload_subless_i4 == 4);
-	assert(game_fn_motherload_subless_i5 == 5);
-	assert(game_fn_motherload_subless_i6 == 6);
-	assert(game_fn_motherload_subless_i7 == 7);
-	assert(game_fn_motherload_subless_f1 == 1.0);
-	assert(game_fn_motherload_subless_f2 == 2.0);
-	assert(game_fn_motherload_subless_f3 == 3.0);
-	assert(game_fn_motherload_subless_f4 == 4.0);
-	assert(game_fn_motherload_subless_f5 == 5.0);
-	assert(game_fn_motherload_subless_f6 == 6.0);
-	assert(game_fn_motherload_subless_f7 == 7.0);
-	assert(game_fn_motherload_subless_f8 == 8.0);
-	assert(game_fn_motherload_subless_f9 == 9.0);
-	assert(game_fn_motherload_subless_id == 42);
-	assert(game_fn_motherload_subless_f10 == 10.0);
+	assert_number(game_fn_motherload_subless_i1, 1.0);
+	assert_number(game_fn_motherload_subless_i2, 2.0);
+	assert_number(game_fn_motherload_subless_i3, 3.0);
+	assert_number(game_fn_motherload_subless_i4, 4.0);
+	assert_number(game_fn_motherload_subless_i5, 5.0);
+	assert_number(game_fn_motherload_subless_i6, 6.0);
+	assert_number(game_fn_motherload_subless_i7, 7.0);
+	assert_number(game_fn_motherload_subless_f1, 1.0);
+	assert_number(game_fn_motherload_subless_f2, 2.0);
+	assert_number(game_fn_motherload_subless_f3, 3.0);
+	assert_number(game_fn_motherload_subless_f4, 4.0);
+	assert_number(game_fn_motherload_subless_f5, 5.0);
+	assert_number(game_fn_motherload_subless_f6, 6.0);
+	assert_number(game_fn_motherload_subless_f7, 7.0);
+	assert_number(game_fn_motherload_subless_f8, 8.0);
+	assert_number(game_fn_motherload_subless_f9, 9.0);
+	assert_id(game_fn_motherload_subless_id, 42);
+	assert_number(game_fn_motherload_subless_f10, 10.0);
 }
 
 static void ok_stack_16_byte_alignment(void) {
-	assert(game_fn_nothing_call_count == 0);
-	assert(game_fn_initialize_call_count == 0);
+	assert_call_count(nothing, 0);
+	assert_call_count(initialize, 0);
     on_fn_dispatcher("on_a");
-	assert(game_fn_nothing_call_count == 1);
-	assert(game_fn_initialize_call_count == 1);
+	assert_call_count(nothing, 1);
+	assert_call_count(initialize, 1);
 
-	assert(game_fn_initialize_x == 42);
+	assert_number(game_fn_initialize_x, 42.0);
 }
 
 static void ok_stack_16_byte_alignment_midway(void) {
-	assert(game_fn_magic_call_count == 0);
-	assert(game_fn_initialize_call_count == 0);
+	assert_call_count(magic, 0);
+	assert_call_count(initialize, 0);
     on_fn_dispatcher("on_a");
-	assert(game_fn_magic_call_count == 1);
-	assert(game_fn_initialize_call_count == 1);
+	assert_call_count(magic, 1);
+	assert_call_count(initialize, 1);
 
-	assert(game_fn_initialize_x == 42 + 42);
+	assert_number(game_fn_initialize_x, 42.0 + 42.0);
 }
 
 static void ok_string_can_be_passed_to_helper_fn(void) {
-	assert(game_fn_say_call_count == 0);
+	assert_call_count(say, 0);
     on_fn_dispatcher("on_a");
-	assert(game_fn_say_call_count == 1);
+	assert_call_count(say, 1);
 
-	assert(streq(game_fn_say_message, "foo"));
+	assert_string(game_fn_say_message, "foo");
 }
 
 static void ok_string_duplicate(void) {
-	assert(game_fn_talk_call_count == 0);
+	assert_call_count(talk, 0);
     on_fn_dispatcher("on_a");
-	assert(game_fn_talk_call_count == 1);
+	assert_call_count(talk, 1);
 
-	assert(streq(game_fn_talk_message1, "foo"));
-	assert(streq(game_fn_talk_message2, "bar"));
-	assert(streq(game_fn_talk_message3, "bar"));
-	assert(streq(game_fn_talk_message4, "baz"));
+	assert_string(game_fn_talk_message1, "foo");
+	assert_string(game_fn_talk_message2, "bar");
+	assert_string(game_fn_talk_message3, "bar");
+	assert_string(game_fn_talk_message4, "baz");
 }
 
 static void ok_string_eq_false(void) {
-	assert(game_fn_initialize_bool_call_count == 0);
+	assert_call_count(initialize_bool, 0);
     on_fn_dispatcher("on_a");
-	assert(game_fn_initialize_bool_call_count == 1);
+	assert_call_count(initialize_bool, 1);
 
-	assert(game_fn_initialize_bool_b == false);
+	assert_false(game_fn_initialize_bool_b);
 }
 
 static void ok_string_eq_true(void) {
-	assert(game_fn_initialize_bool_call_count == 0);
+	assert_call_count(initialize_bool, 0);
     on_fn_dispatcher("on_a");
-	assert(game_fn_initialize_bool_call_count == 1);
+	assert_call_count(initialize_bool, 1);
 
-	assert(game_fn_initialize_bool_b == true);
+	assert_true(game_fn_initialize_bool_b);
 }
 
 static void ok_string_eq_true_empty(void) {
-	assert(game_fn_initialize_bool_call_count == 0);
+	assert_call_count(initialize_bool, 0);
     on_fn_dispatcher("on_a");
-	assert(game_fn_initialize_bool_call_count == 1);
+	assert_call_count(initialize_bool, 1);
 
-	assert(game_fn_initialize_bool_b == true);
+	assert_true(game_fn_initialize_bool_b);
 }
 
 static void ok_string_ne_false(void) {
-	assert(game_fn_initialize_bool_call_count == 0);
+	assert_call_count(initialize_bool, 0);
     on_fn_dispatcher("on_a");
-	assert(game_fn_initialize_bool_call_count == 1);
+	assert_call_count(initialize_bool, 1);
 
-	assert(game_fn_initialize_bool_b == false);
+	assert_false(game_fn_initialize_bool_b);
 }
 
 static void ok_string_ne_false_empty(void) {
-	assert(game_fn_initialize_bool_call_count == 0);
+	assert_call_count(initialize_bool, 0);
     on_fn_dispatcher("on_a");
-	assert(game_fn_initialize_bool_call_count == 1);
+	assert_call_count(initialize_bool, 1);
 
-	assert(game_fn_initialize_bool_b == false);
+	assert_false(game_fn_initialize_bool_b);
 }
 
 static void ok_string_ne_true(void) {
-	assert(game_fn_initialize_bool_call_count == 0);
+	assert_call_count(initialize_bool, 0);
     on_fn_dispatcher("on_a");
-	assert(game_fn_initialize_bool_call_count == 1);
+	assert_call_count(initialize_bool, 1);
 
-	assert(game_fn_initialize_bool_b == true);
+	assert_true(game_fn_initialize_bool_b);
 }
 
 static void ok_sub_rsp_32_bits_local_variables_i32(void) {
-	assert(game_fn_initialize_call_count == 0);
+	assert_call_count(initialize, 0);
     on_fn_dispatcher("on_a");
-	assert(game_fn_initialize_call_count == 30);
+	assert_call_count(initialize, 30);
 
-	assert(game_fn_initialize_x == 30);
+	assert_number(game_fn_initialize_x, 30.0);
 }
 
 static void ok_sub_rsp_32_bits_local_variables_id(void) {
-	assert(game_fn_set_d_call_count == 0);
+	assert_call_count(set_d, 0);
     on_fn_dispatcher("on_a");
-	assert(game_fn_set_d_call_count == 15);
+	assert_call_count(set_d, 15);
 
-	assert(game_fn_set_d_target == 42);
+	assert_id(game_fn_set_d_target, 42);
 }
 
 static void ok_subtraction_negative_result(void) {
-	assert(game_fn_initialize_call_count == 0);
+	assert_call_count(initialize, 0);
     on_fn_dispatcher("on_a");
-	assert(game_fn_initialize_call_count == 1);
+	assert_call_count(initialize, 1);
 
-	assert(game_fn_initialize_x == -3);
+	assert_number(game_fn_initialize_x, -3.0);
 }
 
 static void ok_subtraction_positive_result(void) {
-	assert(game_fn_initialize_call_count == 0);
+	assert_call_count(initialize, 0);
     on_fn_dispatcher("on_a");
-	assert(game_fn_initialize_call_count == 1);
+	assert_call_count(initialize, 1);
 
-	assert(game_fn_initialize_x == 3);
+	assert_number(game_fn_initialize_x, 3.0);
 }
 
 static void ok_variable(void) {
-	assert(game_fn_initialize_call_count == 0);
+	assert_call_count(initialize, 0);
     on_fn_dispatcher("on_a");
-	assert(game_fn_initialize_call_count == 1);
+	assert_call_count(initialize, 1);
 
-	assert(game_fn_initialize_x == 42);
+	assert_number(game_fn_initialize_x, 42.0);
 }
 
 static void ok_variable_does_not_shadow_in_different_if_statement(void) {
-	assert(game_fn_initialize_call_count == 0);
+	assert_call_count(initialize, 0);
     on_fn_dispatcher("on_a");
-	assert(game_fn_initialize_call_count == 2);
+	assert_call_count(initialize, 2);
 
-	assert(game_fn_initialize_x == 69);
+	assert_number(game_fn_initialize_x, 69.0);
 }
 
 static void ok_variable_reassignment(void) {
-	assert(game_fn_initialize_call_count == 0);
+	assert_call_count(initialize, 0);
     on_fn_dispatcher("on_a");
-	assert(game_fn_initialize_call_count == 1);
+	assert_call_count(initialize, 1);
 
-	assert(game_fn_initialize_x == 69);
+	assert_number(game_fn_initialize_x, 69.0);
 }
 
 static void ok_variable_reassignment_does_not_dealloc_outer_variable(void) {
-	assert(game_fn_initialize_call_count == 0);
+	assert_call_count(initialize, 0);
     on_fn_dispatcher("on_a");
-	assert(game_fn_initialize_call_count == 1);
+	assert_call_count(initialize, 1);
 
-	assert(game_fn_initialize_x == 69);
+	assert_number(game_fn_initialize_x, 69.0);
 }
 
 static void ok_variable_string_global(void) {
-	assert(game_fn_say_call_count == 0);
+	assert_call_count(say, 0);
     on_fn_dispatcher("on_a");
-	assert(game_fn_say_call_count == 1);
+	assert_call_count(say, 1);
 
-	assert(streq(game_fn_say_message, "foo"));
+	assert_string(game_fn_say_message, "foo");
 }
 
 static void ok_variable_string_local(void) {
-	assert(game_fn_say_call_count == 0);
+	assert_call_count(say, 0);
     on_fn_dispatcher("on_a");
-	assert(game_fn_say_call_count == 1);
+	assert_call_count(say, 1);
 
-	assert(streq(game_fn_say_message, "foo"));
+	assert_string(game_fn_say_message, "foo");
 }
 
 static void ok_void_function_early_return(void) {
-	assert(game_fn_nothing_call_count == 0);
+	assert_call_count(nothing, 0);
     on_fn_dispatcher("on_a");
-	assert(game_fn_nothing_call_count == 1);
+	assert_call_count(nothing, 1);
 }
 
 static void ok_while_false(void) {
-	assert(game_fn_nothing_call_count == 0);
+	assert_call_count(nothing, 0);
     on_fn_dispatcher("on_a");
-	assert(game_fn_nothing_call_count == 2);
+	assert_call_count(nothing, 2);
 }
 
 static void ok_write_to_global_variable(void) {
-	assert(game_fn_max_call_count == 0);
+	assert_call_count(max, 0);
     on_fn_dispatcher("on_a");
-	assert(game_fn_max_call_count == 1);
+	assert_call_count(max, 1);
 
-	assert(game_fn_max_x == 43);
-	assert(game_fn_max_y == 69);
+	assert_number(game_fn_max_x, 43.0);
+	assert_number(game_fn_max_y, 69.0);
 }
 
 void grug_tests_runtime_error_handler(const char *reason, enum grug_runtime_error_type type, const char *on_fn_name, const char *on_fn_path) {
 	had_runtime_error = true;
-	error_handler_calls++;
+	error_handler_call_count++;
 
 	runtime_error_reason = reason;
 	runtime_error_type = type;
@@ -2779,143 +2836,143 @@ void grug_tests_runtime_error_handler(const char *reason, enum grug_runtime_erro
 static void runtime_error_all(void) {
 	on_fn_dispatcher("on_a");
 
-	assert(had_runtime_error);
+	assert_true(had_runtime_error);
 
-	assert(runtime_error_type == GRUG_ON_FN_STACK_OVERFLOW);
+	assert_runtime_error_type(GRUG_ON_FN_STACK_OVERFLOW);
 
-	assert(streq(runtime_error_on_fn_name, "on_a"));
-	assert(streq(runtime_error_on_fn_path, "err_runtime/all/input-D.grug"));
+	assert_string(runtime_error_on_fn_name, "on_a");
+	assert_string(runtime_error_on_fn_path, "err_runtime/all/input-D.grug");
 }
 
 static void runtime_error_game_fn_error(void) {
-	assert(game_fn_cause_game_fn_error_call_count == 0);
-	assert(error_handler_calls == 0);
+	assert_call_count(cause_game_fn_error, 0);
+	assert_error_handler_call_count(0);
 	on_fn_dispatcher("on_a");
-	assert(game_fn_cause_game_fn_error_call_count == 1);
-	assert(error_handler_calls == 1);
+	assert_call_count(cause_game_fn_error, 1);
+	assert_error_handler_call_count(1);
 
-	assert(had_runtime_error);
+	assert_true(had_runtime_error);
 
-	assert(runtime_error_type == GRUG_ON_FN_GAME_FN_ERROR);
+	assert_runtime_error_type(GRUG_ON_FN_GAME_FN_ERROR);
 
-	assert(streq(runtime_error_on_fn_name, "on_a"));
-	assert(streq(runtime_error_on_fn_path, "err_runtime/game_fn_error/input-D.grug"));
+	assert_string(runtime_error_on_fn_name, "on_a");
+	assert_string(runtime_error_on_fn_path, "err_runtime/game_fn_error/input-D.grug");
 }
 
 static void runtime_error_game_fn_error_once(void) {
-	assert(game_fn_cause_game_fn_error_call_count == 0);
-	assert(error_handler_calls == 0);
+	assert_call_count(cause_game_fn_error, 0);
+	assert_error_handler_call_count(0);
 	on_fn_dispatcher("on_a");
-	assert(game_fn_cause_game_fn_error_call_count == 1);
-	assert(error_handler_calls == 1);
+	assert_call_count(cause_game_fn_error, 1);
+	assert_error_handler_call_count(1);
 
-	assert(had_runtime_error);
+	assert_true(had_runtime_error);
 
-	assert(runtime_error_type == GRUG_ON_FN_GAME_FN_ERROR);
+	assert_runtime_error_type(GRUG_ON_FN_GAME_FN_ERROR);
 
-	assert(streq(runtime_error_on_fn_name, "on_a"));
-	assert(streq(runtime_error_on_fn_path, "err_runtime/game_fn_error_once/input-E.grug"));
+	assert_string(runtime_error_on_fn_name, "on_a");
+	assert_string(runtime_error_on_fn_path, "err_runtime/game_fn_error_once/input-E.grug");
 
 	had_runtime_error = false;
 
-	assert(game_fn_cause_game_fn_error_call_count == 1);
-	assert(game_fn_nothing_call_count == 0);
-	assert(error_handler_calls == 1);
+	assert_call_count(cause_game_fn_error, 1);
+	assert_call_count(nothing, 0);
+	assert_error_handler_call_count(1);
 	on_fn_dispatcher("on_b");
-	assert(game_fn_cause_game_fn_error_call_count == 1);
-	assert(game_fn_nothing_call_count == 1);
-	assert(error_handler_calls == 1);
+	assert_call_count(cause_game_fn_error, 1);
+	assert_call_count(nothing, 1);
+	assert_error_handler_call_count(1);
 
-	assert(!had_runtime_error);
+	assert_false(had_runtime_error);
 }
 
 static void runtime_error_on_fn_calls_erroring_on_fn(void) {
 	saved_grug_path = "err_runtime/on_fn_calls_erroring_on_fn/input-E.grug";
 
-	assert(game_fn_call_on_b_fn_call_count == 0);
-	assert(game_fn_cause_game_fn_error_call_count == 0);
-	assert(game_fn_nothing_call_count == 0);
-	assert(error_handler_calls == 0);
+	assert_call_count(call_on_b_fn, 0);
+	assert_call_count(cause_game_fn_error, 0);
+	assert_call_count(nothing, 0);
+	assert_error_handler_call_count(0);
     on_fn_dispatcher("on_a");
-	assert(game_fn_call_on_b_fn_call_count == 1);
-	assert(game_fn_cause_game_fn_error_call_count == 1);
-	assert(game_fn_nothing_call_count == 0);
-	assert(error_handler_calls == 1);
+	assert_call_count(call_on_b_fn, 1);
+	assert_call_count(cause_game_fn_error, 1);
+	assert_call_count(nothing, 0);
+	assert_error_handler_call_count(1);
 
-	assert(had_runtime_error);
+	assert_true(had_runtime_error);
 
-	assert(runtime_error_type == GRUG_ON_FN_GAME_FN_ERROR);
+	assert_runtime_error_type(GRUG_ON_FN_GAME_FN_ERROR);
 
-	assert(streq(runtime_error_on_fn_name, "on_b"));
-	assert(streq(runtime_error_on_fn_path, "err_runtime/on_fn_calls_erroring_on_fn/input-E.grug"));
+	assert_string(runtime_error_on_fn_name, "on_b");
+	assert_string(runtime_error_on_fn_path, "err_runtime/on_fn_calls_erroring_on_fn/input-E.grug");
 }
 
 static void runtime_error_on_fn_errors_after_it_calls_other_on_fn(void) {
 	saved_grug_path = "err_runtime/on_fn_errors_after_it_calls_other_on_fn/input-E.grug";
 
-	assert(game_fn_call_on_b_fn_call_count == 0);
-	assert(game_fn_nothing_call_count == 0);
-	assert(game_fn_cause_game_fn_error_call_count == 0);
-	assert(error_handler_calls == 0);
+	assert_call_count(call_on_b_fn, 0);
+	assert_call_count(nothing, 0);
+	assert_call_count(cause_game_fn_error, 0);
+	assert_error_handler_call_count(0);
 	on_fn_dispatcher("on_a");
-	assert(game_fn_call_on_b_fn_call_count == 1);
-	assert(game_fn_nothing_call_count == 1);
-	assert(game_fn_cause_game_fn_error_call_count == 1);
-	assert(error_handler_calls == 1);
+	assert_call_count(call_on_b_fn, 1);
+	assert_call_count(nothing, 1);
+	assert_call_count(cause_game_fn_error, 1);
+	assert_error_handler_call_count(1);
 
-	assert(had_runtime_error);
+	assert_true(had_runtime_error);
 
-	assert(runtime_error_type == GRUG_ON_FN_GAME_FN_ERROR);
+	assert_runtime_error_type(GRUG_ON_FN_GAME_FN_ERROR);
 
-	assert(streq(runtime_error_on_fn_name, "on_b"));
-	assert(streq(runtime_error_on_fn_path, "err_runtime/on_fn_errors_after_it_calls_other_on_fn/input-E.grug"));
+	assert_string(runtime_error_on_fn_name, "on_b");
+	assert_string(runtime_error_on_fn_path, "err_runtime/on_fn_errors_after_it_calls_other_on_fn/input-E.grug");
 }
 
 static void runtime_error_stack_overflow(void) {
     on_fn_dispatcher("on_a");
 
-	assert(had_runtime_error);
+	assert_true(had_runtime_error);
 
-	assert(runtime_error_type == GRUG_ON_FN_STACK_OVERFLOW);
+	assert_runtime_error_type(GRUG_ON_FN_STACK_OVERFLOW);
 
-	assert(streq(runtime_error_on_fn_name, "on_a"));
-	assert(streq(runtime_error_on_fn_path, "err_runtime/stack_overflow/input-D.grug"));
+	assert_string(runtime_error_on_fn_name, "on_a");
+	assert_string(runtime_error_on_fn_path, "err_runtime/stack_overflow/input-D.grug");
 }
 
 static void runtime_error_time_limit_exceeded(void) {
     on_fn_dispatcher("on_a");
 
-	assert(had_runtime_error);
+	assert_true(had_runtime_error);
 
-	assert(runtime_error_type == GRUG_ON_FN_TIME_LIMIT_EXCEEDED);
+	assert_runtime_error_type(GRUG_ON_FN_TIME_LIMIT_EXCEEDED);
 
-	assert(streq(runtime_error_on_fn_name, "on_a"));
-	assert(streq(runtime_error_on_fn_path, "err_runtime/time_limit_exceeded/input-D.grug"));
+	assert_string(runtime_error_on_fn_name, "on_a");
+	assert_string(runtime_error_on_fn_path, "err_runtime/time_limit_exceeded/input-D.grug");
 }
 
 static void runtime_error_time_limit_exceeded_exponential_calls(void) {
     on_fn_dispatcher("on_a");
 
-	assert(had_runtime_error);
+	assert_true(had_runtime_error);
 
-	assert(runtime_error_type == GRUG_ON_FN_TIME_LIMIT_EXCEEDED);
+	assert_runtime_error_type(GRUG_ON_FN_TIME_LIMIT_EXCEEDED);
 
-	assert(streq(runtime_error_on_fn_name, "on_a"));
-	assert(streq(runtime_error_on_fn_path, "err_runtime/time_limit_exceeded_exponential_calls/input-D.grug"));
+	assert_string(runtime_error_on_fn_name, "on_a");
+	assert_string(runtime_error_on_fn_path, "err_runtime/time_limit_exceeded_exponential_calls/input-D.grug");
 }
 
 static void runtime_error_time_limit_exceeded_fibonacci(void) {
     on_fn_dispatcher("on_a");
 
-	assert(had_runtime_error);
+	assert_true(had_runtime_error);
 
-	assert(runtime_error_type == GRUG_ON_FN_TIME_LIMIT_EXCEEDED);
+	assert_runtime_error_type(GRUG_ON_FN_TIME_LIMIT_EXCEEDED);
 
-	assert(streq(runtime_error_on_fn_name, "on_a"));
-	assert(streq(runtime_error_on_fn_path, "err_runtime/time_limit_exceeded_fibonacci/input-D.grug"));
+	assert_string(runtime_error_on_fn_name, "on_a");
+	assert_string(runtime_error_on_fn_path, "err_runtime/time_limit_exceeded_fibonacci/input-D.grug");
 }
 
-#define CHECK_THAT_EVERY_TEST_DIRECTORY_HAS_A_FUNCTION(test_dirname) {\
+#define CHECK_THAT_EVERY_TEST_DIRECTORY_HAS_A_FUNCTION(test_dirname) do {\
 	size_t entries = 0;\
 	\
 	DIR *dirp = opendir(prefix(#test_dirname));\
@@ -2938,8 +2995,11 @@ static void runtime_error_time_limit_exceeded_fibonacci(void) {
 		exit(EXIT_FAILURE);\
 	}\
 	\
-	assert(closedir(dirp) == 0);\
-}
+	if (closedir(dirp) == -1) {\
+		perror("closedir");\
+		exit(EXIT_FAILURE);\
+	}\
+} while (0)
 
 static void add_error_tests(void) {
 	ADD_TEST_ERROR(assignment_isnt_expression, "D");
@@ -3361,8 +3421,12 @@ void grug_tests_run(const char *tests_dir_path_, compile_grug_file_t compile_gru
 	}
 
 #ifdef SHUFFLES
-	// TODO: Allow this seed to be set using an ifdef.
+	#ifdef SEED
+	unsigned int seed = SEED;
+	#else
 	unsigned int seed = time(NULL);
+	#endif
+
 	printf("The seed is %u\n", seed);
 	srand(seed);
 

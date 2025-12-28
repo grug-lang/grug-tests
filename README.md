@@ -17,7 +17,7 @@ This is the test suite of [my programming language called grug](https://github.c
 
 You can get more info in the test its generated `results` directory (from objdump, readelf and xxd) by running `./tests.sh ../grug`.
 
-If a test failed, you can reproduce it by replacing `time(NULL)` in `main()` with the failing test's printed seed.
+If a test failed, you can reproduce it by passing `-DSEED=<failing test's printed seed>`.
 
 ### Troubleshooting
 

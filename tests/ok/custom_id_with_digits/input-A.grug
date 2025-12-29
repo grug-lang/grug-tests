@@ -1,2 +1,1 @@
 foo: BoxedNumber = box_number(42)
-

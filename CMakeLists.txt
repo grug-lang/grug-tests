@@ -19,14 +19,15 @@ set(BASE_WARNINGS
     -g
     -Wall
     -Wextra
+    -pedantic
+    -Wconversion
     -Werror
-    -Wpedantic
+    -Wfatal-errors
     -Wstrict-prototypes
     -Wmissing-prototypes
     -Wshadow
     -Wuninitialized
     -Wunused-macros
-    # -Wfatal-errors
 )
 
 add_compile_options(${BASE_WARNINGS})

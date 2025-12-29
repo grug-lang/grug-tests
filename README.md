@@ -12,11 +12,12 @@ This is the test suite of [my programming language called grug](https://github.c
     `cmake -S . -B ./build`
    On windows, run
     `cmake -S . -B ./build -G 'MinGW Makefile' -DCMAKE_C_COMPILER=gcc`
-4. Build the tests with `cmake --build ./build`
+4. Build the smoke tests with `cmake --build ./build`
+5. Run the smoke tests with `./build/smoketest`.
 
 You can get more info in the test its generated `results` directory (from objdump, readelf and xxd) by running `./tests.sh ../grug`.
 
-If a test failed, you can reproduce it by replacing `time(NULL)` in `main()` with the failing test's printed seed.
+If a test failed, you can reproduce it by passing `-DSEED=<failing test's printed seed>`.
 
 ### Troubleshooting
 

@@ -1011,7 +1011,7 @@ static void test_error(
 
 	if (!msg) {
 		fprintf(stderr, "\nError: Compilation succeeded, but expected this error message:\n");
-		fprintf(stderr, "%s\n", expected_error);
+		fprintf(stderr, "\"%s\"\n", expected_error);
 		exit(EXIT_FAILURE);
 	}
 
@@ -1032,10 +1032,10 @@ static void test_error(
 	if (!streq(msg, expected_error)) {
 		fprintf(stderr, "\nError: The output differs from the expected output.\n");
 		fprintf(stderr, "Output:\n");
-		fprintf(stderr, "%s\n", msg);
+		fprintf(stderr, "\"%s\"\n", msg);
 
 		fprintf(stderr, "Expected:\n");
-		fprintf(stderr, "%s\n", expected_error);
+		fprintf(stderr, "\"%s\"\n", expected_error);
 
 		exit(EXIT_FAILURE);
 	}
@@ -1068,10 +1068,10 @@ static void diff_roundtrip(
 	if (!streq((const char *)grug_path_bytes, (const char *)applied_path_bytes)) {
 		fprintf(stderr, "\nError: The output differs from the expected output.\n");
 		fprintf(stderr, "Output:\n");
-		fprintf(stderr, "%s\n", applied_path_bytes);
+		fprintf(stderr, "\"%s\"\n", applied_path_bytes);
 
 		fprintf(stderr, "Expected:\n");
-		fprintf(stderr, "%s\n", grug_path_bytes);
+		fprintf(stderr, "\"%s\"\n", grug_path_bytes);
 
 		exit(EXIT_FAILURE);
 	}
@@ -3489,10 +3489,10 @@ void grug_tests_run(const char *tests_dir_path_, compile_grug_file_t compile_gru
 		if (!streq(runtime_error_reason, expected_error)) {
 			fprintf(stderr, "\nError: The error message differs from the expected error message.\n");
 			fprintf(stderr, "Output:\n");
-			fprintf(stderr, "%s\n", runtime_error_reason);
+			fprintf(stderr, "\"%s\"\n", runtime_error_reason);
 
 			fprintf(stderr, "Expected:\n");
-			fprintf(stderr, "%s\n", expected_error);
+			fprintf(stderr, "\"%s\"\n", expected_error);
 
 			exit(EXIT_FAILURE);
 		}

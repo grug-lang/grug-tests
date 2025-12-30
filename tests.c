@@ -1,5 +1,4 @@
 #include "tests.h"
-
 #include <dirent.h>
 #include <errno.h>
 #include <fcntl.h>
@@ -10,6 +9,16 @@
 #include <string.h>
 #include <time.h>
 #include <unistd.h>
+
+// using inttypes.h causes a wierd issue where %zu is no longer recognized
+// right now, the only portable format specifier we need is PRIu64, so we use
+// an ifdef for it.
+// If we need more portable specifiers, we'll see about actually figuring out the issue with inttypes.h
+#if defined(_WIN32)
+#define PRIu64 "%llu"
+#elif defined(__linux__)
+#define PRIu64 "%lu"
+#endif
 
 #define assert_call_count(game_fn_name, expected_count) do { \
 	size_t count = game_fn_ ## game_fn_name ## _call_count; \
@@ -56,7 +65,7 @@
 
 #define assert_id(id, expected_id) do { \
 	if (id != expected_id) { \
-		fprintf(stderr, "%s:%d: Assertion ID %lu (%s) == %d failed.\n", __FILE__, __LINE__, id, #id, expected_id); \
+		fprintf(stderr, "%s:%d: Assertion ID "PRIu64" (%s) == %d failed.\n", __FILE__, __LINE__, id, #id, expected_id); \
 		exit(EXIT_FAILURE); \
 	} \
 } while (0)
@@ -920,18 +929,18 @@ static const char *prefix(const char *path) {
 }
 
 static size_t read_file(const char *path, uint8_t *bytes) {
-	FILE *f = fopen(prefix(path), "rb");
+	FILE *f = fopen(prefix(path), "r");
 	check_null(f, "fopen", prefix(path));
 
 	check(fseek(f, 0, SEEK_END), "fseek", NULL);
 
 	long ftell_result = ftell(f);
 	check((int)ftell_result, "ftell", NULL);
-	size_t len = (size_t)ftell_result;
 
 	check(fseek(f, 0, SEEK_SET), "fseek", NULL);
+	size_t len = fread(bytes, 1, (size_t)ftell_result, f);
 
-	if (fread(bytes, len, 1, f) < len && ferror(f)) {
+	if (ferror(f)) {
 		fprintf(stderr, "Error: fread error\n");
 		exit(EXIT_FAILURE);
 	}

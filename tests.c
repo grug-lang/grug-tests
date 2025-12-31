@@ -8,6 +8,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
+#include <ctype.h>
 #include <unistd.h>
 
 // using inttypes.h causes a wierd issue where %zu is no longer recognized
@@ -842,6 +843,32 @@ static bool is_whitelisted_test(const char *name) {
 	return whitelisted_test == NULL || streq(name, whitelisted_test);
 }
 
+static void print_string_debug(FILE* output, const char* str) {
+	fprintf(output, "\"");
+	while (*str != '\0') {
+		switch (*str) {
+			case '\n': fputs("\\n", output); break;
+			case '\r': fputs("\\r", output); break;
+			case '\t': fputs("\\t", output); break;
+			case '\v': fputs("\\v", output); break;
+			case '\f': fputs("\\f", output); break;
+			case '\b': fputs("\\b", output); break;
+			case '\\': fputs("\\\\", output); break;
+			case '"':  fputs("\\\"", output); break;
+
+			default:
+				if (isprint(*str)) {
+					fputc(*str, output);
+				} else {
+					fprintf(output, "\\x%02X", *str);
+				}
+				break;
+		}
+		str++;
+	}
+	fprintf(output, "\"");
+}
+
 #define ADD_TEST_ERROR(test_name, entity_type) do {\
 	if (is_whitelisted_test(#test_name)) {\
 		error_test_datas[err_test_datas_size++] = (struct error_test_data){\
@@ -950,21 +977,28 @@ static size_t read_file(const char *path, uint8_t *bytes) {
 		exit(EXIT_FAILURE);
 	}
 
+	// This part was originally in get_expected error 
+	// all calls to this function except for two in diff_roundtrip
+	// 
+	// This snippet was also needed for the two calls in diff_roundtrip
+	// so I moved it in here. 
+	//
+	// This can be 
+	if (bytes[len - 1] == '\n') {
+		len--;
+		if (bytes[len - 1] == '\r') {
+			len--;
+		}
+	}
+
+	bytes[len] = '\0';
+
 	return len;
 }
 
 static const char *get_expected_error(const char *expected_error_path) {
 	static char expected_error[420420];
-	size_t expected_error_len = read_file(expected_error_path, (uint8_t *)expected_error);
-
-	if (expected_error[expected_error_len - 1] == '\n') {
-		expected_error_len--;
-		if (expected_error[expected_error_len - 1] == '\r') {
-			expected_error_len--;
-		}
-	}
-
-	expected_error[expected_error_len] = '\0';
+	read_file(expected_error_path, (uint8_t *)expected_error);
 
 	return expected_error;
 }
@@ -1011,7 +1045,8 @@ static void test_error(
 
 	if (!msg) {
 		fprintf(stderr, "\nError: Compilation succeeded, but expected this error message:\n");
-		fprintf(stderr, "\"%s\"\n", expected_error);
+		print_string_debug(stderr, expected_error);
+		fprintf(stderr, "\n");
 		exit(EXIT_FAILURE);
 	}
 
@@ -1032,10 +1067,12 @@ static void test_error(
 	if (!streq(msg, expected_error)) {
 		fprintf(stderr, "\nError: The output differs from the expected output.\n");
 		fprintf(stderr, "Output:\n");
-		fprintf(stderr, "\"%s\"\n", msg);
+		print_string_debug(stderr, msg);
+		fprintf(stderr, "\n");
 
 		fprintf(stderr, "Expected:\n");
-		fprintf(stderr, "\"%s\"\n", expected_error);
+		print_string_debug(stderr, expected_error);
+		fprintf(stderr, "\n");
 
 		exit(EXIT_FAILURE);
 	}
@@ -1068,10 +1105,12 @@ static void diff_roundtrip(
 	if (!streq((const char *)grug_path_bytes, (const char *)applied_path_bytes)) {
 		fprintf(stderr, "\nError: The output differs from the expected output.\n");
 		fprintf(stderr, "Output:\n");
-		fprintf(stderr, "\"%s\"\n", applied_path_bytes);
+		print_string_debug(stderr, (const char *)applied_path_bytes);
+		fprintf(stderr, "\n");
 
 		fprintf(stderr, "Expected:\n");
-		fprintf(stderr, "\"%s\"\n", grug_path_bytes);
+		print_string_debug(stderr, (const char *)grug_path_bytes);
+		fprintf(stderr, "\n");
 
 		exit(EXIT_FAILURE);
 	}

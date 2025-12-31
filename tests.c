@@ -977,13 +977,6 @@ static size_t read_file(const char *path, uint8_t *bytes) {
 		exit(EXIT_FAILURE);
 	}
 
-	// This part was originally in get_expected error 
-	// all calls to this function except for two in diff_roundtrip
-	// 
-	// This snippet was also needed for the two calls in diff_roundtrip
-	// so I moved it in here. 
-	//
-	// This can be 
 	if (bytes[len - 1] == '\n') {
 		len--;
 		if (bytes[len - 1] == '\r') {

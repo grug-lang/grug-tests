@@ -11,7 +11,7 @@
 #include <ctype.h>
 #include <unistd.h>
 
-// using inttypes.h causes a wierd issue where %zu is no longer recognized
+// Using inttypes.h causes a weird issue where %zu is no longer recognized
 // right now, the only portable format specifier we need is PRIu64, so we use
 // an ifdef for it.
 // If we need more portable specifiers, we'll see about actually figuring out the issue with inttypes.h

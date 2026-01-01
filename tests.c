@@ -843,30 +843,30 @@ static bool is_whitelisted_test(const char *name) {
 	return whitelisted_test == NULL || streq(name, whitelisted_test);
 }
 
-static void print_string_debug(FILE* output, const char* str) {
-	fprintf(output, "\"");
+static void print_string_debug(const char* str) {
+	fprintf(stderr, "\"");
 	while (*str != '\0') {
 		switch (*str) {
-			case '\n': fputs("\\n", output); break;
-			case '\r': fputs("\\r", output); break;
-			case '\t': fputs("\\t", output); break;
-			case '\v': fputs("\\v", output); break;
-			case '\f': fputs("\\f", output); break;
-			case '\b': fputs("\\b", output); break;
-			case '\\': fputs("\\\\", output); break;
-			case '"':  fputs("\\\"", output); break;
+			case '\n': fputs("\\n", stderr); break;
+			case '\r': fputs("\\r", stderr); break;
+			case '\t': fputs("\\t", stderr); break;
+			case '\v': fputs("\\v", stderr); break;
+			case '\f': fputs("\\f", stderr); break;
+			case '\b': fputs("\\b", stderr); break;
+			case '\\': fputs("\\\\", stderr); break;
+			case '"':  fputs("\\\"", stderr); break;
 
 			default:
 				if (isprint(*str)) {
-					fputc(*str, output);
+					fputc(*str, stderr);
 				} else {
-					fprintf(output, "\\x%02X", *str);
+					fprintf(stderr, "\\x%02X", *str);
 				}
 				break;
 		}
 		str++;
 	}
-	fprintf(output, "\"\n");
+	fprintf(stderr, "\"\n");
 }
 
 #define ADD_TEST_ERROR(test_name, entity_type) do {\
@@ -1038,7 +1038,7 @@ static void test_error(
 
 	if (!msg) {
 		fprintf(stderr, "\nError: Compilation succeeded, but expected this error message:\n");
-		print_string_debug(stderr, expected_error);
+		print_string_debug(expected_error);
 		exit(EXIT_FAILURE);
 	}
 
@@ -1059,10 +1059,10 @@ static void test_error(
 	if (!streq(msg, expected_error)) {
 		fprintf(stderr, "\nError: The output differs from the expected output.\n");
 		fprintf(stderr, "Output:\n");
-		print_string_debug(stderr, msg);
+		print_string_debug(msg);
 
 		fprintf(stderr, "Expected:\n");
-		print_string_debug(stderr, expected_error);
+		print_string_debug(expected_error);
 
 		exit(EXIT_FAILURE);
 	}
@@ -1095,10 +1095,10 @@ static void diff_roundtrip(
 	if (!streq((const char *)grug_path_bytes, (const char *)applied_path_bytes)) {
 		fprintf(stderr, "\nError: The output differs from the expected output.\n");
 		fprintf(stderr, "Output:\n");
-		print_string_debug(stderr, (const char *)applied_path_bytes);
+		print_string_debug((const char *)applied_path_bytes);
 
 		fprintf(stderr, "Expected:\n");
-		print_string_debug(stderr, (const char *)grug_path_bytes);
+		print_string_debug((const char *)grug_path_bytes);
 
 		exit(EXIT_FAILURE);
 	}
@@ -1121,7 +1121,7 @@ static void prologue(const char *grug_path, const char *results_path) {
 	if (msg) {
 		fprintf(stderr, "Error: The test wasn't supposed to print anything, but did:\n");
 		fprintf(stderr, "----\n");
-		print_string_debug(stderr, msg);
+		print_string_debug(msg);
 		fprintf(stderr, "----\n");
 
 		exit(EXIT_FAILURE);

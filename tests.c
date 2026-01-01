@@ -866,7 +866,7 @@ static void print_string_debug(FILE* output, const char* str) {
 		}
 		str++;
 	}
-	fprintf(output, "\"");
+	fprintf(output, "\"\n");
 }
 
 #define ADD_TEST_ERROR(test_name, entity_type) do {\
@@ -1046,7 +1046,6 @@ static void test_error(
 	if (!msg) {
 		fprintf(stderr, "\nError: Compilation succeeded, but expected this error message:\n");
 		print_string_debug(stderr, expected_error);
-		fprintf(stderr, "\n");
 		exit(EXIT_FAILURE);
 	}
 
@@ -1068,11 +1067,9 @@ static void test_error(
 		fprintf(stderr, "\nError: The output differs from the expected output.\n");
 		fprintf(stderr, "Output:\n");
 		print_string_debug(stderr, msg);
-		fprintf(stderr, "\n");
 
 		fprintf(stderr, "Expected:\n");
 		print_string_debug(stderr, expected_error);
-		fprintf(stderr, "\n");
 
 		exit(EXIT_FAILURE);
 	}
@@ -1106,11 +1103,9 @@ static void diff_roundtrip(
 		fprintf(stderr, "\nError: The output differs from the expected output.\n");
 		fprintf(stderr, "Output:\n");
 		print_string_debug(stderr, (const char *)applied_path_bytes);
-		fprintf(stderr, "\n");
 
 		fprintf(stderr, "Expected:\n");
 		print_string_debug(stderr, (const char *)grug_path_bytes);
-		fprintf(stderr, "\n");
 
 		exit(EXIT_FAILURE);
 	}
@@ -1133,7 +1128,7 @@ static void prologue(const char *grug_path, const char *results_path) {
 	if (msg) {
 		fprintf(stderr, "Error: The test wasn't supposed to print anything, but did:\n");
 		fprintf(stderr, "----\n");
-		fprintf(stderr, "%s\n", msg);
+		print_string_debug(stderr, msg);
 		fprintf(stderr, "----\n");
 
 		exit(EXIT_FAILURE);
@@ -3528,10 +3523,10 @@ void grug_tests_run(const char *tests_dir_path_, compile_grug_file_t compile_gru
 		if (!streq(runtime_error_reason, expected_error)) {
 			fprintf(stderr, "\nError: The error message differs from the expected error message.\n");
 			fprintf(stderr, "Output:\n");
-			fprintf(stderr, "\"%s\"\n", runtime_error_reason);
+			print_string_debug(runtime_error_reason);
 
 			fprintf(stderr, "Expected:\n");
-			fprintf(stderr, "\"%s\"\n", expected_error);
+			print_string_debug(expected_error);
 
 			exit(EXIT_FAILURE);
 		}

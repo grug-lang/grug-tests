@@ -1,1 +1,1 @@
-The function 'helper_foo' does not exist
+The helper function 'helper_foo' was not defined by this grug file

@@ -1,1 +1,1 @@
-The function 'foo' does not exist
+The game function 'foo' was not declared by mod_api.json

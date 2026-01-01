@@ -11,7 +11,7 @@
 #include <ctype.h>
 #include <unistd.h>
 
-// using inttypes.h causes a wierd issue where %zu is no longer recognized
+// Using inttypes.h causes a weird issue where %zu is no longer recognized
 // right now, the only portable format specifier we need is PRIu64, so we use
 // an ifdef for it.
 // If we need more portable specifiers, we'll see about actually figuring out the issue with inttypes.h
@@ -977,13 +977,6 @@ static size_t read_file(const char *path, uint8_t *bytes) {
 		exit(EXIT_FAILURE);
 	}
 
-	// This part was originally in get_expected error 
-	// all calls to this function except for two in diff_roundtrip
-	// 
-	// This snippet was also needed for the two calls in diff_roundtrip
-	// so I moved it in here. 
-	//
-	// This can be 
 	if (bytes[len - 1] == '\n') {
 		len--;
 		if (bytes[len - 1] == '\r') {

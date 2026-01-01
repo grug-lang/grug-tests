@@ -130,12 +130,104 @@
 		}
 	},
 	"game_functions": {
-		"nothing": {
+		"blocked_alrm": {
 			"description": "foo"
 		},
-		"magic": {
+		"box_number": {
 			"description": "foo",
-			"return_type": "number"
+			"return_type": "BoxedNumber",
+			"arguments": [
+				{
+					"name": "n",
+					"type": "number"
+				}
+			]
+		},
+		"call_on_b_fn": {
+			"description": "foo"
+		},
+		"cause_game_fn_error": {
+			"description": "foo"
+		},
+		"cos": {
+			"description": "foo",
+			"return_type": "number",
+			"arguments": [
+				{
+					"name": "x",
+					"type": "number"
+				}
+			]
+		},
+		"draw": {
+			"description": "foo",
+			"arguments": [
+				{
+					"name": "sprite_path",
+					"type": "resource",
+					"resource_extension": ""
+				}
+			]
+		},
+		"get_false": {
+			"description": "foo",
+			"return_type": "bool"
+		},
+		"get_opponent": {
+			"description": "foo",
+			"return_type": "Opponent"
+		},
+		"get_position": {
+			"description": "foo",
+			"return_type": "Position",
+			"arguments": [
+				{
+					"name": "id",
+					"type": "D"
+				}
+			]
+		},
+		"has_entity": {
+			"description": "foo",
+			"return_type": "bool",
+			"arguments": [
+				{
+					"name": "name",
+					"type": "entity",
+					"entity_type": ""
+				}
+			]
+		},
+		"has_resource": {
+			"description": "foo",
+			"return_type": "bool",
+			"arguments": [
+				{
+					"name": "path",
+					"type": "resource",
+					"resource_extension": ""
+				}
+			]
+		},
+		"has_string": {
+			"description": "foo",
+			"return_type": "bool",
+			"arguments": [
+				{
+					"name": "str",
+					"type": "string"
+				}
+			]
+		},
+		"identity": {
+			"description": "foo",
+			"return_type": "number",
+			"arguments": [
+				{
+					"name": "x",
+					"type": "number"
+				}
+			]
 		},
 		"initialize": {
 			"description": "foo",
@@ -155,15 +247,9 @@
 				}
 			]
 		},
-		"identity": {
+		"magic": {
 			"description": "foo",
-			"return_type": "number",
-			"arguments": [
-				{
-					"name": "x",
-					"type": "number"
-				}
-			]
+			"return_type": "number"
 		},
 		"max": {
 			"description": "foo",
@@ -175,35 +261,6 @@
 				},
 				{
 					"name": "y",
-					"type": "number"
-				}
-			]
-		},
-		"say": {
-			"description": "foo",
-			"arguments": [
-				{
-					"name": "message",
-					"type": "string"
-				}
-			]
-		},
-		"sin": {
-			"description": "foo",
-			"return_type": "number",
-			"arguments": [
-				{
-					"name": "x",
-					"type": "number"
-				}
-			]
-		},
-		"cos": {
-			"description": "foo",
-			"return_type": "number",
-			"arguments": [
-				{
-					"name": "x",
 					"type": "number"
 				}
 			]
@@ -266,19 +323,6 @@
 				{
 					"name": "str",
 					"type": "string"
-				}
-			]
-		},
-		"get_false": {
-			"description": "foo",
-			"return_type": "bool"
-		},
-		"set_is_happy": {
-			"description": "foo",
-			"arguments": [
-				{
-					"name": "is_happy",
-					"type": "bool"
 				}
 			]
 		},
@@ -353,83 +397,6 @@
 				{
 					"name": "i7",
 					"type": "number"
-				}
-			]
-		},
-		"draw": {
-			"description": "foo",
-			"arguments": [
-				{
-					"name": "sprite_path",
-					"type": "resource",
-					"resource_extension": ""
-				}
-			]
-		},
-		"blocked_alrm": {
-			"description": "foo"
-		},
-		"spawn": {
-			"description": "foo",
-			"arguments": [
-				{
-					"name": "name",
-					"type": "entity",
-					"entity_type": ""
-				}
-			]
-		},
-		"has_resource": {
-			"description": "foo",
-			"return_type": "bool",
-			"arguments": [
-				{
-					"name": "path",
-					"type": "resource",
-					"resource_extension": ""
-				}
-			]
-		},
-		"has_entity": {
-			"description": "foo",
-			"return_type": "bool",
-			"arguments": [
-				{
-					"name": "name",
-					"type": "entity",
-					"entity_type": ""
-				}
-			]
-		},
-		"has_string": {
-			"description": "foo",
-			"return_type": "bool",
-			"arguments": [
-				{
-					"name": "str",
-					"type": "string"
-				}
-			]
-		},
-		"get_opponent": {
-			"description": "foo",
-			"return_type": "Opponent"
-		},
-		"set_d": {
-			"description": "foo",
-			"arguments": [
-				{
-					"name": "target",
-					"type": "D"
-				}
-			]
-		},
-		"set_opponent": {
-			"description": "foo",
-			"arguments": [
-				{
-					"name": "target",
-					"type": "Opponent"
 				}
 			]
 		},
@@ -582,6 +549,9 @@
 					"type": "number"
 				}
 			]
+		},
+		"nothing": {
+			"description": "foo"
 		},
 		"offset_32_bit_f32": {
 			"description": "foo",
@@ -982,6 +952,84 @@
 				}
 			]
 		},
+		"retrieve": {
+			"description": "foo",
+			"return_type": "id"
+		},
+		"say": {
+			"description": "foo",
+			"arguments": [
+				{
+					"name": "message",
+					"type": "string"
+				}
+			]
+		},
+		"set_d": {
+			"description": "foo",
+			"arguments": [
+				{
+					"name": "target",
+					"type": "D"
+				}
+			]
+		},
+		"set_is_happy": {
+			"description": "foo",
+			"arguments": [
+				{
+					"name": "is_happy",
+					"type": "bool"
+				}
+			]
+		},
+		"set_opponent": {
+			"description": "foo",
+			"arguments": [
+				{
+					"name": "target",
+					"type": "Opponent"
+				}
+			]
+		},
+		"set_position": {
+			"description": "foo",
+			"arguments": [
+				{
+					"name": "pos",
+					"type": "Position"
+				}
+			]
+		},
+		"sin": {
+			"description": "foo",
+			"return_type": "number",
+			"arguments": [
+				{
+					"name": "x",
+					"type": "number"
+				}
+			]
+		},
+		"spawn": {
+			"description": "foo",
+			"arguments": [
+				{
+					"name": "name",
+					"type": "entity",
+					"entity_type": ""
+				}
+			]
+		},
+		"store": {
+			"description": "foo",
+			"arguments": [
+				{
+					"name": "id",
+					"type": "id"
+				}
+			]
+		},
 		"talk": {
 			"description": "foo",
 			"arguments": [
@@ -1000,54 +1048,6 @@
 				{
 					"name": "message4",
 					"type": "string"
-				}
-			]
-		},
-		"get_position": {
-			"description": "foo",
-			"return_type": "Position",
-			"arguments": [
-				{
-					"name": "id",
-					"type": "D"
-				}
-			]
-		},
-		"set_position": {
-			"description": "foo",
-			"arguments": [
-				{
-					"name": "pos",
-					"type": "Position"
-				}
-			]
-		},
-		"cause_game_fn_error": {
-			"description": "foo"
-		},
-		"call_on_b_fn": {
-			"description": "foo"
-		},
-		"store": {
-			"description": "foo",
-			"arguments": [
-				{
-					"name": "id",
-					"type": "id"
-				}
-			]
-		},
-		"retrieve": {
-			"description": "foo",
-			"return_type": "id"
-		},
-		"box_number": {
-			"description": "foo",
-			"return_type": "BoxedNumber",
-			"arguments": [
-				{
-					"name": "n",
-					"type": "number"
 				}
 			]
 		}

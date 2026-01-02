@@ -6,104 +6,46 @@ on:
   workflow_dispatch:
 
 jobs:
-  # --- Anchors for DRY steps ---
-  steps-anchors: &steps-anchors
-    checkout: &checkout
-      name: Checkout code
-      uses: actions/checkout@v4
-
-    configure: &configure
-      name: Configure CMake
-      run: cmake -S . -B ./build
-
-    build: &build
-      name: Build smoke tests
-      run: cmake --build ./build
-
-    run: &run
-      name: Run smoke tests
-      run: ./build/smoketest
-
-    install-valgrind: &install-valgrind
-      name: Install Valgrind
-      run: sudo apt-get update && sudo apt-get install -y valgrind
-
-  # --- Clang jobs ---
-  build-ubuntu-clang:
-    name: ubuntu-clang
+  build:
+    name: Build ${{ matrix.compiler }} ${{ matrix.sanitizer }}
     runs-on: ubuntu-latest
-    steps:
-      - *checkout
-      - *configure
-      - *build
-      - *run
+    strategy:
+      matrix:
+        compiler: [clang, gcc]
+        sanitizer: [none, asan, valgrind]
 
-  build-ubuntu-clang-asan:
-    name: ubuntu-clang-asan
-    runs-on: ubuntu-latest
     steps:
-      - *checkout
-      - name: Configure CMake with ASAN
-        run: cmake -S . -B ./build -DASAN=ON
-      - *build
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install Valgrind (if needed)
+        if: matrix.sanitizer == 'valgrind'
+        run: sudo apt-get update && sudo apt-get install -y valgrind
+
+      - name: Configure CMake
+        run: |
+          CMAKE_FLAGS=""
+          if [ "${{ matrix.sanitizer }}" == "asan" ]; then
+            CMAKE_FLAGS="-DASAN=ON"
+          fi
+          cmake -S . -B ./build $CMAKE_FLAGS
+        env:
+          CC: ${{ matrix.compiler }}
+
+      - name: Build smoke tests
+        run: cmake --build ./build
+        env:
+          CC: ${{ matrix.compiler }}
+
       - name: Run smoke tests
-        run: ./build/smoketest
+        run: |
+          if [ "${{ matrix.sanitizer }}" == "valgrind" ]; then
+            valgrind ./build/smoketest
+          else
+            ./build/smoketest
+          fi
         env:
-          ASAN: 1
+          CC: ${{ matrix.compiler }}
+          ASAN: ${{ matrix.sanitizer == 'asan' && 1 || '' }}
+          VALGRIND: ${{ matrix.sanitizer == 'valgrind' && 1 || '' }}
           SHUFFLES: 10
-
-  build-ubuntu-clang-valgrind:
-    name: ubuntu-clang-valgrind
-    runs-on: ubuntu-latest
-    steps:
-      - *checkout
-      - *install-valgrind
-      - *configure
-      - *build
-      - name: Run smoke tests with Valgrind
-        run: valgrind ./build/smoketest
-        env:
-          VALGRIND: 1
-          SHUFFLES: 10
-
-  # --- GCC jobs ---
-  build-ubuntu-gcc:
-    name: ubuntu-gcc
-    runs-on: ubuntu-latest
-    steps:
-      - *checkout
-      - *configure
-      - *build
-      - name: Run smoke tests with GCC
-        run: ./build/smoketest
-        env:
-          CC: gcc
-
-  build-ubuntu-gcc-asan:
-    name: ubuntu-gcc-asan
-    runs-on: ubuntu-latest
-    steps:
-      - *checkout
-      - name: Configure CMake with GCC ASAN
-        run: cmake -S . -B ./build -DASAN=ON
-      - *build
-      - name: Run smoke tests with GCC ASAN
-        run: ./build/smoketest
-        env:
-          CC: gcc
-          ASAN: 1
-          SHUFFLES: 10
-
-  build-ubuntu-gcc-valgrind:
-    name: ubuntu-gcc-valgrind
-    runs-on: ubuntu-latest
-    steps:
-      - *checkout
-      - *install-valgrind
-      - *configure
-      - *build
-      - name: Run smoke tests with GCC Valgrind
-        run: valgrind ./build/smoketest
-        env:
-          CC: gcc
-          VALGRIND: 1

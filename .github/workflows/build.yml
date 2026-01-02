@@ -3,7 +3,107 @@ name: CI Build
 on:
   push:
   pull_request:
+  workflow_dispatch:
 
 jobs:
-  ci:
-    uses: ./.github/workflows/reusable-build.yml
+  # --- Anchors for DRY steps ---
+  steps-anchors: &steps-anchors
+    checkout: &checkout
+      name: Checkout code
+      uses: actions/checkout@v4
+
+    configure: &configure
+      name: Configure CMake
+      run: cmake -S . -B ./build
+
+    build: &build
+      name: Build smoke tests
+      run: cmake --build ./build
+
+    run: &run
+      name: Run smoke tests
+      run: ./build/smoketest
+
+    install-valgrind: &install-valgrind
+      name: Install Valgrind
+      run: sudo apt-get update && sudo apt-get install -y valgrind
+
+  # --- Clang jobs ---
+  build-ubuntu-clang:
+    name: ubuntu-clang
+    runs-on: ubuntu-latest
+    steps:
+      - *checkout
+      - *configure
+      - *build
+      - *run
+
+  build-ubuntu-clang-asan:
+    name: ubuntu-clang-asan
+    runs-on: ubuntu-latest
+    steps:
+      - *checkout
+      - name: Configure CMake with ASAN
+        run: cmake -S . -B ./build -DASAN=ON
+      - *build
+      - name: Run smoke tests
+        run: ./build/smoketest
+        env:
+          ASAN: 1
+          SHUFFLES: 10
+
+  build-ubuntu-clang-valgrind:
+    name: ubuntu-clang-valgrind
+    runs-on: ubuntu-latest
+    steps:
+      - *checkout
+      - *install-valgrind
+      - *configure
+      - *build
+      - name: Run smoke tests with Valgrind
+        run: valgrind ./build/smoketest
+        env:
+          VALGRIND: 1
+          SHUFFLES: 10
+
+  # --- GCC jobs ---
+  build-ubuntu-gcc:
+    name: ubuntu-gcc
+    runs-on: ubuntu-latest
+    steps:
+      - *checkout
+      - *configure
+      - *build
+      - name: Run smoke tests with GCC
+        run: ./build/smoketest
+        env:
+          CC: gcc
+
+  build-ubuntu-gcc-asan:
+    name: ubuntu-gcc-asan
+    runs-on: ubuntu-latest
+    steps:
+      - *checkout
+      - name: Configure CMake with GCC ASAN
+        run: cmake -S . -B ./build -DASAN=ON
+      - *build
+      - name: Run smoke tests with GCC ASAN
+        run: ./build/smoketest
+        env:
+          CC: gcc
+          ASAN: 1
+          SHUFFLES: 10
+
+  build-ubuntu-gcc-valgrind:
+    name: ubuntu-gcc-valgrind
+    runs-on: ubuntu-latest
+    steps:
+      - *checkout
+      - *install-valgrind
+      - *configure
+      - *build
+      - name: Run smoke tests with GCC Valgrind
+        run: valgrind ./build/smoketest
+        env:
+          CC: gcc
+          VALGRIND: 1

@@ -203,7 +203,7 @@ static size_t game_fn_box_number_call_count;
 static bool had_runtime_error = false;
 static size_t error_handler_call_count = 0;
 static const char *runtime_error_reason = NULL;
-static enum grug_runtime_error_type runtime_error_type = -1;
+static enum grug_runtime_error_type runtime_error_type = 0;
 static const char *runtime_error_on_fn_name = NULL;
 static const char *runtime_error_on_fn_path = NULL;
 
@@ -1110,7 +1110,7 @@ static void prologue(const char *grug_path, const char *results_path) {
 	runtime_error_reason = NULL;
 	had_runtime_error = false;
 	error_handler_call_count = 0;
-	runtime_error_type = -1;
+	runtime_error_type = 0;
 	runtime_error_on_fn_name = NULL;
 	runtime_error_on_fn_path = NULL;
 

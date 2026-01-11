@@ -1,0 +1,13 @@
+# This tests that on_a() calling on_b() must not
+# reset the time limit exceeded timer of 10 ms
+
+on_a() {
+    sleep(8)
+    call_on_b_fn()
+}
+
+on_b() {
+    # After this game fn call,
+    # a time limit exceeded error must be thrown
+    sleep(8)
+}

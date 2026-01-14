@@ -1,0 +1,7 @@
+on_a() {
+    helper_foo(25)
+}
+
+helper_foo(x: id) {
+    return
+}

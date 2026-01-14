@@ -3089,6 +3089,7 @@ static void add_error_tests(void) {
 	ADD_TEST_ERROR(global_cant_call_helper_fn, "A");
 	ADD_TEST_ERROR(global_cant_call_on_fn, "D");
 	ADD_TEST_ERROR(global_cant_use_later_global, "A");
+	ADD_TEST_ERROR(global_id_assigned_to_number, "D");
 	ADD_TEST_ERROR(global_id_cant_be_reassigned, "D");
 	ADD_TEST_ERROR(global_variable_after_on_fns, "D");
 	ADD_TEST_ERROR(global_variable_already_uses_local_variable_name, "D");
@@ -3110,6 +3111,7 @@ static void add_error_tests(void) {
 	ADD_TEST_ERROR(helper_fn_different_return_value_expected, "D");
 	ADD_TEST_ERROR(helper_fn_does_not_exist, "D");
 	ADD_TEST_ERROR(helper_fn_duplicate, "D");
+	ADD_TEST_ERROR(helper_fn_id_arg_gets_number, "D");
 	ADD_TEST_ERROR(helper_fn_is_not_called_1, "D");
 	ADD_TEST_ERROR(helper_fn_is_not_called_2, "D");
 	ADD_TEST_ERROR(helper_fn_is_not_called_3, "D");
@@ -3131,6 +3133,7 @@ static void add_error_tests(void) {
 	ADD_TEST_ERROR(indented_helper_fn_parameters, "D");
 	ADD_TEST_ERROR(indented_on_fn_parameter, "F");
 	ADD_TEST_ERROR(indented_on_fn_parameters, "G");
+	ADD_TEST_ERROR(local_id_assigned_to_number, "D");
 	ADD_TEST_ERROR(local_variable_already_exists, "D");
 	ADD_TEST_ERROR(local_variable_definition_cant_use_itself, "D");
 	ADD_TEST_ERROR(local_variable_definition_missing_type, "D");

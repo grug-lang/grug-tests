@@ -1,0 +1,1 @@
+Can't assign number to 'foo', which has type id

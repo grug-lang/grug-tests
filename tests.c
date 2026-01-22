@@ -2960,7 +2960,7 @@ static void runtime_error_on_fn_errors_after_it_calls_other_on_fn(void) {
 
 	assert_runtime_error_type(GRUG_ON_FN_GAME_FN_ERROR);
 
-	assert_string(runtime_error_on_fn_name, "on_b");
+	assert_string(runtime_error_on_fn_name, "on_a");
 	assert_string(runtime_error_on_fn_path, "err_runtime/on_fn_errors_after_it_calls_other_on_fn/input-E.grug");
 }
 

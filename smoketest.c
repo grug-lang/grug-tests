@@ -163,7 +163,9 @@ static void on_fn_dispatcher(const char *on_fn_name, const union grug_value args
         }
     } else if (starts_with(grug_file_path, "err_runtime/on_fn_errors_after_it_calls_other_on_fn/")) {
         if (streq(on_fn_name, "on_a")) {
+			const char* current_on_fn_name = on_fn_name;
             CALL_ARGLESS(call_on_b_fn);
+			saved_on_fn_name = current_on_fn_name;
             CALL_ARGLESS(cause_game_fn_error);
         } else {
             CALL_ARGLESS(nothing);

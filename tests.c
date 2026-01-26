@@ -1849,13 +1849,13 @@ static void ok_helper_fn_returning_void_returns_void(void) {
 
 static void ok_helper_fn_same_param_name_as_on_fn(void) {
 	assert_call_count(nothing, 0);
-    on_fn_dispatcher("on_a");
+    on_fn_args_dispatcher("on_a", (const union grug_value[]){{._number=42.0}});
 	assert_call_count(nothing, 1);
 }
 
 static void ok_helper_fn_same_param_name_as_other_helper_fn(void) {
 	assert_call_count(nothing, 0);
-    on_fn_dispatcher("on_a");
+    on_fn_args_dispatcher("on_a", (const union grug_value[]){{._number=42.0}});
 	assert_call_count(nothing, 2);
 }
 

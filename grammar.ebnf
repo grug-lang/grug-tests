@@ -1,0 +1,59 @@
+start: program
+
+program: statement*
+
+statement: vardecl
+         | reassignment
+         | function
+         | comment
+         | expr_stmt
+         | control_flow
+
+vardecl: NAME ":" type "=" expr
+reassignment: NAME "=" expr
+
+function: NAME "(" [params] ")" [return_type] block
+return_type: type
+params: param ("," param)*
+param: NAME ":" type
+
+block: "{" (statement | expr_stmt | comment | control_flow | return_stmt | reassignment)* "}"
+
+type: "number" | "bool" | "string" | ID | id
+
+expr_stmt: expr
+
+expr: literal
+    | NAME
+    | call
+    | "-" expr
+    | "not" expr
+    | expr binop expr
+    | expr cmp_op expr
+    | expr "and" expr
+    | expr "or" expr
+    | "(" expr ")"
+
+call: NAME "(" [args] ")"
+args: expr ("," expr)*
+literal: NUMBER | STRING | "true" | "false"
+
+comment: /#[^\n]*/
+
+cmp_op: "==" | "!=" | "<" | "<=" | ">" | ">="
+binop: "+" | "-" | "*" | "/"
+
+control_flow: while_loop | break_stmt | if_stmt
+while_loop: "while" expr block
+break_stmt: "break"
+if_stmt: "if" expr block ["else" block]
+return_stmt: "return" expr
+
+ID: /[A-Z][a-zA-Z0-9_]*/
+id: /[a-z][a-zA-Z0-9_]*/
+NAME: /[a-z_][a-zA-Z0-9_]*/
+NUMBER: /[0-9]+(\.[0-9]+)?/
+STRING: /"([^"\\]|\\.)*"/
+
+%import common.WS
+%ignore WS

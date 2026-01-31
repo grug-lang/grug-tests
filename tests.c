@@ -3657,4 +3657,5 @@ void grug_tests_run(
 #endif
 
 	printf("\nAll tests passed! 🎉\n");
+	destroy_grug_state(grug_state);
 }

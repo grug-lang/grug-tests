@@ -184,6 +184,7 @@ static size_t game_fn_has_resource_call_count;
 static size_t game_fn_has_entity_call_count;
 static size_t game_fn_has_string_call_count;
 static size_t game_fn_get_opponent_call_count;
+static size_t game_fn_get_os_call_count;
 static size_t game_fn_set_d_call_count;
 static size_t game_fn_set_opponent_call_count;
 static size_t game_fn_motherload_call_count;
@@ -421,6 +422,12 @@ union grug_value game_fn_get_opponent(void) {
 	game_fn_get_opponent_call_count++;
 
 	return grug_id(69);
+}
+union grug_value game_fn_get_os(void) {
+	ASSERT_16_BYTE_STACK_ALIGNED();
+	game_fn_get_os_call_count++;
+
+	return grug_string("foo");
 }
 static uint64_t game_fn_set_d_target;
 void game_fn_set_d(const union grug_value args[]) {
@@ -806,6 +813,7 @@ static void reset_call_counts(void) {
 	game_fn_has_entity_call_count = 0;
 	game_fn_has_string_call_count = 0;
 	game_fn_get_opponent_call_count = 0;
+	game_fn_get_os_call_count = 0;
 	game_fn_set_d_call_count = 0;
 	game_fn_set_opponent_call_count = 0;
 	game_fn_motherload_call_count = 0;
@@ -2758,6 +2766,44 @@ static void ok_string_ne_true(void) {
 	assert_true(game_fn_initialize_bool_b);
 }
 
+static void ok_string_returned_by_game_fn(void) {
+	assert_call_count(get_os, 0);
+	assert_call_count(has_string, 0);
+	on_fn_dispatcher("on_a");
+	assert_call_count(get_os, 1);
+	assert_call_count(has_string, 1);
+
+	assert_string(game_fn_has_string_str, "foo");
+}
+
+static void ok_string_returned_by_game_fn_assigned_to_member(void) {
+	assert_call_count(get_os, 1); // Called by init_globals()
+	assert_call_count(has_string, 0);
+	on_fn_dispatcher("on_a");
+	assert_call_count(get_os, 1);
+	assert_call_count(has_string, 1);
+
+	assert_string(game_fn_has_string_str, "foo");
+}
+
+static void ok_string_returned_by_helper_fn(void) {
+	assert_call_count(has_string, 0);
+	on_fn_dispatcher("on_a");
+	assert_call_count(has_string, 1);
+
+	assert_string(game_fn_has_string_str, "foo");
+}
+
+static void ok_string_returned_by_helper_fn_from_game_fn(void) {
+	assert_call_count(get_os, 0);
+	assert_call_count(has_string, 0);
+	on_fn_dispatcher("on_a");
+	assert_call_count(get_os, 1);
+	assert_call_count(has_string, 1);
+
+	assert_string(game_fn_has_string_str, "foo");
+}
+
 static void ok_sub_rsp_32_bits_local_variables_i32(void) {
 	assert_call_count(initialize, 0);
     on_fn_dispatcher("on_a");
@@ -3407,6 +3453,10 @@ static void add_ok_tests(void) {
 	ADD_TEST_OK(string_ne_false, "D", 8);
 	ADD_TEST_OK(string_ne_false_empty, "D", 8);
 	ADD_TEST_OK(string_ne_true, "D", 8);
+	ADD_TEST_OK(string_returned_by_game_fn, "D", 8);
+	ADD_TEST_OK(string_returned_by_game_fn_assigned_to_member, "D", 8);
+	ADD_TEST_OK(string_returned_by_helper_fn, "D", 8);
+	ADD_TEST_OK(string_returned_by_helper_fn_from_game_fn, "D", 8);
 	ADD_TEST_OK(sub_rsp_32_bits_local_variables_i32, "D", 8);
 	ADD_TEST_OK(sub_rsp_32_bits_local_variables_id, "D", 8);
 	ADD_TEST_OK(subtraction_negative_result, "D", 8);

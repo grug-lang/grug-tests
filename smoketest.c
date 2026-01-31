@@ -62,6 +62,7 @@ static union grug_value (*p_game_fn_has_resource)(const union grug_value args[])
 static union grug_value (*p_game_fn_has_entity)(const union grug_value args[]);
 static union grug_value (*p_game_fn_has_string)(const union grug_value args[]);
 static union grug_value (*p_game_fn_get_opponent)(void);
+static union grug_value (*p_game_fn_get_os)(void);
 static void (*p_game_fn_set_d)(const union grug_value args[]);
 static void (*p_game_fn_set_opponent)(const union grug_value args[]);
 static void (*p_game_fn_motherload)(const union grug_value args[]);
@@ -137,6 +138,8 @@ static void init_globals_fn_dispatcher(void) {
         CALL_ARGLESS(retrieve);
     } else if (starts_with(grug_file_path, "ok/id_global_with_opponent_to_new_id/")) {
         CALL_ARGLESS(get_opponent);
+    } else if (starts_with(grug_file_path, "ok/string_returned_by_game_fn_assigned_to_member/")) {
+        CALL_ARGLESS(get_os);
     }
 }
 
@@ -606,6 +609,14 @@ static void on_fn_dispatcher(const char *on_fn_name, const union grug_value args
         CALL(initialize_bool, grug_bool(false));
     } else if (starts_with(grug_file_path, "ok/string_ne_true/")) {
         CALL(initialize_bool, grug_bool(true));
+    } else if (starts_with(grug_file_path, "ok/string_returned_by_game_fn/")) {
+        CALL(has_string, CALL_ARGLESS(get_os));
+    } else if (starts_with(grug_file_path, "ok/string_returned_by_game_fn_assigned_to_member/")) {
+        CALL(has_string, grug_string("foo"));
+    } else if (starts_with(grug_file_path, "ok/string_returned_by_helper_fn/")) {
+        CALL(has_string, grug_string("foo"));
+    } else if (starts_with(grug_file_path, "ok/string_returned_by_helper_fn_from_game_fn/")) {
+        CALL(has_string, CALL_ARGLESS(get_os));
     } else if (starts_with(grug_file_path, "ok/sub_rsp_32_bits_local_variables_i32/")) {
         for (int32_t n = 1; n <= 30; n++) {
             CALL(initialize, grug_number(30.0));
@@ -742,6 +753,7 @@ static void load_tests_so(void) {
     p_game_fn_has_entity = load_sym(h, "game_fn_has_entity");
     p_game_fn_has_string = load_sym(h, "game_fn_has_string");
     p_game_fn_get_opponent = load_sym(h, "game_fn_get_opponent");
+    p_game_fn_get_os = load_sym(h, "game_fn_get_os");
     p_game_fn_set_d = load_sym(h, "game_fn_set_d");
     p_game_fn_set_opponent = load_sym(h, "game_fn_set_opponent");
     p_game_fn_motherload = load_sym(h, "game_fn_motherload");

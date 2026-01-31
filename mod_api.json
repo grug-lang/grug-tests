@@ -177,6 +177,10 @@
 			"description": "foo",
 			"return_type": "Opponent"
 		},
+		"get_os": {
+			"description": "foo",
+			"return_type": "string"
+		},
 		"get_position": {
 			"description": "foo",
 			"return_type": "Position",

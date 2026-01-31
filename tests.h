@@ -186,6 +186,7 @@ union grug_value game_fn_has_resource(const union grug_value args[]);
 union grug_value game_fn_has_entity(const union grug_value args[]);
 union grug_value game_fn_has_string(const union grug_value args[]);
 union grug_value game_fn_get_opponent(void);
+union grug_value game_fn_get_os(void);
 void game_fn_set_d(const union grug_value args[]);
 void game_fn_set_opponent(const union grug_value args[]);
 void game_fn_motherload(const union grug_value args[]);

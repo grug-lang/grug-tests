@@ -1,0 +1,7 @@
+on_a() {
+    has_string(helper_foo())
+}
+
+helper_foo() string {
+    return get_os()
+}

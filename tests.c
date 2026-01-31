@@ -120,6 +120,9 @@ static const char *get_type_name[] = {
 #endif
 
 static const char *tests_dir_path;
+static const char *mod_api_path;
+static init_grug_state_t init_grug_state;
+static destroy_grug_state_t destroy_grug_state;
 static compile_grug_file_t compile_grug_file;
 static init_globals_fn_dispatcher_t init_globals_fn_dispatcher;
 static on_fn_dispatcher_t on_fn_args_dispatcher;
@@ -139,7 +142,7 @@ static struct error_test_data error_test_datas[420420];
 static size_t err_test_datas_size;
 
 struct ok_test_data {
-	void (*run)(void);
+	void (*run)(void* grug_state);
 	const char *test_name_str;
 	const char *grug_path;
 	const char *results_path;
@@ -151,7 +154,7 @@ static struct ok_test_data ok_test_datas[420420];
 static size_t ok_test_datas_size;
 
 struct runtime_error_test_data {
-	void (*run)(void);
+	void (*run)(void* grug_state);
 	const char *test_name_str;
 	const char *grug_path;
 	const char *expected_error_path;
@@ -212,36 +215,41 @@ static bool streq(const char *a, const char *b) {
 	return strcmp(a, b) == 0;
 }
 
-static void on_fn_dispatcher(const char *on_fn_name) {
-	on_fn_args_dispatcher(on_fn_name, NULL);
+static void on_fn_dispatcher(void* grug_state, const char *on_fn_name) {
+	on_fn_args_dispatcher(grug_state, on_fn_name, NULL);
 }
 
-void game_fn_nothing(void) {
+void game_fn_nothing(void* grug_state) {
+	(void)(grug_state);
 	ASSERT_16_BYTE_STACK_ALIGNED();
 	game_fn_nothing_call_count++;
 }
-union grug_value game_fn_magic(void) {
+union grug_value game_fn_magic(void* grug_state) {
+	(void)(grug_state);
 	ASSERT_16_BYTE_STACK_ALIGNED();
 	game_fn_magic_call_count++;
 
 	return grug_number(42.0);
 }
 static double game_fn_initialize_x;
-void game_fn_initialize(const union grug_value args[]) {
+void game_fn_initialize(void* grug_state, const union grug_value args[]) {
+	(void)(grug_state);
 	ASSERT_16_BYTE_STACK_ALIGNED();
 	game_fn_initialize_call_count++;
 
 	game_fn_initialize_x = args[0]._number;
 }
 static bool game_fn_initialize_bool_b;
-void game_fn_initialize_bool(const union grug_value args[]) {
+void game_fn_initialize_bool(void* grug_state, const union grug_value args[]) {
+	(void)(grug_state);
 	ASSERT_16_BYTE_STACK_ALIGNED();
 	game_fn_initialize_bool_call_count++;
 
 	game_fn_initialize_bool_b = args[0]._bool;
 }
 static double game_fn_identity_x;
-union grug_value game_fn_identity(const union grug_value args[]) {
+union grug_value game_fn_identity(void* grug_state, const union grug_value args[]) {
+	(void)(grug_state);
 	ASSERT_16_BYTE_STACK_ALIGNED();
 	game_fn_identity_call_count++;
 
@@ -251,7 +259,8 @@ union grug_value game_fn_identity(const union grug_value args[]) {
 }
 static double game_fn_max_x;
 static double game_fn_max_y;
-union grug_value game_fn_max(const union grug_value args[]) {
+union grug_value game_fn_max(void* grug_state, const union grug_value args[]) {
+	(void)(grug_state);
 	ASSERT_16_BYTE_STACK_ALIGNED();
 	game_fn_max_call_count++;
 
@@ -261,14 +270,16 @@ union grug_value game_fn_max(const union grug_value args[]) {
 	return args[0]._number > args[1]._number ? args[0] : args[1];
 }
 static const char *game_fn_say_message;
-void game_fn_say(const union grug_value args[]) {
+void game_fn_say(void* grug_state, const union grug_value args[]) {
+	(void)(grug_state);
 	ASSERT_16_BYTE_STACK_ALIGNED();
 	game_fn_say_call_count++;
 
 	game_fn_say_message = strdup(args[0]._string);
 }
 static double game_fn_sin_x;
-union grug_value game_fn_sin(const union grug_value args[]) {
+union grug_value game_fn_sin(void* grug_state, const union grug_value args[]) {
+	(void)(grug_state);
 	ASSERT_16_BYTE_STACK_ALIGNED();
 	game_fn_sin_call_count++;
 
@@ -277,7 +288,8 @@ union grug_value game_fn_sin(const union grug_value args[]) {
 	return grug_number(sin(args[0]._number));
 }
 static double game_fn_cos_x;
-union grug_value game_fn_cos(const union grug_value args[]) {
+union grug_value game_fn_cos(void* grug_state, const union grug_value args[]) {
+	(void)(grug_state);
 	ASSERT_16_BYTE_STACK_ALIGNED();
 	game_fn_cos_call_count++;
 
@@ -299,7 +311,8 @@ static double game_fn_mega_f7;
 static double game_fn_mega_f8;
 static uint64_t game_fn_mega_id;
 static const char *game_fn_mega_str;
-void game_fn_mega(const union grug_value args[]) {
+void game_fn_mega(void* grug_state, const union grug_value args[]) {
+	(void)(grug_state);
 	ASSERT_16_BYTE_STACK_ALIGNED();
 	game_fn_mega_call_count++;
 
@@ -318,14 +331,16 @@ void game_fn_mega(const union grug_value args[]) {
 	game_fn_mega_id = args[12]._id;
 	game_fn_mega_str = strdup(args[13]._string);
 }
-union grug_value game_fn_get_false(void) {
+union grug_value game_fn_get_false(void* grug_state) {
+	(void)(grug_state);
 	ASSERT_16_BYTE_STACK_ALIGNED();
 	game_fn_get_false_call_count++;
 
 	return grug_bool(false);
 }
 static bool game_fn_set_is_happy_is_happy;
-void game_fn_set_is_happy(const union grug_value args[]) {
+void game_fn_set_is_happy(void* grug_state, const union grug_value args[]) {
+	(void)(grug_state);
 	ASSERT_16_BYTE_STACK_ALIGNED();
 	game_fn_set_is_happy_call_count++;
 
@@ -340,7 +355,8 @@ static double game_fn_mega_f32_f6;
 static double game_fn_mega_f32_f7;
 static double game_fn_mega_f32_f8;
 static double game_fn_mega_f32_f9;
-void game_fn_mega_f32(const union grug_value args[]) {
+void game_fn_mega_f32(void* grug_state, const union grug_value args[]) {
+	(void)(grug_state);
 	ASSERT_16_BYTE_STACK_ALIGNED();
 	game_fn_mega_f32_call_count++;
 
@@ -361,7 +377,8 @@ static double game_fn_mega_i32_i4;
 static double game_fn_mega_i32_i5;
 static double game_fn_mega_i32_i6;
 static double game_fn_mega_i32_i7;
-void game_fn_mega_i32(const union grug_value args[]) {
+void game_fn_mega_i32(void* grug_state, const union grug_value args[]) {
+	(void)(grug_state);
 	ASSERT_16_BYTE_STACK_ALIGNED();
 	game_fn_mega_i32_call_count++;
 
@@ -374,24 +391,28 @@ void game_fn_mega_i32(const union grug_value args[]) {
 	game_fn_mega_i32_i7 = args[6]._number;
 }
 static const char *game_fn_draw_sprite_path;
-void game_fn_draw(const union grug_value args[]) {
+void game_fn_draw(void* grug_state, const union grug_value args[]) {
+	(void)(grug_state);
 	ASSERT_16_BYTE_STACK_ALIGNED();
 	game_fn_draw_call_count++;
 	game_fn_draw_sprite_path = strdup(args[0]._string);
 }
-void game_fn_blocked_alrm(void) {
+void game_fn_blocked_alrm(void* grug_state) {
+	(void)(grug_state);
 	ASSERT_16_BYTE_STACK_ALIGNED();
 	game_fn_blocked_alrm_call_count++;
 }
 static const char *game_fn_spawn_name;
-void game_fn_spawn(const union grug_value args[]) {
+void game_fn_spawn(void* grug_state, const union grug_value args[]) {
+	(void)(grug_state);
 	ASSERT_16_BYTE_STACK_ALIGNED();
 	game_fn_spawn_call_count++;
 
 	game_fn_spawn_name = strdup(args[0]._string);
 }
 static const char *game_fn_has_resource_path;
-union grug_value game_fn_has_resource(const union grug_value args[]) {
+union grug_value game_fn_has_resource(void* grug_state, const union grug_value args[]) {
+	(void)(grug_state);
 	ASSERT_16_BYTE_STACK_ALIGNED();
 	game_fn_has_resource_call_count++;
 
@@ -400,7 +421,8 @@ union grug_value game_fn_has_resource(const union grug_value args[]) {
 	return grug_bool(true);
 }
 static const char *game_fn_has_entity_name;
-union grug_value game_fn_has_entity(const union grug_value args[]) {
+union grug_value game_fn_has_entity(void* grug_state, const union grug_value args[]) {
+	(void)(grug_state);
 	ASSERT_16_BYTE_STACK_ALIGNED();
 	game_fn_has_entity_call_count++;
 
@@ -409,7 +431,8 @@ union grug_value game_fn_has_entity(const union grug_value args[]) {
 	return grug_bool(true);
 }
 static const char *game_fn_has_string_str;
-union grug_value game_fn_has_string(const union grug_value args[]) {
+union grug_value game_fn_has_string(void* grug_state, const union grug_value args[]) {
+	(void)(grug_state);
 	ASSERT_16_BYTE_STACK_ALIGNED();
 	game_fn_has_string_call_count++;
 
@@ -417,27 +440,31 @@ union grug_value game_fn_has_string(const union grug_value args[]) {
 
 	return grug_bool(true);
 }
-union grug_value game_fn_get_opponent(void) {
+union grug_value game_fn_get_opponent(void* grug_state) {
+	(void)(grug_state);
 	ASSERT_16_BYTE_STACK_ALIGNED();
 	game_fn_get_opponent_call_count++;
 
 	return grug_id(69);
 }
-union grug_value game_fn_get_os(void) {
+union grug_value game_fn_get_os(void* grug_state) {
+	(void)(grug_state);
 	ASSERT_16_BYTE_STACK_ALIGNED();
 	game_fn_get_os_call_count++;
 
 	return grug_string("foo");
 }
 static uint64_t game_fn_set_d_target;
-void game_fn_set_d(const union grug_value args[]) {
+void game_fn_set_d(void* grug_state, const union grug_value args[]) {
+	(void)(grug_state);
 	ASSERT_16_BYTE_STACK_ALIGNED();
 	game_fn_set_d_call_count++;
 
 	game_fn_set_d_target = args[0]._id;
 }
 static uint64_t game_fn_set_opponent_target;
-void game_fn_set_opponent(const union grug_value args[]) {
+void game_fn_set_opponent(void* grug_state, const union grug_value args[]) {
+	(void)(grug_state);
 	ASSERT_16_BYTE_STACK_ALIGNED();
 	game_fn_set_opponent_call_count++;
 
@@ -460,7 +487,8 @@ static double game_fn_motherload_f7;
 static double game_fn_motherload_f8;
 static uint64_t game_fn_motherload_id;
 static double game_fn_motherload_f9;
-void game_fn_motherload(const union grug_value args[]) {
+void game_fn_motherload(void* grug_state, const union grug_value args[]) {
+	(void)(grug_state);
 	ASSERT_16_BYTE_STACK_ALIGNED();
 	game_fn_motherload_call_count++;
 
@@ -500,7 +528,8 @@ static double game_fn_motherload_subless_f8;
 static double game_fn_motherload_subless_f9;
 static uint64_t game_fn_motherload_subless_id;
 static double game_fn_motherload_subless_f10;
-void game_fn_motherload_subless(const union grug_value args[]) {
+void game_fn_motherload_subless(void* grug_state, const union grug_value args[]) {
+	(void)(grug_state);
 	ASSERT_16_BYTE_STACK_ALIGNED();
 	game_fn_motherload_subless_call_count++;
 
@@ -547,7 +576,8 @@ static double game_fn_offset_32_bit_f32_f6;
 static double game_fn_offset_32_bit_f32_f7;
 static double game_fn_offset_32_bit_f32_f8;
 static double game_fn_offset_32_bit_f32_g;
-void game_fn_offset_32_bit_f32(const union grug_value args[]) {
+void game_fn_offset_32_bit_f32(void* grug_state, const union grug_value args[]) {
+	(void)(grug_state);
 	ASSERT_16_BYTE_STACK_ALIGNED();
 	game_fn_offset_32_bit_f32_call_count++;
 
@@ -612,7 +642,8 @@ static double game_fn_offset_32_bit_i32_i3;
 static double game_fn_offset_32_bit_i32_i4;
 static double game_fn_offset_32_bit_i32_i5;
 static double game_fn_offset_32_bit_i32_g;
-void game_fn_offset_32_bit_i32(const union grug_value args[]) {
+void game_fn_offset_32_bit_i32(void* grug_state, const union grug_value args[]) {
+	(void)(grug_state);
 	ASSERT_16_BYTE_STACK_ALIGNED();
 	game_fn_offset_32_bit_i32_call_count++;
 
@@ -689,7 +720,8 @@ static const char *game_fn_offset_32_bit_string_s3;
 static const char *game_fn_offset_32_bit_string_s4;
 static const char *game_fn_offset_32_bit_string_s5;
 static double game_fn_offset_32_bit_string_g;
-void game_fn_offset_32_bit_string(const union grug_value args[]) {
+void game_fn_offset_32_bit_string(void* grug_state, const union grug_value args[]) {
+	(void)(grug_state);
 	ASSERT_16_BYTE_STACK_ALIGNED();
 	game_fn_offset_32_bit_string_call_count++;
 
@@ -734,7 +766,8 @@ static const char *game_fn_talk_message1;
 static const char *game_fn_talk_message2;
 static const char *game_fn_talk_message3;
 static const char *game_fn_talk_message4;
-void game_fn_talk(const union grug_value args[]) {
+void game_fn_talk(void* grug_state, const union grug_value args[]) {
+	(void)(grug_state);
 	ASSERT_16_BYTE_STACK_ALIGNED();
 	game_fn_talk_call_count++;
 
@@ -743,7 +776,8 @@ void game_fn_talk(const union grug_value args[]) {
 	game_fn_talk_message3 = strdup(args[2]._string);
 	game_fn_talk_message4 = strdup(args[3]._string);
 }
-union grug_value game_fn_get_position(const union grug_value args[]) {
+union grug_value game_fn_get_position(void* grug_state, const union grug_value args[]) {
+	(void)(grug_state);
 	ASSERT_16_BYTE_STACK_ALIGNED();
 	game_fn_get_position_call_count++;
 
@@ -752,39 +786,43 @@ union grug_value game_fn_get_position(const union grug_value args[]) {
 	return grug_id(1337);
 }
 static uint64_t game_fn_set_position_pos;
-void game_fn_set_position(const union grug_value args[]) {
+void game_fn_set_position(void* grug_state, const union grug_value args[]) {
+	(void)(grug_state);
 	ASSERT_16_BYTE_STACK_ALIGNED();
 	game_fn_set_position_call_count++;
 
 	game_fn_set_position_pos = args[0]._id;
 }
-void game_fn_cause_game_fn_error(void) {
+void game_fn_cause_game_fn_error(void* grug_state) {
 	ASSERT_16_BYTE_STACK_ALIGNED();
 	game_fn_cause_game_fn_error_call_count++;
 
-	game_fn_error("cause_game_fn_error(): Example game function error");
+	game_fn_error(grug_state, "cause_game_fn_error(): Example game function error");
 }
 static char *saved_grug_path = NULL;
-void game_fn_call_on_b_fn(void) {
+void game_fn_call_on_b_fn(void* grug_state) {
 	ASSERT_16_BYTE_STACK_ALIGNED();
 	game_fn_call_on_b_fn_call_count++;
 
-	on_fn_dispatcher("on_b");
+	on_fn_dispatcher(grug_state,"on_b");
 }
 static uint64_t game_fn_store_id;
-void game_fn_store(const union grug_value args[]) {
+void game_fn_store(void* grug_state, const union grug_value args[]) {
+	(void)(grug_state);
 	ASSERT_16_BYTE_STACK_ALIGNED();
 	game_fn_store_call_count++;
 
 	game_fn_store_id = args[0]._id;
 }
-union grug_value game_fn_retrieve(void) {
+union grug_value game_fn_retrieve(void* grug_state) {
+	(void)(grug_state);
 	ASSERT_16_BYTE_STACK_ALIGNED();
 	game_fn_retrieve_call_count++;
 
 	return grug_id(123);
 }
-union grug_value game_fn_box_number(const union grug_value args[]) {
+union grug_value game_fn_box_number(void* grug_state, const union grug_value args[]) {
+	(void)(grug_state);
 	ASSERT_16_BYTE_STACK_ALIGNED();
 	game_fn_box_number_call_count++;
 
@@ -1029,6 +1067,7 @@ static int rm_rf(const char *path) {
 }
 
 static void test_error(
+	void* grug_state,
 	const char *test_name,
 	const char *grug_path,
 	const char *expected_error_path,
@@ -1040,7 +1079,7 @@ static void test_error(
 	rm_rf(results_path);
 	make_results_dir(results_path);
 
-	const char *msg = compile_grug_file(grug_path);
+	const char *msg = compile_grug_file(grug_state, grug_path);
 
 	const char *expected_error = get_expected_error(expected_error_path);
 
@@ -1077,17 +1116,18 @@ static void test_error(
 }
 
 static void diff_roundtrip(
+	void* grug_state,
 	const char *grug_path,
 	const char *dump_path,
 	const char *applied_path
 ) {
 	static char buf[4096];
-	if (dump_file_to_json(prefix(grug_path), prefix_buf(dump_path, buf))) {
+	if (dump_file_to_json(grug_state, prefix(grug_path), prefix_buf(dump_path, buf))) {
 		fprintf(stderr, "Error: Failed to dump file AST\n");
 		exit(EXIT_FAILURE);
 	}
 
-	if (generate_file_from_json(prefix(dump_path), prefix_buf(applied_path, buf))) {
+	if (generate_file_from_json(grug_state, prefix(dump_path), prefix_buf(applied_path, buf))) {
 		fprintf(stderr, "Error: Failed to apply file AST\n");
 		exit(EXIT_FAILURE);
 	}
@@ -1112,7 +1152,7 @@ static void diff_roundtrip(
 	}
 }
 
-static void prologue(const char *grug_path, const char *results_path) {
+static void prologue(void* grug_state, const char *grug_path, const char *results_path) {
 	reset_call_counts();
 
 	runtime_error_reason = NULL;
@@ -1125,7 +1165,7 @@ static void prologue(const char *grug_path, const char *results_path) {
 	rm_rf(results_path);
 	make_results_dir(results_path);
 
-	const char *msg = compile_grug_file(grug_path);
+	const char *msg = compile_grug_file(grug_state, grug_path);
 	if (msg) {
 		fprintf(stderr, "Error: The test wasn't supposed to print anything, but did:\n");
 		fprintf(stderr, "----\n");
@@ -1136,9 +1176,9 @@ static void prologue(const char *grug_path, const char *results_path) {
 	}
 }
 
-static void ok_addition_as_argument(void) {
+static void ok_addition_as_argument(void* grug_state) {
 	assert_call_count(initialize, 0);
-    on_fn_dispatcher("on_a");
+    on_fn_dispatcher(grug_state,"on_a");
 	assert_call_count(initialize, 1);
 
 	assert_false(had_runtime_error);
@@ -1146,149 +1186,149 @@ static void ok_addition_as_argument(void) {
 	assert_number(game_fn_initialize_x, 3.0);
 }
 
-static void ok_addition_as_two_arguments(void) {
+static void ok_addition_as_two_arguments(void* grug_state) {
 	assert_call_count(max, 0);
-    on_fn_dispatcher("on_a");
+    on_fn_dispatcher(grug_state,"on_a");
 	assert_call_count(max, 1);
 
 	assert_number(game_fn_max_x, 3.0);
 	assert_number(game_fn_max_y, 9.0);
 }
 
-static void ok_addition_with_multiplication(void) {
+static void ok_addition_with_multiplication(void* grug_state) {
 	assert_call_count(initialize, 0);
-    on_fn_dispatcher("on_a");
+    on_fn_dispatcher(grug_state,"on_a");
 	assert_call_count(initialize, 1);
 
 	assert_number(game_fn_initialize_x, 14.0);
 }
 
-static void ok_addition_with_multiplication_2(void) {
+static void ok_addition_with_multiplication_2(void* grug_state) {
 	assert_call_count(initialize, 0);
-    on_fn_dispatcher("on_a");
+    on_fn_dispatcher(grug_state,"on_a");
 	assert_call_count(initialize, 1);
 
 	assert_number(game_fn_initialize_x, 10.0);
 }
 
-static void ok_and_false_1(void) {
+static void ok_and_false_1(void* grug_state) {
 	assert_call_count(initialize_bool, 0);
-    on_fn_dispatcher("on_a");
+    on_fn_dispatcher(grug_state,"on_a");
 	assert_call_count(initialize_bool, 1);
 
 	assert_false(game_fn_initialize_bool_b);
 }
 
-static void ok_and_false_2(void) {
+static void ok_and_false_2(void* grug_state) {
 	assert_call_count(initialize_bool, 0);
-    on_fn_dispatcher("on_a");
+    on_fn_dispatcher(grug_state,"on_a");
 	assert_call_count(initialize_bool, 1);
 
 	assert_false(game_fn_initialize_bool_b);
 }
 
-static void ok_and_false_3(void) {
+static void ok_and_false_3(void* grug_state) {
 	assert_call_count(initialize_bool, 0);
-    on_fn_dispatcher("on_a");
+    on_fn_dispatcher(grug_state,"on_a");
 	assert_call_count(initialize_bool, 1);
 
 	assert_false(game_fn_initialize_bool_b);
 }
 
-static void ok_and_short_circuit(void) {
+static void ok_and_short_circuit(void* grug_state) {
 	assert_call_count(initialize_bool, 0);
-    on_fn_dispatcher("on_a");
+    on_fn_dispatcher(grug_state,"on_a");
 	assert_call_count(initialize_bool, 1);
 
 	assert_false(game_fn_initialize_bool_b);
 }
 
-static void ok_and_true(void) {
+static void ok_and_true(void* grug_state) {
 	assert_call_count(initialize_bool, 0);
-    on_fn_dispatcher("on_a");
+    on_fn_dispatcher(grug_state,"on_a");
 	assert_call_count(initialize_bool, 1);
 
 	assert_true(game_fn_initialize_bool_b);
 }
 
-static void ok_blocked_alrm(void) {
+static void ok_blocked_alrm(void* grug_state) {
 	assert_call_count(blocked_alrm, 0);
-    on_fn_dispatcher("on_a");
+    on_fn_dispatcher(grug_state,"on_a");
 	assert_call_count(blocked_alrm, 1);
 }
 
-static void ok_bool_logical_not_false(void) {
+static void ok_bool_logical_not_false(void* grug_state) {
 	assert_call_count(initialize_bool, 0);
-    on_fn_dispatcher("on_a");
+    on_fn_dispatcher(grug_state,"on_a");
 	assert_call_count(initialize_bool, 1);
 
 	assert_true(game_fn_initialize_bool_b);
 }
 
-static void ok_bool_logical_not_true(void) {
+static void ok_bool_logical_not_true(void* grug_state) {
 	assert_call_count(initialize_bool, 0);
-    on_fn_dispatcher("on_a");
+    on_fn_dispatcher(grug_state,"on_a");
 	assert_call_count(initialize_bool, 1);
 
 	assert_false(game_fn_initialize_bool_b);
 }
 
-static void ok_bool_returned(void) {
+static void ok_bool_returned(void* grug_state) {
 	assert_call_count(set_is_happy, 0);
 	assert_call_count(get_false, 0);
-    on_fn_dispatcher("on_a");
+    on_fn_dispatcher(grug_state,"on_a");
 	assert_call_count(set_is_happy, 1);
 	assert_call_count(get_false, 1);
 
 	assert_false(game_fn_set_is_happy_is_happy);
 }
 
-static void ok_bool_returned_global(void) {
+static void ok_bool_returned_global(void* grug_state) {
 	assert_call_count(set_is_happy, 0);
 	assert_call_count(get_false, 0);
-    on_fn_dispatcher("on_a");
+    on_fn_dispatcher(grug_state,"on_a");
 	assert_call_count(set_is_happy, 1);
 	assert_call_count(get_false, 1);
 
 	assert_false(game_fn_set_is_happy_is_happy);
 }
 
-static void ok_bool_zero_extended_if_statement(void) {
+static void ok_bool_zero_extended_if_statement(void* grug_state) {
 	assert_call_count(nothing, 0);
 	assert_call_count(get_false, 0);
-    on_fn_dispatcher("on_a");
+    on_fn_dispatcher(grug_state,"on_a");
 	assert_call_count(nothing, 2);
 	assert_call_count(get_false, 1);
 }
 
-static void ok_bool_zero_extended_while_statement(void) {
+static void ok_bool_zero_extended_while_statement(void* grug_state) {
 	assert_call_count(nothing, 0);
-    on_fn_dispatcher("on_a");
+    on_fn_dispatcher(grug_state,"on_a");
 	assert_call_count(nothing, 2);
 }
 
-static void ok_break(void) {
+static void ok_break(void* grug_state) {
 	assert_call_count(nothing, 0);
-    on_fn_dispatcher("on_a");
+    on_fn_dispatcher(grug_state,"on_a");
 	assert_call_count(nothing, 3);
 }
 
-static void ok_calls_100(void) {
+static void ok_calls_100(void* grug_state) {
 	assert_call_count(nothing, 0);
-    on_fn_dispatcher("on_a");
+    on_fn_dispatcher(grug_state,"on_a");
 	assert_call_count(nothing, 100);
 }
 
-static void ok_calls_1000(void) {
+static void ok_calls_1000(void* grug_state) {
 	assert_call_count(nothing, 0);
-    on_fn_dispatcher("on_a");
+    on_fn_dispatcher(grug_state,"on_a");
 	assert_call_count(nothing, 1000);
 }
 
-static void ok_calls_in_call(void) {
+static void ok_calls_in_call(void* grug_state) {
 	assert_call_count(max, 0);
 	assert_call_count(initialize, 0);
-    on_fn_dispatcher("on_a");
+    on_fn_dispatcher(grug_state,"on_a");
 	assert_call_count(max, 3);
 	assert_call_count(initialize, 1);
 
@@ -1297,164 +1337,168 @@ static void ok_calls_in_call(void) {
 	assert_number(game_fn_initialize_x, 4.0);
 }
 
-static void ok_comment_above_block(void) {
+static void ok_comment_above_block(void* grug_state) {
 	assert_call_count(nothing, 0);
-    on_fn_dispatcher("on_a");
+    on_fn_dispatcher(grug_state,"on_a");
 	assert_call_count(nothing, 1);
 }
 
-static void ok_comment_above_block_twice(void) {
+static void ok_comment_above_block_twice(void* grug_state) {
 	assert_call_count(nothing, 0);
-    on_fn_dispatcher("on_a");
+    on_fn_dispatcher(grug_state,"on_a");
 	assert_call_count(nothing, 1);
 }
 
-static void ok_comment_above_globals(void) {
+static void ok_comment_above_globals(void* grug_state) {
+	(void)(grug_state);
 }
 
-static void ok_comment_above_helper_fn(void) {
+static void ok_comment_above_helper_fn(void* grug_state) {
 	assert_call_count(nothing, 0);
-    on_fn_dispatcher("on_a");
+    on_fn_dispatcher(grug_state,"on_a");
 	assert_call_count(nothing, 1);
 }
 
-static void ok_comment_above_on_fn(void) {
-    on_fn_dispatcher("on_a");
+static void ok_comment_above_on_fn(void* grug_state) {
+    on_fn_dispatcher(grug_state,"on_a");
 }
 
-static void ok_comment_between_globals(void) {
+static void ok_comment_between_globals(void* grug_state) {
+	(void)(grug_state);
 }
 
-static void ok_comment_between_statements(void) {
+static void ok_comment_between_statements(void* grug_state) {
 	assert_call_count(nothing, 0);
-    on_fn_dispatcher("on_a");
+    on_fn_dispatcher(grug_state,"on_a");
 	assert_call_count(nothing, 2);
 }
 
-static void ok_comment_lone_block(void) {
+static void ok_comment_lone_block(void* grug_state) {
 	assert_call_count(nothing, 0);
-    on_fn_dispatcher("on_a");
+    on_fn_dispatcher(grug_state,"on_a");
 	assert_call_count(nothing, 1);
 }
 
-static void ok_comment_lone_block_at_end(void) {
-    on_fn_dispatcher("on_a");
+static void ok_comment_lone_block_at_end(void* grug_state) {
+    on_fn_dispatcher(grug_state,"on_a");
 }
 
-static void ok_comment_lone_global(void) {
-    on_fn_dispatcher("on_a");
+static void ok_comment_lone_global(void* grug_state) {
+    on_fn_dispatcher(grug_state,"on_a");
 }
 
-static void ok_continue(void) {
+static void ok_continue(void* grug_state) {
 	assert_call_count(nothing, 0);
-    on_fn_dispatcher("on_a");
+    on_fn_dispatcher(grug_state,"on_a");
 	assert_call_count(nothing, 2);
 }
 
-static void ok_custom_id_decays_to_id(void) {
+static void ok_custom_id_decays_to_id(void* grug_state) {
 	assert_call_count(store, 0);
-    on_fn_dispatcher("on_a");
+    on_fn_dispatcher(grug_state,"on_a");
 	assert_call_count(store, 1);
 
 	assert_id(game_fn_store_id, 42);
 }
 
-static void ok_custom_id_transfer_between_globals(void) {
+static void ok_custom_id_transfer_between_globals(void* grug_state) {
 	assert_call_count(get_opponent, 1); // Called by init_globals()
 	assert_call_count(set_opponent, 0);
-    on_fn_dispatcher("on_a");
+    on_fn_dispatcher(grug_state,"on_a");
 	assert_call_count(get_opponent, 1);
 	assert_call_count(set_opponent, 1);
 
 	assert_id(game_fn_set_opponent_target, 69);
 }
 
-static void ok_custom_id_with_digits(void) {
+static void ok_custom_id_with_digits(void* grug_state) {
+	(void)(grug_state);
 	assert_call_count(box_number, 1);
 }
 
-static void ok_division_negative_result(void) {
+static void ok_division_negative_result(void* grug_state) {
 	assert_call_count(initialize, 0);
-    on_fn_dispatcher("on_a");
+    on_fn_dispatcher(grug_state,"on_a");
 	assert_call_count(initialize, 1);
 
 	assert_number(game_fn_initialize_x, -2.5);
 }
 
-static void ok_division_positive_result(void) {
+static void ok_division_positive_result(void* grug_state) {
 	assert_call_count(initialize, 0);
-    on_fn_dispatcher("on_a");
+    on_fn_dispatcher(grug_state,"on_a");
 	assert_call_count(initialize, 1);
 
 	assert_number(game_fn_initialize_x, 2.5);
 }
 
-static void ok_double_negation_with_parentheses(void) {
+static void ok_double_negation_with_parentheses(void* grug_state) {
 	assert_call_count(initialize, 0);
-    on_fn_dispatcher("on_a");
+    on_fn_dispatcher(grug_state,"on_a");
 	assert_call_count(initialize, 1);
 
 	assert_number(game_fn_initialize_x, 2.0);
 }
 
-static void ok_double_not_with_parentheses(void) {
+static void ok_double_not_with_parentheses(void* grug_state) {
 	assert_call_count(initialize_bool, 0);
-    on_fn_dispatcher("on_a");
+    on_fn_dispatcher(grug_state,"on_a");
 	assert_call_count(initialize_bool, 1);
 
 	assert_true(game_fn_initialize_bool_b);
 }
 
-static void ok_else_after_else_if_false(void) {
+static void ok_else_after_else_if_false(void* grug_state) {
 	assert_call_count(nothing, 0);
-    on_fn_dispatcher("on_a");
+    on_fn_dispatcher(grug_state,"on_a");
 	assert_call_count(nothing, 2);
 }
 
-static void ok_else_after_else_if_true(void) {
+static void ok_else_after_else_if_true(void* grug_state) {
 	assert_call_count(nothing, 0);
-    on_fn_dispatcher("on_a");
+    on_fn_dispatcher(grug_state,"on_a");
 	assert_call_count(nothing, 3);
 }
 
-static void ok_else_false(void) {
+static void ok_else_false(void* grug_state) {
 	assert_call_count(nothing, 0);
-    on_fn_dispatcher("on_a");
+    on_fn_dispatcher(grug_state,"on_a");
 	assert_call_count(nothing, 2);
 }
 
-static void ok_else_if_false(void) {
+static void ok_else_if_false(void* grug_state) {
 	assert_call_count(nothing, 0);
-    on_fn_dispatcher("on_a");
+    on_fn_dispatcher(grug_state,"on_a");
 	assert_call_count(nothing, 2);
 }
 
-static void ok_else_if_true(void) {
+static void ok_else_if_true(void* grug_state) {
 	assert_call_count(nothing, 0);
-    on_fn_dispatcher("on_a");
+    on_fn_dispatcher(grug_state,"on_a");
 	assert_call_count(nothing, 3);
 }
 
-static void ok_else_true(void) {
+static void ok_else_true(void* grug_state) {
 	assert_call_count(nothing, 0);
-    on_fn_dispatcher("on_a");
+    on_fn_dispatcher(grug_state,"on_a");
 	assert_call_count(nothing, 3);
 }
 
-static void ok_empty_file(void) {
+static void ok_empty_file(void* grug_state) {
+	(void)(grug_state);
 }
 
-static void ok_empty_line(void) {
+static void ok_empty_line(void* grug_state) {
 	assert_call_count(nothing, 0);
-    on_fn_dispatcher("on_a");
+    on_fn_dispatcher(grug_state,"on_a");
 	assert_call_count(nothing, 2);
 }
 
-static void ok_entity_and_resource_as_subexpression(void) {
+static void ok_entity_and_resource_as_subexpression(void* grug_state) {
 	assert_call_count(has_resource, 0);
 	assert_call_count(has_entity, 0);
 	assert_call_count(has_string, 0);
-    on_fn_dispatcher("on_a");
+    on_fn_dispatcher(grug_state,"on_a");
 	assert_call_count(has_resource, 1);
 	assert_call_count(has_entity, 1);
 	assert_call_count(has_string, 1);
@@ -1464,234 +1508,234 @@ static void ok_entity_and_resource_as_subexpression(void) {
 	assert_string(game_fn_has_string_str, "bar");
 }
 
-static void ok_entity_duplicate(void) {
+static void ok_entity_duplicate(void* grug_state) {
 	assert_call_count(spawn, 0);
-    on_fn_dispatcher("on_a");
+    on_fn_dispatcher(grug_state,"on_a");
 	assert_call_count(spawn, 4);
 
 	assert_string(game_fn_spawn_name, "ok:baz");
 }
 
-static void ok_entity_in_on_fn(void) {
+static void ok_entity_in_on_fn(void* grug_state) {
 	assert_call_count(spawn, 0);
-    on_fn_dispatcher("on_a");
+    on_fn_dispatcher(grug_state,"on_a");
 	assert_call_count(spawn, 1);
 
 	assert_string(game_fn_spawn_name, "ok:foo");
 }
 
-static void ok_entity_in_on_fn_with_mod_specified(void) {
+static void ok_entity_in_on_fn_with_mod_specified(void* grug_state) {
 	assert_call_count(spawn, 0);
-    on_fn_dispatcher("on_a");
+    on_fn_dispatcher(grug_state,"on_a");
 	assert_call_count(spawn, 1);
 
 	assert_string(game_fn_spawn_name, "wow:foo");
 }
 
-static void ok_eq_false(void) {
+static void ok_eq_false(void* grug_state) {
 	assert_call_count(initialize_bool, 0);
-    on_fn_dispatcher("on_a");
+    on_fn_dispatcher(grug_state,"on_a");
 	assert_call_count(initialize_bool, 1);
 
 	assert_false(game_fn_initialize_bool_b);
 }
 
-static void ok_eq_true(void) {
+static void ok_eq_true(void* grug_state) {
 	assert_call_count(initialize_bool, 0);
-    on_fn_dispatcher("on_a");
+    on_fn_dispatcher(grug_state,"on_a");
 	assert_call_count(initialize_bool, 1);
 
 	assert_true(game_fn_initialize_bool_b);
 }
 
-static void ok_f32_addition(void) {
+static void ok_f32_addition(void* grug_state) {
 	assert_call_count(sin, 0);
-    on_fn_dispatcher("on_a");
+    on_fn_dispatcher(grug_state,"on_a");
 	assert_call_count(sin, 1);
 
 	assert_number(game_fn_sin_x, 6.0);
 }
 
-static void ok_f32_argument(void) {
+static void ok_f32_argument(void* grug_state) {
 	assert_call_count(sin, 0);
-    on_fn_dispatcher("on_a");
+    on_fn_dispatcher(grug_state,"on_a");
 	assert_call_count(sin, 1);
 
 	assert_number(game_fn_sin_x, 4.0);
 }
 
-static void ok_f32_division(void) {
+static void ok_f32_division(void* grug_state) {
 	assert_call_count(sin, 0);
-    on_fn_dispatcher("on_a");
+    on_fn_dispatcher(grug_state,"on_a");
 	assert_call_count(sin, 1);
 
 	assert_number(game_fn_sin_x, 0.5);
 }
 
-static void ok_f32_eq_false(void) {
+static void ok_f32_eq_false(void* grug_state) {
 	assert_call_count(initialize_bool, 0);
-    on_fn_dispatcher("on_a");
+    on_fn_dispatcher(grug_state,"on_a");
 	assert_call_count(initialize_bool, 1);
 
 	assert_false(game_fn_initialize_bool_b);
 }
 
-static void ok_f32_eq_true(void) {
+static void ok_f32_eq_true(void* grug_state) {
 	assert_call_count(initialize_bool, 0);
-    on_fn_dispatcher("on_a");
+    on_fn_dispatcher(grug_state,"on_a");
 	assert_call_count(initialize_bool, 1);
 
 	assert_true(game_fn_initialize_bool_b);
 }
 
-static void ok_f32_ge_false(void) {
+static void ok_f32_ge_false(void* grug_state) {
 	assert_call_count(initialize_bool, 0);
-    on_fn_dispatcher("on_a");
+    on_fn_dispatcher(grug_state,"on_a");
 	assert_call_count(initialize_bool, 1);
 
 	assert_false(game_fn_initialize_bool_b);
 }
 
-static void ok_f32_ge_true_1(void) {
+static void ok_f32_ge_true_1(void* grug_state) {
 	assert_call_count(initialize_bool, 0);
-    on_fn_dispatcher("on_a");
+    on_fn_dispatcher(grug_state,"on_a");
 	assert_call_count(initialize_bool, 1);
 
 	assert_true(game_fn_initialize_bool_b);
 }
 
-static void ok_f32_ge_true_2(void) {
+static void ok_f32_ge_true_2(void* grug_state) {
 	assert_call_count(initialize_bool, 0);
-    on_fn_dispatcher("on_a");
+    on_fn_dispatcher(grug_state,"on_a");
 	assert_call_count(initialize_bool, 1);
 
 	assert_true(game_fn_initialize_bool_b);
 }
 
-static void ok_f32_global_variable(void) {
+static void ok_f32_global_variable(void* grug_state) {
 	assert_call_count(sin, 0);
-    on_fn_dispatcher("on_a");
+    on_fn_dispatcher(grug_state,"on_a");
 	assert_call_count(sin, 1);
 
 	assert_number(game_fn_sin_x, 4.0);
 }
 
-static void ok_f32_gt_false(void) {
+static void ok_f32_gt_false(void* grug_state) {
 	assert_call_count(initialize_bool, 0);
-    on_fn_dispatcher("on_a");
+    on_fn_dispatcher(grug_state,"on_a");
 	assert_call_count(initialize_bool, 1);
 
 	assert_false(game_fn_initialize_bool_b);
 }
 
-static void ok_f32_gt_true(void) {
+static void ok_f32_gt_true(void* grug_state) {
 	assert_call_count(initialize_bool, 0);
-    on_fn_dispatcher("on_a");
+    on_fn_dispatcher(grug_state,"on_a");
 	assert_call_count(initialize_bool, 1);
 
 	assert_true(game_fn_initialize_bool_b);
 }
 
-static void ok_f32_le_false(void) {
+static void ok_f32_le_false(void* grug_state) {
 	assert_call_count(initialize_bool, 0);
-    on_fn_dispatcher("on_a");
+    on_fn_dispatcher(grug_state,"on_a");
 	assert_call_count(initialize_bool, 1);
 
 	assert_false(game_fn_initialize_bool_b);
 }
 
-static void ok_f32_le_true_1(void) {
+static void ok_f32_le_true_1(void* grug_state) {
 	assert_call_count(initialize_bool, 0);
-    on_fn_dispatcher("on_a");
+    on_fn_dispatcher(grug_state,"on_a");
 	assert_call_count(initialize_bool, 1);
 
 	assert_true(game_fn_initialize_bool_b);
 }
 
-static void ok_f32_le_true_2(void) {
+static void ok_f32_le_true_2(void* grug_state) {
 	assert_call_count(initialize_bool, 0);
-    on_fn_dispatcher("on_a");
+    on_fn_dispatcher(grug_state,"on_a");
 	assert_call_count(initialize_bool, 1);
 
 	assert_true(game_fn_initialize_bool_b);
 }
 
-static void ok_f32_local_variable(void) {
+static void ok_f32_local_variable(void* grug_state) {
 	assert_call_count(sin, 0);
-    on_fn_dispatcher("on_a");
+    on_fn_dispatcher(grug_state,"on_a");
 	assert_call_count(sin, 1);
 
 	assert_number(game_fn_sin_x, 4.0);
 }
 
-static void ok_f32_lt_false(void) {
+static void ok_f32_lt_false(void* grug_state) {
 	assert_call_count(initialize_bool, 0);
-    on_fn_dispatcher("on_a");
+    on_fn_dispatcher(grug_state,"on_a");
 	assert_call_count(initialize_bool, 1);
 
 	assert_false(game_fn_initialize_bool_b);
 }
 
-static void ok_f32_lt_true(void) {
+static void ok_f32_lt_true(void* grug_state) {
 	assert_call_count(initialize_bool, 0);
-    on_fn_dispatcher("on_a");
+    on_fn_dispatcher(grug_state,"on_a");
 	assert_call_count(initialize_bool, 1);
 
 	assert_true(game_fn_initialize_bool_b);
 }
 
-static void ok_f32_multiplication(void) {
+static void ok_f32_multiplication(void* grug_state) {
 	assert_call_count(sin, 0);
-    on_fn_dispatcher("on_a");
+    on_fn_dispatcher(grug_state,"on_a");
 	assert_call_count(sin, 1);
 
 	assert_number(game_fn_sin_x, 8.0);
 }
 
-static void ok_f32_ne_false(void) {
+static void ok_f32_ne_false(void* grug_state) {
 	assert_call_count(initialize_bool, 0);
-    on_fn_dispatcher("on_a");
+    on_fn_dispatcher(grug_state,"on_a");
 	assert_call_count(initialize_bool, 1);
 
 	assert_false(game_fn_initialize_bool_b);
 }
 
-static void ok_f32_negated(void) {
+static void ok_f32_negated(void* grug_state) {
 	assert_call_count(sin, 0);
-    on_fn_dispatcher("on_a");
+    on_fn_dispatcher(grug_state,"on_a");
 	assert_call_count(sin, 1);
 
 	assert_number(game_fn_sin_x, -4.0);
 }
 
-static void ok_f32_ne_true(void) {
+static void ok_f32_ne_true(void* grug_state) {
 	assert_call_count(initialize_bool, 0);
-    on_fn_dispatcher("on_a");
+    on_fn_dispatcher(grug_state,"on_a");
 	assert_call_count(initialize_bool, 1);
 
 	assert_true(game_fn_initialize_bool_b);
 }
 
-static void ok_f32_passed_to_helper_fn(void) {
+static void ok_f32_passed_to_helper_fn(void* grug_state) {
 	assert_call_count(sin, 0);
-    on_fn_dispatcher("on_a");
+    on_fn_dispatcher(grug_state,"on_a");
 	assert_call_count(sin, 1);
 
 	assert_number(game_fn_sin_x, 42.0);
 }
 
-static void ok_f32_passed_to_on_fn(void) {
+static void ok_f32_passed_to_on_fn(void* grug_state) {
 	assert_call_count(sin, 0);
-    on_fn_args_dispatcher("on_a", (const union grug_value[]){{._number=42.0}});
+    on_fn_args_dispatcher(grug_state, "on_a", (const union grug_value[]){{._number=42.0}});
 	assert_call_count(sin, 1);
 
 	assert_number(game_fn_sin_x, 42.0);
 }
 
-static void ok_f32_passing_sin_to_cos(void) {
+static void ok_f32_passing_sin_to_cos(void* grug_state) {
 	assert_call_count(sin, 0);
 	assert_call_count(cos, 0);
-    on_fn_dispatcher("on_a");
+    on_fn_dispatcher(grug_state,"on_a");
 	assert_call_count(sin, 1);
 	assert_call_count(cos, 1);
 
@@ -1699,143 +1743,148 @@ static void ok_f32_passing_sin_to_cos(void) {
 	assert_number(game_fn_cos_x, sin(4.0));
 }
 
-static void ok_f32_subtraction(void) {
+static void ok_f32_subtraction(void* grug_state) {
 	assert_call_count(sin, 0);
-    on_fn_dispatcher("on_a");
+    on_fn_dispatcher(grug_state,"on_a");
 	assert_call_count(sin, 1);
 
 	assert_number(game_fn_sin_x, -2.0);
 }
 
-static void ok_fibonacci(void) {
+static void ok_fibonacci(void* grug_state) {
 	assert_call_count(initialize, 0);
-    on_fn_dispatcher("on_a");
+    on_fn_dispatcher(grug_state,"on_a");
 	assert_call_count(initialize, 1);
 
 	assert_number(game_fn_initialize_x, 55.0);
 }
 
-static void ok_ge_false(void) {
+static void ok_ge_false(void* grug_state) {
 	assert_call_count(initialize_bool, 0);
-    on_fn_dispatcher("on_a");
+    on_fn_dispatcher(grug_state,"on_a");
 	assert_call_count(initialize_bool, 1);
 
 	assert_false(game_fn_initialize_bool_b);
 }
 
-static void ok_ge_true_1(void) {
+static void ok_ge_true_1(void* grug_state) {
 	assert_call_count(initialize_bool, 0);
-    on_fn_dispatcher("on_a");
+    on_fn_dispatcher(grug_state,"on_a");
 	assert_call_count(initialize_bool, 1);
 
 	assert_true(game_fn_initialize_bool_b);
 }
 
-static void ok_ge_true_2(void) {
+static void ok_ge_true_2(void* grug_state) {
 	assert_call_count(initialize_bool, 0);
-    on_fn_dispatcher("on_a");
+    on_fn_dispatcher(grug_state,"on_a");
 	assert_call_count(initialize_bool, 1);
 
 	assert_true(game_fn_initialize_bool_b);
 }
 
-static void ok_global_2_does_not_have_error_handling(void) {
+static void ok_global_2_does_not_have_error_handling(void* grug_state) {
+	(void)(grug_state);
 }
 
-static void ok_global_call_using_me(void) {
+static void ok_global_call_using_me(void* grug_state) {
 	assert_call_count(get_position, 1);
 
 	assert_call_count(set_position, 0);
-    on_fn_dispatcher("on_a");
+    on_fn_dispatcher(grug_state,"on_a");
 	assert_call_count(set_position, 1);
 
 	assert_id(game_fn_set_position_pos, 1337);
 }
 
-static void ok_global_can_use_earlier_global(void) {
+static void ok_global_can_use_earlier_global(void* grug_state) {
 	assert_call_count(initialize, 0);
-    on_fn_dispatcher("on_a");
+    on_fn_dispatcher(grug_state,"on_a");
 	assert_call_count(initialize, 1);
 
 	assert_number(game_fn_initialize_x, 5.0);
 }
 
-static void ok_global_containing_negation(void) {
+static void ok_global_containing_negation(void* grug_state) {
 	assert_call_count(initialize, 0);
-    on_fn_dispatcher("on_a");
+    on_fn_dispatcher(grug_state,"on_a");
 	assert_call_count(initialize, 1);
 
 	assert_number(game_fn_initialize_x, -2.0);
 }
 
-static void ok_global_id(void) {
+static void ok_global_id(void* grug_state) {
 	assert_call_count(get_opponent, 1);
 
 	assert_call_count(set_opponent, 0);
-    on_fn_dispatcher("on_a");
+    on_fn_dispatcher(grug_state,"on_a");
 	assert_call_count(set_opponent, 1);
 
 	assert_id(game_fn_set_opponent_target, 69);
 }
 
-static void ok_globals(void) {
+static void ok_globals(void* grug_state) {
 	assert_call_count(initialize, 0);
-    on_fn_dispatcher("on_a");
+    on_fn_dispatcher(grug_state,"on_a");
 	assert_call_count(initialize, 2);
 
 	assert_number(game_fn_initialize_x, 1337.0);
 }
 
-static void ok_globals_1000(void) {
+static void ok_globals_1000(void* grug_state) {
+	(void)(grug_state);
 }
 
-static void ok_globals_1000_string(void) {
+static void ok_globals_1000_string(void* grug_state) {
+	(void)(grug_state);
 }
 
-static void ok_globals_32(void) {
+static void ok_globals_32(void* grug_state) {
+	(void)(grug_state);
 }
 
-static void ok_globals_64(void) {
+static void ok_globals_64(void* grug_state) {
+	(void)(grug_state);
 }
 
-static void ok_gt_false(void) {
+static void ok_gt_false(void* grug_state) {
 	assert_call_count(initialize_bool, 0);
-    on_fn_dispatcher("on_a");
+    on_fn_dispatcher(grug_state,"on_a");
 	assert_call_count(initialize_bool, 1);
 
 	assert_false(game_fn_initialize_bool_b);
 }
 
-static void ok_gt_true(void) {
+static void ok_gt_true(void* grug_state) {
 	assert_call_count(initialize_bool, 0);
-    on_fn_dispatcher("on_a");
+    on_fn_dispatcher(grug_state,"on_a");
 	assert_call_count(initialize_bool, 1);
 
 	assert_true(game_fn_initialize_bool_b);
 }
 
-static void ok_helper_fn(void) {
+static void ok_helper_fn(void* grug_state) {
 	assert_call_count(nothing, 0);
-    on_fn_dispatcher("on_a");
+    on_fn_dispatcher(grug_state,"on_a");
 	assert_call_count(nothing, 1);
 }
 
-static void ok_helper_fn_called_in_if(void) {
+static void ok_helper_fn_called_in_if(void* grug_state) {
 	assert_call_count(nothing, 0);
-    on_fn_dispatcher("on_a");
+    on_fn_dispatcher(grug_state,"on_a");
 	assert_call_count(nothing, 1);
 }
 
-static void ok_helper_fn_called_indirectly(void) {
+static void ok_helper_fn_called_indirectly(void* grug_state) {
 	assert_call_count(nothing, 0);
-    on_fn_dispatcher("on_a");
+    on_fn_dispatcher(grug_state,"on_a");
 	assert_call_count(nothing, 1);
 }
 
-static void ok_helper_fn_overwriting_param(void) {
+static void ok_helper_fn_overwriting_param(void* grug_state) {
 	assert_call_count(initialize, 0);
 	assert_call_count(sin, 0);
-    on_fn_dispatcher("on_a");
+    on_fn_dispatcher(grug_state,"on_a");
 	assert_call_count(initialize, 1);
 	assert_call_count(sin, 1);
 
@@ -1843,263 +1892,263 @@ static void ok_helper_fn_overwriting_param(void) {
 	assert_number(game_fn_sin_x, 30.0);
 }
 
-static void ok_helper_fn_returning_void_has_no_return(void) {
+static void ok_helper_fn_returning_void_has_no_return(void* grug_state) {
 	assert_call_count(nothing, 0);
-    on_fn_dispatcher("on_a");
+    on_fn_dispatcher(grug_state,"on_a");
 	assert_call_count(nothing, 2);
 }
 
-static void ok_helper_fn_returning_void_returns_void(void) {
+static void ok_helper_fn_returning_void_returns_void(void* grug_state) {
 	assert_call_count(nothing, 0);
-    on_fn_dispatcher("on_a");
+    on_fn_dispatcher(grug_state,"on_a");
 	assert_call_count(nothing, 2);
 }
 
-static void ok_helper_fn_same_param_name_as_on_fn(void) {
+static void ok_helper_fn_same_param_name_as_on_fn(void* grug_state) {
 	assert_call_count(nothing, 0);
-    on_fn_args_dispatcher("on_a", (const union grug_value[]){{._number=42.0}});
+    on_fn_args_dispatcher(grug_state, "on_a", (const union grug_value[]){{._number=42.0}});
 	assert_call_count(nothing, 1);
 }
 
-static void ok_helper_fn_same_param_name_as_other_helper_fn(void) {
+static void ok_helper_fn_same_param_name_as_other_helper_fn(void* grug_state) {
 	assert_call_count(nothing, 0);
-    on_fn_args_dispatcher("on_a", (const union grug_value[]){{._number=42.0}});
+    on_fn_args_dispatcher(grug_state, "on_a", (const union grug_value[]){{._number=42.0}});
 	assert_call_count(nothing, 2);
 }
 
-static void ok_i32_max(void) {
+static void ok_i32_max(void* grug_state) {
 	assert_call_count(initialize, 0);
-    on_fn_dispatcher("on_a");
+    on_fn_dispatcher(grug_state,"on_a");
 	assert_call_count(initialize, 1);
 
 	assert_number(game_fn_initialize_x, 2147483647.0);
 }
 
-static void ok_i32_min(void) {
+static void ok_i32_min(void* grug_state) {
 	assert_call_count(initialize, 0);
-    on_fn_dispatcher("on_a");
+    on_fn_dispatcher(grug_state,"on_a");
 	assert_call_count(initialize, 1);
 
 	assert_number(game_fn_initialize_x, -2147483648.0);
 }
 
-static void ok_i32_negated(void) {
+static void ok_i32_negated(void* grug_state) {
 	assert_call_count(initialize, 0);
-    on_fn_dispatcher("on_a");
+    on_fn_dispatcher(grug_state,"on_a");
 	assert_call_count(initialize, 1);
 
 	assert_number(game_fn_initialize_x, -42.0);
 }
 
-static void ok_i32_negative_is_smaller_than_positive(void) {
+static void ok_i32_negative_is_smaller_than_positive(void* grug_state) {
 	assert_call_count(initialize_bool, 0);
-    on_fn_dispatcher("on_a");
+    on_fn_dispatcher(grug_state,"on_a");
 	assert_call_count(initialize_bool, 1);
 
 	assert_true(game_fn_initialize_bool_b);
 }
 
-static void ok_id_binary_expr_false(void) {
+static void ok_id_binary_expr_false(void* grug_state) {
 	assert_call_count(initialize_bool, 0);
-    on_fn_dispatcher("on_a");
+    on_fn_dispatcher(grug_state,"on_a");
 	assert_call_count(initialize_bool, 1);
 
 	assert_false(game_fn_initialize_bool_b);
 }
 
-static void ok_id_binary_expr_true(void) {
+static void ok_id_binary_expr_true(void* grug_state) {
 	assert_call_count(initialize_bool, 0);
-    on_fn_dispatcher("on_a");
+    on_fn_dispatcher(grug_state,"on_a");
 	assert_call_count(initialize_bool, 1);
 
 	assert_true(game_fn_initialize_bool_b);
 }
 
-static void ok_id_eq_1(void) {
+static void ok_id_eq_1(void* grug_state) {
 	assert_call_count(initialize_bool, 0);
 	assert_call_count(retrieve, 0);
-    on_fn_dispatcher("on_a");
+    on_fn_dispatcher(grug_state,"on_a");
 	assert_call_count(initialize_bool, 1);
 	assert_call_count(retrieve, 1);
 
 	assert_false(game_fn_initialize_bool_b);
 }
 
-static void ok_id_eq_2(void) {
+static void ok_id_eq_2(void* grug_state) {
 	assert_call_count(initialize_bool, 0);
 	assert_call_count(retrieve, 0);
-    on_fn_dispatcher("on_a");
+    on_fn_dispatcher(grug_state,"on_a");
 	assert_call_count(initialize_bool, 1);
 	assert_call_count(retrieve, 1);
 
 	assert_false(game_fn_initialize_bool_b);
 }
 
-static void ok_id_global_with_id_to_new_id(void) {
+static void ok_id_global_with_id_to_new_id(void* grug_state) {
 	assert_call_count(retrieve, 1); // Called by init_globals()
 	assert_call_count(store, 0);
-    on_fn_dispatcher("on_a");
+    on_fn_dispatcher(grug_state,"on_a");
 	assert_call_count(retrieve, 1);
 	assert_call_count(store, 1);
 
 	assert_id(game_fn_store_id, 123);
 }
 
-static void ok_id_global_with_opponent_to_new_id(void) {
+static void ok_id_global_with_opponent_to_new_id(void* grug_state) {
 	assert_call_count(get_opponent, 1); // Called by init_globals()
 	assert_call_count(store, 0);
-    on_fn_dispatcher("on_a");
+    on_fn_dispatcher(grug_state,"on_a");
 	assert_call_count(get_opponent, 1);
 	assert_call_count(store, 1);
 
 	assert_id(game_fn_store_id, 69);
 }
 
-static void ok_id_helper_fn_param(void) {
+static void ok_id_helper_fn_param(void* grug_state) {
 	assert_call_count(retrieve, 0);
 	assert_call_count(store, 0);
-    on_fn_dispatcher("on_a");
+    on_fn_dispatcher(grug_state,"on_a");
 	assert_call_count(retrieve, 1);
 	assert_call_count(store, 1);
 
 	assert_id(game_fn_store_id, 123);
 }
 
-static void ok_id_local_variable_get_and_set(void) {
+static void ok_id_local_variable_get_and_set(void* grug_state) {
 	assert_call_count(get_opponent, 0);
 	assert_call_count(set_opponent, 0);
-    on_fn_dispatcher("on_a");
+    on_fn_dispatcher(grug_state,"on_a");
 	assert_call_count(get_opponent, 1);
 	assert_call_count(set_opponent, 1);
 
 	assert_id(game_fn_set_opponent_target, 69);
 }
 
-static void ok_id_ne_1(void) {
+static void ok_id_ne_1(void* grug_state) {
 	assert_call_count(initialize_bool, 0);
 	assert_call_count(retrieve, 0);
-    on_fn_dispatcher("on_a");
+    on_fn_dispatcher(grug_state,"on_a");
 	assert_call_count(initialize_bool, 1);
 	assert_call_count(retrieve, 1);
 
 	assert_true(game_fn_initialize_bool_b);
 }
 
-static void ok_id_ne_2(void) {
+static void ok_id_ne_2(void* grug_state) {
 	assert_call_count(initialize_bool, 0);
 	assert_call_count(retrieve, 0);
-    on_fn_dispatcher("on_a");
+    on_fn_dispatcher(grug_state,"on_a");
 	assert_call_count(initialize_bool, 1);
 	assert_call_count(retrieve, 1);
 
 	assert_true(game_fn_initialize_bool_b);
 }
 
-static void ok_id_on_fn_param(void) {
+static void ok_id_on_fn_param(void* grug_state) {
 	assert_call_count(store, 0);
-    on_fn_args_dispatcher("on_a", (const union grug_value[]){{._id=77}});
+    on_fn_args_dispatcher(grug_state, "on_a", (const union grug_value[]){{._id=77}});
 	assert_call_count(store, 1);
 
 	assert_id(game_fn_store_id, 77);
 }
 
-static void ok_id_returned_from_helper(void) {
+static void ok_id_returned_from_helper(void* grug_state) {
 	assert_call_count(store, 0);
-    on_fn_dispatcher("on_a");
+    on_fn_dispatcher(grug_state,"on_a");
 	assert_call_count(store, 1);
 
 	assert_id(game_fn_store_id, 42);
 }
 
-static void ok_id_with_d_to_new_id_and_id_to_old_id(void) {
+static void ok_id_with_d_to_new_id_and_id_to_old_id(void* grug_state) {
 	assert_call_count(retrieve, 0);
 	assert_call_count(store, 0);
-    on_fn_dispatcher("on_a");
+    on_fn_dispatcher(grug_state,"on_a");
 	assert_call_count(retrieve, 1);
 	assert_call_count(store, 1);
 
 	assert_id(game_fn_store_id, 123);
 }
 
-static void ok_id_with_d_to_old_id(void) {
+static void ok_id_with_d_to_old_id(void* grug_state) {
 	assert_call_count(store, 0);
-    on_fn_dispatcher("on_a");
+    on_fn_dispatcher(grug_state,"on_a");
 	assert_call_count(store, 1);
 
 	assert_id(game_fn_store_id, 42);
 }
 
-static void ok_id_with_id_to_new_id(void) {
+static void ok_id_with_id_to_new_id(void* grug_state) {
 	assert_call_count(retrieve, 0);
 	assert_call_count(store, 0);
-    on_fn_dispatcher("on_a");
+    on_fn_dispatcher(grug_state,"on_a");
 	assert_call_count(retrieve, 1);
 	assert_call_count(store, 1);
 
 	assert_id(game_fn_store_id, 123);
 }
 
-static void ok_if_false(void) {
+static void ok_if_false(void* grug_state) {
 	assert_call_count(nothing, 0);
-    on_fn_dispatcher("on_a");
+    on_fn_dispatcher(grug_state,"on_a");
 	assert_call_count(nothing, 2);
 }
 
-static void ok_if_true(void) {
+static void ok_if_true(void* grug_state) {
 	assert_call_count(nothing, 0);
-    on_fn_dispatcher("on_a");
+    on_fn_dispatcher(grug_state,"on_a");
 	assert_call_count(nothing, 3);
 }
 
-static void ok_le_false(void) {
+static void ok_le_false(void* grug_state) {
 	assert_call_count(initialize_bool, 0);
-    on_fn_dispatcher("on_a");
+    on_fn_dispatcher(grug_state,"on_a");
 	assert_call_count(initialize_bool, 1);
 
 	assert_false(game_fn_initialize_bool_b);
 }
 
-static void ok_le_true_1(void) {
+static void ok_le_true_1(void* grug_state) {
 	assert_call_count(initialize_bool, 0);
-    on_fn_dispatcher("on_a");
+    on_fn_dispatcher(grug_state,"on_a");
 	assert_call_count(initialize_bool, 1);
 
 	assert_true(game_fn_initialize_bool_b);
 }
 
-static void ok_le_true_2(void) {
+static void ok_le_true_2(void* grug_state) {
 	assert_call_count(initialize_bool, 0);
-    on_fn_dispatcher("on_a");
+    on_fn_dispatcher(grug_state,"on_a");
 	assert_call_count(initialize_bool, 1);
 
 	assert_true(game_fn_initialize_bool_b);
 }
 
-static void ok_local_id_can_be_reassigned(void) {
+static void ok_local_id_can_be_reassigned(void* grug_state) {
 	assert_call_count(get_opponent, 0);
-    on_fn_dispatcher("on_a");
+    on_fn_dispatcher(grug_state,"on_a");
 	assert_call_count(get_opponent, 2);
 }
 
-static void ok_lt_false(void) {
+static void ok_lt_false(void* grug_state) {
 	assert_call_count(initialize_bool, 0);
-    on_fn_dispatcher("on_a");
+    on_fn_dispatcher(grug_state,"on_a");
 	assert_call_count(initialize_bool, 1);
 
 	assert_false(game_fn_initialize_bool_b);
 }
 
-static void ok_lt_true(void) {
+static void ok_lt_true(void* grug_state) {
 	assert_call_count(initialize_bool, 0);
-    on_fn_dispatcher("on_a");
+    on_fn_dispatcher(grug_state,"on_a");
 	assert_call_count(initialize_bool, 1);
 
 	assert_true(game_fn_initialize_bool_b);
 }
 
-static void ok_max_args(void) {
+static void ok_max_args(void* grug_state) {
 	assert_call_count(mega, 0);
-    on_fn_dispatcher("on_a");
+    on_fn_dispatcher(grug_state,"on_a");
 	assert_call_count(mega, 1);
 
 	assert_number(game_fn_mega_f1, 1.0);
@@ -2118,123 +2167,126 @@ static void ok_max_args(void) {
 	assert_string(game_fn_mega_str, "foo");
 }
 
-static void ok_me(void) {
+static void ok_me(void* grug_state) {
 	assert_call_count(set_d, 0);
-    on_fn_dispatcher("on_a");
+    on_fn_dispatcher(grug_state,"on_a");
 	assert_call_count(set_d, 1);
 
 	assert_id(game_fn_set_d_target, 42);
 }
 
-static void ok_me_assigned_to_local_variable(void) {
+static void ok_me_assigned_to_local_variable(void* grug_state) {
 	assert_call_count(set_d, 0);
-    on_fn_dispatcher("on_a");
+    on_fn_dispatcher(grug_state,"on_a");
 	assert_call_count(set_d, 1);
 
 	assert_id(game_fn_set_d_target, 42);
 }
 
-static void ok_me_passed_to_helper_fn(void) {
+static void ok_me_passed_to_helper_fn(void* grug_state) {
 	assert_call_count(set_d, 0);
-    on_fn_dispatcher("on_a");
+    on_fn_dispatcher(grug_state,"on_a");
 	assert_call_count(set_d, 1);
 
 	assert_id(game_fn_set_d_target, 42);
 }
 
-static void ok_mov_32_bits_global_i32(void) {
+static void ok_mov_32_bits_global_i32(void* grug_state) {
+	(void)(grug_state);
 }
 
-static void ok_mov_32_bits_global_id(void) {
+static void ok_mov_32_bits_global_id(void* grug_state) {
+	(void)(grug_state);
 }
 
-static void ok_multiplication_as_two_arguments(void) {
+static void ok_multiplication_as_two_arguments(void* grug_state) {
 	assert_call_count(max, 0);
-    on_fn_dispatcher("on_a");
+    on_fn_dispatcher(grug_state,"on_a");
 	assert_call_count(max, 1);
 
 	assert_number(game_fn_max_x, 6.0);
 	assert_number(game_fn_max_y, 20.0);
 }
 
-static void ok_ne_false(void) {
+static void ok_ne_false(void* grug_state) {
 	assert_call_count(initialize_bool, 0);
-    on_fn_dispatcher("on_a");
+    on_fn_dispatcher(grug_state,"on_a");
 	assert_call_count(initialize_bool, 1);
 
 	assert_false(game_fn_initialize_bool_b);
 }
 
-static void ok_ne_true(void) {
+static void ok_ne_true(void* grug_state) {
 	assert_call_count(initialize_bool, 0);
-    on_fn_dispatcher("on_a");
+    on_fn_dispatcher(grug_state,"on_a");
 	assert_call_count(initialize_bool, 1);
 
 	assert_true(game_fn_initialize_bool_b);
 }
 
-static void ok_negate_parenthesized_expr(void) {
+static void ok_negate_parenthesized_expr(void* grug_state) {
 	assert_call_count(initialize, 0);
-    on_fn_dispatcher("on_a");
+    on_fn_dispatcher(grug_state,"on_a");
 	assert_call_count(initialize, 1);
 
 	assert_number(game_fn_initialize_x, -5.0);
 }
 
-static void ok_negative_literal(void) {
+static void ok_negative_literal(void* grug_state) {
 	assert_call_count(initialize, 0);
-    on_fn_dispatcher("on_a");
+    on_fn_dispatcher(grug_state,"on_a");
 	assert_call_count(initialize, 1);
 
 	assert_number(game_fn_initialize_x, -42.0);
 }
 
-static void ok_nested_break(void) {
+static void ok_nested_break(void* grug_state) {
 	assert_call_count(nothing, 0);
-    on_fn_dispatcher("on_a");
+    on_fn_dispatcher(grug_state,"on_a");
 	assert_call_count(nothing, 3);
 }
 
-static void ok_nested_continue(void) {
+static void ok_nested_continue(void* grug_state) {
 	assert_call_count(nothing, 0);
-    on_fn_dispatcher("on_a");
+    on_fn_dispatcher(grug_state,"on_a");
 	assert_call_count(nothing, 2);
 }
 
-static void ok_no_empty_line_between_globals(void) {
+static void ok_no_empty_line_between_globals(void* grug_state) {
+	(void)(grug_state);
 }
 
-static void ok_no_empty_line_between_statements(void) {
+static void ok_no_empty_line_between_statements(void* grug_state) {
 	assert_call_count(nothing, 0);
-    on_fn_dispatcher("on_a");
+    on_fn_dispatcher(grug_state,"on_a");
 	assert_call_count(nothing, 2);
 }
 
-static void ok_on_fn(void) {
+static void ok_on_fn(void* grug_state) {
 	assert_call_count(nothing, 0);
-    on_fn_dispatcher("on_a");
+    on_fn_dispatcher(grug_state,"on_a");
 	assert_call_count(nothing, 1);
 }
 
-static void ok_on_fn_calling_game_fn_nothing(void) {
+static void ok_on_fn_calling_game_fn_nothing(void* grug_state) {
 	assert_call_count(nothing, 0);
-    on_fn_dispatcher("on_a");
+    on_fn_dispatcher(grug_state,"on_a");
 	assert_call_count(nothing, 1);
 }
 
-static void ok_on_fn_calling_game_fn_nothing_twice(void) {
+static void ok_on_fn_calling_game_fn_nothing_twice(void* grug_state) {
 	assert_call_count(nothing, 0);
-    on_fn_dispatcher("on_a");
+    on_fn_dispatcher(grug_state,"on_a");
 	assert_call_count(nothing, 2);
 }
 
-static void ok_on_fn_calling_game_fn_plt_order(void) {
+static void ok_on_fn_calling_game_fn_plt_order(void* grug_state) {
 	assert_call_count(nothing, 0);
 	assert_call_count(magic, 0);
 	assert_call_count(initialize, 0);
 	assert_call_count(identity, 0);
 	assert_call_count(max, 0);
-    on_fn_dispatcher("on_a");
+    on_fn_dispatcher(grug_state,"on_a");
 	assert_call_count(nothing, 1);
 	assert_call_count(magic, 1);
 	assert_call_count(initialize, 1);
@@ -2247,32 +2299,32 @@ static void ok_on_fn_calling_game_fn_plt_order(void) {
 	assert_number(game_fn_max_y, 8192.0);
 }
 
-static void ok_on_fn_calling_helper_fns(void) {
+static void ok_on_fn_calling_helper_fns(void* grug_state) {
 	assert_call_count(nothing, 0);
 	assert_call_count(initialize, 0);
-    on_fn_dispatcher("on_a");
+    on_fn_dispatcher(grug_state,"on_a");
 	assert_call_count(nothing, 1);
 	assert_call_count(initialize, 1);
 
 	assert_number(game_fn_initialize_x, 42.0);
 }
 
-static void ok_on_fn_calling_no_game_fn(void) {
-    on_fn_dispatcher("on_a");
+static void ok_on_fn_calling_no_game_fn(void* grug_state) {
+    on_fn_dispatcher(grug_state,"on_a");
 }
 
-static void ok_on_fn_calling_no_game_fn_but_with_addition(void) {
-    on_fn_dispatcher("on_a");
+static void ok_on_fn_calling_no_game_fn_but_with_addition(void* grug_state) {
+    on_fn_dispatcher(grug_state,"on_a");
 }
 
-static void ok_on_fn_calling_no_game_fn_but_with_global(void) {
-    on_fn_dispatcher("on_a");
+static void ok_on_fn_calling_no_game_fn_but_with_global(void* grug_state) {
+    on_fn_dispatcher(grug_state,"on_a");
 }
 
-static void ok_on_fn_overwriting_param(void) {
+static void ok_on_fn_overwriting_param(void* grug_state) {
 	assert_call_count(initialize, 0);
 	assert_call_count(sin, 0);
-    on_fn_args_dispatcher("on_a", (const union grug_value[]){{._number=2.0}, {._number=3.0}});
+    on_fn_args_dispatcher(grug_state, "on_a", (const union grug_value[]){{._number=2.0}, {._number=3.0}});
 	assert_call_count(initialize, 1);
 	assert_call_count(sin, 1);
 
@@ -2280,111 +2332,111 @@ static void ok_on_fn_overwriting_param(void) {
 	assert_number(game_fn_sin_x, 30.0);
 }
 
-static void ok_on_fn_passing_argument_to_helper_fn(void) {
+static void ok_on_fn_passing_argument_to_helper_fn(void* grug_state) {
 	assert_call_count(initialize, 0);
-    on_fn_dispatcher("on_a");
+    on_fn_dispatcher(grug_state,"on_a");
 	assert_call_count(initialize, 1);
 
 	assert_number(game_fn_initialize_x, 42.0);
 }
 
-static void ok_on_fn_passing_magic_to_initialize(void) {
+static void ok_on_fn_passing_magic_to_initialize(void* grug_state) {
 	assert_call_count(magic, 0);
 	assert_call_count(initialize, 0);
-    on_fn_dispatcher("on_a");
+    on_fn_dispatcher(grug_state,"on_a");
 	assert_call_count(magic, 1);
 	assert_call_count(initialize, 1);
 }
 
-static void ok_on_fn_three(void) {
+static void ok_on_fn_three(void* grug_state) {
 	assert_call_count(nothing, 0);
-    on_fn_dispatcher("on_a");
-    on_fn_dispatcher("on_b");
-    on_fn_dispatcher("on_c");
+    on_fn_dispatcher(grug_state,"on_a");
+    on_fn_dispatcher(grug_state,"on_b");
+    on_fn_dispatcher(grug_state,"on_c");
 	assert_call_count(nothing, 3);
 }
 
-static void ok_on_fn_three_unused_first(void) {
+static void ok_on_fn_three_unused_first(void* grug_state) {
 	assert_call_count(nothing, 0);
-    on_fn_dispatcher("on_b");
-    on_fn_dispatcher("on_c");
+    on_fn_dispatcher(grug_state,"on_b");
+    on_fn_dispatcher(grug_state,"on_c");
 	assert_call_count(nothing, 2);
 }
 
-static void ok_on_fn_three_unused_second(void) {
+static void ok_on_fn_three_unused_second(void* grug_state) {
 	assert_call_count(nothing, 0);
-    on_fn_dispatcher("on_a");
-    on_fn_dispatcher("on_c");
+    on_fn_dispatcher(grug_state,"on_a");
+    on_fn_dispatcher(grug_state,"on_c");
 	assert_call_count(nothing, 2);
 }
 
-static void ok_on_fn_three_unused_third(void) {
+static void ok_on_fn_three_unused_third(void* grug_state) {
 	assert_call_count(nothing, 0);
-    on_fn_dispatcher("on_a");
-    on_fn_dispatcher("on_b");
+    on_fn_dispatcher(grug_state,"on_a");
+    on_fn_dispatcher(grug_state,"on_b");
 	assert_call_count(nothing, 2);
 }
 
-static void ok_or_false(void) {
+static void ok_or_false(void* grug_state) {
 	assert_call_count(initialize_bool, 0);
-    on_fn_dispatcher("on_a");
+    on_fn_dispatcher(grug_state,"on_a");
 	assert_call_count(initialize_bool, 1);
 
 	assert_false(game_fn_initialize_bool_b);
 }
 
-static void ok_or_short_circuit(void) {
+static void ok_or_short_circuit(void* grug_state) {
 	assert_call_count(initialize_bool, 0);
-    on_fn_dispatcher("on_a");
+    on_fn_dispatcher(grug_state,"on_a");
 	assert_call_count(initialize_bool, 1);
 
 	assert_true(game_fn_initialize_bool_b);
 }
 
-static void ok_or_true_1(void) {
+static void ok_or_true_1(void* grug_state) {
 	assert_call_count(initialize_bool, 0);
-    on_fn_dispatcher("on_a");
+    on_fn_dispatcher(grug_state,"on_a");
 	assert_call_count(initialize_bool, 1);
 
 	assert_true(game_fn_initialize_bool_b);
 }
 
-static void ok_or_true_2(void) {
+static void ok_or_true_2(void* grug_state) {
 	assert_call_count(initialize_bool, 0);
-    on_fn_dispatcher("on_a");
+    on_fn_dispatcher(grug_state,"on_a");
 	assert_call_count(initialize_bool, 1);
 
 	assert_true(game_fn_initialize_bool_b);
 }
 
-static void ok_or_true_3(void) {
+static void ok_or_true_3(void* grug_state) {
 	assert_call_count(initialize_bool, 0);
-    on_fn_dispatcher("on_a");
+    on_fn_dispatcher(grug_state,"on_a");
 	assert_call_count(initialize_bool, 1);
 
 	assert_true(game_fn_initialize_bool_b);
 }
 
-static void ok_pass_string_argument_to_game_fn(void) {
+static void ok_pass_string_argument_to_game_fn(void* grug_state) {
 	assert_call_count(say, 0);
-    on_fn_dispatcher("on_a");
+    on_fn_dispatcher(grug_state,"on_a");
 	assert_call_count(say, 1);
 
 	assert_string(game_fn_say_message, "foo");
 }
 
-static void ok_pass_string_argument_to_helper_fn(void) {
+static void ok_pass_string_argument_to_helper_fn(void* grug_state) {
 	assert_call_count(say, 0);
-    on_fn_dispatcher("on_a");
+    on_fn_dispatcher(grug_state,"on_a");
 	assert_call_count(say, 1);
 
 	assert_string(game_fn_say_message, "foo");
 }
 
-static void ok_resource_and_entity(void) {
+static void ok_resource_and_entity(void* grug_state) {
 	assert_call_count(draw, 0);
 	assert_call_count(spawn, 0);
-    on_fn_dispatcher("on_a");
+    on_fn_dispatcher(grug_state,"on_a");
 	assert_call_count(draw, 1);
 	assert_call_count(spawn, 1);
 
@@ -2392,81 +2444,81 @@ static void ok_resource_and_entity(void) {
 	assert_string(game_fn_spawn_name, "ok:foo");
 }
 
-static void ok_resource_can_contain_dot_1(void) {
+static void ok_resource_can_contain_dot_1(void* grug_state) {
 	assert_call_count(draw, 0);
-    on_fn_dispatcher("on_a");
+    on_fn_dispatcher(grug_state,"on_a");
 	assert_call_count(draw, 1);
 
 	assert_string(game_fn_draw_sprite_path, "ok/resource_can_contain_dot_1/.foo");
 }
 
-static void ok_resource_can_contain_dot_3(void) {
+static void ok_resource_can_contain_dot_3(void* grug_state) {
 	assert_call_count(draw, 0);
-    on_fn_dispatcher("on_a");
+    on_fn_dispatcher(grug_state,"on_a");
 	assert_call_count(draw, 1);
 
 	assert_string(game_fn_draw_sprite_path, "ok/resource_can_contain_dot_3/foo.bar");
 }
 
-static void ok_resource_can_contain_dot_dot_1(void) {
+static void ok_resource_can_contain_dot_dot_1(void* grug_state) {
 	assert_call_count(draw, 0);
-    on_fn_dispatcher("on_a");
+    on_fn_dispatcher(grug_state,"on_a");
 	assert_call_count(draw, 1);
 
 	assert_string(game_fn_draw_sprite_path, "ok/resource_can_contain_dot_dot_1/..foo");
 }
 
-static void ok_resource_can_contain_dot_dot_3(void) {
+static void ok_resource_can_contain_dot_dot_3(void* grug_state) {
 	assert_call_count(draw, 0);
-    on_fn_dispatcher("on_a");
+    on_fn_dispatcher(grug_state,"on_a");
 	assert_call_count(draw, 1);
 
 	assert_string(game_fn_draw_sprite_path, "ok/resource_can_contain_dot_dot_3/foo..bar");
 }
 
-static void ok_resource_duplicate(void) {
+static void ok_resource_duplicate(void* grug_state) {
 	assert_call_count(draw, 0);
-    on_fn_dispatcher("on_a");
+    on_fn_dispatcher(grug_state,"on_a");
 	assert_call_count(draw, 4);
 
 	assert_string(game_fn_draw_sprite_path, "ok/resource_duplicate/baz.txt");
 }
 
-static void ok_return(void) {
+static void ok_return(void* grug_state) {
 	assert_call_count(initialize, 0);
-    on_fn_dispatcher("on_a");
+    on_fn_dispatcher(grug_state,"on_a");
 	assert_call_count(initialize, 1);
 
 	assert_number(game_fn_initialize_x, 42.0);
 }
 
-static void ok_return_from_on_fn(void) {
+static void ok_return_from_on_fn(void* grug_state) {
 	assert_call_count(nothing, 0);
-    on_fn_dispatcher("on_a");
+    on_fn_dispatcher(grug_state,"on_a");
 	assert_call_count(nothing, 1);
 }
 
-static void ok_return_from_on_fn_minimal(void) {
-    on_fn_dispatcher("on_a");
+static void ok_return_from_on_fn_minimal(void* grug_state) {
+    on_fn_dispatcher(grug_state,"on_a");
 }
 
-static void ok_return_with_no_value(void) {
+static void ok_return_with_no_value(void* grug_state) {
 	assert_call_count(nothing, 0);
-    on_fn_dispatcher("on_a");
+    on_fn_dispatcher(grug_state,"on_a");
 	assert_call_count(nothing, 1);
 }
 
-static void ok_same_variable_name_in_different_functions(void) {
+static void ok_same_variable_name_in_different_functions(void* grug_state) {
 	assert_call_count(initialize, 0);
-    on_fn_dispatcher("on_a");
+    on_fn_dispatcher(grug_state,"on_a");
 	assert_call_count(initialize, 2);
 
 	assert_number(game_fn_initialize_x, 69.0);
 }
 
-static void ok_spill_args_to_game_fn(void) {
+static void ok_spill_args_to_game_fn(void* grug_state) {
 	assert_call_count(motherload, 0);
-    on_fn_dispatcher("on_a");
+    on_fn_dispatcher(grug_state,"on_a");
 	assert_call_count(motherload, 1);
 
 	assert_number(game_fn_motherload_i1, 1.0);
@@ -2488,9 +2540,9 @@ static void ok_spill_args_to_game_fn(void) {
 	assert_number(game_fn_motherload_f9, 9.0);
 }
 
-static void ok_spill_args_to_game_fn_subless(void) {
+static void ok_spill_args_to_game_fn_subless(void* grug_state) {
 	assert_call_count(motherload_subless, 0);
-    on_fn_dispatcher("on_a");
+    on_fn_dispatcher(grug_state,"on_a");
 	assert_call_count(motherload_subless, 1);
 
 	assert_number(game_fn_motherload_subless_i1, 1.0);
@@ -2513,9 +2565,9 @@ static void ok_spill_args_to_game_fn_subless(void) {
 	assert_number(game_fn_motherload_subless_f10, 10.0);
 }
 
-static void ok_spill_args_to_helper_fn(void) {
+static void ok_spill_args_to_helper_fn(void* grug_state) {
 	assert_call_count(motherload, 0);
-    on_fn_dispatcher("on_a");
+    on_fn_dispatcher(grug_state,"on_a");
 	assert_call_count(motherload, 1);
 
 	assert_number(game_fn_motherload_i1, 1.0);
@@ -2537,9 +2589,9 @@ static void ok_spill_args_to_helper_fn(void) {
 	assert_number(game_fn_motherload_f9, 9.0);
 }
 
-static void ok_spill_args_to_helper_fn_32_bit_f32(void) {
+static void ok_spill_args_to_helper_fn_32_bit_f32(void* grug_state) {
 	assert_call_count(offset_32_bit_f32, 0);
-    on_fn_dispatcher("on_a");
+    on_fn_dispatcher(grug_state,"on_a");
 	assert_call_count(offset_32_bit_f32, 1);
 
 	assert_string(game_fn_offset_32_bit_f32_s1, "1");
@@ -2568,9 +2620,9 @@ static void ok_spill_args_to_helper_fn_32_bit_f32(void) {
 	assert_number(game_fn_offset_32_bit_f32_g, 1.0);
 }
 
-static void ok_spill_args_to_helper_fn_32_bit_i32(void) {
+static void ok_spill_args_to_helper_fn_32_bit_i32(void* grug_state) {
 	assert_call_count(offset_32_bit_i32, 0);
-    on_fn_dispatcher("on_a");
+    on_fn_dispatcher(grug_state,"on_a");
 	assert_call_count(offset_32_bit_i32, 1);
 
 	assert_number(game_fn_offset_32_bit_i32_f1, 1.0);
@@ -2611,9 +2663,9 @@ static void ok_spill_args_to_helper_fn_32_bit_i32(void) {
 	assert_number(game_fn_offset_32_bit_i32_g, 6.0);
 }
 
-static void ok_spill_args_to_helper_fn_32_bit_string(void) {
+static void ok_spill_args_to_helper_fn_32_bit_string(void* grug_state) {
 	assert_call_count(offset_32_bit_string, 0);
-    on_fn_dispatcher("on_a");
+    on_fn_dispatcher(grug_state,"on_a");
 	assert_call_count(offset_32_bit_string, 1);
 
 	assert_number(game_fn_offset_32_bit_string_f1, 1.0);
@@ -2654,9 +2706,9 @@ static void ok_spill_args_to_helper_fn_32_bit_string(void) {
 	assert_number(game_fn_offset_32_bit_string_g, 1.0);
 }
 
-static void ok_spill_args_to_helper_fn_subless(void) {
+static void ok_spill_args_to_helper_fn_subless(void* grug_state) {
 	assert_call_count(motherload_subless, 0);
-    on_fn_dispatcher("on_a");
+    on_fn_dispatcher(grug_state,"on_a");
 	assert_call_count(motherload_subless, 1);
 
 	assert_number(game_fn_motherload_subless_i1, 1.0);
@@ -2679,37 +2731,37 @@ static void ok_spill_args_to_helper_fn_subless(void) {
 	assert_number(game_fn_motherload_subless_f10, 10.0);
 }
 
-static void ok_stack_16_byte_alignment(void) {
+static void ok_stack_16_byte_alignment(void* grug_state) {
 	assert_call_count(nothing, 0);
 	assert_call_count(initialize, 0);
-    on_fn_dispatcher("on_a");
+    on_fn_dispatcher(grug_state,"on_a");
 	assert_call_count(nothing, 1);
 	assert_call_count(initialize, 1);
 
 	assert_number(game_fn_initialize_x, 42.0);
 }
 
-static void ok_stack_16_byte_alignment_midway(void) {
+static void ok_stack_16_byte_alignment_midway(void* grug_state) {
 	assert_call_count(magic, 0);
 	assert_call_count(initialize, 0);
-    on_fn_dispatcher("on_a");
+    on_fn_dispatcher(grug_state,"on_a");
 	assert_call_count(magic, 1);
 	assert_call_count(initialize, 1);
 
 	assert_number(game_fn_initialize_x, 42.0 + 42.0);
 }
 
-static void ok_string_can_be_passed_to_helper_fn(void) {
+static void ok_string_can_be_passed_to_helper_fn(void* grug_state) {
 	assert_call_count(say, 0);
-    on_fn_dispatcher("on_a");
+    on_fn_dispatcher(grug_state,"on_a");
 	assert_call_count(say, 1);
 
 	assert_string(game_fn_say_message, "foo");
 }
 
-static void ok_string_duplicate(void) {
+static void ok_string_duplicate(void* grug_state) {
 	assert_call_count(talk, 0);
-    on_fn_dispatcher("on_a");
+    on_fn_dispatcher(grug_state,"on_a");
 	assert_call_count(talk, 1);
 
 	assert_string(game_fn_talk_message1, "foo");
@@ -2718,187 +2770,187 @@ static void ok_string_duplicate(void) {
 	assert_string(game_fn_talk_message4, "baz");
 }
 
-static void ok_string_eq_false(void) {
+static void ok_string_eq_false(void* grug_state) {
 	assert_call_count(initialize_bool, 0);
-    on_fn_dispatcher("on_a");
+    on_fn_dispatcher(grug_state,"on_a");
 	assert_call_count(initialize_bool, 1);
 
 	assert_false(game_fn_initialize_bool_b);
 }
 
-static void ok_string_eq_true(void) {
+static void ok_string_eq_true(void* grug_state) {
 	assert_call_count(initialize_bool, 0);
-    on_fn_dispatcher("on_a");
+    on_fn_dispatcher(grug_state,"on_a");
 	assert_call_count(initialize_bool, 1);
 
 	assert_true(game_fn_initialize_bool_b);
 }
 
-static void ok_string_eq_true_empty(void) {
+static void ok_string_eq_true_empty(void* grug_state) {
 	assert_call_count(initialize_bool, 0);
-    on_fn_dispatcher("on_a");
+    on_fn_dispatcher(grug_state,"on_a");
 	assert_call_count(initialize_bool, 1);
 
 	assert_true(game_fn_initialize_bool_b);
 }
 
-static void ok_string_ne_false(void) {
+static void ok_string_ne_false(void* grug_state) {
 	assert_call_count(initialize_bool, 0);
-    on_fn_dispatcher("on_a");
+    on_fn_dispatcher(grug_state,"on_a");
 	assert_call_count(initialize_bool, 1);
 
 	assert_false(game_fn_initialize_bool_b);
 }
 
-static void ok_string_ne_false_empty(void) {
+static void ok_string_ne_false_empty(void* grug_state) {
 	assert_call_count(initialize_bool, 0);
-    on_fn_dispatcher("on_a");
+    on_fn_dispatcher(grug_state,"on_a");
 	assert_call_count(initialize_bool, 1);
 
 	assert_false(game_fn_initialize_bool_b);
 }
 
-static void ok_string_ne_true(void) {
+static void ok_string_ne_true(void* grug_state) {
 	assert_call_count(initialize_bool, 0);
-    on_fn_dispatcher("on_a");
+    on_fn_dispatcher(grug_state,"on_a");
 	assert_call_count(initialize_bool, 1);
 
 	assert_true(game_fn_initialize_bool_b);
 }
 
-static void ok_string_returned_by_game_fn(void) {
+static void ok_string_returned_by_game_fn(void* grug_state) {
 	assert_call_count(get_os, 0);
 	assert_call_count(has_string, 0);
-	on_fn_dispatcher("on_a");
+	on_fn_dispatcher(grug_state,"on_a");
 	assert_call_count(get_os, 1);
 	assert_call_count(has_string, 1);
 
 	assert_string(game_fn_has_string_str, "foo");
 }
 
-static void ok_string_returned_by_game_fn_assigned_to_member(void) {
+static void ok_string_returned_by_game_fn_assigned_to_member(void* grug_state) {
 	assert_call_count(get_os, 1); // Called by init_globals()
 	assert_call_count(has_string, 0);
-	on_fn_dispatcher("on_a");
+	on_fn_dispatcher(grug_state,"on_a");
 	assert_call_count(get_os, 1);
 	assert_call_count(has_string, 1);
 
 	assert_string(game_fn_has_string_str, "foo");
 }
 
-static void ok_string_returned_by_helper_fn(void) {
+static void ok_string_returned_by_helper_fn(void* grug_state) {
 	assert_call_count(has_string, 0);
-	on_fn_dispatcher("on_a");
+	on_fn_dispatcher(grug_state,"on_a");
 	assert_call_count(has_string, 1);
 
 	assert_string(game_fn_has_string_str, "foo");
 }
 
-static void ok_string_returned_by_helper_fn_from_game_fn(void) {
+static void ok_string_returned_by_helper_fn_from_game_fn(void* grug_state) {
 	assert_call_count(get_os, 0);
 	assert_call_count(has_string, 0);
-	on_fn_dispatcher("on_a");
+	on_fn_dispatcher(grug_state,"on_a");
 	assert_call_count(get_os, 1);
 	assert_call_count(has_string, 1);
 
 	assert_string(game_fn_has_string_str, "foo");
 }
 
-static void ok_sub_rsp_32_bits_local_variables_i32(void) {
+static void ok_sub_rsp_32_bits_local_variables_i32(void* grug_state) {
 	assert_call_count(initialize, 0);
-    on_fn_dispatcher("on_a");
+    on_fn_dispatcher(grug_state,"on_a");
 	assert_call_count(initialize, 30);
 
 	assert_number(game_fn_initialize_x, 30.0);
 }
 
-static void ok_sub_rsp_32_bits_local_variables_id(void) {
+static void ok_sub_rsp_32_bits_local_variables_id(void* grug_state) {
 	assert_call_count(set_d, 0);
-    on_fn_dispatcher("on_a");
+    on_fn_dispatcher(grug_state,"on_a");
 	assert_call_count(set_d, 15);
 
 	assert_id(game_fn_set_d_target, 42);
 }
 
-static void ok_subtraction_negative_result(void) {
+static void ok_subtraction_negative_result(void* grug_state) {
 	assert_call_count(initialize, 0);
-    on_fn_dispatcher("on_a");
+    on_fn_dispatcher(grug_state,"on_a");
 	assert_call_count(initialize, 1);
 
 	assert_number(game_fn_initialize_x, -3.0);
 }
 
-static void ok_subtraction_positive_result(void) {
+static void ok_subtraction_positive_result(void* grug_state) {
 	assert_call_count(initialize, 0);
-    on_fn_dispatcher("on_a");
+    on_fn_dispatcher(grug_state,"on_a");
 	assert_call_count(initialize, 1);
 
 	assert_number(game_fn_initialize_x, 3.0);
 }
 
-static void ok_variable(void) {
+static void ok_variable(void* grug_state) {
 	assert_call_count(initialize, 0);
-    on_fn_dispatcher("on_a");
+    on_fn_dispatcher(grug_state,"on_a");
 	assert_call_count(initialize, 1);
 
 	assert_number(game_fn_initialize_x, 42.0);
 }
 
-static void ok_variable_does_not_shadow_in_different_if_statement(void) {
+static void ok_variable_does_not_shadow_in_different_if_statement(void* grug_state) {
 	assert_call_count(initialize, 0);
-    on_fn_dispatcher("on_a");
+    on_fn_dispatcher(grug_state,"on_a");
 	assert_call_count(initialize, 2);
 
 	assert_number(game_fn_initialize_x, 69.0);
 }
 
-static void ok_variable_reassignment(void) {
+static void ok_variable_reassignment(void* grug_state) {
 	assert_call_count(initialize, 0);
-    on_fn_dispatcher("on_a");
+    on_fn_dispatcher(grug_state,"on_a");
 	assert_call_count(initialize, 1);
 
 	assert_number(game_fn_initialize_x, 69.0);
 }
 
-static void ok_variable_reassignment_does_not_dealloc_outer_variable(void) {
+static void ok_variable_reassignment_does_not_dealloc_outer_variable(void* grug_state) {
 	assert_call_count(initialize, 0);
-    on_fn_dispatcher("on_a");
+    on_fn_dispatcher(grug_state,"on_a");
 	assert_call_count(initialize, 1);
 
 	assert_number(game_fn_initialize_x, 69.0);
 }
 
-static void ok_variable_string_global(void) {
+static void ok_variable_string_global(void* grug_state) {
 	assert_call_count(say, 0);
-    on_fn_dispatcher("on_a");
+    on_fn_dispatcher(grug_state,"on_a");
 	assert_call_count(say, 1);
 
 	assert_string(game_fn_say_message, "foo");
 }
 
-static void ok_variable_string_local(void) {
+static void ok_variable_string_local(void* grug_state) {
 	assert_call_count(say, 0);
-    on_fn_dispatcher("on_a");
+    on_fn_dispatcher(grug_state,"on_a");
 	assert_call_count(say, 1);
 
 	assert_string(game_fn_say_message, "foo");
 }
 
-static void ok_void_function_early_return(void) {
+static void ok_void_function_early_return(void* grug_state) {
 	assert_call_count(nothing, 0);
-    on_fn_dispatcher("on_a");
+    on_fn_dispatcher(grug_state,"on_a");
 	assert_call_count(nothing, 1);
 }
 
-static void ok_while_false(void) {
+static void ok_while_false(void* grug_state) {
 	assert_call_count(nothing, 0);
-    on_fn_dispatcher("on_a");
+    on_fn_dispatcher(grug_state,"on_a");
 	assert_call_count(nothing, 2);
 }
 
-static void ok_write_to_global_variable(void) {
+static void ok_write_to_global_variable(void* grug_state) {
 	assert_call_count(max, 0);
-    on_fn_dispatcher("on_a");
+    on_fn_dispatcher(grug_state,"on_a");
 	assert_call_count(max, 1);
 
 	assert_number(game_fn_max_x, 43.0);
@@ -2915,8 +2967,8 @@ void grug_tests_runtime_error_handler(const char *reason, enum grug_runtime_erro
 	runtime_error_on_fn_path = strdup(on_fn_path);
 }
 
-static void runtime_error_all(void) {
-	on_fn_dispatcher("on_a");
+static void runtime_error_all(void* grug_state) {
+	on_fn_dispatcher(grug_state,"on_a");
 
 	assert_true(had_runtime_error);
 
@@ -2926,10 +2978,10 @@ static void runtime_error_all(void) {
 	assert_string(runtime_error_on_fn_path, "err_runtime/all/input-D.grug");
 }
 
-static void runtime_error_game_fn_error(void) {
+static void runtime_error_game_fn_error(void* grug_state) {
 	assert_call_count(cause_game_fn_error, 0);
 	assert_error_handler_call_count(0);
-	on_fn_dispatcher("on_a");
+	on_fn_dispatcher(grug_state,"on_a");
 	assert_call_count(cause_game_fn_error, 1);
 	assert_error_handler_call_count(1);
 
@@ -2941,10 +2993,10 @@ static void runtime_error_game_fn_error(void) {
 	assert_string(runtime_error_on_fn_path, "err_runtime/game_fn_error/input-D.grug");
 }
 
-static void runtime_error_game_fn_error_once(void) {
+static void runtime_error_game_fn_error_once(void* grug_state) {
 	assert_call_count(cause_game_fn_error, 0);
 	assert_error_handler_call_count(0);
-	on_fn_dispatcher("on_a");
+	on_fn_dispatcher(grug_state,"on_a");
 	assert_call_count(cause_game_fn_error, 1);
 	assert_error_handler_call_count(1);
 
@@ -2960,7 +3012,7 @@ static void runtime_error_game_fn_error_once(void) {
 	assert_call_count(cause_game_fn_error, 1);
 	assert_call_count(nothing, 0);
 	assert_error_handler_call_count(1);
-	on_fn_dispatcher("on_b");
+	on_fn_dispatcher(grug_state,"on_b");
 	assert_call_count(cause_game_fn_error, 1);
 	assert_call_count(nothing, 1);
 	assert_error_handler_call_count(1);
@@ -2968,14 +3020,14 @@ static void runtime_error_game_fn_error_once(void) {
 	assert_false(had_runtime_error);
 }
 
-static void runtime_error_on_fn_calls_erroring_on_fn(void) {
+static void runtime_error_on_fn_calls_erroring_on_fn(void* grug_state) {
 	saved_grug_path = "err_runtime/on_fn_calls_erroring_on_fn/input-E.grug";
 
 	assert_call_count(call_on_b_fn, 0);
 	assert_call_count(cause_game_fn_error, 0);
 	assert_call_count(nothing, 0);
 	assert_error_handler_call_count(0);
-    on_fn_dispatcher("on_a");
+    on_fn_dispatcher(grug_state,"on_a");
 	assert_call_count(call_on_b_fn, 1);
 	assert_call_count(cause_game_fn_error, 1);
 	assert_call_count(nothing, 0);
@@ -2989,14 +3041,14 @@ static void runtime_error_on_fn_calls_erroring_on_fn(void) {
 	assert_string(runtime_error_on_fn_path, "err_runtime/on_fn_calls_erroring_on_fn/input-E.grug");
 }
 
-static void runtime_error_on_fn_errors_after_it_calls_other_on_fn(void) {
+static void runtime_error_on_fn_errors_after_it_calls_other_on_fn(void* grug_state) {
 	saved_grug_path = "err_runtime/on_fn_errors_after_it_calls_other_on_fn/input-E.grug";
 
 	assert_call_count(call_on_b_fn, 0);
 	assert_call_count(nothing, 0);
 	assert_call_count(cause_game_fn_error, 0);
 	assert_error_handler_call_count(0);
-	on_fn_dispatcher("on_a");
+	on_fn_dispatcher(grug_state,"on_a");
 	assert_call_count(call_on_b_fn, 1);
 	assert_call_count(nothing, 1);
 	assert_call_count(cause_game_fn_error, 1);
@@ -3010,8 +3062,8 @@ static void runtime_error_on_fn_errors_after_it_calls_other_on_fn(void) {
 	assert_string(runtime_error_on_fn_path, "err_runtime/on_fn_errors_after_it_calls_other_on_fn/input-E.grug");
 }
 
-static void runtime_error_stack_overflow(void) {
-    on_fn_dispatcher("on_a");
+static void runtime_error_stack_overflow(void* grug_state) {
+    on_fn_dispatcher(grug_state,"on_a");
 
 	assert_true(had_runtime_error);
 
@@ -3021,8 +3073,8 @@ static void runtime_error_stack_overflow(void) {
 	assert_string(runtime_error_on_fn_path, "err_runtime/stack_overflow/input-D.grug");
 }
 
-static void runtime_error_time_limit_exceeded(void) {
-    on_fn_dispatcher("on_a");
+static void runtime_error_time_limit_exceeded(void* grug_state) {
+    on_fn_dispatcher(grug_state,"on_a");
 
 	assert_true(had_runtime_error);
 
@@ -3032,8 +3084,8 @@ static void runtime_error_time_limit_exceeded(void) {
 	assert_string(runtime_error_on_fn_path, "err_runtime/time_limit_exceeded/input-D.grug");
 }
 
-static void runtime_error_time_limit_exceeded_exponential_calls(void) {
-    on_fn_dispatcher("on_a");
+static void runtime_error_time_limit_exceeded_exponential_calls(void* grug_state) {
+    on_fn_dispatcher(grug_state,"on_a");
 
 	assert_true(had_runtime_error);
 
@@ -3043,8 +3095,8 @@ static void runtime_error_time_limit_exceeded_exponential_calls(void) {
 	assert_string(runtime_error_on_fn_path, "err_runtime/time_limit_exceeded_exponential_calls/input-D.grug");
 }
 
-static void runtime_error_time_limit_exceeded_fibonacci(void) {
-    on_fn_dispatcher("on_a");
+static void runtime_error_time_limit_exceeded_fibonacci(void* grug_state) {
+    on_fn_dispatcher(grug_state,"on_a");
 
 	assert_true(had_runtime_error);
 
@@ -3484,8 +3536,23 @@ static void add_runtime_error_tests(void) {
 	ADD_TEST_RUNTIME_ERROR(time_limit_exceeded_fibonacci, "D", 8);
 }
 
-void grug_tests_run(const char *tests_dir_path_, compile_grug_file_t compile_grug_file_, init_globals_fn_dispatcher_t init_globals_fn_dispatcher_, on_fn_dispatcher_t on_fn_dispatcher_, dump_file_to_json_t dump_file_to_json_, generate_file_from_json_t generate_file_from_json_, game_fn_error_t game_fn_error_, const char *whitelisted_test_) {
+void grug_tests_run(
+	const char *tests_dir_path_, 
+	const char *mod_api_path_, 
+	init_grug_state_t init_grug_state_,
+	destroy_grug_state_t destroy_grug_state_,
+	compile_grug_file_t compile_grug_file_, 
+	init_globals_fn_dispatcher_t init_globals_fn_dispatcher_, 
+	on_fn_dispatcher_t on_fn_dispatcher_, 
+	dump_file_to_json_t dump_file_to_json_, 
+	generate_file_from_json_t generate_file_from_json_, 
+	game_fn_error_t game_fn_error_, 
+	const char *whitelisted_test_
+) {
+	init_grug_state = init_grug_state_,
+	destroy_grug_state = destroy_grug_state_,
 	tests_dir_path = tests_dir_path_;
+	mod_api_path = mod_api_path_;
 	compile_grug_file = compile_grug_file_;
 	init_globals_fn_dispatcher = init_globals_fn_dispatcher_;
 	on_fn_args_dispatcher = on_fn_dispatcher_;
@@ -3493,6 +3560,12 @@ void grug_tests_run(const char *tests_dir_path_, compile_grug_file_t compile_gru
 	generate_file_from_json = generate_file_from_json_;
 	game_fn_error = game_fn_error_;
 	whitelisted_test = whitelisted_test_;
+
+	// We only have a single grug_state for now
+	void* grug_state = init_grug_state(
+		mod_api_path,
+		tests_dir_path
+	);
 
 	add_error_tests();
 	add_runtime_error_tests();
@@ -3529,6 +3602,7 @@ void grug_tests_run(const char *tests_dir_path_, compile_grug_file_t compile_gru
 		struct error_test_data fn_data = error_test_datas[i];
 
 		test_error(
+			grug_state,
 			fn_data.test_name_str,
 			fn_data.grug_path,
 			fn_data.expected_error_path,
@@ -3542,13 +3616,13 @@ void grug_tests_run(const char *tests_dir_path_, compile_grug_file_t compile_gru
 
 		printf("Running tests/ok/%s...\n", fn_data.test_name_str);
 
-		prologue(fn_data.grug_path, fn_data.results_path);
+		prologue(grug_state, fn_data.grug_path, fn_data.results_path);
 
-		diff_roundtrip(fn_data.grug_path, fn_data.dump_path, fn_data.applied_path);
+		diff_roundtrip(grug_state, fn_data.grug_path, fn_data.dump_path, fn_data.applied_path);
 
-		init_globals_fn_dispatcher();
+		init_globals_fn_dispatcher(grug_state);
 
-		fn_data.run();
+		fn_data.run(grug_state);
 	}
 
 	for (size_t i = 0; i < err_runtime_test_datas_size; i++) {
@@ -3556,13 +3630,13 @@ void grug_tests_run(const char *tests_dir_path_, compile_grug_file_t compile_gru
 
 		printf("Running tests/err_runtime/%s...\n", fn_data.test_name_str);
 
-		prologue(fn_data.grug_path, fn_data.results_path);
+		prologue(grug_state, fn_data.grug_path, fn_data.results_path);
 
-		diff_roundtrip(fn_data.grug_path, fn_data.dump_path, fn_data.applied_path);
+		diff_roundtrip(grug_state, fn_data.grug_path, fn_data.dump_path, fn_data.applied_path);
 
-		init_globals_fn_dispatcher();
+		init_globals_fn_dispatcher(grug_state);
 
-		fn_data.run();
+		fn_data.run(grug_state);
 
 		const char *expected_error = get_expected_error(fn_data.expected_error_path);
 

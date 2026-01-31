@@ -4,24 +4,24 @@ program: statement*
 
 statement: vardecl
          | reassignment
-         | function
+         | on_fn
+         | helper_fn
          | comment
-         | expr_stmt
+         | call
          | control_flow
 
 vardecl: NAME ":" type "=" expr
 reassignment: NAME "=" expr
 
-function: NAME "(" [params] ")" [return_type] block
+on_fn: "on_" NAME "(" [params] ")" block
+helper_fn: "helper_" NAME "(" [params] ")" [return_type] block
 return_type: type
 params: param ("," param)*
 param: NAME ":" type
 
-block: "{" (statement | expr_stmt | comment | control_flow | return_stmt | reassignment)* "}"
+block: "{" (statement | call | comment | control_flow | return_stmt | reassignment)* "}"
 
 type: "number" | "bool" | "string" | ID | id
-
-expr_stmt: expr
 
 expr: literal
     | NAME
@@ -43,11 +43,12 @@ comment: /#[^\n]*/
 cmp_op: "==" | "!=" | "<" | "<=" | ">" | ">="
 binop: "+" | "-" | "*" | "/"
 
-control_flow: while_loop | break_stmt | if_stmt
+control_flow: while_loop | break_stmt | continue_stmt | if_stmt
 while_loop: "while" expr block
 break_stmt: "break"
-if_stmt: "if" expr block ["else" block]
-return_stmt: "return" expr
+continue_stmt: "continue"
+if_stmt: "if" expr block ("else" (if_stmt | block))?
+return_stmt: "return" expr?
 
 ID: /[A-Z][a-zA-Z0-9_]*/
 id: /[a-z][a-zA-Z0-9_]*/

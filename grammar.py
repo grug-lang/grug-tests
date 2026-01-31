@@ -1,5 +1,6 @@
 import sys
 from pathlib import Path
+
 from lark import Lark, exceptions
 
 # Load the EBNF grammar
@@ -11,14 +12,13 @@ parser: Lark = Lark(grammar, start="start")
 
 
 def check_dir(path: Path) -> None:
-    """
-    Parse all .grug files in the directory (non-recursive, only one level)
-    and immediately exit on the first grammar error.
-    """
-    for subdir in path.iterdir():
-        if not subdir.is_dir():
-            continue
-        for file in subdir.glob("*.grug"):
+    # Sort directories alphabetically
+    for subdir in sorted(
+        [d for d in path.iterdir() if d.is_dir()], key=lambda d: d.name
+    ):
+        # Sort .grug files alphabetically
+        for file in sorted(subdir.glob("*.grug"), key=lambda f: f.name):
+            print(f"Parsing {file}...")
             try:
                 parser.parse(file.read_text())  # type: ignore
             except exceptions.LarkError as e:
@@ -27,11 +27,7 @@ def check_dir(path: Path) -> None:
                 sys.exit(1)
 
 
-# The tests directory relative to this script
 root: Path = Path("tests")
-
-# Check OK and err_runtime tests
 check_dir(root / "ok")
 check_dir(root / "err_runtime")
-
 print("✅ All grammar checks passed")

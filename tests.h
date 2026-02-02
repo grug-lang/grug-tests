@@ -123,15 +123,15 @@ typedef void (*game_fn_error_t)(void* state, const char *message);
  * Initializes a grug_state and returns a pointer to it.
  * this state will be passed to game functions
  */
-typedef void* (*init_grug_state_t) (
+typedef void* (*create_grug_state_t) (
 	const char* mod_api_dir,
 	const char* mods_dir
 );
 
 /**
  * Destroys an exiting grug_state. The pointer passed to this function will be
- * a pointer returned from a previous call to `init_grug_state`. 
- * Note that the order that init_grug_state is called may not match the order
+ * a pointer returned from a previous call to `create_grug_state`. 
+ * Note that the order that create_grug_state is called may not match the order
  * that destroy_grug_state is called
  */
 typedef void (*destroy_grug_state_t)(void* grug_state);
@@ -156,7 +156,7 @@ typedef void (*destroy_grug_state_t)(void* grug_state);
  */
 void grug_tests_run(const char *tests_dir_path,
 					const char *mod_api_path,
-					init_grug_state_t init_grug_state,
+					create_grug_state_t create_grug_state,
 					destroy_grug_state_t destroy_grug_state,
                     compile_grug_file_t compile_grug_file,
                     init_globals_fn_dispatcher_t init_globals_fn_dispatcher,

@@ -121,7 +121,7 @@ static const char *get_type_name[] = {
 
 static const char *tests_dir_path;
 static const char *mod_api_path;
-static init_grug_state_t init_grug_state;
+static create_grug_state_t create_grug_state;
 static destroy_grug_state_t destroy_grug_state;
 static compile_grug_file_t compile_grug_file;
 static init_globals_fn_dispatcher_t init_globals_fn_dispatcher;
@@ -3539,7 +3539,7 @@ static void add_runtime_error_tests(void) {
 void grug_tests_run(
 	const char *tests_dir_path_, 
 	const char *mod_api_path_, 
-	init_grug_state_t init_grug_state_,
+	create_grug_state_t create_grug_state_,
 	destroy_grug_state_t destroy_grug_state_,
 	compile_grug_file_t compile_grug_file_, 
 	init_globals_fn_dispatcher_t init_globals_fn_dispatcher_, 
@@ -3549,7 +3549,7 @@ void grug_tests_run(
 	game_fn_error_t game_fn_error_, 
 	const char *whitelisted_test_
 ) {
-	init_grug_state = init_grug_state_,
+	create_grug_state = create_grug_state_,
 	destroy_grug_state = destroy_grug_state_,
 	tests_dir_path = tests_dir_path_;
 	mod_api_path = mod_api_path_;
@@ -3562,7 +3562,7 @@ void grug_tests_run(
 	whitelisted_test = whitelisted_test_;
 
 	// We only have a single grug_state for now
-	void* grug_state = init_grug_state(
+	void* grug_state = create_grug_state(
 		mod_api_path,
 		tests_dir_path
 	);

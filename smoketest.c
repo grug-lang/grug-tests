@@ -26,7 +26,7 @@ typedef HMODULE DllLib;
 static void (*p_grug_tests_run)(
     const char *,
 	const char *,
-	init_grug_state_t,
+	create_grug_state_t,
 	destroy_grug_state_t,
     compile_grug_file_t,
     init_globals_fn_dispatcher_t,
@@ -780,7 +780,7 @@ static void load_tests_so(void) {
     #pragma GCC diagnostic pop
 }
 
-static void* init_grug_state(const char* mod_api_dir, const char* mods_dir) {
+static void* create_grug_state(const char* mod_api_dir, const char* mods_dir) {
 	(void)(mod_api_dir);
 	(void)(mods_dir);
 	return (void*)(0);
@@ -804,7 +804,7 @@ int main(int argc, const char *argv[]) {
     p_grug_tests_run(
         "tests",
 		"mod_api.json",
-		init_grug_state,
+		create_grug_state,
 		destroy_grug_state,
         compile_grug_file,
         init_globals_fn_dispatcher,

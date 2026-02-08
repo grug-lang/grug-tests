@@ -1,0 +1,61 @@
+start: (definition | vardecl | reassign | comment | _NL)*
+
+definition: on_fn | helper_fn
+
+statement: vardecl | reassign | comment | call | break_stmt | continue_stmt | return_stmt | block_stmt | _NL
+block_stmt: while_loop | if_stmt
+
+vardecl: NAME ": " type " = " expr
+reassign: NAME " = " expr
+
+on_fn: ON_NAME "(" [params] ")" block
+helper_fn: HELPER_NAME "(" [params] ")" [" " return_type] block
+return_type: type
+params: param (", " param)*
+param: NAME ": " type
+
+block: " {" _NL [_INDENT statement+ _DEDENT] "}"
+
+call: NAME "(" [args] ")"
+args: expr (", " expr)*
+
+type: "number" | "bool" | "string" | ID
+
+expr: literal
+    | NAME
+    | call
+    | "-" expr
+    | NOT expr
+    | expr " " binop " " expr
+    | "(" expr ")"
+
+literal: NUMBER | STRING | "true" | "false"
+
+comment: /#[^\n\r]*/
+
+binop: "+" | "-" | "*" | "/" | "and" | "or" | "==" | "!=" | "<" | "<=" | ">" | ">="
+
+while_loop: WHILE expr block
+break_stmt: "break"
+continue_stmt: "continue"
+
+if_stmt: IF expr block (" else" (" " if_stmt | block))?
+return_stmt: "return" [" " expr]
+
+NOT.2: "not "
+IF.2: "if "
+WHILE.2: "while "
+
+ON_NAME.2: /on_[a-z0-9_]+/
+HELPER_NAME.2: /helper_[a-z0-9_]+/
+NAME: /[a-z_][a-z0-9_]*/
+
+ID: /[a-zA-Z_][a-zA-Z0-9_]*/
+NUMBER: /[0-9]+(\.[0-9]+)?/
+STRING: /"([^"\\]|\\.)*"/
+
+# One or more newline+spaces sequences
+# This lets us detect blank lines cleanly
+_NL: /(\r?\n[ ]*)+/
+
+%declare _INDENT _DEDENT

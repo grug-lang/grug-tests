@@ -1,14 +1,38 @@
 import sys
 from pathlib import Path
+from typing import Iterator
 
-from lark import Lark, exceptions
+from lark import Lark, Token, exceptions
+from lark.indenter import Indenter
 
-# Load the EBNF grammar
-with open("grammar.ebnf", "r", encoding="utf-8") as f:
+with open("grug_grammar.lark") as f:
     grammar: str = f.read()
 
+
+class TreeIndenter(Indenter):
+    NL_type = "_NL"  # type: ignore
+    OPEN_PAREN_types = []  # type: ignore
+    CLOSE_PAREN_types = []  # type: ignore
+    INDENT_type = "_INDENT"  # type: ignore
+    DEDENT_type = "_DEDENT"  # type: ignore
+    tab_len = 4  # type: ignore
+
+    def handle_NL(self, token: Token) -> Iterator[Token]:
+        # Only spaces after newline
+        indent = len(token.rsplit("\n", 1)[1])
+
+        # Reject indent not multiple of tab_len
+        if indent % self.tab_len != 0:
+            raise IndentationError(
+                f"Invalid indent of {indent} spaces at line {token.line}, must be multiple of {self.tab_len}"
+            )
+
+        # Delegate to base class for normal INDENT/DEDENT handling
+        yield from super().handle_NL(token)
+
+
 # Create a parser from the grammar
-parser: Lark = Lark(grammar, start="start")
+parser: Lark = Lark(grammar, start="start", parser="lalr", postlex=TreeIndenter())
 
 
 def check_dir(path: Path) -> None:

@@ -32,7 +32,9 @@ class TreeIndenter(Indenter):
 
 
 # Create a parser from the grammar
-parser: Lark = Lark(grammar, start="start", parser="lalr", postlex=TreeIndenter())
+parser: Lark = Lark(
+    grammar, start="start", parser="lalr", postlex=TreeIndenter(), strict=True
+)
 
 
 def check_dir(path: Path) -> None:

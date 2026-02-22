@@ -276,7 +276,7 @@ def check_dir(path: Path) -> None:
         for file in sorted(subdir.glob("*.grug"), key=lambda f: f.name):
             print(f"Parsing {file}...")
             try:
-                tree: Tree[Any] = parser.parse(file.read_text())
+                tree: Tree[Any] = parser.parse(file.read_text()) # type: ignore
                 ast: Any = transformer.transform(tree)
             except exceptions.LarkError as e:
                 print(f"❌ Grammar error in test: {file}")

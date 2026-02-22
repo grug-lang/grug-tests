@@ -1,16 +1,18 @@
-start: (definition | vardecl | reassign | comment | _NL)*
+start: (definition | vardecl | reassign | comment | empty_line)*
 
-definition: on_fn | helper_fn
+?definition: on_fn | helper_fn
 
 statement: vardecl
          | reassign
          | comment
-         | call
+         | call_stmt
          | break_stmt
          | continue_stmt
          | return_stmt
          | block_stmt
          | _NL
+
+empty_line: _NL
 
 block_stmt: while_loop | if_stmt
 
@@ -26,35 +28,51 @@ param: NAME ": " type
 
 block: " {" _NL [_INDENT statement+ _DEDENT] "}"
 
-call: NAME "(" [args] ")"
+call_stmt: NAME "(" [args] ")"
+call_expr: NAME "(" [args] ")"
 args: expr (", " expr)*
 
-type: "number" | "bool" | "string" | ID
+type: TYPE_NAME
+TYPE_NAME: "number" | "bool" | "string" | ID
 
 ?expr: or_expr
 
-?or_expr: and_expr (" or " and_expr)*
+?or_expr: and_expr
+        | or_expr " or " and_expr   -> or_op
 
-?and_expr: equality_expr (" and " equality_expr)*
+?and_expr: equality_expr
+         | and_expr " and " equality_expr   -> and_op
 
-?equality_expr: compare_expr ((" == " | " != ") compare_expr)*
+?equality_expr: compare_expr
+              | equality_expr " == " compare_expr   -> eq
+              | equality_expr " != " compare_expr   -> neq
 
-?compare_expr: add_expr ((" < " | " <= " | " > " | " >= ") add_expr)*
+?compare_expr: add_expr
+             | compare_expr " < " add_expr   -> lt
+             | compare_expr " <= " add_expr  -> le
+             | compare_expr " > " add_expr   -> gt
+             | compare_expr " >= " add_expr  -> ge
 
-?add_expr: mul_expr ((" + " | " - ") mul_expr)*
+?add_expr: mul_expr
+         | add_expr " + " mul_expr   -> add
+         | add_expr " - " mul_expr   -> sub
 
-?mul_expr: unary_expr ((" * " | " / ") unary_expr)*
+?mul_expr: unary_expr
+         | mul_expr " * " unary_expr   -> mul
+         | mul_expr " / " unary_expr   -> div
 
-?unary_expr: "-" unary_expr
-           | NOT unary_expr
+?unary_expr: "-" unary_expr   -> neg
+           | NOT unary_expr   -> not_op
            | atom
 
 ?atom: literal
-     | call
-     | NAME
-     | "(" expr ")"
+     | call_expr
+     | ident_ref
+     | "(" expr ")" -> paren_expr
 
-literal: NUMBER | STRING | "true" | "false"
+?literal: NUMBER | STRING | "true" -> true_expr | "false" -> false_expr
+
+ident_ref: NAME
 
 comment: /#[^\n\r]*/
 

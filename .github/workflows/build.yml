@@ -18,14 +18,28 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Run grammar.py
+      - name: Set up Python
         uses: actions/setup-python@v4
         with:
           python-version: "3.11"
+
       - name: Install Lark parser
         run: pip install lark
+
       - name: Run grammar check
         run: python grammar.py
+
+      - name: Install Pyright
+        run: pip install pyright
+
+      - name: Run Pyright type check
+        run: |
+          PY_MAJOR_MINOR=$(python - <<'EOF'
+          import sys
+          print(f"{sys.version_info.major}.{sys.version_info.minor}")
+          EOF
+          )
+          pyright --pythonversion "$PY_MAJOR_MINOR"
 
       - name: Install Valgrind (if needed)
         if: matrix.sanitizer == 'valgrind'

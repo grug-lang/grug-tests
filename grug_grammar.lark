@@ -1,4 +1,4 @@
-start: (definition | vardecl | reassign | comment | empty_line)*
+start: (_NL | definition | vardecl | reassign | comment | empty_line)*
 
 ?definition: on_fn | helper_fn
 
@@ -10,9 +10,11 @@ statement: vardecl
          | continue_stmt
          | return_stmt
          | block_stmt
+         | empty_line
          | _NL
 
-empty_line: _NL
+empty_line: EMPTY_LINE
+%declare EMPTY_LINE
 
 block_stmt: while_loop | if_stmt
 

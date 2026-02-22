@@ -1,15 +1,1 @@
-[
-    {
-        "type": "GLOBAL_VARIABLE",
-        "name": "foo",
-        "variable_type": "number",
-        "assignment": {
-            "type": "UNARY_EXPR",
-            "operator": "MINUS_TOKEN",
-            "expr": {
-                "type": "NUMBER_EXPR",
-                "value": "2"
-            }
-        }
-    }
-]
+[{"type":"GLOBAL_VARIABLE","name":"foo","variable_type":"number","assignment":{"type":"UNARY_EXPR","operator":"MINUS_TOKEN","expr":{"type":"NUMBER_EXPR","value":"2"}}},{"type":"GLOBAL_EMPTY_LINE"},{"type":"GLOBAL_ON_FN","name":"on_a","statements":[{"type":"CALL_STATEMENT","name":"initialize","arguments":[{"type":"IDENTIFIER_EXPR","str":"foo"}]}]}]

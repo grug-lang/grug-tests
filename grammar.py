@@ -1,7 +1,7 @@
 import json
 import sys
 from pathlib import Path
-from typing import Iterator
+from typing import Any, Dict, Iterator, List, Optional, Union
 
 from lark import Lark, Token, Transformer, Tree, exceptions
 from lark.indenter import Indenter
@@ -12,8 +12,8 @@ with open("grug_grammar.lark") as f:
 
 class TreeIndenter(Indenter):
     NL_type = "_NL"  # type: ignore
-    OPEN_PAREN_types = []  # type: ignore
-    CLOSE_PAREN_types = []  # type: ignore
+    OPEN_PAREN_types: List[str] = []  # type: ignore
+    CLOSE_PAREN_types: List[str] = []  # type: ignore
     INDENT_type = "_INDENT"  # type: ignore
     DEDENT_type = "_DEDENT"  # type: ignore
     tab_len = 4  # type: ignore
@@ -24,6 +24,8 @@ class TreeIndenter(Indenter):
             raise IndentationError(
                 f"Invalid indent of {indent} spaces at line {token.line}, must be multiple of {self.tab_len}"
             )
+        if token.count("\n") >= 2:
+            yield Token("EMPTY_LINE", "")
         yield from super().handle_NL(token)
 
 
@@ -32,58 +34,60 @@ parser: Lark = Lark(
 )
 
 
-class GrugTransformer(Transformer):
-    def start(self, items):
-        res = []
+class GrugTransformer(Transformer[Tree[Any], Any]):
+    def start(self, items: List[Dict[str, Any]]) -> List[Any]:
+        res: List[Any] = []
         for item in items:
-            if item is None:
-                continue
-
-            if isinstance(item, dict):
-                if item.get("type") == "VARIABLE_STATEMENT":
-                    item["type"] = "GLOBAL_VARIABLE"
-                elif item.get("type") == "COMMENT_STATEMENT":
-                    item["type"] = "GLOBAL_COMMENT"
+            typ: Optional[str] = item.get("type")
+            if typ == "VARIABLE_STATEMENT":
+                item["type"] = "GLOBAL_VARIABLE"
+            elif typ == "COMMENT_STATEMENT":
+                item["type"] = "GLOBAL_COMMENT"
+            elif typ == "EMPTY_LINE_STATEMENT":
+                item["type"] = "GLOBAL_EMPTY_LINE"
 
             res.append(item)
 
-        while res and res[-1].get("type") == "GLOBAL_EMPTY_LINE":
-            res.pop()
-
         return res
 
-    def empty_line(self, items):
-        return {"type": "GLOBAL_EMPTY_LINE"}
+    def empty_line(self, items: List[Any]) -> Dict[str, str]:
+        return {"type": "EMPTY_LINE_STATEMENT"}
 
-    def on_fn(self, items):
-        name = str(items[0])
-        statements = items[-1]
-        return {
+    def on_fn(self, items: List[Any]) -> Dict[str, Any]:
+        func: Dict[str, Any] = {
             "type": "GLOBAL_ON_FN",
-            "name": name,
-            "statements": statements,
-        }
-
-    def helper_fn(self, items):
-        return {
-            "type": "HELPER_FN",
             "name": str(items[0]),
             "statements": items[-1],
         }
+        if items[1]:
+            func["arguments"] = items[1]
+        return func
 
-    def return_type(self, items):
+    def helper_fn(self, items: List[Any]) -> Dict[str, Any]:
+        func: Dict[str, Any] = {
+            "type": "GLOBAL_HELPER_FN",
+            "name": str(items[0]),
+        }
+        if items[1]:
+            func["arguments"] = items[1]
+        if items[2]:
+            func["return_type"] = items[2]
+        func["statements"] = items[-1]
+        return func
+
+    def return_type(self, items: List[Any]) -> Any:
         return items[0]
 
-    def statement(self, items):
+    def statement(self, items: List[Any]) -> Optional[Any]:
         return items[0] if items else None
 
-    def block_stmt(self, items):
+    def block_stmt(self, items: List[Any]) -> Any:
         return items[0]
 
-    def block(self, items):
+    def block(self, items: List[Any]) -> List[Any]:
         return [s for s in items if s is not None]
 
-    def vardecl(self, items):
+    def vardecl(self, items: List[Any]) -> Dict[str, Any]:
         name, typ, expr = items
         return {
             "type": "VARIABLE_STATEMENT",
@@ -92,16 +96,16 @@ class GrugTransformer(Transformer):
             "assignment": expr,
         }
 
-    def ident_ref(self, items):
+    def ident_ref(self, items: List[Any]) -> Dict[str, Any]:
         return {"type": "IDENTIFIER_EXPR", "str": str(items[0])}
 
-    def call_stmt(self, items):
+    def call_stmt(self, items: List[Any]) -> Dict[str, Any]:
         res = self.call_expr(items)
         res["type"] = "CALL_STATEMENT"
         return res
 
-    def call_expr(self, items):
-        result = {
+    def call_expr(self, items: List[Any]) -> Dict[str, Any]:
+        result: Dict[str, Any] = {
             "type": "CALL_EXPR",
             "name": str(items[0]),
         }
@@ -109,10 +113,10 @@ class GrugTransformer(Transformer):
             result["arguments"] = items[1]
         return result
 
-    def type(self, items):
+    def type(self, items: List[Any]) -> str:
         return str(items[0])
 
-    def reassign(self, items):
+    def reassign(self, items: List[Any]) -> Dict[str, Any]:
         name, expr = items
         return {
             "type": "VARIABLE_STATEMENT",
@@ -120,37 +124,47 @@ class GrugTransformer(Transformer):
             "assignment": expr,
         }
 
-    def if_stmt(self, items):
-        items = [i for i in items if not isinstance(i, Token) or i.type != "IF"]
-        result = {
+    def if_stmt(self, items: List[Union[List[Any], Dict[str, Any]]]) -> Dict[str, Any]:
+        items = items[1:]  # Remove "if" token
+        result: Dict[str, Any] = {
             "type": "IF_STATEMENT",
             "condition": items[0],
-            "if_statements": items[1],
         }
+
+        if len(items) > 1 and items[1]:
+            result["if_statements"] = items[1]
+
         if len(items) > 2:
-            result["else_statements"] = items[2]
+            else_block = items[2]
+            if (
+                isinstance(else_block, dict)
+                and else_block.get("type") == "IF_STATEMENT"
+            ):
+                result["else_statements"] = [else_block]
+            else:
+                result["else_statements"] = else_block
         return result
 
-    def while_loop(self, items):
+    def while_loop(self, items: List[Any]) -> Dict[str, Any]:
         return {
             "type": "WHILE_STATEMENT",
             "condition": items[1],
             "statements": items[2],
         }
 
-    def break_stmt(self, items):
+    def break_stmt(self, items: List[Any]) -> Dict[str, str]:
         return {"type": "BREAK_STATEMENT"}
 
-    def continue_stmt(self, items):
+    def continue_stmt(self, items: List[Any]) -> Dict[str, str]:
         return {"type": "CONTINUE_STATEMENT"}
 
-    def return_stmt(self, items):
-        result = {"type": "RETURN_STATEMENT"}
+    def return_stmt(self, items: List[Any]) -> Dict[str, Any]:
+        result: Dict[str, Any] = {"type": "RETURN_STATEMENT"}
         if len(items) > 0 and items[0] is not None:
-            result["expression"] = items[0]
+            result["expr"] = items[0]
         return result
 
-    def _binary_expr(self, operator_token, items):
+    def _binary_expr(self, operator_token: str, items: List[Any]) -> Dict[str, Any]:
         return {
             "type": "BINARY_EXPR",
             "left_expr": items[0],
@@ -158,37 +172,39 @@ class GrugTransformer(Transformer):
             "right_expr": items[1],
         }
 
-    def add(self, items):
+    # Binary operations
+    def add(self, items: List[Any]) -> Dict[str, Any]:
         return self._binary_expr("PLUS_TOKEN", items)
 
-    def sub(self, items):
+    def sub(self, items: List[Any]) -> Dict[str, Any]:
         return self._binary_expr("MINUS_TOKEN", items)
 
-    def mul(self, items):
+    def mul(self, items: List[Any]) -> Dict[str, Any]:
         return self._binary_expr("MULTIPLICATION_TOKEN", items)
 
-    def div(self, items):
+    def div(self, items: List[Any]) -> Dict[str, Any]:
         return self._binary_expr("DIVISION_TOKEN", items)
 
-    def eq(self, items):
+    def eq(self, items: List[Any]) -> Dict[str, Any]:
         return self._binary_expr("EQUALS_TOKEN", items)
 
-    def neq(self, items):
+    def neq(self, items: List[Any]) -> Dict[str, Any]:
         return self._binary_expr("NOT_EQUALS_TOKEN", items)
 
-    def lt(self, items):
-        return self._binary_expr("LESS_THAN_TOKEN", items)
+    def lt(self, items: List[Any]) -> Dict[str, Any]:
+        return self._binary_expr("LESS_TOKEN", items)
 
-    def le(self, items):
-        return self._binary_expr("LESS_THAN_OR_EQUAL_TOKEN", items)
+    def le(self, items: List[Any]) -> Dict[str, Any]:
+        return self._binary_expr("LESS_OR_EQUAL_TOKEN", items)
 
-    def gt(self, items):
-        return self._binary_expr("GREATER_THAN_TOKEN", items)
+    def gt(self, items: List[Any]) -> Dict[str, Any]:
+        return self._binary_expr("GREATER_TOKEN", items)
 
-    def ge(self, items):
-        return self._binary_expr("GREATER_THAN_OR_EQUAL_TOKEN", items)
+    def ge(self, items: List[Any]) -> Dict[str, Any]:
+        return self._binary_expr("GREATER_OR_EQUAL_TOKEN", items)
 
-    def and_op(self, items):
+    # Logical operations
+    def and_op(self, items: List[Any]) -> Dict[str, Any]:
         return {
             "type": "LOGICAL_EXPR",
             "left_expr": items[0],
@@ -196,7 +212,7 @@ class GrugTransformer(Transformer):
             "right_expr": items[1],
         }
 
-    def or_op(self, items):
+    def or_op(self, items: List[Any]) -> Dict[str, Any]:
         return {
             "type": "LOGICAL_EXPR",
             "left_expr": items[0],
@@ -204,52 +220,48 @@ class GrugTransformer(Transformer):
             "right_expr": items[1],
         }
 
-    def not_op(self, items):
-        return {
-            "type": "UNARY_EXPR",
-            "operator": "NOT_TOKEN",
-            "expr": items[1],
-        }
+    def not_op(self, items: List[Any]) -> Dict[str, Any]:
+        return {"type": "UNARY_EXPR", "operator": "NOT_TOKEN", "expr": items[1]}
 
-    def neg(self, items):
-        return {
-            "type": "UNARY_EXPR",
-            "operator": "MINUS_TOKEN",
-            "expr": items[1],
-        }
+    def neg(self, items: List[Any]) -> Dict[str, Any]:
+        return {"type": "UNARY_EXPR", "operator": "MINUS_TOKEN", "expr": items[0]}
 
-    def paren_expr(self, items):
+    def paren_expr(self, items: List[Any]) -> Dict[str, Any]:
         return {"type": "PARENTHESIZED_EXPR", "expr": items[0]}
 
-    def NUMBER(self, tok):
+    # Terminals
+    def NUMBER(self, tok: Token) -> Dict[str, Any]:
         return {"type": "NUMBER_EXPR", "value": tok.value}
 
-    def STRING(self, tok):
-        return {"type": "STRING_EXPR", "value": tok.value}
+    def STRING(self, tok: Token) -> Dict[str, Any]:
+        s: str = tok.value
+        if s.startswith('"') and s.endswith('"'):
+            s = s[1:-1]
+        return {"type": "STRING_EXPR", "str": s}
 
-    def true_expr(self, items):
+    def true_expr(self, items: List[Any]) -> Dict[str, str]:
         return {"type": "TRUE_EXPR"}
 
-    def false_expr(self, items):
+    def false_expr(self, items: List[Any]) -> Dict[str, str]:
         return {"type": "FALSE_EXPR"}
 
-    def NAME(self, tok):
+    def NAME(self, tok: Token) -> str:
         return str(tok)
 
-    def ID(self, tok):
+    def ID(self, tok: Token) -> str:
         return str(tok)
 
-    def args(self, items):
+    def args(self, items: List[Any]) -> List[Any]:
         return [i for i in items if i is not None]
 
-    def params(self, items):
+    def params(self, items: List[Any]) -> List[Any]:
         return items
 
-    def param(self, items):
+    def param(self, items: List[Any]) -> Dict[str, str]:
         return {"name": str(items[0]), "type": str(items[1])}
 
-    def comment(self, items):
-        content = str(items[0]).lstrip("#").strip()
+    def comment(self, items: List[Any]) -> Dict[str, str]:
+        content: str = str(items[0]).lstrip("#").strip()
         return {"type": "COMMENT_STATEMENT", "comment": content}
 
 
@@ -259,16 +271,13 @@ def check_dir(path: Path) -> None:
         [d for d in path.iterdir() if d.is_dir()], key=lambda d: d.name
     ):
         expected_file = subdir / "expected.json"
-        if not expected_file.exists():
-            print(f"⚠️ No expected.json in {subdir}, skipping")
-            continue
         expected = json.loads(expected_file.read_text())
 
         for file in sorted(subdir.glob("*.grug"), key=lambda f: f.name):
             print(f"Parsing {file}...")
             try:
-                tree: Tree = parser.parse(file.read_text())
-                ast = transformer.transform(tree)
+                tree: Tree[Any] = parser.parse(file.read_text())
+                ast: Any = transformer.transform(tree)
             except exceptions.LarkError as e:
                 print(f"❌ Grammar error in test: {file}")
                 print(e)

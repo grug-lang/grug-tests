@@ -1,1 +1,1 @@
-[{"type":"GLOBAL_VARIABLE","name":"pos","variable_type":"Position","assignment":{"type":"CALL_EXPR","name":"get_position","arguments":[{"type":"IDENTIFIER_EXPR","str":"me"}]}}]
+[{"type":"GLOBAL_VARIABLE","name":"pos","variable_type":"Position","assignment":{"type":"CALL_EXPR","name":"get_position","arguments":[{"type":"IDENTIFIER_EXPR","str":"me"}]}},{"type":"GLOBAL_EMPTY_LINE"},{"type":"GLOBAL_ON_FN","name":"on_a","statements":[{"type":"CALL_STATEMENT","name":"set_position","arguments":[{"type":"IDENTIFIER_EXPR","str":"pos"}]}]}]

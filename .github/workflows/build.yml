@@ -23,8 +23,8 @@ jobs:
         with:
           python-version: "3.11"
 
-      - name: Install Lark parser
-        run: pip install lark
+      - name: Install Lark
+        run: pip install lark[interegular]
 
       - name: Run grammar check
         run: python grammar.py

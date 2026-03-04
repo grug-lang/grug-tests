@@ -3151,7 +3151,9 @@ static void add_error_tests(void) {
 	ADD_TEST_ERROR(cant_declare_variable_in_fn_call, "D");
 	ADD_TEST_ERROR(cant_redefine_global, "D");
 	ADD_TEST_ERROR(comment_at_the_end_of_another_statement, "D");
+	ADD_TEST_ERROR(comment_empty, "A");
 	ADD_TEST_ERROR(comment_lone_global_at_end, "A");
+	ADD_TEST_ERROR(comment_unprintable_character, "A");
 	ADD_TEST_ERROR(double_negation, "D");
 	ADD_TEST_ERROR(double_not, "D");
 	ADD_TEST_ERROR(empty_helper_fn, "D");
@@ -3255,6 +3257,8 @@ static void add_error_tests(void) {
 	ADD_TEST_ERROR(not_followed_by_negation, "D");
 	ADD_TEST_ERROR(number_assigned_to_global_id, "D");
 	ADD_TEST_ERROR(number_assigned_to_local_id, "D");
+	ADD_TEST_ERROR(number_period_twice_1, "A");
+	ADD_TEST_ERROR(number_period_twice_2, "A");
 	ADD_TEST_ERROR(on_fn_cant_be_called_by_helper_fn, "D");
 	ADD_TEST_ERROR(on_fn_cant_be_called_by_on_fn, "D");
 	ADD_TEST_ERROR(on_fn_defined_after_helper_fn, "D");
@@ -3289,11 +3293,13 @@ static void add_error_tests(void) {
 	ADD_TEST_ERROR(resource_type_for_helper_fn_return_type, "D");
 	ADD_TEST_ERROR(resource_type_for_local, "D");
 	ADD_TEST_ERROR(resource_type_for_on_fn_argument, "D");
+	ADD_TEST_ERROR(spaces_per_indent, "D");
 	ADD_TEST_ERROR(string_pointer_arithmetic, "D");
 	ADD_TEST_ERROR(trailing_space_in_comment, "D");
 	ADD_TEST_ERROR(unary_plus_does_not_exist, "D");
 	ADD_TEST_ERROR(unclosed_double_quote, "A");
 	ADD_TEST_ERROR(unknown_variable, "D");
+	ADD_TEST_ERROR(unrecognized_character, "A");
 	ADD_TEST_ERROR(unused_expr_result, "D");
 	ADD_TEST_ERROR(variable_assignment_before_definition, "D");
 	ADD_TEST_ERROR(variable_definition_requires_value_i32, "D");

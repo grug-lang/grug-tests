@@ -219,33 +219,38 @@ static void on_fn_dispatcher(void* grug_state, const char *on_fn_name) {
 	on_fn_args_dispatcher(grug_state, on_fn_name, NULL);
 }
 
-void game_fn_nothing(void* grug_state) {
+union grug_value game_fn_nothing(void* grug_state, const union grug_value args[]) {
 	(void)(grug_state);
+	(void)(args);
 	ASSERT_16_BYTE_STACK_ALIGNED();
 	game_fn_nothing_call_count++;
+	return (union grug_value) {0};
 }
-union grug_value game_fn_magic(void* grug_state) {
+union grug_value game_fn_magic(void* grug_state, const union grug_value args[]) {
 	(void)(grug_state);
+	(void)(args);
 	ASSERT_16_BYTE_STACK_ALIGNED();
 	game_fn_magic_call_count++;
 
 	return grug_number(42.0);
 }
 static double game_fn_initialize_x;
-void game_fn_initialize(void* grug_state, const union grug_value args[]) {
+union grug_value game_fn_initialize(void* grug_state, const union grug_value args[]) {
 	(void)(grug_state);
 	ASSERT_16_BYTE_STACK_ALIGNED();
 	game_fn_initialize_call_count++;
 
 	game_fn_initialize_x = args[0]._number;
+	return (union grug_value) {0};
 }
 static bool game_fn_initialize_bool_b;
-void game_fn_initialize_bool(void* grug_state, const union grug_value args[]) {
+union grug_value game_fn_initialize_bool(void* grug_state, const union grug_value args[]) {
 	(void)(grug_state);
 	ASSERT_16_BYTE_STACK_ALIGNED();
 	game_fn_initialize_bool_call_count++;
 
 	game_fn_initialize_bool_b = args[0]._bool;
+	return (union grug_value) {0};
 }
 static double game_fn_identity_x;
 union grug_value game_fn_identity(void* grug_state, const union grug_value args[]) {
@@ -270,12 +275,13 @@ union grug_value game_fn_max(void* grug_state, const union grug_value args[]) {
 	return args[0]._number > args[1]._number ? args[0] : args[1];
 }
 static const char *game_fn_say_message;
-void game_fn_say(void* grug_state, const union grug_value args[]) {
+union grug_value game_fn_say(void* grug_state, const union grug_value args[]) {
 	(void)(grug_state);
 	ASSERT_16_BYTE_STACK_ALIGNED();
 	game_fn_say_call_count++;
 
 	game_fn_say_message = strdup(args[0]._string);
+	return (union grug_value) {0};
 }
 static double game_fn_sin_x;
 union grug_value game_fn_sin(void* grug_state, const union grug_value args[]) {
@@ -311,7 +317,7 @@ static double game_fn_mega_f7;
 static double game_fn_mega_f8;
 static uint64_t game_fn_mega_id;
 static const char *game_fn_mega_str;
-void game_fn_mega(void* grug_state, const union grug_value args[]) {
+union grug_value game_fn_mega(void* grug_state, const union grug_value args[]) {
 	(void)(grug_state);
 	ASSERT_16_BYTE_STACK_ALIGNED();
 	game_fn_mega_call_count++;
@@ -330,21 +336,24 @@ void game_fn_mega(void* grug_state, const union grug_value args[]) {
 	game_fn_mega_f8 = args[11]._number;
 	game_fn_mega_id = args[12]._id;
 	game_fn_mega_str = strdup(args[13]._string);
+	return (union grug_value) {0};
 }
-union grug_value game_fn_get_false(void* grug_state) {
+union grug_value game_fn_get_false(void* grug_state, const union grug_value args[]) {
 	(void)(grug_state);
+	(void)(args);
 	ASSERT_16_BYTE_STACK_ALIGNED();
 	game_fn_get_false_call_count++;
 
 	return grug_bool(false);
 }
 static bool game_fn_set_is_happy_is_happy;
-void game_fn_set_is_happy(void* grug_state, const union grug_value args[]) {
+union grug_value game_fn_set_is_happy(void* grug_state, const union grug_value args[]) {
 	(void)(grug_state);
 	ASSERT_16_BYTE_STACK_ALIGNED();
 	game_fn_set_is_happy_call_count++;
 
 	game_fn_set_is_happy_is_happy = args[0]._bool;
+	return (union grug_value) {0};
 }
 static double game_fn_mega_f32_f1;
 static double game_fn_mega_f32_f2;
@@ -355,7 +364,7 @@ static double game_fn_mega_f32_f6;
 static double game_fn_mega_f32_f7;
 static double game_fn_mega_f32_f8;
 static double game_fn_mega_f32_f9;
-void game_fn_mega_f32(void* grug_state, const union grug_value args[]) {
+union grug_value game_fn_mega_f32(void* grug_state, const union grug_value args[]) {
 	(void)(grug_state);
 	ASSERT_16_BYTE_STACK_ALIGNED();
 	game_fn_mega_f32_call_count++;
@@ -369,6 +378,7 @@ void game_fn_mega_f32(void* grug_state, const union grug_value args[]) {
 	game_fn_mega_f32_f7 = args[6]._number;
 	game_fn_mega_f32_f8 = args[7]._number;
 	game_fn_mega_f32_f9 = args[8]._number;
+	return (union grug_value) {0};
 }
 static double game_fn_mega_i32_i1;
 static double game_fn_mega_i32_i2;
@@ -377,7 +387,7 @@ static double game_fn_mega_i32_i4;
 static double game_fn_mega_i32_i5;
 static double game_fn_mega_i32_i6;
 static double game_fn_mega_i32_i7;
-void game_fn_mega_i32(void* grug_state, const union grug_value args[]) {
+union grug_value game_fn_mega_i32(void* grug_state, const union grug_value args[]) {
 	(void)(grug_state);
 	ASSERT_16_BYTE_STACK_ALIGNED();
 	game_fn_mega_i32_call_count++;
@@ -389,26 +399,31 @@ void game_fn_mega_i32(void* grug_state, const union grug_value args[]) {
 	game_fn_mega_i32_i5 = args[4]._number;
 	game_fn_mega_i32_i6 = args[5]._number;
 	game_fn_mega_i32_i7 = args[6]._number;
+	return (union grug_value) {0};
 }
 static const char *game_fn_draw_sprite_path;
-void game_fn_draw(void* grug_state, const union grug_value args[]) {
+union grug_value game_fn_draw(void* grug_state, const union grug_value args[]) {
 	(void)(grug_state);
 	ASSERT_16_BYTE_STACK_ALIGNED();
 	game_fn_draw_call_count++;
 	game_fn_draw_sprite_path = strdup(args[0]._string);
+	return (union grug_value) {0};
 }
-void game_fn_blocked_alrm(void* grug_state) {
+union grug_value game_fn_blocked_alrm(void* grug_state, const union grug_value args[]) {
 	(void)(grug_state);
+	(void)(args);
 	ASSERT_16_BYTE_STACK_ALIGNED();
 	game_fn_blocked_alrm_call_count++;
+	return (union grug_value) {0};
 }
 static const char *game_fn_spawn_name;
-void game_fn_spawn(void* grug_state, const union grug_value args[]) {
+union grug_value game_fn_spawn(void* grug_state, const union grug_value args[]) {
 	(void)(grug_state);
 	ASSERT_16_BYTE_STACK_ALIGNED();
 	game_fn_spawn_call_count++;
 
 	game_fn_spawn_name = strdup(args[0]._string);
+	return (union grug_value) {0};
 }
 static const char *game_fn_has_resource_path;
 union grug_value game_fn_has_resource(void* grug_state, const union grug_value args[]) {
@@ -440,35 +455,39 @@ union grug_value game_fn_has_string(void* grug_state, const union grug_value arg
 
 	return grug_bool(true);
 }
-union grug_value game_fn_get_opponent(void* grug_state) {
+union grug_value game_fn_get_opponent(void* grug_state, const union grug_value args[]) {
 	(void)(grug_state);
+	(void)(args);
 	ASSERT_16_BYTE_STACK_ALIGNED();
 	game_fn_get_opponent_call_count++;
 
 	return grug_id(69);
 }
-union grug_value game_fn_get_os(void* grug_state) {
+union grug_value game_fn_get_os(void* grug_state, const union grug_value args[]) {
 	(void)(grug_state);
+	(void)(args);
 	ASSERT_16_BYTE_STACK_ALIGNED();
 	game_fn_get_os_call_count++;
 
 	return grug_string("foo");
 }
 static uint64_t game_fn_set_d_target;
-void game_fn_set_d(void* grug_state, const union grug_value args[]) {
+union grug_value game_fn_set_d(void* grug_state, const union grug_value args[]) {
 	(void)(grug_state);
 	ASSERT_16_BYTE_STACK_ALIGNED();
 	game_fn_set_d_call_count++;
 
 	game_fn_set_d_target = args[0]._id;
+	return (union grug_value) {0};
 }
 static uint64_t game_fn_set_opponent_target;
-void game_fn_set_opponent(void* grug_state, const union grug_value args[]) {
+union grug_value game_fn_set_opponent(void* grug_state, const union grug_value args[]) {
 	(void)(grug_state);
 	ASSERT_16_BYTE_STACK_ALIGNED();
 	game_fn_set_opponent_call_count++;
 
 	game_fn_set_opponent_target = args[0]._id;
+	return (union grug_value) {0};
 }
 static double game_fn_motherload_i1;
 static double game_fn_motherload_i2;
@@ -487,7 +506,7 @@ static double game_fn_motherload_f7;
 static double game_fn_motherload_f8;
 static uint64_t game_fn_motherload_id;
 static double game_fn_motherload_f9;
-void game_fn_motherload(void* grug_state, const union grug_value args[]) {
+union grug_value game_fn_motherload(void* grug_state, const union grug_value args[]) {
 	(void)(grug_state);
 	ASSERT_16_BYTE_STACK_ALIGNED();
 	game_fn_motherload_call_count++;
@@ -509,6 +528,7 @@ void game_fn_motherload(void* grug_state, const union grug_value args[]) {
 	game_fn_motherload_f8 = args[14]._number;
 	game_fn_motherload_id = args[15]._id;
 	game_fn_motherload_f9 = args[16]._number;
+	return (union grug_value) {0};
 }
 static double game_fn_motherload_subless_i1;
 static double game_fn_motherload_subless_i2;
@@ -528,7 +548,7 @@ static double game_fn_motherload_subless_f8;
 static double game_fn_motherload_subless_f9;
 static uint64_t game_fn_motherload_subless_id;
 static double game_fn_motherload_subless_f10;
-void game_fn_motherload_subless(void* grug_state, const union grug_value args[]) {
+union grug_value game_fn_motherload_subless(void* grug_state, const union grug_value args[]) {
 	(void)(grug_state);
 	ASSERT_16_BYTE_STACK_ALIGNED();
 	game_fn_motherload_subless_call_count++;
@@ -551,6 +571,7 @@ void game_fn_motherload_subless(void* grug_state, const union grug_value args[])
 	game_fn_motherload_subless_f9 = args[15]._number;
 	game_fn_motherload_subless_id = args[16]._id;
 	game_fn_motherload_subless_f10 = args[17]._number;
+	return (union grug_value) {0};
 }
 static const char *game_fn_offset_32_bit_f32_s1;
 static const char *game_fn_offset_32_bit_f32_s2;
@@ -576,7 +597,7 @@ static double game_fn_offset_32_bit_f32_f6;
 static double game_fn_offset_32_bit_f32_f7;
 static double game_fn_offset_32_bit_f32_f8;
 static double game_fn_offset_32_bit_f32_g;
-void game_fn_offset_32_bit_f32(void* grug_state, const union grug_value args[]) {
+union grug_value game_fn_offset_32_bit_f32(void* grug_state, const union grug_value args[]) {
 	(void)(grug_state);
 	ASSERT_16_BYTE_STACK_ALIGNED();
 	game_fn_offset_32_bit_f32_call_count++;
@@ -605,6 +626,7 @@ void game_fn_offset_32_bit_f32(void* grug_state, const union grug_value args[]) 
 	game_fn_offset_32_bit_f32_f7 = args[21]._number;
 	game_fn_offset_32_bit_f32_f8 = args[22]._number;
 	game_fn_offset_32_bit_f32_g = args[23]._number;
+	return (union grug_value) {0};
 }
 static double game_fn_offset_32_bit_i32_f1;
 static double game_fn_offset_32_bit_i32_f2;
@@ -642,7 +664,7 @@ static double game_fn_offset_32_bit_i32_i3;
 static double game_fn_offset_32_bit_i32_i4;
 static double game_fn_offset_32_bit_i32_i5;
 static double game_fn_offset_32_bit_i32_g;
-void game_fn_offset_32_bit_i32(void* grug_state, const union grug_value args[]) {
+union grug_value game_fn_offset_32_bit_i32(void* grug_state, const union grug_value args[]) {
 	(void)(grug_state);
 	ASSERT_16_BYTE_STACK_ALIGNED();
 	game_fn_offset_32_bit_i32_call_count++;
@@ -683,6 +705,7 @@ void game_fn_offset_32_bit_i32(void* grug_state, const union grug_value args[]) 
 	game_fn_offset_32_bit_i32_i4 = args[33]._number;
 	game_fn_offset_32_bit_i32_i5 = args[34]._number;
 	game_fn_offset_32_bit_i32_g = args[35]._number;
+	return (union grug_value) {0};
 }
 static double game_fn_offset_32_bit_string_f1;
 static double game_fn_offset_32_bit_string_f2;
@@ -720,7 +743,7 @@ static const char *game_fn_offset_32_bit_string_s3;
 static const char *game_fn_offset_32_bit_string_s4;
 static const char *game_fn_offset_32_bit_string_s5;
 static double game_fn_offset_32_bit_string_g;
-void game_fn_offset_32_bit_string(void* grug_state, const union grug_value args[]) {
+union grug_value game_fn_offset_32_bit_string(void* grug_state, const union grug_value args[]) {
 	(void)(grug_state);
 	ASSERT_16_BYTE_STACK_ALIGNED();
 	game_fn_offset_32_bit_string_call_count++;
@@ -761,12 +784,13 @@ void game_fn_offset_32_bit_string(void* grug_state, const union grug_value args[
 	game_fn_offset_32_bit_string_s4 = strdup(args[33]._string);
 	game_fn_offset_32_bit_string_s5 = strdup(args[34]._string);
 	game_fn_offset_32_bit_string_g = args[35]._number;
+	return (union grug_value) {0};
 }
 static const char *game_fn_talk_message1;
 static const char *game_fn_talk_message2;
 static const char *game_fn_talk_message3;
 static const char *game_fn_talk_message4;
-void game_fn_talk(void* grug_state, const union grug_value args[]) {
+union grug_value game_fn_talk(void* grug_state, const union grug_value args[]) {
 	(void)(grug_state);
 	ASSERT_16_BYTE_STACK_ALIGNED();
 	game_fn_talk_call_count++;
@@ -775,6 +799,7 @@ void game_fn_talk(void* grug_state, const union grug_value args[]) {
 	game_fn_talk_message2 = strdup(args[1]._string);
 	game_fn_talk_message3 = strdup(args[2]._string);
 	game_fn_talk_message4 = strdup(args[3]._string);
+	return (union grug_value) {0};
 }
 union grug_value game_fn_get_position(void* grug_state, const union grug_value args[]) {
 	(void)(grug_state);
@@ -786,36 +811,43 @@ union grug_value game_fn_get_position(void* grug_state, const union grug_value a
 	return grug_id(1337);
 }
 static uint64_t game_fn_set_position_pos;
-void game_fn_set_position(void* grug_state, const union grug_value args[]) {
+union grug_value game_fn_set_position(void* grug_state, const union grug_value args[]) {
 	(void)(grug_state);
 	ASSERT_16_BYTE_STACK_ALIGNED();
 	game_fn_set_position_call_count++;
 
 	game_fn_set_position_pos = args[0]._id;
+	return (union grug_value) {0};
 }
-void game_fn_cause_game_fn_error(void* grug_state) {
+union grug_value game_fn_cause_game_fn_error(void* grug_state, const union grug_value args[]) {
+	(void)(args);
 	ASSERT_16_BYTE_STACK_ALIGNED();
 	game_fn_cause_game_fn_error_call_count++;
 
 	game_fn_error(grug_state, "cause_game_fn_error(): Example game function error");
+	return (union grug_value) {0};
 }
 static char *saved_grug_path = NULL;
-void game_fn_call_on_b_fn(void* grug_state) {
+union grug_value game_fn_call_on_b_fn(void* grug_state, const union grug_value args[]) {
+	(void)(args);
 	ASSERT_16_BYTE_STACK_ALIGNED();
 	game_fn_call_on_b_fn_call_count++;
 
 	on_fn_dispatcher(grug_state,"on_b");
+	return (union grug_value) {0};
 }
 static uint64_t game_fn_store_id;
-void game_fn_store(void* grug_state, const union grug_value args[]) {
+union grug_value game_fn_store(void* grug_state, const union grug_value args[]) {
 	(void)(grug_state);
 	ASSERT_16_BYTE_STACK_ALIGNED();
 	game_fn_store_call_count++;
 
 	game_fn_store_id = args[0]._id;
+	return (union grug_value) {0};
 }
-union grug_value game_fn_retrieve(void* grug_state) {
+union grug_value game_fn_retrieve(void* grug_state, const union grug_value args[]) {
 	(void)(grug_state);
+	(void)(args);
 	ASSERT_16_BYTE_STACK_ALIGNED();
 	game_fn_retrieve_call_count++;
 

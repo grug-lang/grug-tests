@@ -40,7 +40,9 @@ union grug_value {
 
 #define CALL(state, game_fn_name, ...) p_game_fn_##game_fn_name((state), (const union grug_value[]){ __VA_ARGS__ })
 
-#define CALL_ARGLESS(state, game_fn_name) p_game_fn_##game_fn_name((state))
+#define CALL_ARGLESS(state, game_fn_name) p_game_fn_##game_fn_name((state), NULL)
+
+typedef union grug_value (*game_fn)(void* state, const union grug_value[]);
 
 static inline union grug_value grug_number(GRUG_TYPE_NUMBER v) { union grug_value r; r._number = v; return r; }
 static inline union grug_value grug_bool(GRUG_TYPE_BOOL v) { union grug_value r; r._bool = v; return r; }
@@ -186,40 +188,40 @@ void grug_tests_runtime_error_handler(const char *reason,
 /**
  * @brief Game functions that the bindings must call.
  */
-void game_fn_nothing(void* grug_state);
-union grug_value game_fn_magic(void* grug_state);
-void game_fn_initialize(void* grug_state, const union grug_value args[]);
-void game_fn_initialize_bool(void* grug_state, const union grug_value args[]);
-union grug_value game_fn_identity(void* grug_state, const union grug_value args[]);
-union grug_value game_fn_max(void* grug_state, const union grug_value args[]);
-void game_fn_say(void* grug_state, const union grug_value args[]);
-union grug_value game_fn_sin(void* grug_state, const union grug_value args[]);
-union grug_value game_fn_cos(void* grug_state, const union grug_value args[]);
-void game_fn_mega(void* grug_state, const union grug_value args[]);
-union grug_value game_fn_get_false(void* grug_state);
-void game_fn_set_is_happy(void* grug_state, const union grug_value args[]);
-void game_fn_mega_f32(void* grug_state, const union grug_value args[]);
-void game_fn_mega_i32(void* grug_state, const union grug_value args[]);
-void game_fn_draw(void* grug_state, const union grug_value args[]);
-void game_fn_blocked_alrm(void* grug_state);
-void game_fn_spawn(void* grug_state, const union grug_value args[]);
-union grug_value game_fn_has_resource(void* grug_state, const union grug_value args[]);
-union grug_value game_fn_has_entity(void* grug_state, const union grug_value args[]);
-union grug_value game_fn_has_string(void* grug_state, const union grug_value args[]);
-union grug_value game_fn_get_opponent(void* grug_state);
-union grug_value game_fn_get_os(void* grug_state);
-void game_fn_set_d(void* grug_state, const union grug_value args[]);
-void game_fn_set_opponent(void* grug_state, const union grug_value args[]);
-void game_fn_motherload(void* grug_state, const union grug_value args[]);
-void game_fn_motherload_subless(void* grug_state, const union grug_value args[]);
-void game_fn_offset_32_bit_f32(void* grug_state, const union grug_value args[]);
-void game_fn_offset_32_bit_i32(void* grug_state, const union grug_value args[]);
-void game_fn_offset_32_bit_string(void* grug_state, const union grug_value args[]);
-void game_fn_talk(void* grug_state, const union grug_value args[]);
-union grug_value game_fn_get_position(void* grug_state, const union grug_value args[]);
-void game_fn_set_position(void* grug_state, const union grug_value args[]);
-void game_fn_cause_game_fn_error(void* grug_state);
-void game_fn_call_on_b_fn(void* grug_state);
-void game_fn_store(void* grug_state, const union grug_value args[]);
-union grug_value game_fn_retrieve(void* grug_state);
-union grug_value game_fn_box_number(void* grug_state, const union grug_value args[]);
+union grug_value game_fn_nothing              (void* grug_state, const union grug_value args[]);
+union grug_value game_fn_magic                (void* grug_state, const union grug_value args[]);
+union grug_value game_fn_initialize           (void* grug_state, const union grug_value args[]);
+union grug_value game_fn_initialize_bool      (void* grug_state, const union grug_value args[]);
+union grug_value game_fn_identity             (void* grug_state, const union grug_value args[]);
+union grug_value game_fn_max                  (void* grug_state, const union grug_value args[]);
+union grug_value game_fn_say                  (void* grug_state, const union grug_value args[]);
+union grug_value game_fn_sin                  (void* grug_state, const union grug_value args[]);
+union grug_value game_fn_cos                  (void* grug_state, const union grug_value args[]);
+union grug_value game_fn_mega                 (void* grug_state, const union grug_value args[]);
+union grug_value game_fn_get_false            (void* grug_state, const union grug_value args[]);
+union grug_value game_fn_set_is_happy         (void* grug_state, const union grug_value args[]);
+union grug_value game_fn_mega_f32             (void* grug_state, const union grug_value args[]);
+union grug_value game_fn_mega_i32             (void* grug_state, const union grug_value args[]);
+union grug_value game_fn_draw                 (void* grug_state, const union grug_value args[]);
+union grug_value game_fn_blocked_alrm         (void* grug_state, const union grug_value args[]);
+union grug_value game_fn_spawn                (void* grug_state, const union grug_value args[]);
+union grug_value game_fn_has_resource         (void* grug_state, const union grug_value args[]);
+union grug_value game_fn_has_entity           (void* grug_state, const union grug_value args[]);
+union grug_value game_fn_has_string           (void* grug_state, const union grug_value args[]);
+union grug_value game_fn_get_opponent         (void* grug_state, const union grug_value args[]);
+union grug_value game_fn_get_os               (void* grug_state, const union grug_value args[]);
+union grug_value game_fn_set_d                (void* grug_state, const union grug_value args[]);
+union grug_value game_fn_set_opponent         (void* grug_state, const union grug_value args[]);
+union grug_value game_fn_motherload           (void* grug_state, const union grug_value args[]);
+union grug_value game_fn_motherload_subless   (void* grug_state, const union grug_value args[]);
+union grug_value game_fn_offset_32_bit_f32    (void* grug_state, const union grug_value args[]);
+union grug_value game_fn_offset_32_bit_i32    (void* grug_state, const union grug_value args[]);
+union grug_value game_fn_offset_32_bit_string (void* grug_state, const union grug_value args[]);
+union grug_value game_fn_talk                 (void* grug_state, const union grug_value args[]);
+union grug_value game_fn_get_position         (void* grug_state, const union grug_value args[]);
+union grug_value game_fn_set_position         (void* grug_state, const union grug_value args[]);
+union grug_value game_fn_cause_game_fn_error  (void* grug_state, const union grug_value args[]);
+union grug_value game_fn_call_on_b_fn         (void* grug_state, const union grug_value args[]);
+union grug_value game_fn_store                (void* grug_state, const union grug_value args[]);
+union grug_value game_fn_retrieve             (void* grug_state, const union grug_value args[]);
+union grug_value game_fn_box_number           (void* grug_state, const union grug_value args[]);

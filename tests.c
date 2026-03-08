@@ -10,16 +10,7 @@
 #include <time.h>
 #include <ctype.h>
 #include <unistd.h>
-
-// Using inttypes.h causes a weird issue where %zu is no longer recognized
-// right now, the only portable format specifier we need is PRIu64, so we use
-// an ifdef for it.
-// If we need more portable specifiers, we'll see about actually figuring out the issue with inttypes.h
-#if defined(_WIN32)
-#define PRIu64 "%llu"
-#elif defined(__linux__)
-#define PRIu64 "%lu"
-#endif
+#include <inttypes.h>
 
 #define assert_call_count(game_fn_name, expected_count) do { \
 	size_t count = game_fn_ ## game_fn_name ## _call_count; \
@@ -66,7 +57,7 @@
 
 #define assert_id(id, expected_id) do { \
 	if (id != expected_id) { \
-		fprintf(stderr, "%s:%d: Assertion ID "PRIu64" (%s) == %d failed.\n", __FILE__, __LINE__, id, #id, expected_id); \
+		fprintf(stderr, "%s:%d: Assertion ID %"PRIu64" (%s) == %d failed.\n", __FILE__, __LINE__, id, #id, expected_id); \
 		exit(EXIT_FAILURE); \
 	} \
 } while (0)

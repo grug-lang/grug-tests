@@ -1410,6 +1410,10 @@ static void ok_comment_lone_global(void* grug_state) {
     on_fn_dispatcher(grug_state,"on_a");
 }
 
+static void ok_comment_unprintable_character(void* grug_state) {
+	(void)(grug_state);
+}
+
 static void ok_continue(void* grug_state) {
 	assert_call_count(nothing, 0);
     on_fn_dispatcher(grug_state,"on_a");
@@ -3176,7 +3180,6 @@ static void add_error_tests(void) {
 	ADD_TEST_ERROR(comment_at_the_end_of_another_statement, "D");
 	ADD_TEST_ERROR(comment_empty, "A");
 	ADD_TEST_ERROR(comment_lone_global_at_end, "A");
-	ADD_TEST_ERROR(comment_unprintable_character, "A");
 	ADD_TEST_ERROR(double_negation, "D");
 	ADD_TEST_ERROR(double_not, "D");
 	ADD_TEST_ERROR(empty_helper_fn, "D");
@@ -3371,6 +3374,7 @@ static void add_ok_tests(void) {
 	ADD_TEST_OK(comment_lone_block, "D", 8);
 	ADD_TEST_OK(comment_lone_block_at_end, "D", 8);
 	ADD_TEST_OK(comment_lone_global, "D", 8);
+	ADD_TEST_OK(comment_unprintable_character, "A", 8);
 	ADD_TEST_OK(continue, "D", 8);
 	ADD_TEST_OK(custom_id_decays_to_id, "D", 8);
 	ADD_TEST_OK(custom_id_transfer_between_globals, "D", 24);

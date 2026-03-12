@@ -3262,6 +3262,7 @@ static void add_error_tests(void) {
 	ADD_TEST_ERROR(indented_helper_fn_parameters, "D");
 	ADD_TEST_ERROR(indented_on_fn_parameter, "F");
 	ADD_TEST_ERROR(indented_on_fn_parameters, "G");
+	ADD_TEST_ERROR(line_continuation, "A");
 	ADD_TEST_ERROR(local_variable_already_exists, "D");
 	ADD_TEST_ERROR(local_variable_definition_cant_use_itself, "D");
 	ADD_TEST_ERROR(local_variable_definition_missing_type, "D");

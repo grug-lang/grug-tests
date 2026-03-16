@@ -60,26 +60,32 @@ enum grug_runtime_error_type {
  * @brief Function pointer type for compiling a grug file.
  *
  * @param grug_file_path Path to the grug source file to compile.
- * @return `NULL` on success, or an error message string on failure.
+ * @param error_out Out parameter for a compile error message. Output `NULL` on success
+ * @return An opaque identifier to the compiled file that can be used to create an entity from later
  */
-typedef const char *(*compile_grug_file_t)(void* state, const char *grug_file_path);
+typedef void* (*compile_grug_file_t)(void* state, const char* file_path, char** error_out);
 
 /**
- * @typedef init_globals_fn_dispatcher_t
- * @brief Function pointer type for initializing global variables for a grug file.
+ * @typedef init_globals_t
+ * @brief Function pointer type for initializing and immediately destroying a grug_entity
+ *
+ * It should create and entity from the file id, initialize its globals and immediately deinitialize itself
+ *
+ * @param file_id file_id to create an entity and run function for
  */
-typedef void (*init_globals_fn_dispatcher_t)(void* state);
+typedef void (*init_globals_t)(void* state, void* file_id);
 
 /**
- * @typedef on_fn_dispatcher_t
+ * @typedef call_file_event_fn_t
  * @brief Function pointer type for invoking a grug function handler.
  *
- * It should call the specified function `on_fn_name`, passing `args`.
+ * It should call the specified function `event_fn_name`, on entity `entity`, passing `args` with count `args_len`.
  *
- * @param on_fn_name Name of the grug function to invoke.
+ * @param file_id file_id to create an entity and run function for
+ * @param event_fn_name Name of the grug function to invoke.
  * @param args Array of `grug_value` arguments to pass to the function.
  */
-typedef void (*on_fn_dispatcher_t)(void* state, const char *on_fn_name, const union grug_value args[]);
+typedef void (*call_file_event_fn_t)(void* state, void* file_id, const char* event_name, const union grug_value* args, size_t args_len);
 
 /**
  * @typedef dump_file_to_json_t
@@ -138,6 +144,17 @@ typedef void* (*create_grug_state_t) (
  */
 typedef void (*destroy_grug_state_t)(void* grug_state);
 
+struct grug_state_vtable {
+	create_grug_state_t create_grug_state;
+	destroy_grug_state_t destroy_grug_state;
+	compile_grug_file_t compile_grug_file;
+	init_globals_t init_globals;
+	call_file_event_fn_t call_file_event_fn;
+	dump_file_to_json_t dump_file_to_json;
+	generate_file_from_json_t generate_file_from_json;
+	game_fn_error_t game_fn_error;
+};
+
 /**
  * @brief Runs all grug tests.
  *
@@ -158,14 +175,7 @@ typedef void (*destroy_grug_state_t)(void* grug_state);
  */
 void grug_tests_run(const char *tests_dir_path,
 					const char *mod_api_path,
-					create_grug_state_t create_grug_state,
-					destroy_grug_state_t destroy_grug_state,
-                    compile_grug_file_t compile_grug_file,
-                    init_globals_fn_dispatcher_t init_globals_fn_dispatcher,
-                    on_fn_dispatcher_t on_fn_dispatcher,
-                    dump_file_to_json_t dump_file_to_json,
-                    generate_file_from_json_t generate_file_from_json,
-                    game_fn_error_t game_fn_error,
+					struct grug_state_vtable,
                     const char *whitelisted_test);
 
 /**

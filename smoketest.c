@@ -26,14 +26,7 @@ typedef HMODULE DllLib;
 static void (*p_grug_tests_run)(
     const char *,
 	const char *,
-	create_grug_state_t,
-	destroy_grug_state_t,
-    compile_grug_file_t,
-    init_globals_fn_dispatcher_t,
-    on_fn_dispatcher_t,
-    dump_file_to_json_t,
-    generate_file_from_json_t,
-    game_fn_error_t,
+	struct grug_state_vtable,
     const char *
 );
 
@@ -93,9 +86,8 @@ static bool starts_with(const char *haystack, const char *needle) {
     return strncmp(haystack, needle, strlen(needle)) == 0;
 }
 
-static const char *compile_grug_file(void* grug_state, const char *grug_file_path) {
+static void *compile_grug_file(void* grug_state, const char *grug_file_path, char** out_error) {
 	(void)(grug_state);
-    saved_grug_file_path = grug_file_path;
 
     if (starts_with(grug_file_path, "err/")) {
         // Turn "err/foo-D.grug" into "err/expected_error.txt"
@@ -120,16 +112,21 @@ static const char *compile_grug_file(void* grug_state, const char *grug_file_pat
         }
         buf[nread] = '\0';
         fclose(f);
-        return buf;
+		*out_error = buf;
+		return NULL;
     }
 
     // No error happened, so no error message to return.
-    return NULL;
+	*out_error = NULL;
+    return (void*)grug_file_path;
 }
 
-static void init_globals_fn_dispatcher(void* grug_state) {
-    const char *grug_file_path = saved_grug_file_path;
+static void init_globals(void* grug_state, void* file_id) {
+	(void)(grug_state);
 
+    const char *grug_file_path = file_id;
+
+	// Init globals section
     if (starts_with(grug_file_path, "ok/custom_id_transfer_between_globals/")) {
         CALL_ARGLESS(grug_state, get_opponent);
     } else if (starts_with(grug_file_path, "ok/custom_id_with_digits/")) {
@@ -147,12 +144,19 @@ static void init_globals_fn_dispatcher(void* grug_state) {
     }
 }
 
-static void on_fn_dispatcher(void* grug_state, const char *on_fn_name, const union grug_value args[]) {
+static void call_file_event_fn(void* grug_state, void* file_id, const char *on_fn_name, const union grug_value* args, size_t args_len) {
 	(void)(grug_state);
+	(void)(on_fn_name);
+	(void)(args);
+	(void)(args_len);
     saved_on_fn_name = on_fn_name;
+	saved_grug_file_path = (const char*)file_id;
 
-    const char *grug_file_path = saved_grug_file_path;
+    const char *grug_file_path = file_id;
 
+	init_globals(grug_state, file_id);
+
+	// On functions section
     if (starts_with(grug_file_path, "err_runtime/all/")) {
         p_grug_tests_runtime_error_handler("Stack overflow, so check for accidental infinite recursion", GRUG_ON_FN_STACK_OVERFLOW, on_fn_name, grug_file_path);
     } else if (starts_with(grug_file_path, "err_runtime/game_fn_error/")) {
@@ -804,14 +808,16 @@ int main(int argc, const char *argv[]) {
     p_grug_tests_run(
         "tests",
 		"mod_api.json",
-		create_grug_state,
-		destroy_grug_state,
-        compile_grug_file,
-        init_globals_fn_dispatcher,
-        on_fn_dispatcher,
-        dump_file_to_json,
-        generate_file_from_json,
-        game_fn_error,
+		(struct grug_state_vtable) {
+			.create_grug_state = create_grug_state,
+			.destroy_grug_state = destroy_grug_state,
+			.compile_grug_file = compile_grug_file,
+			.init_globals = init_globals,
+			.call_file_event_fn = call_file_event_fn,
+			.dump_file_to_json = dump_file_to_json,
+			.generate_file_from_json = generate_file_from_json,
+			.game_fn_error = game_fn_error,
+		},
         whitelisted_test
     );
 }

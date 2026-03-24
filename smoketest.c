@@ -144,7 +144,7 @@ static void init_globals(void* grug_state, void* file_id) {
     }
 }
 
-static void call_file_event_fn(void* grug_state, void* file_id, const char *on_fn_name, const union grug_value* args, size_t args_len) {
+static void call_export_fn(void* grug_state, void* file_id, const char *on_fn_name, const union grug_value* args, size_t args_len) {
 	(void)(grug_state);
 	(void)(on_fn_name);
 	(void)(args);
@@ -813,7 +813,7 @@ int main(int argc, const char *argv[]) {
 			.destroy_grug_state = destroy_grug_state,
 			.compile_grug_file = compile_grug_file,
 			.init_globals = init_globals,
-			.call_file_event_fn = call_file_event_fn,
+			.call_export_fn = call_export_fn,
 			.dump_file_to_json = dump_file_to_json,
 			.generate_file_from_json = generate_file_from_json,
 			.game_fn_error = game_fn_error,

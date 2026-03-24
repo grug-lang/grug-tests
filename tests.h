@@ -59,6 +59,7 @@ enum grug_runtime_error_type {
  * @typedef compile_grug_file_t
  * @brief Function pointer type for compiling a grug file.
  *
+ * @param state current active grug state
  * @param grug_file_path Path to the grug source file to compile.
  * @param error_out Out parameter for a compile error message. Output `NULL` on success
  * @return An opaque identifier to the compiled file that can be used to create an entity from later
@@ -74,6 +75,7 @@ typedef void* (*compile_grug_file_t)(void* state, const char* file_path, char** 
  * store the entity in a global. If an entity from a previous call to
  * init_globals_t, it should be deinitialized
  *
+ * @param state current active grug state
  * @param file_id file_id to create an entity and run function for
  */
 typedef void (*init_globals_t)(void* state, void* file_id);
@@ -85,11 +87,13 @@ typedef void (*init_globals_t)(void* state, void* file_id);
  * It should call the specified function `event_fn_name`, on the entity created
  * in a previous call to init_globals_t passing `args` with count `args_len`.
  *
+ * @param state current active grug state
  * @param file_id file_id to create an entity and run function for
  * @param event_fn_name Name of the grug function to invoke.
  * @param args Array of `grug_value` arguments to pass to the function.
+ * @param args_count number of arguments being passed to the function.
  */
-typedef void (*call_export_fn_t)(void* state, void* file_id, const char* event_name, const union grug_value* args, size_t args_len);
+typedef void (*call_export_fn_t)(void* state, void* file_id, const char* event_name, const union grug_value* args, size_t args_count);
 
 /**
  * @typedef dump_file_to_json_t
@@ -101,6 +105,7 @@ typedef void (*call_export_fn_t)(void* state, void* file_id, const char* event_n
  * It should parse the grug file at `input_grug_path`, produce a JSON
  * representation of its AST, and write it to `output_json_path`.
  *
+ * @param state current active grug state
  * @param input_grug_path Path to the input `.grug` source file to be dumped.
  * @param output_json_path Path to write the produced JSON file.
  * @return `true` if an error occurred.
@@ -117,6 +122,7 @@ typedef bool (*dump_file_to_json_t)(void* state, const char *input_grug_path, co
  * It should read the AST at `input_json_path`, generate the `.grug` text for it,
  * and write it to `output_grug_path`.
  *
+ * @param state current active grug state
  * @param input_json_path Path to the input JSON file containing the grug AST.
  * @param output_grug_path Path to write the generated `.grug` source file.
  * @return `true` if an error occurred.
@@ -127,27 +133,36 @@ typedef bool (*generate_file_from_json_t)(void* state, const char *input_json_pa
  * @typedef game_fn_error_t
  * @brief Function pointer type for throwing a game function error.
  *
+ * @param state current active grug state
  * @param message The error message.
  */
 typedef void (*game_fn_error_t)(void* state, const char *message);
 
 /**
- * Initializes a grug_state and returns a pointer to it.
- * this state will be passed to game functions
+ * @typedef create_grug_state_t
+ * @brief create an instance of grug_state that can be passed to all other functions.
+ * It is valid to return a null pointer here if no state is needed or if the
+ * state is stored in a global
+ *
+ * @param mod_api_dir path to the mod_api.json this state will be initialized with
+ * @param mods_dir path to the mods directory this state should use
  */
+
 typedef void* (*create_grug_state_t) (
 	const char* mod_api_dir,
 	const char* mods_dir
 );
 
 /**
- * Destroys an exiting grug_state. The pointer passed to this function will be
- * a pointer returned from a previous call to `create_grug_state`. 
- * Note that the order that create_grug_state is called may not match the order
- * that destroy_grug_state is called
+ * @typedef destroy_grug_state_t
+ * @brief create a grug_state that was created from a previous call to grug_state
+ *
+ * @param grug_state the state that is to be destroyed
  */
 typedef void (*destroy_grug_state_t)(void* grug_state);
 
+/// A vtable of pointers passed from the testee to grug_tests. Contains all the
+/// functions needed to run the entire test suite
 struct grug_state_vtable {
 	create_grug_state_t create_grug_state;
 	destroy_grug_state_t destroy_grug_state;
@@ -169,17 +184,13 @@ struct grug_state_vtable {
  * - `tests/ok/`
  *
  * @param tests_dir_path Path to grug-tests its tests/ directory.
- * @param compile_grug_file Function to compile a grug file.
- * @param init_globals_fn_dispatcher Function to initialize globals for a grug file.
- * @param on_fn_dispatcher Function to invoke grug functions during testing.
- * @param dump_file_to_json Function to dump a grug file's AST to JSON.
- * @param generate_file_from_json Function to generate a grug file from an AST JSON.
- * @param game_fn_error Function to throw a game function error.
+ * @param mod_api_path Path to the mod api in the tests/ directory
+ * @param state_vtable vtable of pointers to implementation functions
  * @param whitelisted_test A specific test name to run. Pass `NULL` if all tests should be run.
  */
 void grug_tests_run(const char *tests_dir_path,
 					const char *mod_api_path,
-					struct grug_state_vtable,
+					struct grug_state_vtable state_vtable,
                     const char *whitelisted_test);
 
 /**

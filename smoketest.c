@@ -154,8 +154,6 @@ static void call_export_fn(void* grug_state, void* file_id, const char *on_fn_na
 
     const char *grug_file_path = file_id;
 
-	init_globals(grug_state, file_id);
-
 	// On functions section
     if (starts_with(grug_file_path, "err_runtime/all/")) {
         p_grug_tests_runtime_error_handler("Stack overflow, so check for accidental infinite recursion", GRUG_ON_FN_STACK_OVERFLOW, on_fn_name, grug_file_path);

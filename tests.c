@@ -1,3 +1,4 @@
+// TODO: Add strong typing to void* arguments (struct grug_state*, struct grug_file_id*, and struct grug_entity_id*)
 #include "tests.h"
 #include <dirent.h>
 #include <errno.h>
@@ -1443,10 +1444,10 @@ static void ok_custom_id_decays_to_id(void* grug_state, void* file_id) {
 }
 
 static void ok_custom_id_transfer_between_globals(void* grug_state, void* file_id) {
-	assert_call_count(get_opponent, 0);
+	assert_call_count(get_opponent, 1);
 	assert_call_count(set_opponent, 0);
     call_export_fn_argless(grug_state,file_id, "on_a");
-	assert_call_count(get_opponent, 1); // Called by init_globals()
+	assert_call_count(get_opponent, 1); 
 	assert_call_count(set_opponent, 1);
 
 	assert_id(game_fn_set_opponent_target, 69);
@@ -1455,7 +1456,6 @@ static void ok_custom_id_transfer_between_globals(void* grug_state, void* file_i
 static void ok_custom_id_with_digits(void* grug_state, void* file_id) {
 	(void)(grug_state);
 	(void)(file_id);
-	init_globals(grug_state, file_id);
 	assert_call_count(box_number, 1);
 }
 
@@ -1833,8 +1833,7 @@ static void ok_global_2_does_not_have_error_handling(void* grug_state, void* fil
 }
 
 static void ok_global_call_using_me(void* grug_state, void* file_id) {
-
-	assert_call_count(get_position, 0);
+	assert_call_count(get_position, 1); // called by init_globals
 	assert_call_count(set_position, 0);
     call_export_fn_argless(grug_state,file_id, "on_a");
 	assert_call_count(get_position, 1);
@@ -1861,7 +1860,7 @@ static void ok_global_containing_negation(void* grug_state, void* file_id) {
 
 static void ok_global_id(void* grug_state, void* file_id) {
 
-	assert_call_count(get_opponent, 0);
+	assert_call_count(get_opponent, 1); // called by init_globals
 	assert_call_count(set_opponent, 0);
     call_export_fn_argless(grug_state,file_id, "on_a");
 	assert_call_count(get_opponent, 1);
@@ -2036,7 +2035,7 @@ static void ok_id_eq_2(void* grug_state, void* file_id) {
 }
 
 static void ok_id_global_with_id_to_new_id(void* grug_state, void* file_id) {
-	assert_call_count(retrieve, 0);
+	assert_call_count(retrieve, 1); // Called by init_globals()
 	assert_call_count(store, 0);
     call_export_fn_argless(grug_state,file_id, "on_a");
 	assert_call_count(retrieve, 1); // Called by init_globals()
@@ -2046,7 +2045,7 @@ static void ok_id_global_with_id_to_new_id(void* grug_state, void* file_id) {
 }
 
 static void ok_id_global_with_opponent_to_new_id(void* grug_state, void* file_id) {
-	assert_call_count(get_opponent, 0);
+	assert_call_count(get_opponent, 1); // Called by init_globals()
 	assert_call_count(store, 0);
     call_export_fn_argless(grug_state,file_id, "on_a");
 	assert_call_count(get_opponent, 1); // Called by init_globals()
@@ -2883,7 +2882,7 @@ static void ok_string_returned_by_game_fn(void* grug_state, void* file_id) {
 }
 
 static void ok_string_returned_by_game_fn_assigned_to_member(void* grug_state, void* file_id) {
-	assert_call_count(get_os, 0);
+	assert_call_count(get_os, 1); // Called by init_globals()
 	assert_call_count(has_string, 0);
 	call_export_fn_argless(grug_state,file_id, "on_a");
 	assert_call_count(get_os, 1); // Called by init_globals()
@@ -3689,6 +3688,7 @@ void grug_tests_run(
 
 		diff_roundtrip(grug_state, fn_data->grug_path, fn_data->dump_path, fn_data->applied_path);
 
+		init_globals(grug_state, file_id);
 		fn_data->file_id = file_id;
 		current_file_id = file_id;
 		fn_data->run(grug_state, file_id);
@@ -3700,6 +3700,7 @@ void grug_tests_run(
 		printf("Rerunning tests/ok/%s...\n", fn_data->test_name_str);
 		reset_call_counts();
 
+		init_globals(grug_state, fn_data->file_id);
 		current_file_id = fn_data->file_id;
 		fn_data->run(grug_state, fn_data->file_id);
 	}
@@ -3713,6 +3714,7 @@ void grug_tests_run(
 
 		diff_roundtrip(grug_state, fn_data->grug_path, fn_data->dump_path, fn_data->applied_path);
 
+		init_globals(grug_state, file_id);
 		fn_data->file_id = file_id;
 		current_file_id = file_id;
 		fn_data->run(grug_state, file_id);
@@ -3738,6 +3740,7 @@ void grug_tests_run(
 		reset_call_counts();
 		reset_runtime_error_data();
 
+		init_globals(grug_state, fn_data->file_id);
 		current_file_id = fn_data->file_id;
 		fn_data->run(grug_state, fn_data->file_id);
 

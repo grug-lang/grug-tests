@@ -67,9 +67,12 @@ typedef void* (*compile_grug_file_t)(void* state, const char* file_path, char** 
 
 /**
  * @typedef init_globals_t
- * @brief Function pointer type for initializing and immediately destroying a grug_entity
+ * @brief Function pointer type for initializing a grug_entity and keeping it
+ * ready for subsequent calls to call_export_fn_t
  *
- * It should create and entity from the file id, initialize its globals and immediately deinitialize itself
+ * It should create and entity from the file id, initialize its globals and
+ * store the entity in a global. If an entity from a previous call to
+ * init_globals_t, it should be deinitialized
  *
  * @param file_id file_id to create an entity and run function for
  */
@@ -79,7 +82,8 @@ typedef void (*init_globals_t)(void* state, void* file_id);
  * @typedef call_export_fn_t
  * @brief Function pointer type for invoking a grug function handler.
  *
- * It should call the specified function `event_fn_name`, on entity `entity`, passing `args` with count `args_len`.
+ * It should call the specified function `event_fn_name`, on the entity created
+ * in a previous call to init_globals_t passing `args` with count `args_len`.
  *
  * @param file_id file_id to create an entity and run function for
  * @param event_fn_name Name of the grug function to invoke.

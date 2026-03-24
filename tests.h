@@ -76,7 +76,7 @@ typedef void* (*compile_grug_file_t)(void* state, const char* file_path, char** 
 typedef void (*init_globals_t)(void* state, void* file_id);
 
 /**
- * @typedef call_file_event_fn_t
+ * @typedef call_export_fn_t
  * @brief Function pointer type for invoking a grug function handler.
  *
  * It should call the specified function `event_fn_name`, on entity `entity`, passing `args` with count `args_len`.
@@ -85,7 +85,7 @@ typedef void (*init_globals_t)(void* state, void* file_id);
  * @param event_fn_name Name of the grug function to invoke.
  * @param args Array of `grug_value` arguments to pass to the function.
  */
-typedef void (*call_file_event_fn_t)(void* state, void* file_id, const char* event_name, const union grug_value* args, size_t args_len);
+typedef void (*call_export_fn_t)(void* state, void* file_id, const char* event_name, const union grug_value* args, size_t args_len);
 
 /**
  * @typedef dump_file_to_json_t
@@ -149,7 +149,7 @@ struct grug_state_vtable {
 	destroy_grug_state_t destroy_grug_state;
 	compile_grug_file_t compile_grug_file;
 	init_globals_t init_globals;
-	call_file_event_fn_t call_file_event_fn;
+	call_export_fn_t call_export_fn;
 	dump_file_to_json_t dump_file_to_json;
 	generate_file_from_json_t generate_file_from_json;
 	game_fn_error_t game_fn_error;

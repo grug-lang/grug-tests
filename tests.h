@@ -84,16 +84,16 @@ typedef void (*init_globals_t)(void* state, void* file_id);
  * @typedef call_export_fn_t
  * @brief Function pointer type for invoking a grug function handler.
  *
- * It should call the specified function `event_fn_name`, on the entity created
+ * It should call the specified function `fn_name`, on the entity created
  * in a previous call to init_globals_t passing `args` with count `args_len`.
  *
  * @param state current active grug state
  * @param file_id file_id to create an entity and run function for
- * @param event_fn_name Name of the grug function to invoke.
+ * @param fn_name Name of the grug function to invoke.
  * @param args Array of `grug_value` arguments to pass to the function.
  * @param args_count number of arguments being passed to the function.
  */
-typedef void (*call_export_fn_t)(void* state, void* file_id, const char* event_name, const union grug_value* args, size_t args_count);
+typedef void (*call_export_fn_t)(void* state, void* file_id, const char* fn_name, const union grug_value* args, size_t args_count);
 
 /**
  * @typedef dump_file_to_json_t

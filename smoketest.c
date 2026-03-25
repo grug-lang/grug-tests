@@ -116,17 +116,14 @@ static void *compile_grug_file(void* grug_state, const char *grug_file_path, cha
 		return NULL;
     }
 
-    // No error happened, so no error message to return.
+    // No error.
 	*out_error = NULL;
     return (void*)grug_file_path;
 }
 
 static void init_globals(void* grug_state, void* file_id) {
-	(void)(grug_state);
-
     const char *grug_file_path = file_id;
 
-	// Init globals section
     if (starts_with(grug_file_path, "ok/custom_id_transfer_between_globals/")) {
         CALL_ARGLESS(grug_state, get_opponent);
     } else if (starts_with(grug_file_path, "ok/custom_id_with_digits/")) {
@@ -145,16 +142,12 @@ static void init_globals(void* grug_state, void* file_id) {
 }
 
 static void call_export_fn(void* grug_state, void* file_id, const char *on_fn_name, const union grug_value* args, size_t args_len) {
-	(void)(grug_state);
-	(void)(on_fn_name);
-	(void)(args);
 	(void)(args_len);
     saved_on_fn_name = on_fn_name;
 	saved_grug_file_path = (const char*)file_id;
 
     const char *grug_file_path = file_id;
 
-	// On functions section
     if (starts_with(grug_file_path, "err_runtime/all/")) {
         p_grug_tests_runtime_error_handler("Stack overflow, so check for accidental infinite recursion", GRUG_ON_FN_STACK_OVERFLOW, on_fn_name, grug_file_path);
     } else if (starts_with(grug_file_path, "err_runtime/game_fn_error/")) {

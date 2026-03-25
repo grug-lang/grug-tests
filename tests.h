@@ -144,12 +144,12 @@ typedef void (*game_fn_error_t)(void* state, const char *message);
  * It is valid to return a null pointer here if no state is needed or if the
  * state is stored in a global
  *
- * @param mod_api_dir path to the mod_api.json this state will be initialized with
+ * @param mod_api_path path to the mod_api.json this state will be initialized with
  * @param mods_dir path to the mods directory this state should use
  */
 
 typedef void* (*create_grug_state_t) (
-	const char* mod_api_dir,
+	const char* mod_api_path,
 	const char* mods_dir
 );
 

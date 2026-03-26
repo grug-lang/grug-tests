@@ -3626,8 +3626,10 @@ void grug_tests_run(
 	generate_file_from_json    = vtable.generate_file_from_json;
 	game_fn_error              = vtable.game_fn_error;
 
-	char buffer[16];
-	setvbuf(stdout, buffer, _IOFBF, sizeof(buffer));
+	if (setvbuf(stdout, NULL, _IOLBF, 64) != 0) {
+		fprintf(stderr, "Could not buffer stdout\n");
+		exit(EXIT_FAILURE);
+	};
 
 	// We only have a single grug_state for now
 	void* grug_state = create_grug_state(

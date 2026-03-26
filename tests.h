@@ -64,7 +64,7 @@ enum grug_runtime_error_type {
  * @param error_out Out parameter for a compile error message. Outputs `NULL` on success.
  * @return An opaque identifier to the compiled file that can be used to create entities.
  */
-typedef void* (*compile_grug_file_t)(void* state, const char* file_path, char** error_out);
+typedef void* (*compile_grug_file_t)(void* state, const char* file_path, const char** error_out);
 
 /**
  * @typedef init_globals_t

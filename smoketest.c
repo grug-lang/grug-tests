@@ -86,7 +86,7 @@ static bool starts_with(const char *haystack, const char *needle) {
     return strncmp(haystack, needle, strlen(needle)) == 0;
 }
 
-static void *compile_grug_file(void* grug_state, const char *grug_file_path, char** out_error) {
+static void *compile_grug_file(void* grug_state, const char *grug_file_path, const char** out_error) {
 	(void)(grug_state);
 
     if (starts_with(grug_file_path, "err/")) {

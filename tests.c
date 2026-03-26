@@ -3627,6 +3627,9 @@ void grug_tests_run(
 	generate_file_from_json    = vtable.generate_file_from_json;
 	game_fn_error              = vtable.game_fn_error;
 
+	char buffer[16];
+	setvbuf(stdout, buffer, _IOFBF, sizeof(buffer));
+
 	// We only have a single grug_state for now
 	void* grug_state = create_grug_state(
 		mod_api_path,
@@ -3761,5 +3764,6 @@ void grug_tests_run(
 #endif
 
 	printf("\nAll tests passed! 🎉\n");
+	fflush(stdout);
 	destroy_grug_state(grug_state);
 }

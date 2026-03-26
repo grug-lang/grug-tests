@@ -1110,7 +1110,7 @@ static void test_error(
 	rm_rf(results_path);
 	make_results_dir(results_path);
 
-	char* msg = NULL;
+	const char* msg = NULL;
 	compile_grug_file(grug_state, grug_path, &msg);
 
 	const char *expected_error = get_expected_error(expected_error_path);
@@ -1193,7 +1193,6 @@ static void reset_runtime_error_data(void) {
 	runtime_error_on_fn_path = NULL;
 }
 
-/// returns the grug_file_id
 static void* prologue(void* grug_state, const char *grug_path, const char *results_path) {
 	reset_call_counts();
 	reset_runtime_error_data();
@@ -1201,7 +1200,7 @@ static void* prologue(void* grug_state, const char *grug_path, const char *resul
 	rm_rf(results_path);
 	make_results_dir(results_path);
 
-	char *msg = NULL;
+	const char *msg = NULL;
 	void *file_id = compile_grug_file(grug_state, grug_path, &msg);
 	if (msg) {
 		fprintf(stderr, "Error: The test wasn't supposed to print anything, but did:\n");

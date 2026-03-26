@@ -77,16 +77,9 @@ static const char *get_type_name[] = {
 } while (0)
 
 #if defined(_WIN32)
-#include <windows.h>
 #define mkdir(dir_path) mkdir(dir_path)
-
-static void full_name(const char* in, char* out, uint32_t out_len) {
-	GetFullPathNameA(in, out_len, out, NULL);
-}
 #elif defined(__linux__)
 #define mkdir(dir_path) mkdir(dir_path, 0755)
-
-#define full_name(in, out, out_len) ((void)(out_len), realname(in, out))
 #endif
 
 // From https://stackoverflow.com/a/2114249/13279557
@@ -1100,14 +1093,8 @@ static int remove_callback(const char *entry_path, const struct stat *entry_info
 }
 
 static int rm_rf(const char *path) {
-	const char* prefixed = prefix(path);
-	char full_path[4096] = {0};
-	full_name(prefixed, full_path, sizeof(full_path));
-	printf("%s\n", full_path);
-	fflush(stdout);
 	int fd_limit = 42;
-	int ret_val =  nftw(full_path, remove_callback, fd_limit, FTW_DEPTH | FTW_PHYS);
-	return ret_val;
+	return nftw(path, remove_callback, fd_limit, FTW_DEPTH | FTW_PHYS);
 }
 
 static void test_error(

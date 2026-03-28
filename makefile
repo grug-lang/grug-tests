@@ -1,0 +1,2 @@
+check: 
+	cmake --build ./build

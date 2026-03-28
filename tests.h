@@ -68,7 +68,7 @@ enum grug_runtime_error_type {
  * @param error_out Out parameter for a compile error message. Outputs `NULL` on success.
  * @return An opaque identifier to the compiled file that can be used to create entities.
  */
-typedef void* (*compile_grug_file_t)(struct grug_state* state, const char* file_path, const char** error_out);
+typedef struct grug_file_id* (*compile_grug_file_t)(struct grug_state* state, const char* file_path, const char** error_out);
 
 /**
  * @typedef init_globals_t
@@ -161,7 +161,7 @@ typedef struct grug_state* (*create_grug_state_t) (
  * @typedef destroy_grug_state_t
  * @brief Destroy a `grug_state` that was created from a previous call to `create_grug_state`.
  *
- * @param grug_state The state that to destroy.
+ * @param grug_state The state to destroy.
  */
 typedef void (*destroy_grug_state_t)(struct grug_state* state);
 

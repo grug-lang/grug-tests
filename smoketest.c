@@ -86,7 +86,7 @@ static bool starts_with(const char *haystack, const char *needle) {
     return strncmp(haystack, needle, strlen(needle)) == 0;
 }
 
-static void *compile_grug_file(struct grug_state* grug_state, const char *grug_file_path, const char** out_error) {
+static struct grug_file_id *compile_grug_file(struct grug_state* grug_state, const char *grug_file_path, const char** out_error) {
 	(void)(grug_state);
 
     if (starts_with(grug_file_path, "err/")) {
@@ -118,7 +118,7 @@ static void *compile_grug_file(struct grug_state* grug_state, const char *grug_f
 
     // No error.
 	*out_error = NULL;
-    return (void*)grug_file_path;
+    return (struct grug_file_id*)grug_file_path;
 }
 
 static void init_globals(struct grug_state* grug_state, struct grug_file_id* file_id) {
@@ -778,7 +778,7 @@ static void load_tests_so(void) {
 static struct grug_state* create_grug_state(const char* mod_api_dir, const char* mods_dir) {
 	(void)(mod_api_dir);
 	(void)(mods_dir);
-	return (struct grug_state*)(0);
+	return NULL;
 }
 
 static void destroy_grug_state(struct grug_state* grug_state) {

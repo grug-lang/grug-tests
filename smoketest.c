@@ -86,7 +86,7 @@ static bool starts_with(const char *haystack, const char *needle) {
     return strncmp(haystack, needle, strlen(needle)) == 0;
 }
 
-static void *compile_grug_file(void* grug_state, const char *grug_file_path, const char** out_error) {
+static void *compile_grug_file(struct grug_state* grug_state, const char *grug_file_path, const char** out_error) {
 	(void)(grug_state);
 
     if (starts_with(grug_file_path, "err/")) {
@@ -121,8 +121,8 @@ static void *compile_grug_file(void* grug_state, const char *grug_file_path, con
     return (void*)grug_file_path;
 }
 
-static void init_globals(void* grug_state, void* file_id) {
-    const char *grug_file_path = file_id;
+static void init_globals(struct grug_state* grug_state, struct grug_file_id* file_id) {
+    const char *grug_file_path = (const char*)file_id;
 
     if (starts_with(grug_file_path, "ok/custom_id_transfer_between_globals/")) {
         CALL_ARGLESS(grug_state, get_opponent);
@@ -141,12 +141,12 @@ static void init_globals(void* grug_state, void* file_id) {
     }
 }
 
-static void call_export_fn(void* grug_state, void* file_id, const char *on_fn_name, const union grug_value* args, size_t args_len) {
+static void call_export_fn(struct grug_state* grug_state, struct grug_file_id* file_id, const char *on_fn_name, const union grug_value* args, size_t args_len) {
 	(void)(args_len);
     saved_on_fn_name = on_fn_name;
 	saved_grug_file_path = (const char*)file_id;
 
-    const char *grug_file_path = file_id;
+    const char *grug_file_path = (const char*)file_id;
 
     if (starts_with(grug_file_path, "err_runtime/all/")) {
         p_grug_tests_runtime_error_handler("Stack overflow, so check for accidental infinite recursion", GRUG_ON_FN_STACK_OVERFLOW, on_fn_name, grug_file_path);
@@ -693,17 +693,17 @@ static bool copy_file(const char *src_path, const char *dst_path) {
     return false;
 }
 
-static bool dump_file_to_json(void* grug_state, const char *input_grug_path, const char *output_json_path) {
+static bool dump_file_to_json(struct grug_state* grug_state, const char *input_grug_path, const char *output_json_path) {
 	(void)(grug_state);
     return copy_file(input_grug_path, output_json_path);
 }
 
-static bool generate_file_from_json(void* grug_state, const char *input_json_path, const char *output_grug_path) {
+static bool generate_file_from_json(struct grug_state* grug_state, const char *input_json_path, const char *output_grug_path) {
 	(void)(grug_state);
     return copy_file(input_json_path, output_grug_path);
 }
 
-static void game_fn_error(void* grug_state, const char *message) {
+static void game_fn_error(struct grug_state* grug_state, const char *message) {
 	(void)(grug_state);
     p_grug_tests_runtime_error_handler(message, GRUG_ON_FN_GAME_FN_ERROR, saved_on_fn_name, saved_grug_file_path);
 }
@@ -775,14 +775,14 @@ static void load_tests_so(void) {
     #pragma GCC diagnostic pop
 }
 
-static void* create_grug_state(const char* mod_api_dir, const char* mods_dir) {
+static struct grug_state* create_grug_state(const char* mod_api_dir, const char* mods_dir) {
 	(void)(mod_api_dir);
 	(void)(mods_dir);
-	return (void*)(0);
+	return (struct grug_state*)(0);
 }
 
-static void destroy_grug_state(void* state) {
-	(void)(state);
+static void destroy_grug_state(struct grug_state* grug_state) {
+	(void)(grug_state);
 }
 
 int main(int argc, const char *argv[]) {

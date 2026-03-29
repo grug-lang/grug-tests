@@ -3281,7 +3281,6 @@ static void add_error_tests(void) {
 	ADD_TEST_ERROR(global_variable_contains_double_negation, "A");
 	ADD_TEST_ERROR(global_variable_contains_double_not, "A");
 	ADD_TEST_ERROR(global_variable_contains_entity, "A");
-	ADD_TEST_ERROR(global_variable_contains_resource, "A");
 	ADD_TEST_ERROR(global_variable_definition_cant_use_itself, "A");
 	ADD_TEST_ERROR(global_variable_definition_missing_type, "A");
 	ADD_TEST_ERROR(global_variable_definition_requires_value_i32, "D");

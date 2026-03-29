@@ -3248,6 +3248,7 @@ static void add_error_tests(void) {
 	ADD_TEST_ERROR(f32_too_close_to_zero_negative, "D");
 	ADD_TEST_ERROR(f32_too_close_to_zero_positive, "D");
 	ADD_TEST_ERROR(f32_too_small, "D");
+	ADD_TEST_ERROR(file_name_missing_entity_type, "");
 	ADD_TEST_ERROR(game_fn_call_gets_void, "D");
 	ADD_TEST_ERROR(game_fn_does_not_exist, "D");
 	ADD_TEST_ERROR(game_function_call_gets_wrong_arg_type, "D");

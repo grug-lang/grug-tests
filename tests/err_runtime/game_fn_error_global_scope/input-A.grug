@@ -1,0 +1,1 @@
+b: bool = cause_game_fn_error()

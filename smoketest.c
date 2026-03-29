@@ -124,9 +124,13 @@ static struct grug_file_id *compile_grug_file(struct grug_state* grug_state, con
 }
 
 static void init_globals(struct grug_state* grug_state, struct grug_file_id* file_id) {
+	saved_grug_file_path = (const char*)file_id;
+
     const char *grug_file_path = (const char*)file_id;
 
-    if (starts_with(grug_file_path, "ok"SLASH"custom_id_transfer_between_globals"SLASH)) {
+    if (starts_with(grug_file_path, "err_runtime"SLASH"game_fn_error_global_scope"SLASH)) {
+        CALL_ARGLESS(grug_state, cause_game_fn_error);
+    } else if (starts_with(grug_file_path, "ok"SLASH"custom_id_transfer_between_globals"SLASH)) {
         CALL_ARGLESS(grug_state, get_opponent);
     } else if (starts_with(grug_file_path, "ok"SLASH"custom_id_with_digits"SLASH)) {
         CALL(grug_state, box_number, grug_number(42.0));

@@ -841,7 +841,7 @@ union grug_value game_fn_cause_game_fn_error(struct grug_state* grug_state, cons
 	game_fn_cause_game_fn_error_call_count++;
 
 	game_fn_error(grug_state, "cause_game_fn_error(): Example game function error");
-	return (union grug_value) {0};
+	return grug_bool(true);
 }
 static char *saved_grug_path = NULL;
 union grug_value game_fn_call_on_b_fn(struct grug_state* grug_state, const union grug_value args[]) {
@@ -3067,6 +3067,20 @@ static void runtime_error_game_fn_error(void* grug_state, void* file_id) {
 	assert_string(runtime_error_on_fn_path, "err_runtime"SLASH"game_fn_error"SLASH"input-D.grug");
 }
 
+static void runtime_error_game_fn_error_global_scope(void* grug_state, void* file_id) {
+	(void)grug_state;
+	(void)file_id;
+
+	assert_call_count(cause_game_fn_error, 1);
+	assert_error_handler_call_count(1);
+
+	assert_true(had_runtime_error);
+
+	assert_runtime_error_type(GRUG_ON_FN_GAME_FN_ERROR);
+
+	assert_string(runtime_error_on_fn_path, "err_runtime/game_fn_error_global_scope/input-A.grug");
+}
+
 static void runtime_error_game_fn_error_once(void* grug_state, void* file_id) {
 	assert_call_count(cause_game_fn_error, 0);
 	assert_error_handler_call_count(0);
@@ -3611,6 +3625,7 @@ static void add_ok_tests(void) {
 static void add_runtime_error_tests(void) {
 	ADD_TEST_RUNTIME_ERROR(all, "D", 8);
 	ADD_TEST_RUNTIME_ERROR(game_fn_error, "D", 8);
+	ADD_TEST_RUNTIME_ERROR(game_fn_error_global_scope, "A", 9);
 	ADD_TEST_RUNTIME_ERROR(game_fn_error_once, "E", 8);
 	ADD_TEST_RUNTIME_ERROR(on_fn_calls_erroring_on_fn, "E", 8);
 	ADD_TEST_RUNTIME_ERROR(on_fn_errors_after_it_calls_other_on_fn, "E", 8);

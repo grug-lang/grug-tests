@@ -1,1 +1,0 @@
-The argument 'bar' can't have 'resource' as its type

@@ -956,6 +956,18 @@ static void print_string_debug(const char* str) {
 	}\
 } while (0)
 
+#define ADD_TEST_ERROR_FILE_NAME(test_name, file_name) do {\
+	if (is_whitelisted_test(#test_name)) {\
+		error_test_datas[err_test_datas_size++] = (struct error_test_data){\
+			.test_name_str = #test_name,\
+			.grug_path = "err/"#test_name"/"file_name,\
+			.expected_error_path = "err/"#test_name"/expected_error.txt",\
+			.results_path = "err/"#test_name"/results",\
+			.grug_output_path = "err/"#test_name"/results/grug_output.txt"\
+		};\
+	}\
+} while (0)
+
 #define ADD_TEST_OK(test_name, entity_type, expected_globals_size) do {\
 	if (is_whitelisted_test(#test_name)) {\
 		ok_test_datas[ok_test_datas_size++] = (struct ok_test_data){\
@@ -3249,6 +3261,7 @@ static void add_error_tests(void) {
 	ADD_TEST_ERROR(f32_too_close_to_zero_positive, "D");
 	ADD_TEST_ERROR(f32_too_small, "D");
 	ADD_TEST_ERROR(file_name_missing_entity_type, "");
+	ADD_TEST_ERROR_FILE_NAME(file_name_missing_period, "input-A");
 	ADD_TEST_ERROR(game_fn_call_gets_void, "D");
 	ADD_TEST_ERROR(game_fn_does_not_exist, "D");
 	ADD_TEST_ERROR(game_function_call_gets_wrong_arg_type, "D");

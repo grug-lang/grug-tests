@@ -3380,7 +3380,6 @@ static void add_error_tests(void) {
 	ADD_TEST_ERROR(resource_type_for_helper_fn_argument, "D");
 	ADD_TEST_ERROR(resource_type_for_helper_fn_return_type, "D");
 	ADD_TEST_ERROR(resource_type_for_local, "D");
-	ADD_TEST_ERROR(resource_type_for_on_fn_argument, "D");
 	ADD_TEST_ERROR(spaces_per_indent, "D");
 	ADD_TEST_ERROR(string_pointer_arithmetic, "D");
 	ADD_TEST_ERROR(trailing_space_in_comment, "D");

@@ -236,15 +236,15 @@ static void call_export_fn_argless(void* grug_state, void* file_id, const char *
 }
 
 union grug_value game_fn_nothing(struct grug_state* grug_state, const union grug_value args[]) {
-	(void)(grug_state);
-	(void)(args);
+	(void)grug_state;
+	(void)args;
 	ASSERT_16_BYTE_STACK_ALIGNED();
 	game_fn_nothing_call_count++;
 	return (union grug_value) {0};
 }
 union grug_value game_fn_magic(struct grug_state* grug_state, const union grug_value args[]) {
-	(void)(grug_state);
-	(void)(args);
+	(void)grug_state;
+	(void)args;
 	ASSERT_16_BYTE_STACK_ALIGNED();
 	game_fn_magic_call_count++;
 
@@ -252,7 +252,7 @@ union grug_value game_fn_magic(struct grug_state* grug_state, const union grug_v
 }
 static double game_fn_initialize_x;
 union grug_value game_fn_initialize(struct grug_state* grug_state, const union grug_value args[]) {
-	(void)(grug_state);
+	(void)grug_state;
 	ASSERT_16_BYTE_STACK_ALIGNED();
 	game_fn_initialize_call_count++;
 
@@ -261,7 +261,7 @@ union grug_value game_fn_initialize(struct grug_state* grug_state, const union g
 }
 static bool game_fn_initialize_bool_b;
 union grug_value game_fn_initialize_bool(struct grug_state* grug_state, const union grug_value args[]) {
-	(void)(grug_state);
+	(void)grug_state;
 	ASSERT_16_BYTE_STACK_ALIGNED();
 	game_fn_initialize_bool_call_count++;
 
@@ -270,7 +270,7 @@ union grug_value game_fn_initialize_bool(struct grug_state* grug_state, const un
 }
 static double game_fn_identity_x;
 union grug_value game_fn_identity(struct grug_state* grug_state, const union grug_value args[]) {
-	(void)(grug_state);
+	(void)grug_state;
 	ASSERT_16_BYTE_STACK_ALIGNED();
 	game_fn_identity_call_count++;
 
@@ -281,7 +281,7 @@ union grug_value game_fn_identity(struct grug_state* grug_state, const union gru
 static double game_fn_max_x;
 static double game_fn_max_y;
 union grug_value game_fn_max(struct grug_state* grug_state, const union grug_value args[]) {
-	(void)(grug_state);
+	(void)grug_state;
 	ASSERT_16_BYTE_STACK_ALIGNED();
 	game_fn_max_call_count++;
 
@@ -292,7 +292,7 @@ union grug_value game_fn_max(struct grug_state* grug_state, const union grug_val
 }
 static char game_fn_say_message[256];
 union grug_value game_fn_say(struct grug_state* grug_state, const union grug_value args[]) {
-	(void)(grug_state);
+	(void)grug_state;
 	ASSERT_16_BYTE_STACK_ALIGNED();
 	game_fn_say_call_count++;
 
@@ -301,7 +301,7 @@ union grug_value game_fn_say(struct grug_state* grug_state, const union grug_val
 }
 static double game_fn_sin_x;
 union grug_value game_fn_sin(struct grug_state* grug_state, const union grug_value args[]) {
-	(void)(grug_state);
+	(void)grug_state;
 	ASSERT_16_BYTE_STACK_ALIGNED();
 	game_fn_sin_call_count++;
 
@@ -311,7 +311,7 @@ union grug_value game_fn_sin(struct grug_state* grug_state, const union grug_val
 }
 static double game_fn_cos_x;
 union grug_value game_fn_cos(struct grug_state* grug_state, const union grug_value args[]) {
-	(void)(grug_state);
+	(void)grug_state;
 	ASSERT_16_BYTE_STACK_ALIGNED();
 	game_fn_cos_call_count++;
 
@@ -334,7 +334,7 @@ static double game_fn_mega_f8;
 static uint64_t game_fn_mega_id;
 static char game_fn_mega_str[256];
 union grug_value game_fn_mega(struct grug_state* grug_state, const union grug_value args[]) {
-	(void)(grug_state);
+	(void)grug_state;
 	ASSERT_16_BYTE_STACK_ALIGNED();
 	game_fn_mega_call_count++;
 
@@ -355,8 +355,8 @@ union grug_value game_fn_mega(struct grug_state* grug_state, const union grug_va
 	return (union grug_value) {0};
 }
 union grug_value game_fn_get_false(struct grug_state* grug_state, const union grug_value args[]) {
-	(void)(grug_state);
-	(void)(args);
+	(void)grug_state;
+	(void)args;
 	ASSERT_16_BYTE_STACK_ALIGNED();
 	game_fn_get_false_call_count++;
 
@@ -364,7 +364,7 @@ union grug_value game_fn_get_false(struct grug_state* grug_state, const union gr
 }
 static bool game_fn_set_is_happy_is_happy;
 union grug_value game_fn_set_is_happy(struct grug_state* grug_state, const union grug_value args[]) {
-	(void)(grug_state);
+	(void)grug_state;
 	ASSERT_16_BYTE_STACK_ALIGNED();
 	game_fn_set_is_happy_call_count++;
 
@@ -381,7 +381,7 @@ static double game_fn_mega_f32_f7;
 static double game_fn_mega_f32_f8;
 static double game_fn_mega_f32_f9;
 union grug_value game_fn_mega_f32(struct grug_state* grug_state, const union grug_value args[]) {
-	(void)(grug_state);
+	(void)grug_state;
 	ASSERT_16_BYTE_STACK_ALIGNED();
 	game_fn_mega_f32_call_count++;
 
@@ -404,7 +404,7 @@ static double game_fn_mega_i32_i5;
 static double game_fn_mega_i32_i6;
 static double game_fn_mega_i32_i7;
 union grug_value game_fn_mega_i32(struct grug_state* grug_state, const union grug_value args[]) {
-	(void)(grug_state);
+	(void)grug_state;
 	ASSERT_16_BYTE_STACK_ALIGNED();
 	game_fn_mega_i32_call_count++;
 
@@ -419,22 +419,22 @@ union grug_value game_fn_mega_i32(struct grug_state* grug_state, const union gru
 }
 static char game_fn_draw_sprite_path[256];
 union grug_value game_fn_draw(struct grug_state* grug_state, const union grug_value args[]) {
-	(void)(grug_state);
+	(void)grug_state;
 	ASSERT_16_BYTE_STACK_ALIGNED();
 	game_fn_draw_call_count++;
 	strcpy(game_fn_draw_sprite_path, args[0]._string);
 	return (union grug_value) {0};
 }
 union grug_value game_fn_blocked_alrm(struct grug_state* grug_state, const union grug_value args[]) {
-	(void)(grug_state);
-	(void)(args);
+	(void)grug_state;
+	(void)args;
 	ASSERT_16_BYTE_STACK_ALIGNED();
 	game_fn_blocked_alrm_call_count++;
 	return (union grug_value) {0};
 }
 static char game_fn_spawn_name[256];
 union grug_value game_fn_spawn(struct grug_state* grug_state, const union grug_value args[]) {
-	(void)(grug_state);
+	(void)grug_state;
 	ASSERT_16_BYTE_STACK_ALIGNED();
 	game_fn_spawn_call_count++;
 
@@ -443,7 +443,7 @@ union grug_value game_fn_spawn(struct grug_state* grug_state, const union grug_v
 }
 static char game_fn_has_resource_path[256];
 union grug_value game_fn_has_resource(struct grug_state* grug_state, const union grug_value args[]) {
-	(void)(grug_state);
+	(void)grug_state;
 	ASSERT_16_BYTE_STACK_ALIGNED();
 	game_fn_has_resource_call_count++;
 
@@ -453,7 +453,7 @@ union grug_value game_fn_has_resource(struct grug_state* grug_state, const union
 }
 static char game_fn_has_entity_name[256];
 union grug_value game_fn_has_entity(struct grug_state* grug_state, const union grug_value args[]) {
-	(void)(grug_state);
+	(void)grug_state;
 	ASSERT_16_BYTE_STACK_ALIGNED();
 	game_fn_has_entity_call_count++;
 
@@ -463,7 +463,7 @@ union grug_value game_fn_has_entity(struct grug_state* grug_state, const union g
 }
 static char game_fn_has_string_str[256];
 union grug_value game_fn_has_string(struct grug_state* grug_state, const union grug_value args[]) {
-	(void)(grug_state);
+	(void)grug_state;
 	ASSERT_16_BYTE_STACK_ALIGNED();
 	game_fn_has_string_call_count++;
 
@@ -472,16 +472,16 @@ union grug_value game_fn_has_string(struct grug_state* grug_state, const union g
 	return grug_bool(true);
 }
 union grug_value game_fn_get_opponent(struct grug_state* grug_state, const union grug_value args[]) {
-	(void)(grug_state);
-	(void)(args);
+	(void)grug_state;
+	(void)args;
 	ASSERT_16_BYTE_STACK_ALIGNED();
 	game_fn_get_opponent_call_count++;
 
 	return grug_id(69);
 }
 union grug_value game_fn_get_os(struct grug_state* grug_state, const union grug_value args[]) {
-	(void)(grug_state);
-	(void)(args);
+	(void)grug_state;
+	(void)args;
 	ASSERT_16_BYTE_STACK_ALIGNED();
 	game_fn_get_os_call_count++;
 
@@ -489,7 +489,7 @@ union grug_value game_fn_get_os(struct grug_state* grug_state, const union grug_
 }
 static uint64_t game_fn_set_d_target;
 union grug_value game_fn_set_d(struct grug_state* grug_state, const union grug_value args[]) {
-	(void)(grug_state);
+	(void)grug_state;
 	ASSERT_16_BYTE_STACK_ALIGNED();
 	game_fn_set_d_call_count++;
 
@@ -498,7 +498,7 @@ union grug_value game_fn_set_d(struct grug_state* grug_state, const union grug_v
 }
 static uint64_t game_fn_set_opponent_target;
 union grug_value game_fn_set_opponent(struct grug_state* grug_state, const union grug_value args[]) {
-	(void)(grug_state);
+	(void)grug_state;
 	ASSERT_16_BYTE_STACK_ALIGNED();
 	game_fn_set_opponent_call_count++;
 
@@ -523,7 +523,7 @@ static double game_fn_motherload_f8;
 static uint64_t game_fn_motherload_id;
 static double game_fn_motherload_f9;
 union grug_value game_fn_motherload(struct grug_state* grug_state, const union grug_value args[]) {
-	(void)(grug_state);
+	(void)grug_state;
 	ASSERT_16_BYTE_STACK_ALIGNED();
 	game_fn_motherload_call_count++;
 
@@ -565,7 +565,7 @@ static double game_fn_motherload_subless_f9;
 static uint64_t game_fn_motherload_subless_id;
 static double game_fn_motherload_subless_f10;
 union grug_value game_fn_motherload_subless(struct grug_state* grug_state, const union grug_value args[]) {
-	(void)(grug_state);
+	(void)grug_state;
 	ASSERT_16_BYTE_STACK_ALIGNED();
 	game_fn_motherload_subless_call_count++;
 
@@ -614,7 +614,7 @@ static double game_fn_offset_32_bit_f32_f7;
 static double game_fn_offset_32_bit_f32_f8;
 static double game_fn_offset_32_bit_f32_g;
 union grug_value game_fn_offset_32_bit_f32(struct grug_state* grug_state, const union grug_value args[]) {
-	(void)(grug_state);
+	(void)grug_state;
 	ASSERT_16_BYTE_STACK_ALIGNED();
 	game_fn_offset_32_bit_f32_call_count++;
 
@@ -681,7 +681,7 @@ static double game_fn_offset_32_bit_i32_i4;
 static double game_fn_offset_32_bit_i32_i5;
 static double game_fn_offset_32_bit_i32_g;
 union grug_value game_fn_offset_32_bit_i32(struct grug_state* grug_state, const union grug_value args[]) {
-	(void)(grug_state);
+	(void)grug_state;
 	ASSERT_16_BYTE_STACK_ALIGNED();
 	game_fn_offset_32_bit_i32_call_count++;
 
@@ -760,7 +760,7 @@ static char game_fn_offset_32_bit_string_s4[256];
 static char game_fn_offset_32_bit_string_s5[256];
 static double game_fn_offset_32_bit_string_g;
 union grug_value game_fn_offset_32_bit_string(struct grug_state* grug_state, const union grug_value args[]) {
-	(void)(grug_state);
+	(void)grug_state;
 	ASSERT_16_BYTE_STACK_ALIGNED();
 	game_fn_offset_32_bit_string_call_count++;
 
@@ -807,7 +807,7 @@ static char game_fn_talk_message2[256];
 static char game_fn_talk_message3[256];
 static char game_fn_talk_message4[256];
 union grug_value game_fn_talk(struct grug_state* grug_state, const union grug_value args[]) {
-	(void)(grug_state);
+	(void)grug_state;
 	ASSERT_16_BYTE_STACK_ALIGNED();
 	game_fn_talk_call_count++;
 
@@ -818,7 +818,7 @@ union grug_value game_fn_talk(struct grug_state* grug_state, const union grug_va
 	return (union grug_value) {0};
 }
 union grug_value game_fn_get_position(struct grug_state* grug_state, const union grug_value args[]) {
-	(void)(grug_state);
+	(void)grug_state;
 	ASSERT_16_BYTE_STACK_ALIGNED();
 	game_fn_get_position_call_count++;
 
@@ -828,7 +828,7 @@ union grug_value game_fn_get_position(struct grug_state* grug_state, const union
 }
 static uint64_t game_fn_set_position_pos;
 union grug_value game_fn_set_position(struct grug_state* grug_state, const union grug_value args[]) {
-	(void)(grug_state);
+	(void)grug_state;
 	ASSERT_16_BYTE_STACK_ALIGNED();
 	game_fn_set_position_call_count++;
 
@@ -836,7 +836,7 @@ union grug_value game_fn_set_position(struct grug_state* grug_state, const union
 	return (union grug_value) {0};
 }
 union grug_value game_fn_cause_game_fn_error(struct grug_state* grug_state, const union grug_value args[]) {
-	(void)(args);
+	(void)args;
 	ASSERT_16_BYTE_STACK_ALIGNED();
 	game_fn_cause_game_fn_error_call_count++;
 
@@ -844,7 +844,7 @@ union grug_value game_fn_cause_game_fn_error(struct grug_state* grug_state, cons
 	return grug_bool(true);
 }
 union grug_value game_fn_call_on_b_fn(struct grug_state* grug_state, const union grug_value args[]) {
-	(void)(args);
+	(void)args;
 	ASSERT_16_BYTE_STACK_ALIGNED();
 	game_fn_call_on_b_fn_call_count++;
 
@@ -853,7 +853,7 @@ union grug_value game_fn_call_on_b_fn(struct grug_state* grug_state, const union
 }
 static uint64_t game_fn_store_id;
 union grug_value game_fn_store(struct grug_state* grug_state, const union grug_value args[]) {
-	(void)(grug_state);
+	(void)grug_state;
 	ASSERT_16_BYTE_STACK_ALIGNED();
 	game_fn_store_call_count++;
 
@@ -861,15 +861,15 @@ union grug_value game_fn_store(struct grug_state* grug_state, const union grug_v
 	return (union grug_value) {0};
 }
 union grug_value game_fn_retrieve(struct grug_state* grug_state, const union grug_value args[]) {
-	(void)(grug_state);
-	(void)(args);
+	(void)grug_state;
+	(void)args;
 	ASSERT_16_BYTE_STACK_ALIGNED();
 	game_fn_retrieve_call_count++;
 
 	return grug_id(123);
 }
 union grug_value game_fn_box_number(struct grug_state* grug_state, const union grug_value args[]) {
-	(void)(grug_state);
+	(void)grug_state;
 	ASSERT_16_BYTE_STACK_ALIGNED();
 	game_fn_box_number_call_count++;
 
@@ -1400,8 +1400,8 @@ static void ok_comment_above_block_twice(void* grug_state, void* file_id) {
 }
 
 static void ok_comment_above_globals(void* grug_state, void* file_id) {
-	(void)(grug_state);
-	(void)(file_id);
+	(void)grug_state;
+	(void)file_id;
 }
 
 static void ok_comment_above_helper_fn(void* grug_state, void* file_id) {
@@ -1415,8 +1415,8 @@ static void ok_comment_above_on_fn(void* grug_state, void* file_id) {
 }
 
 static void ok_comment_between_globals(void* grug_state, void* file_id) {
-	(void)(grug_state);
-	(void)(file_id);
+	(void)grug_state;
+	(void)file_id;
 }
 
 static void ok_comment_between_statements(void* grug_state, void* file_id) {
@@ -1464,8 +1464,8 @@ static void ok_custom_id_transfer_between_globals(void* grug_state, void* file_i
 }
 
 static void ok_custom_id_with_digits(void* grug_state, void* file_id) {
-	(void)(grug_state);
-	(void)(file_id);
+	(void)grug_state;
+	(void)file_id;
 	assert_call_count(box_number, 1);
 }
 
@@ -1538,8 +1538,8 @@ static void ok_else_true(void* grug_state, void* file_id) {
 }
 
 static void ok_empty_file(void* grug_state, void* file_id) {
-	(void)(grug_state);
-	(void)(file_id);
+	(void)grug_state;
+	(void)file_id;
 }
 
 static void ok_empty_line(void* grug_state, void* file_id) {
@@ -1838,8 +1838,8 @@ static void ok_ge_true_2(void* grug_state, void* file_id) {
 }
 
 static void ok_global_2_does_not_have_error_handling(void* grug_state, void* file_id) {
-	(void)(grug_state);
-	(void)(file_id);
+	(void)grug_state;
+	(void)file_id;
 }
 
 static void ok_global_call_using_me(void* grug_state, void* file_id) {
@@ -1888,23 +1888,23 @@ static void ok_globals(void* grug_state, void* file_id) {
 }
 
 static void ok_globals_1000(void* grug_state, void* file_id) {
-	(void)(grug_state);
-	(void)(file_id);
+	(void)grug_state;
+	(void)file_id;
 }
 
 static void ok_globals_1000_string(void* grug_state, void* file_id) {
-	(void)(grug_state);
-	(void)(file_id);
+	(void)grug_state;
+	(void)file_id;
 }
 
 static void ok_globals_32(void* grug_state, void* file_id) {
-	(void)(grug_state);
-	(void)(file_id);
+	(void)grug_state;
+	(void)file_id;
 }
 
 static void ok_globals_64(void* grug_state, void* file_id) {
-	(void)(grug_state);
-	(void)(file_id);
+	(void)grug_state;
+	(void)file_id;
 }
 
 static void ok_gt_false(void* grug_state, void* file_id) {
@@ -2252,13 +2252,13 @@ static void ok_me_passed_to_helper_fn(void* grug_state, void* file_id) {
 }
 
 static void ok_mov_32_bits_global_i32(void* grug_state, void* file_id) {
-	(void)(grug_state);
-	(void)(file_id);
+	(void)grug_state;
+	(void)file_id;
 }
 
 static void ok_mov_32_bits_global_id(void* grug_state, void* file_id) {
-	(void)(grug_state);
-	(void)(file_id);
+	(void)grug_state;
+	(void)file_id;
 }
 
 static void ok_multiplication_as_two_arguments(void* grug_state, void* file_id) {
@@ -2315,8 +2315,8 @@ static void ok_nested_continue(void* grug_state, void* file_id) {
 }
 
 static void ok_no_empty_line_between_globals(void* grug_state, void* file_id) {
-	(void)(grug_state);
-	(void)(file_id);
+	(void)grug_state;
+	(void)file_id;
 }
 
 static void ok_no_empty_line_between_statements(void* grug_state, void* file_id) {
@@ -2952,13 +2952,13 @@ static void ok_subtraction_positive_result(void* grug_state, void* file_id) {
 }
 
 static void ok_unprintable_character_in_comment(void* grug_state, void* file_id) {
-	(void)(grug_state);
-	(void)(file_id);
+	(void)grug_state;
+	(void)file_id;
 }
 
 static void ok_unprintable_character_in_string(void* grug_state, void* file_id) {
-	(void)(grug_state);
-	(void)(file_id);
+	(void)grug_state;
+	(void)file_id;
 }
 
 static void ok_variable(void* grug_state, void* file_id) {

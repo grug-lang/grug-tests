@@ -825,7 +825,6 @@ union grug_value game_fn_cause_game_fn_error(struct grug_state* grug_state, cons
 	game_fn_error(grug_state, "cause_game_fn_error(): Example game function error");
 	return grug_bool(true);
 }
-static char *saved_grug_path = NULL;
 union grug_value game_fn_call_on_b_fn(struct grug_state* grug_state, const union grug_value args[]) {
 	(void)(args);
 	ASSERT_16_BYTE_STACK_ALIGNED();
@@ -3096,8 +3095,6 @@ static void runtime_error_game_fn_error_once(void* grug_state, void* file_id) {
 }
 
 static void runtime_error_on_fn_calls_erroring_on_fn(void* grug_state, void* file_id) {
-	saved_grug_path = "err_runtime"SLASH"on_fn_calls_erroring_on_fn"SLASH"input-E.grug";
-
 	assert_call_count(call_on_b_fn, 0);
 	assert_call_count(cause_game_fn_error, 0);
 	assert_call_count(nothing, 0);
@@ -3117,8 +3114,6 @@ static void runtime_error_on_fn_calls_erroring_on_fn(void* grug_state, void* fil
 }
 
 static void runtime_error_on_fn_errors_after_it_calls_other_on_fn(void* grug_state, void* file_id) {
-	saved_grug_path = "err_runtime"SLASH"on_fn_errors_after_it_calls_other_on_fn"SLASH"input-E.grug";
-
 	assert_call_count(call_on_b_fn, 0);
 	assert_call_count(nothing, 0);
 	assert_call_count(cause_game_fn_error, 0);

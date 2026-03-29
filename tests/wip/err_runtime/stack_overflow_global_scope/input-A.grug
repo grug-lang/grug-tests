@@ -1,0 +1,5 @@
+b: bool = helper_foo()
+
+helper_foo() bool {
+    return helper_foo()
+}

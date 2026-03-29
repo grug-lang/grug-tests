@@ -147,7 +147,8 @@
 			"description": "foo"
 		},
 		"cause_game_fn_error": {
-			"description": "foo"
+			"description": "foo",
+			"return_type": "bool"
 		},
 		"cos": {
 			"description": "foo",

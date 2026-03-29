@@ -1,1 +1,0 @@
-The global variable 'foo' can't have 'resource' as its type

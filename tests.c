@@ -3363,6 +3363,7 @@ static void add_error_tests(void) {
 	ADD_TEST_ERROR(pass_bool_to_i32_helper_param, "D");
 	ADD_TEST_ERROR(resource_cant_be_empty_string, "D");
 	ADD_TEST_ERROR(resource_cant_be_passed_to_helper_fn, "D");
+	ADD_TEST_ERROR(resource_cant_be_passed_to_helper_fn_2, "D");
 	ADD_TEST_ERROR(resource_cant_contain_backslash, "D");
 	ADD_TEST_ERROR(resource_cant_contain_double_slash, "D");
 	ADD_TEST_ERROR(resource_cant_end_with_dot, "D");
@@ -3377,7 +3378,6 @@ static void add_error_tests(void) {
 	ADD_TEST_ERROR(resource_cant_refer_to_current_directory_3, "D");
 	ADD_TEST_ERROR(resource_cant_refer_to_current_directory_4, "D");
 	ADD_TEST_ERROR(resource_type_for_global, "A");
-	ADD_TEST_ERROR(resource_type_for_helper_fn_argument, "D");
 	ADD_TEST_ERROR(resource_type_for_helper_fn_return_type, "D");
 	ADD_TEST_ERROR(resource_type_for_local, "D");
 	ADD_TEST_ERROR(spaces_per_indent, "D");

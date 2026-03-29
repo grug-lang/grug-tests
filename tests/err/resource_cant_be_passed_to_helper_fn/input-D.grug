@@ -1,5 +1,5 @@
 on_a() {
-    helper_foo("resource_and_on_fn/foo.txt")
+    helper_foo("resource_cant_be_passed_to_helper_fn/foo.txt")
 }
 
 helper_foo(r: resource) {

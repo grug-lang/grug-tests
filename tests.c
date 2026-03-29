@@ -3269,6 +3269,7 @@ static void add_error_tests(void) {
 	ADD_TEST_ERROR(entity_mod_name_cant_be_current_mod, "D");
 	ADD_TEST_ERROR(entity_mod_name_is_missing, "D");
 	ADD_TEST_ERROR(entity_name_is_missing, "D");
+	ADD_TEST_ERROR(entity_type_for_helper_fn_return_type, "D");
 	ADD_TEST_ERROR(f32_missing_digit_after_decimal_point, "D");
 	ADD_TEST_ERROR(f32_too_big, "D");
 	ADD_TEST_ERROR(f32_too_close_to_zero_negative, "D");

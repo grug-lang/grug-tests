@@ -1,0 +1,1 @@
+The function 'helper_foo' can't have 'entity' as its return type

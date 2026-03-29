@@ -38,6 +38,7 @@ union grug_value {
 #endif
 };
 
+// Forward declarations to opaque ids
 struct grug_state;
 struct grug_file_id;
 struct grug_entity_id;

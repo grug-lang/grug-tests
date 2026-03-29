@@ -3248,6 +3248,7 @@ static void add_error_tests(void) {
 	ADD_TEST_ERROR(empty_on_fn, "D");
 	ADD_TEST_ERROR(entity_cant_be_empty_string, "D");
 	ADD_TEST_ERROR(entity_cant_be_passed_to_helper_fn, "D");
+	ADD_TEST_ERROR(entity_cant_be_passed_to_helper_fn_2, "D");
 	ADD_TEST_ERROR(entity_has_invalid_entity_name_colon, "D");
 	ADD_TEST_ERROR(entity_has_invalid_entity_name_uppercase, "D");
 	ADD_TEST_ERROR(entity_has_invalid_mod_name_uppercase, "D");

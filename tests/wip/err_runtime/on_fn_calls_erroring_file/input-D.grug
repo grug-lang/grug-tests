@@ -1,0 +1,3 @@
+on_a() {
+    call_other_file()
+}

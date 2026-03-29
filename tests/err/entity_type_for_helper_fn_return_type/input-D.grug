@@ -1,0 +1,6 @@
+on_a() {
+    helper_foo()
+}
+
+helper_foo() entity {
+}

@@ -89,7 +89,7 @@ static bool starts_with(const char *haystack, const char *needle) {
 }
 
 static struct grug_file_id *compile_grug_file(struct grug_state* grug_state, const char *grug_file_path, const char** out_error) {
-	(void)(grug_state);
+	(void)grug_state;
 
     if (starts_with(grug_file_path, "err"SLASH)) {
         // Turn "err/foo-D.grug" into "err/expected_error.txt"
@@ -148,7 +148,7 @@ static void init_globals(struct grug_state* grug_state, struct grug_file_id* fil
 }
 
 static void call_export_fn(struct grug_state* grug_state, struct grug_file_id* file_id, const char *on_fn_name, const union grug_value* args, size_t args_len) {
-	(void)(args_len);
+	(void)args_len;
     saved_on_fn_name = on_fn_name;
 	saved_grug_file_path = (const char*)file_id;
 
@@ -700,17 +700,17 @@ static bool copy_file(const char *src_path, const char *dst_path) {
 }
 
 static bool dump_file_to_json(struct grug_state* grug_state, const char *input_grug_path, const char *output_json_path) {
-	(void)(grug_state);
+	(void)grug_state;
     return copy_file(input_grug_path, output_json_path);
 }
 
 static bool generate_file_from_json(struct grug_state* grug_state, const char *input_json_path, const char *output_grug_path) {
-	(void)(grug_state);
+	(void)grug_state;
     return copy_file(input_json_path, output_grug_path);
 }
 
 static void game_fn_error(struct grug_state* grug_state, const char *message) {
-	(void)(grug_state);
+	(void)grug_state;
     p_grug_tests_runtime_error_handler(message, GRUG_ON_FN_GAME_FN_ERROR, saved_on_fn_name, saved_grug_file_path);
 }
 
@@ -782,13 +782,13 @@ static void load_tests_so(void) {
 }
 
 static struct grug_state* create_grug_state(const char* mod_api_dir, const char* mods_dir) {
-	(void)(mod_api_dir);
-	(void)(mods_dir);
+	(void)mod_api_dir;
+	(void)mods_dir;
 	return NULL;
 }
 
 static void destroy_grug_state(struct grug_state* grug_state) {
-	(void)(grug_state);
+	(void)grug_state;
 }
 
 int main(int argc, const char *argv[]) {

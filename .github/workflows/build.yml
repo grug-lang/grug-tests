@@ -11,7 +11,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     defaults:
       run:
-        shell: bash
+        shell: ${{ matrix.os == 'windows-latest' && 'msys2 {0}' || 'bash' }}
     strategy:
       matrix:
         os: [ubuntu-latest]
@@ -19,12 +19,23 @@ jobs:
         sanitizer: [none, asan, valgrind]
         include:
           - os: windows-latest
-            compiler: clang
+            compiler: gcc
             sanitizer: none
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+
+      - name: Setup MSYS2
+        if: matrix.os == 'windows-latest'
+        uses: msys2/setup-msys2@v2
+        with:
+          msystem: MINGW64
+          update: true
+          install: >-
+            mingw-w64-x86_64-gcc
+            mingw-w64-x86_64-cmake
+            mingw-w64-x86_64-ninja
 
       - name: Set up Python
         uses: actions/setup-python@v4
@@ -55,7 +66,6 @@ jobs:
 
       - name: Configure CMake
         run: |
-          # Use Ninja for everything. It's faster and respects the CC env var on Windows.
           CMAKE_FLAGS="-G Ninja"
           if [ "${{ matrix.sanitizer }}" == "asan" ]; then
             CMAKE_FLAGS="$CMAKE_FLAGS -DASAN=ON"

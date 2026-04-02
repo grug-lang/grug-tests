@@ -77,8 +77,10 @@ static const char *get_type_name[] = {
 
 #if defined(_WIN32)
 #define mkdir(dir_path) mkdir(dir_path)
+#define SLASH "\\"
 #elif defined(__linux__)
 #define mkdir(dir_path) mkdir(dir_path, 0755)
+#define SLASH "/"
 #endif
 
 // From https://stackoverflow.com/a/2114249/13279557
@@ -947,10 +949,10 @@ static void print_string_debug(const char* str) {
 	if (is_whitelisted_test(#test_name)) {\
 		error_test_datas[err_test_datas_size++] = (struct error_test_data){\
 			.test_name_str = #test_name,\
-			.grug_path = "err/"#test_name"/input-"entity_type".grug",\
-			.expected_error_path = "err/"#test_name"/expected_error.txt",\
-			.results_path = "err/"#test_name"/results",\
-			.grug_output_path = "err/"#test_name"/results/grug_output.txt"\
+			.grug_path = "err"SLASH#test_name SLASH"input-"entity_type".grug",\
+			.expected_error_path = "err"SLASH#test_name SLASH"expected_error.txt",\
+			.results_path = "err"SLASH#test_name SLASH"results",\
+			.grug_output_path = "err"SLASH#test_name SLASH"results"SLASH"grug_output.txt"\
 		};\
 	}\
 } while (0)
@@ -961,10 +963,10 @@ static void print_string_debug(const char* str) {
 			.run = ok_##test_name,\
 			.file_id = NULL,\
 			.test_name_str = #test_name,\
-			.grug_path = "ok/"#test_name"/input-"entity_type".grug",\
-			.results_path = "ok/"#test_name"/results",\
-			.dump_path = "ok/"#test_name"/results/dump.json",\
-			.applied_path = "ok/"#test_name"/results/applied.grug",\
+			.grug_path = "ok"SLASH#test_name SLASH"input-"entity_type".grug",\
+			.results_path = "ok"SLASH#test_name SLASH"results",\
+			.dump_path = "ok"SLASH#test_name SLASH"results"SLASH"dump.json",\
+			.applied_path = "ok"SLASH#test_name SLASH"results"SLASH"applied.grug",\
 			.expected_globals_size_value = expected_globals_size\
 		};\
 	}\
@@ -976,11 +978,11 @@ static void print_string_debug(const char* str) {
 			.run = runtime_error_##test_name,\
 			.file_id = NULL,\
 			.test_name_str = #test_name,\
-			.grug_path = "err_runtime/"#test_name"/input-"entity_type".grug",\
-			.expected_error_path = "err_runtime/"#test_name"/expected_error.txt",\
-			.results_path = "err_runtime/"#test_name"/results",\
-			.dump_path = "err_runtime/"#test_name"/results/dump.json",\
-			.applied_path = "err_runtime/"#test_name"/results/applied.grug",\
+			.grug_path = "err_runtime"SLASH#test_name SLASH"input-"entity_type".grug",\
+			.expected_error_path = "err_runtime"SLASH#test_name SLASH"expected_error.txt",\
+			.results_path = "err_runtime"SLASH#test_name SLASH"results",\
+			.dump_path = "err_runtime"SLASH#test_name SLASH"results"SLASH"dump.json",\
+			.applied_path = "err_runtime"SLASH#test_name SLASH"results"SLASH"applied.grug",\
 			.expected_globals_size_value = expected_globals_size\
 		};\
 	}\
@@ -1543,7 +1545,7 @@ static void ok_entity_and_resource_as_subexpression(void* grug_state, void* file
 	assert_call_count(has_entity, 1);
 	assert_call_count(has_string, 1);
 
-	assert_string(game_fn_has_resource_path, "ok/entity_and_resource_as_subexpression/foo.txt");
+	assert_string(game_fn_has_resource_path, "ok"SLASH"entity_and_resource_as_subexpression"SLASH"foo.txt");
 	assert_string(game_fn_has_entity_name, "ok:baz");
 	assert_string(game_fn_has_string_str, "bar");
 }
@@ -2489,7 +2491,7 @@ static void ok_resource_and_entity(void* grug_state, void* file_id) {
 	assert_call_count(draw, 1);
 	assert_call_count(spawn, 1);
 
-	assert_string(game_fn_draw_sprite_path, "ok/resource_and_entity/foo.txt");
+	assert_string(game_fn_draw_sprite_path, "ok"SLASH"resource_and_entity"SLASH"foo.txt");
 	assert_string(game_fn_spawn_name, "ok:foo");
 }
 
@@ -2498,7 +2500,7 @@ static void ok_resource_can_contain_dot_1(void* grug_state, void* file_id) {
     call_export_fn_argless(grug_state, file_id, "on_a");
 	assert_call_count(draw, 1);
 
-	assert_string(game_fn_draw_sprite_path, "ok/resource_can_contain_dot_1/.foo");
+	assert_string(game_fn_draw_sprite_path, "ok"SLASH"resource_can_contain_dot_1"SLASH".foo");
 }
 
 static void ok_resource_can_contain_dot_3(void* grug_state, void* file_id) {
@@ -2506,7 +2508,7 @@ static void ok_resource_can_contain_dot_3(void* grug_state, void* file_id) {
     call_export_fn_argless(grug_state, file_id, "on_a");
 	assert_call_count(draw, 1);
 
-	assert_string(game_fn_draw_sprite_path, "ok/resource_can_contain_dot_3/foo.bar");
+	assert_string(game_fn_draw_sprite_path, "ok"SLASH"resource_can_contain_dot_3"SLASH"foo.bar");
 }
 
 static void ok_resource_can_contain_dot_dot_1(void* grug_state, void* file_id) {
@@ -2514,7 +2516,7 @@ static void ok_resource_can_contain_dot_dot_1(void* grug_state, void* file_id) {
     call_export_fn_argless(grug_state, file_id, "on_a");
 	assert_call_count(draw, 1);
 
-	assert_string(game_fn_draw_sprite_path, "ok/resource_can_contain_dot_dot_1/..foo");
+	assert_string(game_fn_draw_sprite_path, "ok"SLASH"resource_can_contain_dot_dot_1"SLASH"..foo");
 }
 
 static void ok_resource_can_contain_dot_dot_3(void* grug_state, void* file_id) {
@@ -2522,7 +2524,7 @@ static void ok_resource_can_contain_dot_dot_3(void* grug_state, void* file_id) {
     call_export_fn_argless(grug_state, file_id, "on_a");
 	assert_call_count(draw, 1);
 
-	assert_string(game_fn_draw_sprite_path, "ok/resource_can_contain_dot_dot_3/foo..bar");
+	assert_string(game_fn_draw_sprite_path, "ok"SLASH"resource_can_contain_dot_dot_3"SLASH"foo..bar");
 }
 
 static void ok_resource_duplicate(void* grug_state, void* file_id) {
@@ -2530,7 +2532,7 @@ static void ok_resource_duplicate(void* grug_state, void* file_id) {
     call_export_fn_argless(grug_state, file_id, "on_a");
 	assert_call_count(draw, 4);
 
-	assert_string(game_fn_draw_sprite_path, "ok/resource_duplicate/baz.txt");
+	assert_string(game_fn_draw_sprite_path, "ok"SLASH"resource_duplicate"SLASH"baz.txt");
 }
 
 static void ok_return(void* grug_state, void* file_id) {
@@ -3034,7 +3036,7 @@ static void runtime_error_all(void* grug_state, void* file_id) {
 	assert_runtime_error_type(GRUG_ON_FN_STACK_OVERFLOW);
 
 	assert_string(runtime_error_on_fn_name, "on_a");
-	assert_string(runtime_error_on_fn_path, "err_runtime/all/input-D.grug");
+	assert_string(runtime_error_on_fn_path, "err_runtime"SLASH"all"SLASH"input-D.grug");
 }
 
 static void runtime_error_game_fn_error(void* grug_state, void* file_id) {
@@ -3049,7 +3051,7 @@ static void runtime_error_game_fn_error(void* grug_state, void* file_id) {
 	assert_runtime_error_type(GRUG_ON_FN_GAME_FN_ERROR);
 
 	assert_string(runtime_error_on_fn_name, "on_a");
-	assert_string(runtime_error_on_fn_path, "err_runtime/game_fn_error/input-D.grug");
+	assert_string(runtime_error_on_fn_path, "err_runtime"SLASH"game_fn_error"SLASH"input-D.grug");
 }
 
 static void runtime_error_game_fn_error_once(void* grug_state, void* file_id) {
@@ -3064,7 +3066,7 @@ static void runtime_error_game_fn_error_once(void* grug_state, void* file_id) {
 	assert_runtime_error_type(GRUG_ON_FN_GAME_FN_ERROR);
 
 	assert_string(runtime_error_on_fn_name, "on_a");
-	assert_string(runtime_error_on_fn_path, "err_runtime/game_fn_error_once/input-E.grug");
+	assert_string(runtime_error_on_fn_path, "err_runtime"SLASH"game_fn_error_once"SLASH"input-E.grug");
 
 	had_runtime_error = false;
 
@@ -3080,7 +3082,7 @@ static void runtime_error_game_fn_error_once(void* grug_state, void* file_id) {
 }
 
 static void runtime_error_on_fn_calls_erroring_on_fn(void* grug_state, void* file_id) {
-	saved_grug_path = "err_runtime/on_fn_calls_erroring_on_fn/input-E.grug";
+	saved_grug_path = "err_runtime"SLASH"on_fn_calls_erroring_on_fn"SLASH"input-E.grug";
 
 	assert_call_count(call_on_b_fn, 0);
 	assert_call_count(cause_game_fn_error, 0);
@@ -3097,11 +3099,11 @@ static void runtime_error_on_fn_calls_erroring_on_fn(void* grug_state, void* fil
 	assert_runtime_error_type(GRUG_ON_FN_GAME_FN_ERROR);
 
 	assert_string(runtime_error_on_fn_name, "on_b");
-	assert_string(runtime_error_on_fn_path, "err_runtime/on_fn_calls_erroring_on_fn/input-E.grug");
+	assert_string(runtime_error_on_fn_path, "err_runtime"SLASH"on_fn_calls_erroring_on_fn"SLASH"input-E.grug");
 }
 
 static void runtime_error_on_fn_errors_after_it_calls_other_on_fn(void* grug_state, void* file_id) {
-	saved_grug_path = "err_runtime/on_fn_errors_after_it_calls_other_on_fn/input-E.grug";
+	saved_grug_path = "err_runtime"SLASH"on_fn_errors_after_it_calls_other_on_fn"SLASH"input-E.grug";
 
 	assert_call_count(call_on_b_fn, 0);
 	assert_call_count(nothing, 0);
@@ -3118,7 +3120,7 @@ static void runtime_error_on_fn_errors_after_it_calls_other_on_fn(void* grug_sta
 	assert_runtime_error_type(GRUG_ON_FN_GAME_FN_ERROR);
 
 	assert_string(runtime_error_on_fn_name, "on_a");
-	assert_string(runtime_error_on_fn_path, "err_runtime/on_fn_errors_after_it_calls_other_on_fn/input-E.grug");
+	assert_string(runtime_error_on_fn_path, "err_runtime"SLASH"on_fn_errors_after_it_calls_other_on_fn"SLASH"input-E.grug");
 }
 
 static void runtime_error_stack_overflow(void* grug_state, void* file_id) {
@@ -3129,7 +3131,7 @@ static void runtime_error_stack_overflow(void* grug_state, void* file_id) {
 	assert_runtime_error_type(GRUG_ON_FN_STACK_OVERFLOW);
 
 	assert_string(runtime_error_on_fn_name, "on_a");
-	assert_string(runtime_error_on_fn_path, "err_runtime/stack_overflow/input-D.grug");
+	assert_string(runtime_error_on_fn_path, "err_runtime"SLASH"stack_overflow"SLASH"input-D.grug");
 }
 
 static void runtime_error_time_limit_exceeded(void* grug_state, void* file_id) {
@@ -3140,7 +3142,7 @@ static void runtime_error_time_limit_exceeded(void* grug_state, void* file_id) {
 	assert_runtime_error_type(GRUG_ON_FN_TIME_LIMIT_EXCEEDED);
 
 	assert_string(runtime_error_on_fn_name, "on_a");
-	assert_string(runtime_error_on_fn_path, "err_runtime/time_limit_exceeded/input-D.grug");
+	assert_string(runtime_error_on_fn_path, "err_runtime"SLASH"time_limit_exceeded"SLASH"input-D.grug");
 }
 
 static void runtime_error_time_limit_exceeded_exponential_calls(void* grug_state, void* file_id) {
@@ -3151,7 +3153,7 @@ static void runtime_error_time_limit_exceeded_exponential_calls(void* grug_state
 	assert_runtime_error_type(GRUG_ON_FN_TIME_LIMIT_EXCEEDED);
 
 	assert_string(runtime_error_on_fn_name, "on_a");
-	assert_string(runtime_error_on_fn_path, "err_runtime/time_limit_exceeded_exponential_calls/input-D.grug");
+	assert_string(runtime_error_on_fn_path, "err_runtime"SLASH"time_limit_exceeded_exponential_calls"SLASH"input-D.grug");
 }
 
 static void runtime_error_time_limit_exceeded_fibonacci(void* grug_state, void* file_id) {
@@ -3162,7 +3164,7 @@ static void runtime_error_time_limit_exceeded_fibonacci(void* grug_state, void* 
 	assert_runtime_error_type(GRUG_ON_FN_TIME_LIMIT_EXCEEDED);
 
 	assert_string(runtime_error_on_fn_name, "on_a");
-	assert_string(runtime_error_on_fn_path, "err_runtime/time_limit_exceeded_fibonacci/input-D.grug");
+	assert_string(runtime_error_on_fn_path, "err_runtime"SLASH"time_limit_exceeded_fibonacci"SLASH"input-D.grug");
 }
 
 #define CHECK_THAT_EVERY_TEST_DIRECTORY_HAS_A_FUNCTION(test_dirname) do {\

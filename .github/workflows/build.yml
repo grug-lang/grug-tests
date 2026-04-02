@@ -7,12 +7,20 @@ on:
 
 jobs:
   build:
-    name: Build ${{ matrix.compiler }} ${{ matrix.sanitizer }}
-    runs-on: ubuntu-latest
+    name: Build ${{ matrix.os }} ${{ matrix.compiler }} ${{ matrix.sanitizer }}
+    runs-on: ${{ matrix.os }}
+    defaults:
+      run:
+        shell: bash
     strategy:
       matrix:
+        os: [ubuntu-latest]
         compiler: [clang, gcc]
         sanitizer: [none, asan, valgrind]
+        include:
+          - os: windows-latest
+            compiler: clang
+            sanitizer: none
 
     steps:
       - name: Checkout code
@@ -34,7 +42,7 @@ jobs:
 
       - name: Run Pyright type check
         run: |
-          PY_MAJOR_MINOR=$(python - <<'EOF'
+          PY_MAJOR_MINOR=$(python - <<'EOF' | tr -d '\r'
           import sys
           print(f"{sys.version_info.major}.{sys.version_info.minor}")
           EOF
@@ -62,10 +70,12 @@ jobs:
 
       - name: Run smoke tests
         run: |
+          TEST_EXE=$(find ./build -type f \( -name "smoketest" -o -name "smoketest.exe" \) | head -n 1)
+          
           if [ "${{ matrix.sanitizer }}" == "valgrind" ]; then
-            valgrind ./build/smoketest
+            valgrind "$TEST_EXE"
           else
-            ./build/smoketest
+            "$TEST_EXE"
           fi
         env:
           CC: ${{ matrix.compiler }}

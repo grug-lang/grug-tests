@@ -91,8 +91,6 @@ static bool starts_with(const char *haystack, const char *needle) {
 static struct grug_file_id *compile_grug_file(struct grug_state* grug_state, const char *grug_file_path, const char** out_error) {
 	(void)(grug_state);
 
-	printf("file_path: %s\n", grug_file_path);
-	fflush(stdout);
     if (starts_with(grug_file_path, "err"SLASH)) {
         // Turn "err/foo-D.grug" into "err/expected_error.txt"
         const char *last_slash = strrchr(grug_file_path, *SLASH);
@@ -103,7 +101,7 @@ static struct grug_file_id *compile_grug_file(struct grug_state* grug_state, con
         expected_relative_path[dir_len] = '\0';
         strcat(expected_relative_path, "expected_error.txt");
 
-        char expected_path[4096] = "tests"SLASH;
+        char expected_path[4096] = "tests/";
         strcat(expected_path, expected_relative_path);
         FILE *f = fopen(expected_path, "r");
         assert(f);
@@ -549,7 +547,7 @@ static void call_export_fn(struct grug_state* grug_state, struct grug_file_id* f
     } else if (starts_with(grug_file_path, "ok"SLASH"pass_string_argument_to_helper_fn"SLASH)) {
         CALL(grug_state, say, grug_string("foo"));
     } else if (starts_with(grug_file_path, "ok"SLASH"resource_and_entity"SLASH)) {
-        CALL(grug_state, draw, grug_string("ok"SLASH"resource_and_entity"SLASH"foo.txt"));
+        CALL(grug_state, draw, grug_string("ok"SLASH"resource_and_entity/foo.txt"));
         CALL(grug_state, spawn, grug_string("ok:foo"));
     } else if (starts_with(grug_file_path, "ok"SLASH"resource_can_contain_dot_1"SLASH)) {
         CALL(grug_state, draw, grug_string("ok"SLASH"resource_can_contain_dot_1/.foo"));
@@ -564,10 +562,10 @@ static void call_export_fn(struct grug_state* grug_state, struct grug_file_id* f
     } else if (starts_with(grug_file_path, "ok"SLASH"resource_can_contain_dot_dot_3"SLASH)) {
         CALL(grug_state, draw, grug_string("ok"SLASH"resource_can_contain_dot_dot_3/foo..bar"));
     } else if (starts_with(grug_file_path, "ok"SLASH"resource_duplicate"SLASH)) {
-        CALL(grug_state, draw, grug_string("ok"SLASH"resource_duplicate"SLASH"foo.txt"));
-        CALL(grug_state, draw, grug_string("ok"SLASH"resource_duplicate"SLASH"bar.txt"));
-        CALL(grug_state, draw, grug_string("ok"SLASH"resource_duplicate"SLASH"bar.txt"));
-        CALL(grug_state, draw, grug_string("ok"SLASH"resource_duplicate"SLASH"baz.txt"));
+        CALL(grug_state, draw, grug_string("ok"SLASH"resource_duplicate/foo.txt"));
+        CALL(grug_state, draw, grug_string("ok"SLASH"resource_duplicate/bar.txt"));
+        CALL(grug_state, draw, grug_string("ok"SLASH"resource_duplicate/bar.txt"));
+        CALL(grug_state, draw, grug_string("ok"SLASH"resource_duplicate/baz.txt"));
     } else if (starts_with(grug_file_path, "ok"SLASH"return"SLASH)) {
         CALL(grug_state, initialize, grug_number(42.0));
     } else if (starts_with(grug_file_path, "ok"SLASH"return_from_on_fn"SLASH)) {

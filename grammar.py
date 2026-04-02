@@ -279,11 +279,11 @@ def check_dir(path: Path) -> None:
                 tree: Tree[Any] = parser.parse(file.read_text()) # type: ignore
                 ast: Any = transformer.transform(tree)
             except exceptions.LarkError as e:
-                print(f"❌ Grammar error in test: {file}")
+                print(f"Error: Grammar error in test: {file}")
                 print(e)
                 sys.exit(1)
             if ast != expected:
-                print(f"❌ AST does not match expected.json for {file}")
+                print(f"Error: AST does not match expected.json for {file}")
                 print("Got:")
                 print(json.dumps(ast, indent=4))
                 print("Expected:")
@@ -295,4 +295,4 @@ if __name__ == "__main__":
     root: Path = Path("tests")
     check_dir(root / "ok")
     check_dir(root / "err_runtime")
-    print("✅ All grammar checks passed")
+    print("All grammar checks passed")

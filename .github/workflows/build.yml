@@ -55,9 +55,10 @@ jobs:
 
       - name: Configure CMake
         run: |
-          CMAKE_FLAGS=""
+          # Use Ninja for everything. It's faster and respects the CC env var on Windows.
+          CMAKE_FLAGS="-G Ninja"
           if [ "${{ matrix.sanitizer }}" == "asan" ]; then
-            CMAKE_FLAGS="-DASAN=ON"
+            CMAKE_FLAGS="$CMAKE_FLAGS -DASAN=ON"
           fi
           cmake -S . -B ./build $CMAKE_FLAGS
         env:
@@ -70,7 +71,7 @@ jobs:
 
       - name: Run smoke tests
         run: |
-          TEST_EXE=$(find ./build -type f \( -name "smoketest" -o -name "smoketest.exe" \) | head -n 1)
+          TEST_EXE=$(find ./build -type f \( -name "smoketest" -o "smoketest.exe" \) | head -n 1)
           
           if [ "${{ matrix.sanitizer }}" == "valgrind" ]; then
             valgrind "$TEST_EXE"

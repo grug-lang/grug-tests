@@ -71,7 +71,7 @@ jobs:
 
       - name: Run smoke tests
         run: |
-          TEST_EXE=$(find ./build -type f \( -name "smoketest" -o "smoketest.exe" \) | head -n 1)
+          TEST_EXE=$(find ./build -type f \( -name "smoketest" -o -name "smoketest.exe" \) | head -n 1)
           
           if [ "${{ matrix.sanitizer }}" == "valgrind" ]; then
             valgrind "$TEST_EXE"

@@ -1545,7 +1545,7 @@ static void ok_entity_and_resource_as_subexpression(void* grug_state, void* file
 	assert_call_count(has_entity, 1);
 	assert_call_count(has_string, 1);
 
-	assert_string(game_fn_has_resource_path, "ok"SLASH"entity_and_resource_as_subexpression"SLASH"foo.txt");
+	assert_string(game_fn_has_resource_path, "ok"SLASH"entity_and_resource_as_subexpression/foo.txt");
 	assert_string(game_fn_has_entity_name, "ok:baz");
 	assert_string(game_fn_has_string_str, "bar");
 }
@@ -2491,7 +2491,7 @@ static void ok_resource_and_entity(void* grug_state, void* file_id) {
 	assert_call_count(draw, 1);
 	assert_call_count(spawn, 1);
 
-	assert_string(game_fn_draw_sprite_path, "ok"SLASH"resource_and_entity"SLASH"foo.txt");
+	assert_string(game_fn_draw_sprite_path, "ok"SLASH"resource_and_entity/foo.txt");
 	assert_string(game_fn_spawn_name, "ok:foo");
 }
 
@@ -2500,7 +2500,7 @@ static void ok_resource_can_contain_dot_1(void* grug_state, void* file_id) {
     call_export_fn_argless(grug_state, file_id, "on_a");
 	assert_call_count(draw, 1);
 
-	assert_string(game_fn_draw_sprite_path, "ok"SLASH"resource_can_contain_dot_1"SLASH".foo");
+	assert_string(game_fn_draw_sprite_path, "ok"SLASH"resource_can_contain_dot_1/.foo");
 }
 
 static void ok_resource_can_contain_dot_3(void* grug_state, void* file_id) {
@@ -2508,7 +2508,7 @@ static void ok_resource_can_contain_dot_3(void* grug_state, void* file_id) {
     call_export_fn_argless(grug_state, file_id, "on_a");
 	assert_call_count(draw, 1);
 
-	assert_string(game_fn_draw_sprite_path, "ok"SLASH"resource_can_contain_dot_3"SLASH"foo.bar");
+	assert_string(game_fn_draw_sprite_path, "ok"SLASH"resource_can_contain_dot_3/foo.bar");
 }
 
 static void ok_resource_can_contain_dot_dot_1(void* grug_state, void* file_id) {
@@ -2516,7 +2516,7 @@ static void ok_resource_can_contain_dot_dot_1(void* grug_state, void* file_id) {
     call_export_fn_argless(grug_state, file_id, "on_a");
 	assert_call_count(draw, 1);
 
-	assert_string(game_fn_draw_sprite_path, "ok"SLASH"resource_can_contain_dot_dot_1"SLASH"..foo");
+	assert_string(game_fn_draw_sprite_path, "ok"SLASH"resource_can_contain_dot_dot_1/..foo");
 }
 
 static void ok_resource_can_contain_dot_dot_3(void* grug_state, void* file_id) {
@@ -2524,7 +2524,7 @@ static void ok_resource_can_contain_dot_dot_3(void* grug_state, void* file_id) {
     call_export_fn_argless(grug_state, file_id, "on_a");
 	assert_call_count(draw, 1);
 
-	assert_string(game_fn_draw_sprite_path, "ok"SLASH"resource_can_contain_dot_dot_3"SLASH"foo..bar");
+	assert_string(game_fn_draw_sprite_path, "ok"SLASH"resource_can_contain_dot_dot_3/foo..bar");
 }
 
 static void ok_resource_duplicate(void* grug_state, void* file_id) {
@@ -2532,7 +2532,7 @@ static void ok_resource_duplicate(void* grug_state, void* file_id) {
     call_export_fn_argless(grug_state, file_id, "on_a");
 	assert_call_count(draw, 4);
 
-	assert_string(game_fn_draw_sprite_path, "ok"SLASH"resource_duplicate"SLASH"baz.txt");
+	assert_string(game_fn_draw_sprite_path, "ok"SLASH"resource_duplicate/baz.txt");
 }
 
 static void ok_return(void* grug_state, void* file_id) {

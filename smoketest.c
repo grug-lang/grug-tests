@@ -299,7 +299,7 @@ static void call_export_fn(struct grug_state* grug_state, struct grug_file_id* f
     } else if (starts_with(grug_file_path, "ok"SLASH"entity_and_resource_as_subexpression"SLASH)) {
         CALL(grug_state, initialize_bool,
             grug_bool(
-                CALL(grug_state, has_resource, grug_string("ok"SLASH"entity_and_resource_as_subexpression"SLASH"foo.txt"))._bool
+                CALL(grug_state, has_resource, grug_string("ok"SLASH"entity_and_resource_as_subexpression/foo.txt"))._bool
                 && CALL(grug_state, has_string, grug_string("bar"))._bool
                 && CALL(grug_state, has_entity, grug_string("ok:baz"))._bool
             )
@@ -552,17 +552,17 @@ static void call_export_fn(struct grug_state* grug_state, struct grug_file_id* f
         CALL(grug_state, draw, grug_string("ok"SLASH"resource_and_entity"SLASH"foo.txt"));
         CALL(grug_state, spawn, grug_string("ok:foo"));
     } else if (starts_with(grug_file_path, "ok"SLASH"resource_can_contain_dot_1"SLASH)) {
-        CALL(grug_state, draw, grug_string("ok"SLASH"resource_can_contain_dot_1"SLASH".foo"));
+        CALL(grug_state, draw, grug_string("ok"SLASH"resource_can_contain_dot_1/.foo"));
     } else if (starts_with(grug_file_path, "ok"SLASH"resource_can_contain_dot_2"SLASH)) {
-        CALL(grug_state, draw, grug_string("ok"SLASH"resource_can_contain_dot_2"SLASH"foo."));
+        CALL(grug_state, draw, grug_string("ok"SLASH"resource_can_contain_dot_2/foo."));
     } else if (starts_with(grug_file_path, "ok"SLASH"resource_can_contain_dot_3"SLASH)) {
-        CALL(grug_state, draw, grug_string("ok"SLASH"resource_can_contain_dot_3"SLASH"foo.bar"));
+        CALL(grug_state, draw, grug_string("ok"SLASH"resource_can_contain_dot_3/foo.bar"));
     } else if (starts_with(grug_file_path, "ok"SLASH"resource_can_contain_dot_dot_1"SLASH)) {
-        CALL(grug_state, draw, grug_string("ok"SLASH"resource_can_contain_dot_dot_1"SLASH"..foo"));
+        CALL(grug_state, draw, grug_string("ok"SLASH"resource_can_contain_dot_dot_1/..foo"));
     } else if (starts_with(grug_file_path, "ok"SLASH"resource_can_contain_dot_dot_2"SLASH)) {
-        CALL(grug_state, draw, grug_string("ok"SLASH"resource_can_contain_dot_dot_2"SLASH"foo.."));
+        CALL(grug_state, draw, grug_string("ok"SLASH"resource_can_contain_dot_dot_2/foo.."));
     } else if (starts_with(grug_file_path, "ok"SLASH"resource_can_contain_dot_dot_3"SLASH)) {
-        CALL(grug_state, draw, grug_string("ok"SLASH"resource_can_contain_dot_dot_3"SLASH"foo..bar"));
+        CALL(grug_state, draw, grug_string("ok"SLASH"resource_can_contain_dot_dot_3/foo..bar"));
     } else if (starts_with(grug_file_path, "ok"SLASH"resource_duplicate"SLASH)) {
         CALL(grug_state, draw, grug_string("ok"SLASH"resource_duplicate"SLASH"foo.txt"));
         CALL(grug_state, draw, grug_string("ok"SLASH"resource_duplicate"SLASH"bar.txt"));

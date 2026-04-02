@@ -31,6 +31,7 @@ jobs:
         uses: msys2/setup-msys2@v2
         with:
           msystem: MINGW64
+          path-type: inherit
           update: true
           install: >-
             mingw-w64-x86_64-gcc
@@ -43,13 +44,13 @@ jobs:
           python-version: "3.11"
 
       - name: Install Lark
-        run: pip install lark[interegular]
+        run: python -m pip install lark[interegular]
 
       - name: Run grammar check
         run: python grammar.py
 
       - name: Install Pyright
-        run: pip install pyright
+        run: python -m pip install pyright
 
       - name: Run Pyright type check
         run: |

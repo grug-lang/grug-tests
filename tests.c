@@ -3448,6 +3448,7 @@ static void add_error_tests(void) {
 	ADD_TEST_ERROR(variable_shadows_local_variable, "D");
 	ADD_TEST_ERROR(variable_statement_missing_assignment, "D");
 	ADD_TEST_ERROR(variable_used_before_definition, "D");
+	ADD_TEST_ERROR(wrong_indentation, "D");
 	ADD_TEST_ERROR(wrong_type_global_assignment, "D");
 	ADD_TEST_ERROR(wrong_type_global_reassignment, "D");
 	ADD_TEST_ERROR(wrong_type_local_assignment, "D");

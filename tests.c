@@ -3410,6 +3410,7 @@ static void add_error_tests(void) {
 	ADD_TEST_ERROR(on_function_more_args_expected, "G");
 	ADD_TEST_ERROR(on_function_no_args_expected, "D");
 	ADD_TEST_ERROR(on_function_no_return_value_expected, "D");
+	ADD_TEST_ERROR(open_parenthesis_after_number, "D");
 	ADD_TEST_ERROR(pass_bool_to_i32_game_param, "D");
 	ADD_TEST_ERROR(pass_bool_to_i32_helper_param, "D");
 	ADD_TEST_ERROR(resource_cant_be_empty_string, "D");

@@ -270,11 +270,12 @@ def check_dir(path: Path) -> None:
     for subdir in sorted(
         [d for d in path.iterdir() if d.is_dir()], key=lambda d: d.name
     ):
+        print(f"Parsing {subdir}...")
+
         expected_file = subdir / "expected.json"
         expected = json.loads(expected_file.read_text())
 
         for file in sorted(subdir.glob("*.grug"), key=lambda f: f.name):
-            print(f"Parsing {file}...")
             try:
                 tree: Tree[Any] = parser.parse(file.read_text()) # type: ignore
                 ast: Any = transformer.transform(tree)

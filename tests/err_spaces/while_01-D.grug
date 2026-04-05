@@ -1,0 +1,5 @@
+on_a() {
+    whilefalse {
+        nothing()
+    }
+}

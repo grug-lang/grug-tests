@@ -1,16 +1,18 @@
 #include "tests.h"
+
+#include <assert.h>
+#include <ctype.h>
 #include <dirent.h>
 #include <errno.h>
 #include <fcntl.h>
 #include <ftw.h>
+#include <inttypes.h>
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
-#include <ctype.h>
 #include <unistd.h>
-#include <inttypes.h>
 
 #define assert_call_count(game_fn_name, expected_count) do { \
 	size_t count = game_fn_ ## game_fn_name ## _call_count; \
@@ -1103,6 +1105,50 @@ static int remove_callback(const char *entry_path, const struct stat *entry_info
 static int rm_rf(const char *path) {
 	int fd_limit = 42;
 	return nftw(path, remove_callback, fd_limit, FTW_DEPTH | FTW_PHYS);
+}
+
+static void run_err_spaces_tests(struct grug_state *grug_state) {
+	char dir_path[4096];
+	int dir_len = snprintf(dir_path, sizeof(dir_path), "%s/err_spaces", tests_dir_path);
+	assert(dir_len >= 0 && (size_t)dir_len < sizeof(dir_path));
+
+	struct dirent **namelist;
+	int n = scandir(dir_path, &namelist, NULL, alphasort);
+	assert(n >= 0);
+
+	for (int i = 0; i < n; i++) {
+		struct dirent *entry = namelist[i];
+
+		char grug_path[4096];
+		int grug_len = snprintf(grug_path, sizeof(grug_path), "%s/%s", dir_path, entry->d_name);
+		assert(grug_len >= 0 && (size_t)grug_len < sizeof(grug_path));
+
+		// This version does not have the tests/ prefix
+		char relative_path[4096];
+		int rel_len = snprintf(relative_path, sizeof(relative_path), "err_spaces/%s", entry->d_name);
+		assert(rel_len >= 0 && (size_t)rel_len < sizeof(relative_path));
+
+		struct stat st;
+		assert(stat(grug_path, &st) == 0);
+
+		if (!S_ISREG(st.st_mode)) {
+			free(entry);
+			continue;
+		}
+
+		printf("Running tests/%s...\n", relative_path);
+
+		const char *msg = NULL;
+		compile_grug_file(grug_state, relative_path, &msg);
+
+		if (msg == NULL) {
+			fprintf(stderr, "\nError: Expected compilation failure for %s but it succeeded.\n", entry->d_name);
+			exit(EXIT_FAILURE);
+		}
+
+		free(entry);
+	}
+	free(namelist);
 }
 
 static void test_error(
@@ -3697,6 +3743,8 @@ void grug_tests_run(
 	SHUFFLE(ok_test_datas, ok_test_datas_size, struct ok_test_data);
 	SHUFFLE(runtime_error_test_datas, err_runtime_test_datas_size, struct runtime_error_test_data);
 #endif
+
+    run_err_spaces_tests(grug_state);
 
 	for (size_t i = 0; i < err_test_datas_size; i++) {
 		struct error_test_data fn_data = error_test_datas[i];

@@ -1,0 +1,4 @@
+on_a() {
+    foo: number = 7
+    foo =  42
+}

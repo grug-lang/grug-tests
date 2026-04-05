@@ -91,7 +91,10 @@ static bool starts_with(const char *haystack, const char *needle) {
 static struct grug_file_id *compile_grug_file(struct grug_state* grug_state, const char *grug_file_path, const char** out_error) {
 	(void)grug_state;
 
-    if (starts_with(grug_file_path, "err"SLASH)) {
+    if (starts_with(grug_file_path, "err_spaces"SLASH)) {
+		*out_error = "Error: Too many spaces.";
+		return NULL;
+    } else if (starts_with(grug_file_path, "err"SLASH)) {
         // Turn "err/foo-D.grug" into "err/expected_error.txt"
         const char *last_slash = strrchr(grug_file_path, *SLASH);
         assert(last_slash);

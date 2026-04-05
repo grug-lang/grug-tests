@@ -3321,7 +3321,8 @@ static void add_error_tests(void) {
 	ADD_TEST_ERROR(f32_missing_digit_after_decimal_point, "D");
 	ADD_TEST_ERROR(f32_too_big, "D");
 	ADD_TEST_ERROR(f32_too_close_to_zero_negative, "D");
-	ADD_TEST_ERROR(f32_too_close_to_zero_positive, "D");
+	ADD_TEST_ERROR(f32_too_close_to_zero_positive_1, "D");
+	ADD_TEST_ERROR(f32_too_close_to_zero_positive_2, "D");
 	ADD_TEST_ERROR(f32_too_small, "D");
 	ADD_TEST_ERROR(file_name_entity_type_doesnt_start_uppercase, "a");
 	ADD_TEST_ERROR(file_name_entity_type_invalid_character, "Foo#Bar");

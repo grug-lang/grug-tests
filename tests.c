@@ -3184,34 +3184,40 @@ static void runtime_error_time_limit_exceeded_fibonacci(void* grug_state, void* 
 	assert_string(runtime_error_on_fn_path, "err_runtime"SLASH"time_limit_exceeded_fibonacci"SLASH"input-D.grug");
 }
 
-#define CHECK_THAT_EVERY_TEST_DIRECTORY_HAS_A_FUNCTION(test_dirname) do {\
-	size_t entries = 0;\
-	\
-	DIR *dirp = opendir(prefix(#test_dirname));\
-	if (dirp == NULL) {\
-		perror("opendir");\
-		fprintf(stderr, "prefix(#test_dirname): \"%s\"\n", prefix(#test_dirname));\
-		exit(EXIT_FAILURE);\
-	}\
-	\
-	struct dirent *dp;\
-	while ((dp = readdir(dirp))) {\
-		if (streq(dp->d_name, ".") || streq(dp->d_name, "..")) {\
-			continue;\
-		}\
-		entries++;\
-	}\
-	\
-	if (entries != test_dirname ## _test_datas_size) {\
-		fprintf(stderr, "Error: The tests/" #test_dirname "/ directory contains %zu entries, which doesn't match it having %zu test functions\n", entries, test_dirname ## _test_datas_size);\
-		exit(EXIT_FAILURE);\
-	}\
-	\
-	if (closedir(dirp) == -1) {\
-		perror("closedir");\
-		exit(EXIT_FAILURE);\
-	}\
-} while (0)
+static void check_that_every_test_directory_has_a_function(
+    const char *test_dirname,
+    size_t test_datas_size
+) {
+    size_t entries = 0;
+
+    DIR *dirp = opendir(prefix(test_dirname));
+    if (dirp == NULL) {
+        perror("opendir");
+        fprintf(stderr, "prefix(test_dirname): \"%s\"\n", prefix(test_dirname));
+        exit(EXIT_FAILURE);
+    }
+
+    struct dirent *dp;
+    while ((dp = readdir(dirp))) {
+        if (streq(dp->d_name, ".") || streq(dp->d_name, "..")) {
+            continue;
+        }
+        entries++;
+    }
+
+    if (entries != test_datas_size) {
+        fprintf(stderr,
+            "Error: The tests/%s/ directory contains %zu entries, "
+            "which doesn't match it having %zu test functions\n",
+            test_dirname, entries, test_datas_size);
+        exit(EXIT_FAILURE);
+    }
+
+    if (closedir(dirp) == -1) {
+        perror("closedir");
+        exit(EXIT_FAILURE);
+    }
+}
 
 static void add_error_tests(void) {
 	ADD_TEST_ERROR(assignment_isnt_expression, "D");
@@ -3666,9 +3672,9 @@ void grug_tests_run(
 	add_ok_tests();
 
 	if (whitelisted_test == NULL) {
-		CHECK_THAT_EVERY_TEST_DIRECTORY_HAS_A_FUNCTION(err);
-		CHECK_THAT_EVERY_TEST_DIRECTORY_HAS_A_FUNCTION(ok);
-		CHECK_THAT_EVERY_TEST_DIRECTORY_HAS_A_FUNCTION(err_runtime);
+		check_that_every_test_directory_has_a_function("err", err_test_datas_size);
+		check_that_every_test_directory_has_a_function("ok", ok_test_datas_size);
+		check_that_every_test_directory_has_a_function("err_runtime", err_runtime_test_datas_size);
 	}
 
 	if (err_test_datas_size + ok_test_datas_size + err_runtime_test_datas_size == 0) {

@@ -1,0 +1,3 @@
+on_a(x : number) {
+    initialize(x)
+}

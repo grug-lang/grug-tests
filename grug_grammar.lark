@@ -1,6 +1,4 @@
-start: (_NL | definition | vardecl | reassign | comment | empty_line)*
-
-?definition: on_fn | helper_fn
+start: (_NL | on_fn | helper_fn | vardecl | reassign | comment | empty_line)*
 
 statement: vardecl
          | reassign
@@ -9,21 +7,19 @@ statement: vardecl
          | break_stmt
          | continue_stmt
          | return_stmt
-         | block_stmt
+         | while_loop
+         | if_stmt
          | empty_line
          | _NL
 
 empty_line: EMPTY_LINE
 %declare EMPTY_LINE
 
-block_stmt: while_loop | if_stmt
-
 vardecl: NAME ": " type " = " expr
 reassign: NAME " = " expr
 
 on_fn: ON_NAME "(" [params] ")" block
-helper_fn: HELPER_NAME "(" [params] ")" [" " return_type] block
-return_type: type
+helper_fn: HELPER_NAME "(" [params] ")" [" " type] block
 
 params: param (", " param)*
 param: NAME ": " type

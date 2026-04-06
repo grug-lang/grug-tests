@@ -2620,7 +2620,7 @@ static void ok_print_csv(void* grug_state, void* file_id) {
     call_export_fn_argless(grug_state, file_id, "on_a");
 	assert_call_count(print_csv, 1);
 
-	assert_string(game_fn_print_csv_path, "ok/print_csv/foo.csv");
+	assert_string(game_fn_print_csv_path, "ok"SLASH"print_csv/foo.csv");
 }
 
 static void ok_resource_and_entity(void* grug_state, void* file_id) {
@@ -2671,7 +2671,7 @@ static void ok_resource_can_contain_dot_dot_dot(void* grug_state, void* file_id)
     call_export_fn_argless(grug_state, file_id, "on_a");
 	assert_call_count(draw, 1);
 
-	assert_string(game_fn_draw_sprite_path, "ok/...foo");
+	assert_string(game_fn_draw_sprite_path, "ok"SLASH"...foo");
 }
 
 static void ok_resource_duplicate(void* grug_state, void* file_id) {
@@ -2687,7 +2687,7 @@ static void ok_resource_is_a_directory(void* grug_state, void* file_id) {
     call_export_fn_argless(grug_state, file_id, "on_a");
 	assert_call_count(draw, 1);
 
-	assert_string(game_fn_draw_sprite_path, "ok/resource_is_a_directory");
+	assert_string(game_fn_draw_sprite_path, "ok"SLASH"resource_is_a_directory");
 }
 
 static void ok_return(void* grug_state, void* file_id) {
@@ -3228,7 +3228,7 @@ static void runtime_error_game_fn_error_global_scope(void* grug_state, void* fil
 
 	assert_runtime_error_type(GRUG_ON_FN_GAME_FN_ERROR);
 
-	assert_string(runtime_error_on_fn_path, "err_runtime/game_fn_error_global_scope/input-A.grug");
+	assert_string(runtime_error_on_fn_path, "err_runtime"SLASH"game_fn_error_global_scope/input-A.grug");
 }
 
 static void runtime_error_game_fn_error_once(void* grug_state, void* file_id) {

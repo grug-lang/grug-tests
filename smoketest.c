@@ -573,6 +573,8 @@ static void call_export_fn(struct grug_state* grug_state, struct grug_file_id* f
         CALL(grug_state, draw, grug_string("ok"SLASH"resource_duplicate/bar.txt"));
         CALL(grug_state, draw, grug_string("ok"SLASH"resource_duplicate/bar.txt"));
         CALL(grug_state, draw, grug_string("ok"SLASH"resource_duplicate/baz.txt"));
+    } else if (starts_with(grug_file_path, "ok"SLASH"resource_is_a_directory"SLASH)) {
+        CALL(grug_state, draw, grug_string("ok"SLASH"resource_is_a_directory"));
     } else if (starts_with(grug_file_path, "ok"SLASH"return"SLASH)) {
         CALL(grug_state, initialize, grug_number(42.0));
     } else if (starts_with(grug_file_path, "ok"SLASH"return_from_on_fn"SLASH)) {

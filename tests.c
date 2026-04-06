@@ -2588,6 +2588,14 @@ static void ok_resource_duplicate(void* grug_state, void* file_id) {
 	assert_string(game_fn_draw_sprite_path, "ok"SLASH"resource_duplicate/baz.txt");
 }
 
+static void ok_resource_is_a_directory(void* grug_state, void* file_id) {
+	assert_call_count(draw, 0);
+    call_export_fn_argless(grug_state, file_id, "on_a");
+	assert_call_count(draw, 1);
+
+	assert_string(game_fn_draw_sprite_path, "ok/resource_is_a_directory");
+}
+
 static void ok_return(void* grug_state, void* file_id) {
 	assert_call_count(initialize, 0);
     call_export_fn_argless(grug_state, file_id, "on_a");
@@ -3631,6 +3639,7 @@ static void add_ok_tests(void) {
 	ADD_TEST_OK(resource_can_contain_dot_dot_1, "D");
 	ADD_TEST_OK(resource_can_contain_dot_dot_3, "D");
 	ADD_TEST_OK(resource_duplicate, "D");
+	ADD_TEST_OK(resource_is_a_directory, "D");
 	ADD_TEST_OK(return, "D");
 	ADD_TEST_OK(return_from_on_fn, "D");
 	ADD_TEST_OK(return_from_on_fn_minimal, "D");

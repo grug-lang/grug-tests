@@ -3449,6 +3449,9 @@ static void add_error_tests(void) {
 	ADD_TEST_ERROR(parameter_shadows_global_variable, "F");
 	ADD_TEST_ERROR(pass_bool_to_i32_game_param, "D");
 	ADD_TEST_ERROR(pass_bool_to_i32_helper_param, "D");
+	ADD_TEST_ERROR(print_csv_wrong_extension_1, "D");
+	ADD_TEST_ERROR(print_csv_wrong_extension_2, "D");
+	ADD_TEST_ERROR(print_csv_wrong_extension_3, "D");
 	ADD_TEST_ERROR(resource_cant_be_empty_string, "D");
 	ADD_TEST_ERROR(resource_cant_be_passed_to_helper_fn, "D");
 	ADD_TEST_ERROR(resource_cant_be_passed_to_helper_fn_2, "D");

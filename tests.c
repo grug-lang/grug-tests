@@ -2580,6 +2580,14 @@ static void ok_resource_can_contain_dot_dot_2(void* grug_state, void* file_id) {
 	assert_string(game_fn_draw_sprite_path, "ok"SLASH"resource_can_contain_dot_dot_2/foo..bar");
 }
 
+static void ok_resource_can_contain_dot_dot_dot(void* grug_state, void* file_id) {
+	assert_call_count(draw, 0);
+    call_export_fn_argless(grug_state, file_id, "on_a");
+	assert_call_count(draw, 1);
+
+	assert_string(game_fn_draw_sprite_path, "ok/...foo");
+}
+
 static void ok_resource_duplicate(void* grug_state, void* file_id) {
 	assert_call_count(draw, 0);
     call_export_fn_argless(grug_state, file_id, "on_a");
@@ -3638,6 +3646,7 @@ static void add_ok_tests(void) {
 	ADD_TEST_OK(resource_can_contain_dot_2, "D");
 	ADD_TEST_OK(resource_can_contain_dot_dot_1, "D");
 	ADD_TEST_OK(resource_can_contain_dot_dot_2, "D");
+	ADD_TEST_OK(resource_can_contain_dot_dot_dot, "D");
 	ADD_TEST_OK(resource_duplicate, "D");
 	ADD_TEST_OK(resource_is_a_directory, "D");
 	ADD_TEST_OK(return, "D");

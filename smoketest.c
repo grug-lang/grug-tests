@@ -564,6 +564,8 @@ static void call_export_fn(struct grug_state* grug_state, struct grug_file_id* f
         CALL(grug_state, draw, grug_string("ok"SLASH"resource_can_contain_dot_dot_1/..foo"));
     } else if (starts_with(grug_file_path, "ok"SLASH"resource_can_contain_dot_dot_2"SLASH)) {
         CALL(grug_state, draw, grug_string("ok"SLASH"resource_can_contain_dot_dot_2/foo..bar"));
+    } else if (starts_with(grug_file_path, "ok"SLASH"resource_can_contain_dot_dot_dot"SLASH)) {
+        CALL(grug_state, draw, grug_string("ok"SLASH"...foo"));
     } else if (starts_with(grug_file_path, "ok"SLASH"resource_duplicate"SLASH)) {
         CALL(grug_state, draw, grug_string("ok"SLASH"resource_duplicate/foo.txt"));
         CALL(grug_state, draw, grug_string("ok"SLASH"resource_duplicate/bar.txt"));

@@ -1,1 +1,1 @@
-The variable 'x' already exists
+The local variable 'x' shadows an earlier local variable

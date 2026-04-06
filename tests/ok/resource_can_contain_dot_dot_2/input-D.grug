@@ -1,0 +1,3 @@
+on_a() {
+    draw("resource_can_contain_dot_dot_2/foo..bar")
+}

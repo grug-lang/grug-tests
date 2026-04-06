@@ -1,0 +1,1 @@
+[{"type":"GLOBAL_ON_FN","name":"on_a","statements":[{"type":"CALL_STATEMENT","name":"draw","arguments":[{"type":"STRING_EXPR","str":"resource_can_contain_dot_2/foo.bar"}]}]}]

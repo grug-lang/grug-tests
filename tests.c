@@ -217,6 +217,7 @@ static size_t game_fn_set_position_call_count;
 static size_t game_fn_cause_game_fn_error_call_count;
 static size_t game_fn_call_on_b_fn_call_count;
 static size_t game_fn_store_call_count;
+static size_t game_fn_print_csv_call_count;
 static size_t game_fn_retrieve_call_count;
 static size_t game_fn_box_number_call_count;
 
@@ -858,6 +859,14 @@ union grug_value game_fn_store(struct grug_state* grug_state, const union grug_v
 	game_fn_store_call_count++;
 
 	game_fn_store_id = args[0]._id;
+	return (union grug_value) {0};
+}
+static const char *game_fn_print_csv_path;
+union grug_value game_fn_print_csv(struct grug_state* grug_state, const union grug_value args[]) {
+	(void)grug_state;
+	ASSERT_16_BYTE_STACK_ALIGNED();
+	game_fn_print_csv_call_count++;
+	game_fn_print_csv_path = strdup(args[0]._string);
 	return (union grug_value) {0};
 }
 union grug_value game_fn_retrieve(struct grug_state* grug_state, const union grug_value args[]) {
@@ -2550,6 +2559,14 @@ static void ok_pass_string_argument_to_helper_fn(void* grug_state, void* file_id
 	assert_string(game_fn_say_message, "foo");
 }
 
+static void ok_print_csv(void* grug_state, void* file_id) {
+	assert_call_count(print_csv, 0);
+    call_export_fn_argless(grug_state, file_id, "on_a");
+	assert_call_count(print_csv, 1);
+
+	assert_string(game_fn_print_csv_path, "ok/print_csv/foo.csv");
+}
+
 static void ok_resource_and_entity(void* grug_state, void* file_id) {
 	assert_call_count(draw, 0);
 	assert_call_count(spawn, 0);
@@ -3654,6 +3671,7 @@ static void add_ok_tests(void) {
 	ADD_TEST_OK(or_true_3, "D");
 	ADD_TEST_OK(pass_string_argument_to_game_fn, "D");
 	ADD_TEST_OK(pass_string_argument_to_helper_fn, "D");
+	ADD_TEST_OK(print_csv, "D");
 	ADD_TEST_OK(resource_and_entity, "D");
 	ADD_TEST_OK(resource_can_contain_dot_1, "D");
 	ADD_TEST_OK(resource_can_contain_dot_2, "D");

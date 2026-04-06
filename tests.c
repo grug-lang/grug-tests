@@ -1916,7 +1916,7 @@ static void ok_global_2_does_not_have_error_handling(void* grug_state, void* fil
 }
 
 static void ok_global_call_using_me(void* grug_state, void* file_id) {
-	assert_call_count(get_position, 1); // called by init_globals
+	assert_call_count(get_position, 1); // Called by init_globals()
 	assert_call_count(set_position, 0);
     call_export_fn_argless(grug_state, file_id, "on_a");
 	assert_call_count(get_position, 1);
@@ -1942,14 +1942,21 @@ static void ok_global_containing_negation(void* grug_state, void* file_id) {
 }
 
 static void ok_global_id(void* grug_state, void* file_id) {
-
-	assert_call_count(get_opponent, 1); // called by init_globals
+	assert_call_count(get_opponent, 1); // Called by init_globals()
 	assert_call_count(set_opponent, 0);
     call_export_fn_argless(grug_state, file_id, "on_a");
 	assert_call_count(get_opponent, 1);
 	assert_call_count(set_opponent, 1);
 
 	assert_id(game_fn_set_opponent_target, 69);
+}
+
+static void ok_global_parentheses(void* grug_state, void* file_id) {
+	assert_call_count(initialize, 0);
+    call_export_fn_argless(grug_state, file_id, "on_a");
+	assert_call_count(initialize, 1);
+
+	assert_number(game_fn_initialize_x, 14.0);
 }
 
 static void ok_globals(void* grug_state, void* file_id) {
@@ -3616,6 +3623,7 @@ static void add_ok_tests(void) {
 	ADD_TEST_OK(global_can_use_earlier_global, "D");
 	ADD_TEST_OK(global_containing_negation, "D");
 	ADD_TEST_OK(global_id, "D");
+	ADD_TEST_OK(global_parentheses, "D");
 	ADD_TEST_OK(globals, "D");
 	ADD_TEST_OK(globals_1000, "A");
 	ADD_TEST_OK(globals_1000_string, "A");

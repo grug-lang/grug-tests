@@ -3228,7 +3228,7 @@ static void runtime_error_game_fn_error_global_scope(void* grug_state, void* fil
 
 	assert_runtime_error_type(GRUG_ON_FN_GAME_FN_ERROR);
 
-	assert_string(runtime_error_on_fn_path, "err_runtime"SLASH"game_fn_error_global_scope/input-A.grug");
+	assert_string(runtime_error_on_fn_path, "err_runtime"SLASH"game_fn_error_global_scope"SLASH"input-A.grug");
 }
 
 static void runtime_error_game_fn_error_once(void* grug_state, void* file_id) {

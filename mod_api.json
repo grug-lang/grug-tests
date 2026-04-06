@@ -957,6 +957,16 @@
 				}
 			]
 		},
+		"print_csv": {
+			"description": "foo",
+			"arguments": [
+				{
+					"name": "csv_path",
+					"type": "resource",
+					"resource_extension": ".csv"
+				}
+			]
+		},
 		"retrieve": {
 			"description": "foo",
 			"return_type": "id"

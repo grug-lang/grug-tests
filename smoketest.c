@@ -390,6 +390,8 @@ static void call_export_fn(struct grug_state* grug_state, struct grug_file_id* f
         CALL(grug_state, initialize, grug_number(-2.0));
     } else if (starts_with(grug_file_path, "ok"SLASH"global_id"SLASH)) {
         CALL(grug_state, set_opponent, grug_id(69));
+    } else if (starts_with(grug_file_path, "ok"SLASH"global_parentheses"SLASH)) {
+        CALL(grug_state, initialize, grug_number(14.0));
     } else if (starts_with(grug_file_path, "ok"SLASH"globals"SLASH)) {
         CALL(grug_state, initialize, grug_number(420.0));
         CALL(grug_state, initialize, grug_number(1337.0));

@@ -1,0 +1,1 @@
+The resource 'print_csv_wrong_extension_2/foo' was supposed to have the extension '.csv'

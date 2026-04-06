@@ -56,6 +56,7 @@ static game_fn p_game_fn_mega_i32;
 static game_fn p_game_fn_draw;
 static game_fn p_game_fn_blocked_alrm;
 static game_fn p_game_fn_spawn;
+static game_fn p_game_fn_spawn_d;
 static game_fn p_game_fn_has_resource;
 static game_fn p_game_fn_has_entity;
 static game_fn p_game_fn_has_string;
@@ -586,6 +587,8 @@ static void call_export_fn(struct grug_state* grug_state, struct grug_file_id* f
     } else if (starts_with(grug_file_path, "ok"SLASH"same_variable_name_in_different_functions"SLASH)) {
         CALL(grug_state, initialize, grug_number(42.0));
         CALL(grug_state, initialize, grug_number(69.0));
+    } else if (starts_with(grug_file_path, "ok"SLASH"spawn_d"SLASH)) {
+        CALL(grug_state, spawn_d, grug_string("ok:input"));
     } else if (starts_with(grug_file_path, "ok"SLASH"spill_args_to_game_fn"SLASH)) {
         CALL(grug_state, motherload, grug_number(1.0), grug_number(2.0), grug_number(3.0), grug_number(4.0), grug_number(5.0), grug_number(6.0), grug_number(7.0), grug_number(1.0), grug_number(2.0), grug_number(3.0), grug_number(4.0), grug_number(5.0), grug_number(6.0), grug_number(7.0), grug_number(8.0), grug_id(42), grug_number(9.0));
     } else if (starts_with(grug_file_path, "ok"SLASH"spill_args_to_game_fn_subless"SLASH)) {
@@ -764,6 +767,7 @@ static void load_tests_so(void) {
     p_game_fn_draw = load_sym(h, "game_fn_draw");
     p_game_fn_blocked_alrm = load_sym(h, "game_fn_blocked_alrm");
     p_game_fn_spawn = load_sym(h, "game_fn_spawn");
+    p_game_fn_spawn_d = load_sym(h, "game_fn_spawn_d");
     p_game_fn_has_resource = load_sym(h, "game_fn_has_resource");
     p_game_fn_has_entity = load_sym(h, "game_fn_has_entity");
     p_game_fn_has_string = load_sym(h, "game_fn_has_string");

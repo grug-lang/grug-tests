@@ -1036,6 +1036,16 @@
 				}
 			]
 		},
+		"spawn_d": {
+			"description": "foo",
+			"arguments": [
+				{
+					"name": "name",
+					"type": "entity",
+					"entity_type": "D"
+				}
+			]
+		},
 		"store": {
 			"description": "foo",
 			"arguments": [

@@ -199,6 +199,7 @@ static size_t game_fn_mega_i32_call_count;
 static size_t game_fn_draw_call_count;
 static size_t game_fn_blocked_alrm_call_count;
 static size_t game_fn_spawn_call_count;
+static size_t game_fn_spawn_d_call_count;
 static size_t game_fn_has_resource_call_count;
 static size_t game_fn_has_entity_call_count;
 static size_t game_fn_has_string_call_count;
@@ -440,6 +441,15 @@ union grug_value game_fn_spawn(struct grug_state* grug_state, const union grug_v
 	game_fn_spawn_call_count++;
 
 	strcpy(game_fn_spawn_name, args[0]._string);
+	return (union grug_value) {0};
+}
+static char game_fn_spawn_d_name[256];
+union grug_value game_fn_spawn_d(struct grug_state* grug_state, const union grug_value args[]) {
+	(void)grug_state;
+	ASSERT_16_BYTE_STACK_ALIGNED();
+	game_fn_spawn_d_call_count++;
+
+	strcpy(game_fn_spawn_d_name, args[0]._string);
 	return (union grug_value) {0};
 }
 static char game_fn_has_resource_path[256];
@@ -2666,6 +2676,14 @@ static void ok_same_variable_name_in_different_functions(void* grug_state, void*
 	assert_number(game_fn_initialize_x, 69.0);
 }
 
+static void ok_spawn_d(void* grug_state, void* file_id) {
+	assert_call_count(spawn_d, 0);
+    call_export_fn_argless(grug_state, file_id, "on_a");
+	assert_call_count(spawn_d, 1);
+
+	assert_string(game_fn_spawn_d_name, "ok:input");
+}
+
 static void ok_spill_args_to_game_fn(void* grug_state, void* file_id) {
 	assert_call_count(motherload, 0);
     call_export_fn_argless(grug_state, file_id, "on_a");
@@ -3688,6 +3706,7 @@ static void add_ok_tests(void) {
 	ADD_TEST_OK(return_from_on_fn_minimal, "D");
 	ADD_TEST_OK(return_with_no_value, "D");
 	ADD_TEST_OK(same_variable_name_in_different_functions, "E");
+	ADD_TEST_OK(spawn_d, "D");
 	ADD_TEST_OK(spill_args_to_game_fn, "D");
 	ADD_TEST_OK(spill_args_to_game_fn_subless, "D");
 	ADD_TEST_OK(spill_args_to_helper_fn, "D");

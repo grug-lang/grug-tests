@@ -1,0 +1,1 @@
+[{"type":"GLOBAL_ON_FN","name":"on_a","statements":[{"type":"CALL_STATEMENT","name":"spawn_d","arguments":[{"type":"STRING_EXPR","str":"input"}]}]}]

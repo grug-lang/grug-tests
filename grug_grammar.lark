@@ -31,7 +31,7 @@ call_expr: NAME "(" [args] ")"
 args: expr (", " expr)*
 
 type: TYPE_NAME
-TYPE_NAME: "number" | "bool" | "string" | ID
+TYPE_NAME: "number" | "bool" | "string" | "entity" | "resource" | ID
 
 ?expr: or_expr
 

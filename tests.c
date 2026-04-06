@@ -957,10 +957,10 @@ static void print_string_debug(const char* str) {
 	if (is_whitelisted_test(#test_name)) {\
 		error_test_datas[err_test_datas_size++] = (struct error_test_data){\
 			.test_name_str = #test_name,\
-			.grug_path = "err/"#test_name"/"file_name,\
-			.expected_error_path = "err/"#test_name"/expected_error.txt",\
-			.results_path = "err/"#test_name"/results",\
-			.grug_output_path = "err/"#test_name"/results/grug_output.txt"\
+			.grug_path = "err"SLASH#test_name SLASH file_name,\
+			.expected_error_path = "err"SLASH#test_name SLASH"expected_error.txt",\
+			.results_path = "err"SLASH#test_name SLASH"results",\
+			.grug_output_path = "err"SLASH#test_name SLASH"results"SLASH"grug_output.txt"\
 		};\
 	}\
 } while (0)

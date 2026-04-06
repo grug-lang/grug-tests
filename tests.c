@@ -1180,8 +1180,13 @@ static void test_error(
 
 	size_t msg_len = strlen(msg);
 
-	if (fwrite(msg, msg_len, 1, f) == 0) {
-		fprintf(stderr, "Error: fwrite error\n");
+	size_t written = fwrite(msg, 1, msg_len, f);
+	if (written != msg_len) {
+		if (ferror(f)) {
+			perror("fwrite");
+		} else {
+			fprintf(stderr, "fwrite: short write\n");
+		}
 		exit(EXIT_FAILURE);
 	}
 

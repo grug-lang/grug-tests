@@ -1173,12 +1173,12 @@ static void free_directory_entries(char **filenames, size_t count) {
 
 static void run_single_test(struct grug_state *grug_state, const char *dir_path, const char *filename) {
     char grug_path[4096];
-    int grug_len = snprintf(grug_path, sizeof(grug_path), "%s/%s", dir_path, filename);
+    int grug_len = snprintf(grug_path, sizeof(grug_path), "%s"SLASH"%s", dir_path, filename);
     assert(grug_len >= 0 && (size_t)grug_len < sizeof(grug_path));
 
     // This version does not have the tests/ prefix
     char relative_path[4096];
-    int rel_len = snprintf(relative_path, sizeof(relative_path), "err_spaces/%s", filename);
+    int rel_len = snprintf(relative_path, sizeof(relative_path), "err_spaces"SLASH"%s", filename);
     assert(rel_len >= 0 && (size_t)rel_len < sizeof(relative_path));
 
     struct stat st;
@@ -1202,7 +1202,7 @@ static void run_single_test(struct grug_state *grug_state, const char *dir_path,
 
 static void run_err_spaces_tests(struct grug_state *grug_state) {
     char dir_path[4096];
-    int dir_len = snprintf(dir_path, sizeof(dir_path), "%s/err_spaces", tests_dir_path);
+    int dir_len = snprintf(dir_path, sizeof(dir_path), "%s"SLASH"err_spaces", tests_dir_path);
     assert(dir_len >= 0 && (size_t)dir_len < sizeof(dir_path));
 
     char **filenames = NULL;

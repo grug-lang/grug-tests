@@ -3448,8 +3448,10 @@ static void add_error_tests(void) {
 	ADD_TEST_ERROR(not_followed_by_negation, "D");
 	ADD_TEST_ERROR(null_byte_in_comment, "A");
 	ADD_TEST_ERROR(null_byte_in_string, "A");
+	ADD_TEST_ERROR(number_and, "D");
 	ADD_TEST_ERROR(number_assigned_to_global_id, "D");
 	ADD_TEST_ERROR(number_assigned_to_local_id, "D");
+	ADD_TEST_ERROR(number_or, "D");
 	ADD_TEST_ERROR(number_period_twice_1, "A");
 	ADD_TEST_ERROR(number_period_twice_2, "A");
 	ADD_TEST_ERROR(on_fn_cant_be_called_by_helper_fn, "D");

@@ -1,0 +1,3 @@
+on_a() {
+    initialize_bool(42 and 42)
+}

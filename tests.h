@@ -235,6 +235,7 @@ union grug_value game_fn_mega_i32             (struct grug_state* grug_state, co
 union grug_value game_fn_draw                 (struct grug_state* grug_state, const union grug_value args[]);
 union grug_value game_fn_blocked_alrm         (struct grug_state* grug_state, const union grug_value args[]);
 union grug_value game_fn_spawn                (struct grug_state* grug_state, const union grug_value args[]);
+union grug_value game_fn_spawn_d              (struct grug_state* grug_state, const union grug_value args[]);
 union grug_value game_fn_has_resource         (struct grug_state* grug_state, const union grug_value args[]);
 union grug_value game_fn_has_entity           (struct grug_state* grug_state, const union grug_value args[]);
 union grug_value game_fn_has_string           (struct grug_state* grug_state, const union grug_value args[]);

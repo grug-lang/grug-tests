@@ -1108,48 +1108,93 @@ static int rm_rf(const char *path) {
 	return nftw(path, remove_callback, fd_limit, FTW_DEPTH | FTW_PHYS);
 }
 
+static int compare_filenames(const void *a, const void *b) {
+    const char *str_a = *(const char * const *)a;
+    const char *str_b = *(const char * const *)b;
+    return strcoll(str_a, str_b); 
+}
+
+static void read_sorted_directory(const char *dir_path, char ***out_filenames, size_t *out_count) {
+    DIR *dir = opendir(dir_path);
+    assert(dir != NULL);
+
+    size_t capacity = 32;
+    size_t count = 0;
+    char **filenames = malloc(capacity * sizeof(char *));
+    assert(filenames != NULL);
+
+    struct dirent *entry;
+    while ((entry = readdir(dir)) != NULL) {
+        if (count >= capacity) {
+            capacity *= 2;
+            char **temp = realloc(filenames, capacity * sizeof(char *));
+            assert(temp != NULL);
+            filenames = temp;
+        }
+        filenames[count] = strdup(entry->d_name);
+        assert(filenames[count] != NULL);
+        count++;
+    }
+    closedir(dir);
+
+    // Sort alphabetically
+    qsort(filenames, count, sizeof(char *), compare_filenames);
+
+    *out_filenames = filenames;
+    *out_count = count;
+}
+
+static void free_directory_entries(char **filenames, size_t count) {
+    for (size_t i = 0; i < count; i++) {
+        free(filenames[i]);
+    }
+    free(filenames);
+}
+
+static void run_single_test(struct grug_state *grug_state, const char *dir_path, const char *filename) {
+    char grug_path[4096];
+    int grug_len = snprintf(grug_path, sizeof(grug_path), "%s/%s", dir_path, filename);
+    assert(grug_len >= 0 && (size_t)grug_len < sizeof(grug_path));
+
+    // This version does not have the tests/ prefix
+    char relative_path[4096];
+    int rel_len = snprintf(relative_path, sizeof(relative_path), "err_spaces/%s", filename);
+    assert(rel_len >= 0 && (size_t)rel_len < sizeof(relative_path));
+
+    struct stat st;
+    assert(stat(grug_path, &st) == 0);
+
+    // Skip non-regular files (like directories, "." or "..")
+    if (!S_ISREG(st.st_mode)) {
+        return;
+    }
+
+    printf("Running tests/%s...\n", relative_path);
+
+    const char *msg = NULL;
+    compile_grug_file(grug_state, relative_path, &msg);
+
+    if (msg == NULL) {
+        fprintf(stderr, "\nError: Expected compilation failure for %s but it succeeded.\n", filename);
+        exit(EXIT_FAILURE);
+    }
+}
+
 static void run_err_spaces_tests(struct grug_state *grug_state) {
-	char dir_path[4096];
-	int dir_len = snprintf(dir_path, sizeof(dir_path), "%s/err_spaces", tests_dir_path);
-	assert(dir_len >= 0 && (size_t)dir_len < sizeof(dir_path));
+    char dir_path[4096];
+    int dir_len = snprintf(dir_path, sizeof(dir_path), "%s/err_spaces", tests_dir_path);
+    assert(dir_len >= 0 && (size_t)dir_len < sizeof(dir_path));
 
-	struct dirent **namelist;
-	int n = scandir(dir_path, &namelist, NULL, alphasort);
-	assert(n >= 0);
+    char **filenames = NULL;
+    size_t count = 0;
 
-	for (int i = 0; i < n; i++) {
-		struct dirent *entry = namelist[i];
+    read_sorted_directory(dir_path, &filenames, &count);
 
-		char grug_path[4096];
-		int grug_len = snprintf(grug_path, sizeof(grug_path), "%s/%s", dir_path, entry->d_name);
-		assert(grug_len >= 0 && (size_t)grug_len < sizeof(grug_path));
+    for (size_t i = 0; i < count; i++) {
+        run_single_test(grug_state, dir_path, filenames[i]);
+    }
 
-		// This version does not have the tests/ prefix
-		char relative_path[4096];
-		int rel_len = snprintf(relative_path, sizeof(relative_path), "err_spaces/%s", entry->d_name);
-		assert(rel_len >= 0 && (size_t)rel_len < sizeof(relative_path));
-
-		struct stat st;
-		assert(stat(grug_path, &st) == 0);
-
-		if (!S_ISREG(st.st_mode)) {
-			free(entry);
-			continue;
-		}
-
-		printf("Running tests/%s...\n", relative_path);
-
-		const char *msg = NULL;
-		compile_grug_file(grug_state, relative_path, &msg);
-
-		if (msg == NULL) {
-			fprintf(stderr, "\nError: Expected compilation failure for %s but it succeeded.\n", entry->d_name);
-			exit(EXIT_FAILURE);
-		}
-
-		free(entry);
-	}
-	free(namelist);
+    free_directory_entries(filenames, count);
 }
 
 static void test_error(

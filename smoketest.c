@@ -74,6 +74,7 @@ static game_fn p_game_fn_set_position;
 static game_fn p_game_fn_cause_game_fn_error;
 static game_fn p_game_fn_call_on_b_fn;
 static game_fn p_game_fn_store;
+static game_fn p_game_fn_print_csv;
 static game_fn p_game_fn_retrieve;
 static game_fn p_game_fn_box_number;
 
@@ -553,6 +554,8 @@ static void call_export_fn(struct grug_state* grug_state, struct grug_file_id* f
         CALL(grug_state, say, grug_string("foo"));
     } else if (starts_with(grug_file_path, "ok"SLASH"pass_string_argument_to_helper_fn"SLASH)) {
         CALL(grug_state, say, grug_string("foo"));
+    } else if (starts_with(grug_file_path, "ok"SLASH"print_csv"SLASH)) {
+        CALL(grug_state, print_csv, grug_string("ok"SLASH"print_csv/foo.csv"));
     } else if (starts_with(grug_file_path, "ok"SLASH"resource_and_entity"SLASH)) {
         CALL(grug_state, draw, grug_string("ok"SLASH"resource_and_entity/foo.txt"));
         CALL(grug_state, spawn, grug_string("ok:foo"));
@@ -786,6 +789,7 @@ static void load_tests_so(void) {
     p_game_fn_cause_game_fn_error = load_sym(h, "game_fn_cause_game_fn_error");
     p_game_fn_call_on_b_fn = load_sym(h, "game_fn_call_on_b_fn");
     p_game_fn_store = load_sym(h, "game_fn_store");
+    p_game_fn_print_csv = load_sym(h, "game_fn_print_csv");
     p_game_fn_retrieve = load_sym(h, "game_fn_retrieve");
     p_game_fn_box_number = load_sym(h, "game_fn_box_number");
     #pragma GCC diagnostic pop

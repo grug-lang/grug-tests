@@ -1,1 +1,1 @@
-The variable 'foo' already exists
+The local variable 'foo' shadows an earlier global variable

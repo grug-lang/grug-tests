@@ -1,0 +1,5 @@
+x: number = 42
+
+on_a(x: number) {
+    initialize(x)
+}

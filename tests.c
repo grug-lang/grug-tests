@@ -3407,6 +3407,7 @@ static void add_error_tests(void) {
 	ADD_TEST_ERROR(helper_fn_is_not_called_5, "D");
 	ADD_TEST_ERROR(helper_fn_missing_return_statement, "D");
 	ADD_TEST_ERROR(helper_fn_no_return_value_expected, "D");
+	ADD_TEST_ERROR(helper_fn_return_value_expected, "D");
 	ADD_TEST_ERROR(helper_fn_return_with_comment_after_it, "D");
 	ADD_TEST_ERROR(i32_logical_not, "D");
 	ADD_TEST_ERROR(id_invalid_binary_op, "D");

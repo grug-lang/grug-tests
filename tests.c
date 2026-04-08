@@ -83,6 +83,12 @@ static const char *get_type_name[] = {
 #define SLASH "/"
 #endif
 
+// Most implementations shouldn't pass -DASSERT_ALIGNMENT.
+// It caught a ton of stack misalignment bugs
+// in the original version of grug.c, as it emitted raw machine code.
+// Note that ASSERT_ALIGNMENT breaks with -DCMAKE_BUILD_TYPE=Release.
+#ifdef ASSERT_ALIGNMENT
+
 // From https://stackoverflow.com/a/2114249/13279557
 #ifdef __x86_64__
 #define ASSERT_16_BYTE_STACK_ALIGNED() do {\
@@ -117,6 +123,12 @@ static const char *get_type_name[] = {
 #else
 #error Unrecognized architecture
 #endif
+
+#else // ASSERT_ALIGNMENT
+
+#define ASSERT_16_BYTE_STACK_ALIGNED()
+
+#endif // ASSERT_ALIGNMENT
 
 static const char *tests_dir_path;
 static const char *mod_api_path;

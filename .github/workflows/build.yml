@@ -65,12 +65,21 @@ jobs:
         if: matrix.sanitizer == 'valgrind'
         run: sudo apt-get update && sudo apt-get install -y valgrind
 
+      - name: Set sanitizer environment variables
+        run: |
+          if [ "${{ matrix.sanitizer }}" == "asan" ]; then
+            echo "ASAN=1" >> $GITHUB_ENV
+          fi
+          if [ "${{ matrix.sanitizer }}" == "valgrind" ]; then
+            echo "VALGRIND=1" >> $GITHUB_ENV
+          fi
+
       - name: Build and run tests (Debug + Release)
         run: |
           for BUILD_TYPE in Debug Release; do
             echo "=== Building $BUILD_TYPE ==="
             CMAKE_FLAGS="-G Ninja -DCMAKE_BUILD_TYPE=$BUILD_TYPE"
-            if [ "${{ matrix.sanitizer }}" == "asan" ]; then
+            if [ ! -z "$ASAN" ]; then
               CMAKE_FLAGS="$CMAKE_FLAGS -DASAN=ON"
             fi
             cmake -S . -B ./build-$BUILD_TYPE $CMAKE_FLAGS
@@ -79,7 +88,7 @@ jobs:
             echo "=== Running tests ($BUILD_TYPE) ==="
             TEST_EXE=$(find ./build-$BUILD_TYPE -type f \( -name "smoketest" -o -name "smoketest.exe" \) | head -n 1)
 
-            if [ "${{ matrix.sanitizer }}" == "valgrind" ]; then
+            if [ ! -z "$VALGRIND" ]; then
               valgrind "$TEST_EXE"
             else
               "$TEST_EXE"
@@ -87,6 +96,4 @@ jobs:
           done
         env:
           CC: ${{ matrix.compiler }}
-          ASAN: ${{ matrix.sanitizer == 'asan' && 1 || '' }}
-          VALGRIND: ${{ matrix.sanitizer == 'valgrind' && 1 || '' }}
           SHUFFLES: 10

@@ -871,12 +871,12 @@ union grug_value game_fn_store(struct grug_state* grug_state, const union grug_v
 	game_fn_store_id = args[0]._id;
 	return (union grug_value) {0};
 }
-static const char *game_fn_print_csv_path;
+static char game_fn_print_csv_path[256];
 union grug_value game_fn_print_csv(struct grug_state* grug_state, const union grug_value args[]) {
 	(void)grug_state;
 	ASSERT_16_BYTE_STACK_ALIGNED();
 	game_fn_print_csv_call_count++;
-	game_fn_print_csv_path = strdup(args[0]._string);
+	strcpy(game_fn_print_csv_path, args[0]._string);
 	return (union grug_value) {0};
 }
 union grug_value game_fn_retrieve(struct grug_state* grug_state, const union grug_value args[]) {

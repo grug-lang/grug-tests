@@ -69,7 +69,7 @@ endif()
 if(DEFINED ENV{BUILD_DIR})
     # Quote the string so C sees it as a literal
     message(STATUS "BUILD_DIR=\"$ENV{BUILD_DIR}\" was passed")
-    add_compile_definitions(BUILD_DIR="\"$ENV{BUILD_DIR}\"")
+    add_compile_definitions("BUILD_DIR=\"$ENV{BUILD_DIR}\"")
 endif()
 
 # VALGRIND (runtime only, informational)

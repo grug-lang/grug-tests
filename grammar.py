@@ -265,7 +265,33 @@ class GrugTransformer(Transformer[Tree[Any], Any]):
         return {"type": "COMMENT_STATEMENT", "comment": content}
 
 
-def check_dir(path: Path) -> None:
+def check_expected_json_format(path: Path, fix: bool) -> None:
+    raw = path.read_text(encoding="utf-8")
+
+    try:
+        data = json.loads(raw)
+    except json.JSONDecodeError as e:
+        print(f"Error: Invalid JSON in {path}")
+        print(e)
+        sys.exit(1)
+
+    expected = json.dumps(data, indent=4, sort_keys=True) + "\n"
+
+    if raw != expected:
+        if fix:
+            path.write_text(expected, encoding="utf-8")
+            print(f"Fixed formatting: {path}")
+        else:
+            print(f"Error: {path} is not properly formatted")
+            print("Expected format:")
+            print(expected)
+            print(
+                "\nTip: run with '--fix' to automatically format all expected.json files."
+            )
+            sys.exit(1)
+
+
+def check_dir(path: Path, fix: bool) -> None:
     transformer = GrugTransformer()
     for subdir in sorted(
         [d for d in path.iterdir() if d.is_dir()], key=lambda d: d.name
@@ -273,11 +299,14 @@ def check_dir(path: Path) -> None:
         print(f"Parsing {subdir}...")
 
         expected_file = subdir / "expected.json"
+
+        check_expected_json_format(expected_file, fix)
+
         expected = json.loads(expected_file.read_text())
 
         for file in sorted(subdir.glob("*.grug"), key=lambda f: f.name):
             try:
-                tree: Tree[Any] = parser.parse(file.read_text()) # type: ignore
+                tree: Tree[Any] = parser.parse(file.read_text())  # type: ignore
                 ast: Any = transformer.transform(tree)
             except exceptions.LarkError as e:
                 print(f"Error: Grammar error in test: {file}")
@@ -293,7 +322,10 @@ def check_dir(path: Path) -> None:
 
 
 if __name__ == "__main__":
+    fix = "--fix" in sys.argv
+
     root: Path = Path("tests")
-    check_dir(root / "ok")
-    check_dir(root / "err_runtime")
+    check_dir(root / "ok", fix)
+    check_dir(root / "err_runtime", fix)
+
     print("All grammar checks passed")

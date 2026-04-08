@@ -1,1 +1,21 @@
-[{"type":"GLOBAL_ON_FN","name":"on_a","statements":[{"type":"CALL_STATEMENT","name":"initialize_bool","arguments":[{"type":"UNARY_EXPR","operator":"NOT_TOKEN","expr":{"type":"TRUE_EXPR"}}]}]}]
+[
+    {
+        "name": "on_a",
+        "statements": [
+            {
+                "arguments": [
+                    {
+                        "expr": {
+                            "type": "TRUE_EXPR"
+                        },
+                        "operator": "NOT_TOKEN",
+                        "type": "UNARY_EXPR"
+                    }
+                ],
+                "name": "initialize_bool",
+                "type": "CALL_STATEMENT"
+            }
+        ],
+        "type": "GLOBAL_ON_FN"
+    }
+]

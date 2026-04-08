@@ -1,1 +1,123 @@
-[{"type":"GLOBAL_ON_FN","name":"on_a","statements":[{"type":"CALL_STATEMENT","name":"initialize","arguments":[{"type":"CALL_EXPR","name":"helper_fib","arguments":[{"type":"NUMBER_EXPR","value":"50"}]}]}]},{"type":"GLOBAL_EMPTY_LINE"},{"type":"GLOBAL_HELPER_FN","name":"helper_fib","arguments":[{"name":"n","type":"number"}],"return_type":"number","statements":[{"type":"IF_STATEMENT","condition":{"type":"LOGICAL_EXPR","left_expr":{"type":"BINARY_EXPR","left_expr":{"type":"IDENTIFIER_EXPR","str":"n"},"operator":"EQUALS_TOKEN","right_expr":{"type":"NUMBER_EXPR","value":"0"}},"operator":"OR_TOKEN","right_expr":{"type":"BINARY_EXPR","left_expr":{"type":"IDENTIFIER_EXPR","str":"n"},"operator":"EQUALS_TOKEN","right_expr":{"type":"NUMBER_EXPR","value":"1"}}},"if_statements":[{"type":"RETURN_STATEMENT","expr":{"type":"IDENTIFIER_EXPR","str":"n"}}]},{"type":"RETURN_STATEMENT","expr":{"type":"BINARY_EXPR","left_expr":{"type":"CALL_EXPR","name":"helper_fib","arguments":[{"type":"BINARY_EXPR","left_expr":{"type":"IDENTIFIER_EXPR","str":"n"},"operator":"MINUS_TOKEN","right_expr":{"type":"NUMBER_EXPR","value":"1"}}]},"operator":"PLUS_TOKEN","right_expr":{"type":"CALL_EXPR","name":"helper_fib","arguments":[{"type":"BINARY_EXPR","left_expr":{"type":"IDENTIFIER_EXPR","str":"n"},"operator":"MINUS_TOKEN","right_expr":{"type":"NUMBER_EXPR","value":"2"}}]}}}]}]
+[
+    {
+        "name": "on_a",
+        "statements": [
+            {
+                "arguments": [
+                    {
+                        "arguments": [
+                            {
+                                "type": "NUMBER_EXPR",
+                                "value": "50"
+                            }
+                        ],
+                        "name": "helper_fib",
+                        "type": "CALL_EXPR"
+                    }
+                ],
+                "name": "initialize",
+                "type": "CALL_STATEMENT"
+            }
+        ],
+        "type": "GLOBAL_ON_FN"
+    },
+    {
+        "type": "GLOBAL_EMPTY_LINE"
+    },
+    {
+        "arguments": [
+            {
+                "name": "n",
+                "type": "number"
+            }
+        ],
+        "name": "helper_fib",
+        "return_type": "number",
+        "statements": [
+            {
+                "condition": {
+                    "left_expr": {
+                        "left_expr": {
+                            "str": "n",
+                            "type": "IDENTIFIER_EXPR"
+                        },
+                        "operator": "EQUALS_TOKEN",
+                        "right_expr": {
+                            "type": "NUMBER_EXPR",
+                            "value": "0"
+                        },
+                        "type": "BINARY_EXPR"
+                    },
+                    "operator": "OR_TOKEN",
+                    "right_expr": {
+                        "left_expr": {
+                            "str": "n",
+                            "type": "IDENTIFIER_EXPR"
+                        },
+                        "operator": "EQUALS_TOKEN",
+                        "right_expr": {
+                            "type": "NUMBER_EXPR",
+                            "value": "1"
+                        },
+                        "type": "BINARY_EXPR"
+                    },
+                    "type": "LOGICAL_EXPR"
+                },
+                "if_statements": [
+                    {
+                        "expr": {
+                            "str": "n",
+                            "type": "IDENTIFIER_EXPR"
+                        },
+                        "type": "RETURN_STATEMENT"
+                    }
+                ],
+                "type": "IF_STATEMENT"
+            },
+            {
+                "expr": {
+                    "left_expr": {
+                        "arguments": [
+                            {
+                                "left_expr": {
+                                    "str": "n",
+                                    "type": "IDENTIFIER_EXPR"
+                                },
+                                "operator": "MINUS_TOKEN",
+                                "right_expr": {
+                                    "type": "NUMBER_EXPR",
+                                    "value": "1"
+                                },
+                                "type": "BINARY_EXPR"
+                            }
+                        ],
+                        "name": "helper_fib",
+                        "type": "CALL_EXPR"
+                    },
+                    "operator": "PLUS_TOKEN",
+                    "right_expr": {
+                        "arguments": [
+                            {
+                                "left_expr": {
+                                    "str": "n",
+                                    "type": "IDENTIFIER_EXPR"
+                                },
+                                "operator": "MINUS_TOKEN",
+                                "right_expr": {
+                                    "type": "NUMBER_EXPR",
+                                    "value": "2"
+                                },
+                                "type": "BINARY_EXPR"
+                            }
+                        ],
+                        "name": "helper_fib",
+                        "type": "CALL_EXPR"
+                    },
+                    "type": "BINARY_EXPR"
+                },
+                "type": "RETURN_STATEMENT"
+            }
+        ],
+        "type": "GLOBAL_HELPER_FN"
+    }
+]

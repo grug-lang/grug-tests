@@ -1,1 +1,65 @@
-[{"type":"GLOBAL_ON_FN","name":"on_a","statements":[{"type":"IF_STATEMENT","condition":{"type":"TRUE_EXPR"},"if_statements":[{"type":"VARIABLE_STATEMENT","name":"a","variable_type":"number","assignment":{"type":"NUMBER_EXPR","value":"42"}},{"type":"CALL_STATEMENT","name":"initialize","arguments":[{"type":"IDENTIFIER_EXPR","str":"a"}]}]},{"type":"EMPTY_LINE_STATEMENT"},{"type":"IF_STATEMENT","condition":{"type":"TRUE_EXPR"},"if_statements":[{"type":"VARIABLE_STATEMENT","name":"a","variable_type":"number","assignment":{"type":"NUMBER_EXPR","value":"69"}},{"type":"CALL_STATEMENT","name":"initialize","arguments":[{"type":"IDENTIFIER_EXPR","str":"a"}]}]}]}]
+[
+    {
+        "name": "on_a",
+        "statements": [
+            {
+                "condition": {
+                    "type": "TRUE_EXPR"
+                },
+                "if_statements": [
+                    {
+                        "assignment": {
+                            "type": "NUMBER_EXPR",
+                            "value": "42"
+                        },
+                        "name": "a",
+                        "type": "VARIABLE_STATEMENT",
+                        "variable_type": "number"
+                    },
+                    {
+                        "arguments": [
+                            {
+                                "str": "a",
+                                "type": "IDENTIFIER_EXPR"
+                            }
+                        ],
+                        "name": "initialize",
+                        "type": "CALL_STATEMENT"
+                    }
+                ],
+                "type": "IF_STATEMENT"
+            },
+            {
+                "type": "EMPTY_LINE_STATEMENT"
+            },
+            {
+                "condition": {
+                    "type": "TRUE_EXPR"
+                },
+                "if_statements": [
+                    {
+                        "assignment": {
+                            "type": "NUMBER_EXPR",
+                            "value": "69"
+                        },
+                        "name": "a",
+                        "type": "VARIABLE_STATEMENT",
+                        "variable_type": "number"
+                    },
+                    {
+                        "arguments": [
+                            {
+                                "str": "a",
+                                "type": "IDENTIFIER_EXPR"
+                            }
+                        ],
+                        "name": "initialize",
+                        "type": "CALL_STATEMENT"
+                    }
+                ],
+                "type": "IF_STATEMENT"
+            }
+        ],
+        "type": "GLOBAL_ON_FN"
+    }
+]

@@ -1,1 +1,27 @@
-[{"type":"GLOBAL_ON_FN","name":"on_a","statements":[{"type":"VARIABLE_STATEMENT","name":"getting_down","variable_type":"bool","assignment":{"type":"CALL_EXPR","name":"get_false"}},{"type":"CALL_STATEMENT","name":"set_is_happy","arguments":[{"type":"IDENTIFIER_EXPR","str":"getting_down"}]}]}]
+[
+    {
+        "name": "on_a",
+        "statements": [
+            {
+                "assignment": {
+                    "name": "get_false",
+                    "type": "CALL_EXPR"
+                },
+                "name": "getting_down",
+                "type": "VARIABLE_STATEMENT",
+                "variable_type": "bool"
+            },
+            {
+                "arguments": [
+                    {
+                        "str": "getting_down",
+                        "type": "IDENTIFIER_EXPR"
+                    }
+                ],
+                "name": "set_is_happy",
+                "type": "CALL_STATEMENT"
+            }
+        ],
+        "type": "GLOBAL_ON_FN"
+    }
+]

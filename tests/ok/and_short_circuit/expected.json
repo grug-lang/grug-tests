@@ -1,1 +1,47 @@
-[{"type":"GLOBAL_ON_FN","name":"on_a","statements":[{"type":"CALL_STATEMENT","name":"initialize_bool","arguments":[{"type":"LOGICAL_EXPR","left_expr":{"type":"FALSE_EXPR"},"operator":"AND_TOKEN","right_expr":{"type":"PARENTHESIZED_EXPR","expr":{"type":"BINARY_EXPR","left_expr":{"type":"PARENTHESIZED_EXPR","expr":{"type":"BINARY_EXPR","left_expr":{"type":"NUMBER_EXPR","value":"1"},"operator":"DIVISION_TOKEN","right_expr":{"type":"NUMBER_EXPR","value":"0"}}},"operator":"EQUALS_TOKEN","right_expr":{"type":"NUMBER_EXPR","value":"0"}}}}]}]}]
+[
+    {
+        "name": "on_a",
+        "statements": [
+            {
+                "arguments": [
+                    {
+                        "left_expr": {
+                            "type": "FALSE_EXPR"
+                        },
+                        "operator": "AND_TOKEN",
+                        "right_expr": {
+                            "expr": {
+                                "left_expr": {
+                                    "expr": {
+                                        "left_expr": {
+                                            "type": "NUMBER_EXPR",
+                                            "value": "1"
+                                        },
+                                        "operator": "DIVISION_TOKEN",
+                                        "right_expr": {
+                                            "type": "NUMBER_EXPR",
+                                            "value": "0"
+                                        },
+                                        "type": "BINARY_EXPR"
+                                    },
+                                    "type": "PARENTHESIZED_EXPR"
+                                },
+                                "operator": "EQUALS_TOKEN",
+                                "right_expr": {
+                                    "type": "NUMBER_EXPR",
+                                    "value": "0"
+                                },
+                                "type": "BINARY_EXPR"
+                            },
+                            "type": "PARENTHESIZED_EXPR"
+                        },
+                        "type": "LOGICAL_EXPR"
+                    }
+                ],
+                "name": "initialize_bool",
+                "type": "CALL_STATEMENT"
+            }
+        ],
+        "type": "GLOBAL_ON_FN"
+    }
+]

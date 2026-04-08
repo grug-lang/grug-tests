@@ -1,1 +1,22 @@
-[{"type":"GLOBAL_ON_FN","name":"on_a","statements":[{"type":"CALL_STATEMENT","name":"initialize","arguments":[{"type":"UNARY_EXPR","operator":"MINUS_TOKEN","expr":{"type":"NUMBER_EXPR","value":"42"}}]}]}]
+[
+    {
+        "name": "on_a",
+        "statements": [
+            {
+                "arguments": [
+                    {
+                        "expr": {
+                            "type": "NUMBER_EXPR",
+                            "value": "42"
+                        },
+                        "operator": "MINUS_TOKEN",
+                        "type": "UNARY_EXPR"
+                    }
+                ],
+                "name": "initialize",
+                "type": "CALL_STATEMENT"
+            }
+        ],
+        "type": "GLOBAL_ON_FN"
+    }
+]

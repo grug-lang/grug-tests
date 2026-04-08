@@ -1,1 +1,19 @@
-[{"type":"GLOBAL_ON_FN","name":"on_a","statements":[{"type":"CALL_STATEMENT","name":"nothing"},{"type":"RETURN_STATEMENT"},{"type":"CALL_STATEMENT","name":"nothing"}]}]
+[
+    {
+        "name": "on_a",
+        "statements": [
+            {
+                "name": "nothing",
+                "type": "CALL_STATEMENT"
+            },
+            {
+                "type": "RETURN_STATEMENT"
+            },
+            {
+                "name": "nothing",
+                "type": "CALL_STATEMENT"
+            }
+        ],
+        "type": "GLOBAL_ON_FN"
+    }
+]

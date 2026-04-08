@@ -1,1 +1,26 @@
-[{"type":"GLOBAL_ON_FN","name":"on_a","statements":[{"type":"CALL_STATEMENT","name":"initialize_bool","arguments":[{"type":"BINARY_EXPR","left_expr":{"type":"IDENTIFIER_EXPR","str":"me"},"operator":"EQUALS_TOKEN","right_expr":{"type":"CALL_EXPR","name":"retrieve"}}]}]}]
+[
+    {
+        "name": "on_a",
+        "statements": [
+            {
+                "arguments": [
+                    {
+                        "left_expr": {
+                            "str": "me",
+                            "type": "IDENTIFIER_EXPR"
+                        },
+                        "operator": "EQUALS_TOKEN",
+                        "right_expr": {
+                            "name": "retrieve",
+                            "type": "CALL_EXPR"
+                        },
+                        "type": "BINARY_EXPR"
+                    }
+                ],
+                "name": "initialize_bool",
+                "type": "CALL_STATEMENT"
+            }
+        ],
+        "type": "GLOBAL_ON_FN"
+    }
+]

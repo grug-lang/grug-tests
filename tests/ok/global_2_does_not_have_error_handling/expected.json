@@ -1,1 +1,24 @@
-[{"type":"GLOBAL_VARIABLE","name":"g1","variable_type":"number","assignment":{"type":"UNARY_EXPR","operator":"MINUS_TOKEN","expr":{"type":"NUMBER_EXPR","value":"1"}}},{"type":"GLOBAL_VARIABLE","name":"g","variable_type":"number","assignment":{"type":"NUMBER_EXPR","value":"0"}}]
+[
+    {
+        "assignment": {
+            "expr": {
+                "type": "NUMBER_EXPR",
+                "value": "1"
+            },
+            "operator": "MINUS_TOKEN",
+            "type": "UNARY_EXPR"
+        },
+        "name": "g1",
+        "type": "GLOBAL_VARIABLE",
+        "variable_type": "number"
+    },
+    {
+        "assignment": {
+            "type": "NUMBER_EXPR",
+            "value": "0"
+        },
+        "name": "g",
+        "type": "GLOBAL_VARIABLE",
+        "variable_type": "number"
+    }
+]

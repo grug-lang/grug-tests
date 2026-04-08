@@ -1,1 +1,28 @@
-[{"type":"GLOBAL_ON_FN","name":"on_a","statements":[{"type":"CALL_STATEMENT","name":"nothing"},{"type":"WHILE_STATEMENT","condition":{"type":"FALSE_EXPR"},"statements":[{"type":"CALL_STATEMENT","name":"nothing"}]},{"type":"CALL_STATEMENT","name":"nothing"}]}]
+[
+    {
+        "name": "on_a",
+        "statements": [
+            {
+                "name": "nothing",
+                "type": "CALL_STATEMENT"
+            },
+            {
+                "condition": {
+                    "type": "FALSE_EXPR"
+                },
+                "statements": [
+                    {
+                        "name": "nothing",
+                        "type": "CALL_STATEMENT"
+                    }
+                ],
+                "type": "WHILE_STATEMENT"
+            },
+            {
+                "name": "nothing",
+                "type": "CALL_STATEMENT"
+            }
+        ],
+        "type": "GLOBAL_ON_FN"
+    }
+]

@@ -1,1 +1,38 @@
-[{"type":"GLOBAL_ON_FN","name":"on_a","statements":[{"type":"CALL_STATEMENT","name":"max","arguments":[{"type":"BINARY_EXPR","left_expr":{"type":"NUMBER_EXPR","value":"1"},"operator":"PLUS_TOKEN","right_expr":{"type":"NUMBER_EXPR","value":"2"}},{"type":"BINARY_EXPR","left_expr":{"type":"NUMBER_EXPR","value":"4"},"operator":"PLUS_TOKEN","right_expr":{"type":"NUMBER_EXPR","value":"5"}}]}]}]
+[
+    {
+        "name": "on_a",
+        "statements": [
+            {
+                "arguments": [
+                    {
+                        "left_expr": {
+                            "type": "NUMBER_EXPR",
+                            "value": "1"
+                        },
+                        "operator": "PLUS_TOKEN",
+                        "right_expr": {
+                            "type": "NUMBER_EXPR",
+                            "value": "2"
+                        },
+                        "type": "BINARY_EXPR"
+                    },
+                    {
+                        "left_expr": {
+                            "type": "NUMBER_EXPR",
+                            "value": "4"
+                        },
+                        "operator": "PLUS_TOKEN",
+                        "right_expr": {
+                            "type": "NUMBER_EXPR",
+                            "value": "5"
+                        },
+                        "type": "BINARY_EXPR"
+                    }
+                ],
+                "name": "max",
+                "type": "CALL_STATEMENT"
+            }
+        ],
+        "type": "GLOBAL_ON_FN"
+    }
+]

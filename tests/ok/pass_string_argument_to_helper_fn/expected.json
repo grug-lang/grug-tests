@@ -1,1 +1,43 @@
-[{"type":"GLOBAL_ON_FN","name":"on_a","statements":[{"type":"CALL_STATEMENT","name":"helper_shout","arguments":[{"type":"STRING_EXPR","str":"foo"}]}]},{"type":"GLOBAL_EMPTY_LINE"},{"type":"GLOBAL_HELPER_FN","name":"helper_shout","arguments":[{"name":"message","type":"string"}],"statements":[{"type":"CALL_STATEMENT","name":"say","arguments":[{"type":"IDENTIFIER_EXPR","str":"message"}]}]}]
+[
+    {
+        "name": "on_a",
+        "statements": [
+            {
+                "arguments": [
+                    {
+                        "str": "foo",
+                        "type": "STRING_EXPR"
+                    }
+                ],
+                "name": "helper_shout",
+                "type": "CALL_STATEMENT"
+            }
+        ],
+        "type": "GLOBAL_ON_FN"
+    },
+    {
+        "type": "GLOBAL_EMPTY_LINE"
+    },
+    {
+        "arguments": [
+            {
+                "name": "message",
+                "type": "string"
+            }
+        ],
+        "name": "helper_shout",
+        "statements": [
+            {
+                "arguments": [
+                    {
+                        "str": "message",
+                        "type": "IDENTIFIER_EXPR"
+                    }
+                ],
+                "name": "say",
+                "type": "CALL_STATEMENT"
+            }
+        ],
+        "type": "GLOBAL_HELPER_FN"
+    }
+]

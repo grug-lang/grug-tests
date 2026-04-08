@@ -1,1 +1,36 @@
-[{"type":"GLOBAL_ON_FN","name":"on_a","statements":[{"type":"CALL_STATEMENT","name":"nothing"},{"type":"IF_STATEMENT","condition":{"type":"FALSE_EXPR"},"else_statements":[{"type":"IF_STATEMENT","condition":{"type":"TRUE_EXPR"},"if_statements":[{"type":"CALL_STATEMENT","name":"nothing"}]}]},{"type":"CALL_STATEMENT","name":"nothing"}]}]
+[
+    {
+        "name": "on_a",
+        "statements": [
+            {
+                "name": "nothing",
+                "type": "CALL_STATEMENT"
+            },
+            {
+                "condition": {
+                    "type": "FALSE_EXPR"
+                },
+                "else_statements": [
+                    {
+                        "condition": {
+                            "type": "TRUE_EXPR"
+                        },
+                        "if_statements": [
+                            {
+                                "name": "nothing",
+                                "type": "CALL_STATEMENT"
+                            }
+                        ],
+                        "type": "IF_STATEMENT"
+                    }
+                ],
+                "type": "IF_STATEMENT"
+            },
+            {
+                "name": "nothing",
+                "type": "CALL_STATEMENT"
+            }
+        ],
+        "type": "GLOBAL_ON_FN"
+    }
+]

@@ -1,1 +1,30 @@
-[{"type":"GLOBAL_ON_FN","name":"on_a","statements":[{"type":"VARIABLE_STATEMENT","name":"message","variable_type":"string","assignment":{"type":"STRING_EXPR","str":"foo"}},{"type":"EMPTY_LINE_STATEMENT"},{"type":"CALL_STATEMENT","name":"say","arguments":[{"type":"IDENTIFIER_EXPR","str":"message"}]}]}]
+[
+    {
+        "name": "on_a",
+        "statements": [
+            {
+                "assignment": {
+                    "str": "foo",
+                    "type": "STRING_EXPR"
+                },
+                "name": "message",
+                "type": "VARIABLE_STATEMENT",
+                "variable_type": "string"
+            },
+            {
+                "type": "EMPTY_LINE_STATEMENT"
+            },
+            {
+                "arguments": [
+                    {
+                        "str": "message",
+                        "type": "IDENTIFIER_EXPR"
+                    }
+                ],
+                "name": "say",
+                "type": "CALL_STATEMENT"
+            }
+        ],
+        "type": "GLOBAL_ON_FN"
+    }
+]

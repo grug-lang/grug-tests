@@ -1,1 +1,12 @@
-[{"type":"GLOBAL_ON_FN","name":"on_a","statements":[{"type":"CALL_STATEMENT","name":"cause_game_fn_error"}]}]
+[
+    {
+        "name": "on_a",
+        "statements": [
+            {
+                "name": "cause_game_fn_error",
+                "type": "CALL_STATEMENT"
+            }
+        ],
+        "type": "GLOBAL_ON_FN"
+    }
+]

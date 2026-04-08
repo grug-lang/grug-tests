@@ -1,1 +1,48 @@
-[{"type":"GLOBAL_ON_FN","name":"on_a","statements":[{"type":"CALL_STATEMENT","name":"initialize","arguments":[{"type":"CALL_EXPR","name":"max","arguments":[{"type":"CALL_EXPR","name":"max","arguments":[{"type":"NUMBER_EXPR","value":"1"},{"type":"NUMBER_EXPR","value":"2"}]},{"type":"CALL_EXPR","name":"max","arguments":[{"type":"NUMBER_EXPR","value":"3"},{"type":"NUMBER_EXPR","value":"4"}]}]}]}]}]
+[
+    {
+        "name": "on_a",
+        "statements": [
+            {
+                "arguments": [
+                    {
+                        "arguments": [
+                            {
+                                "arguments": [
+                                    {
+                                        "type": "NUMBER_EXPR",
+                                        "value": "1"
+                                    },
+                                    {
+                                        "type": "NUMBER_EXPR",
+                                        "value": "2"
+                                    }
+                                ],
+                                "name": "max",
+                                "type": "CALL_EXPR"
+                            },
+                            {
+                                "arguments": [
+                                    {
+                                        "type": "NUMBER_EXPR",
+                                        "value": "3"
+                                    },
+                                    {
+                                        "type": "NUMBER_EXPR",
+                                        "value": "4"
+                                    }
+                                ],
+                                "name": "max",
+                                "type": "CALL_EXPR"
+                            }
+                        ],
+                        "name": "max",
+                        "type": "CALL_EXPR"
+                    }
+                ],
+                "name": "initialize",
+                "type": "CALL_STATEMENT"
+            }
+        ],
+        "type": "GLOBAL_ON_FN"
+    }
+]

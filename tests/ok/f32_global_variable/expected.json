@@ -1,1 +1,38 @@
-[{"type":"GLOBAL_VARIABLE","name":"x","variable_type":"number","assignment":{"type":"NUMBER_EXPR","value":"0.0"}},{"type":"GLOBAL_EMPTY_LINE"},{"type":"GLOBAL_ON_FN","name":"on_a","statements":[{"type":"VARIABLE_STATEMENT","name":"x","assignment":{"type":"NUMBER_EXPR","value":"4.0"}},{"type":"CALL_STATEMENT","name":"sin","arguments":[{"type":"IDENTIFIER_EXPR","str":"x"}]}]}]
+[
+    {
+        "assignment": {
+            "type": "NUMBER_EXPR",
+            "value": "0.0"
+        },
+        "name": "x",
+        "type": "GLOBAL_VARIABLE",
+        "variable_type": "number"
+    },
+    {
+        "type": "GLOBAL_EMPTY_LINE"
+    },
+    {
+        "name": "on_a",
+        "statements": [
+            {
+                "assignment": {
+                    "type": "NUMBER_EXPR",
+                    "value": "4.0"
+                },
+                "name": "x",
+                "type": "VARIABLE_STATEMENT"
+            },
+            {
+                "arguments": [
+                    {
+                        "str": "x",
+                        "type": "IDENTIFIER_EXPR"
+                    }
+                ],
+                "name": "sin",
+                "type": "CALL_STATEMENT"
+            }
+        ],
+        "type": "GLOBAL_ON_FN"
+    }
+]

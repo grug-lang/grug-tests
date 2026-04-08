@@ -1,1 +1,44 @@
-[{"type":"GLOBAL_COMMENT","comment":"foo"},{"type":"GLOBAL_VARIABLE","name":"uses","variable_type":"number","assignment":{"type":"NUMBER_EXPR","value":"420"}},{"type":"GLOBAL_EMPTY_LINE"},{"type":"GLOBAL_COMMENT","comment":"bar"},{"type":"GLOBAL_COMMENT","comment":"baz"},{"type":"GLOBAL_VARIABLE","name":"armor","variable_type":"number","assignment":{"type":"NUMBER_EXPR","value":"1337"}},{"type":"GLOBAL_VARIABLE","name":"health","variable_type":"number","assignment":{"type":"NUMBER_EXPR","value":"100"}}]
+[
+    {
+        "comment": "foo",
+        "type": "GLOBAL_COMMENT"
+    },
+    {
+        "assignment": {
+            "type": "NUMBER_EXPR",
+            "value": "420"
+        },
+        "name": "uses",
+        "type": "GLOBAL_VARIABLE",
+        "variable_type": "number"
+    },
+    {
+        "type": "GLOBAL_EMPTY_LINE"
+    },
+    {
+        "comment": "bar",
+        "type": "GLOBAL_COMMENT"
+    },
+    {
+        "comment": "baz",
+        "type": "GLOBAL_COMMENT"
+    },
+    {
+        "assignment": {
+            "type": "NUMBER_EXPR",
+            "value": "1337"
+        },
+        "name": "armor",
+        "type": "GLOBAL_VARIABLE",
+        "variable_type": "number"
+    },
+    {
+        "assignment": {
+            "type": "NUMBER_EXPR",
+            "value": "100"
+        },
+        "name": "health",
+        "type": "GLOBAL_VARIABLE",
+        "variable_type": "number"
+    }
+]

@@ -1,1 +1,43 @@
-[{"type":"GLOBAL_ON_FN","name":"on_a","arguments":[{"name":"x","type":"number"}],"statements":[{"type":"CALL_STATEMENT","name":"helper_foo","arguments":[{"type":"NUMBER_EXPR","value":"42"}]}]},{"type":"GLOBAL_EMPTY_LINE"},{"type":"GLOBAL_HELPER_FN","name":"helper_foo","arguments":[{"name":"x","type":"number"}],"statements":[{"type":"CALL_STATEMENT","name":"nothing"}]}]
+[
+    {
+        "arguments": [
+            {
+                "name": "x",
+                "type": "number"
+            }
+        ],
+        "name": "on_a",
+        "statements": [
+            {
+                "arguments": [
+                    {
+                        "type": "NUMBER_EXPR",
+                        "value": "42"
+                    }
+                ],
+                "name": "helper_foo",
+                "type": "CALL_STATEMENT"
+            }
+        ],
+        "type": "GLOBAL_ON_FN"
+    },
+    {
+        "type": "GLOBAL_EMPTY_LINE"
+    },
+    {
+        "arguments": [
+            {
+                "name": "x",
+                "type": "number"
+            }
+        ],
+        "name": "helper_foo",
+        "statements": [
+            {
+                "name": "nothing",
+                "type": "CALL_STATEMENT"
+            }
+        ],
+        "type": "GLOBAL_HELPER_FN"
+    }
+]

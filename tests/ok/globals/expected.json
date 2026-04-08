@@ -1,1 +1,49 @@
-[{"type":"GLOBAL_VARIABLE","name":"a","variable_type":"number","assignment":{"type":"NUMBER_EXPR","value":"420"}},{"type":"GLOBAL_VARIABLE","name":"b","variable_type":"number","assignment":{"type":"NUMBER_EXPR","value":"1337"}},{"type":"GLOBAL_EMPTY_LINE"},{"type":"GLOBAL_ON_FN","name":"on_a","statements":[{"type":"CALL_STATEMENT","name":"initialize","arguments":[{"type":"IDENTIFIER_EXPR","str":"a"}]},{"type":"CALL_STATEMENT","name":"initialize","arguments":[{"type":"IDENTIFIER_EXPR","str":"b"}]}]}]
+[
+    {
+        "assignment": {
+            "type": "NUMBER_EXPR",
+            "value": "420"
+        },
+        "name": "a",
+        "type": "GLOBAL_VARIABLE",
+        "variable_type": "number"
+    },
+    {
+        "assignment": {
+            "type": "NUMBER_EXPR",
+            "value": "1337"
+        },
+        "name": "b",
+        "type": "GLOBAL_VARIABLE",
+        "variable_type": "number"
+    },
+    {
+        "type": "GLOBAL_EMPTY_LINE"
+    },
+    {
+        "name": "on_a",
+        "statements": [
+            {
+                "arguments": [
+                    {
+                        "str": "a",
+                        "type": "IDENTIFIER_EXPR"
+                    }
+                ],
+                "name": "initialize",
+                "type": "CALL_STATEMENT"
+            },
+            {
+                "arguments": [
+                    {
+                        "str": "b",
+                        "type": "IDENTIFIER_EXPR"
+                    }
+                ],
+                "name": "initialize",
+                "type": "CALL_STATEMENT"
+            }
+        ],
+        "type": "GLOBAL_ON_FN"
+    }
+]

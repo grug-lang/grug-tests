@@ -1,1 +1,27 @@
-[{"type":"GLOBAL_ON_FN","name":"on_a","statements":[{"type":"VARIABLE_STATEMENT","name":"foo","variable_type":"D","assignment":{"type":"IDENTIFIER_EXPR","str":"me"}},{"type":"CALL_STATEMENT","name":"set_d","arguments":[{"type":"IDENTIFIER_EXPR","str":"foo"}]}]}]
+[
+    {
+        "name": "on_a",
+        "statements": [
+            {
+                "assignment": {
+                    "str": "me",
+                    "type": "IDENTIFIER_EXPR"
+                },
+                "name": "foo",
+                "type": "VARIABLE_STATEMENT",
+                "variable_type": "D"
+            },
+            {
+                "arguments": [
+                    {
+                        "str": "foo",
+                        "type": "IDENTIFIER_EXPR"
+                    }
+                ],
+                "name": "set_d",
+                "type": "CALL_STATEMENT"
+            }
+        ],
+        "type": "GLOBAL_ON_FN"
+    }
+]

@@ -1,1 +1,49 @@
-[{"type":"GLOBAL_VARIABLE","name":"foo","variable_type":"number","assignment":{"type":"BINARY_EXPR","left_expr":{"type":"NUMBER_EXPR","value":"2"},"operator":"MULTIPLICATION_TOKEN","right_expr":{"type":"PARENTHESIZED_EXPR","expr":{"type":"BINARY_EXPR","left_expr":{"type":"NUMBER_EXPR","value":"3"},"operator":"PLUS_TOKEN","right_expr":{"type":"NUMBER_EXPR","value":"4"}}}}},{"type":"GLOBAL_EMPTY_LINE"},{"type":"GLOBAL_ON_FN","name":"on_a","statements":[{"type":"CALL_STATEMENT","name":"initialize","arguments":[{"type":"IDENTIFIER_EXPR","str":"foo"}]}]}]
+[
+    {
+        "assignment": {
+            "left_expr": {
+                "type": "NUMBER_EXPR",
+                "value": "2"
+            },
+            "operator": "MULTIPLICATION_TOKEN",
+            "right_expr": {
+                "expr": {
+                    "left_expr": {
+                        "type": "NUMBER_EXPR",
+                        "value": "3"
+                    },
+                    "operator": "PLUS_TOKEN",
+                    "right_expr": {
+                        "type": "NUMBER_EXPR",
+                        "value": "4"
+                    },
+                    "type": "BINARY_EXPR"
+                },
+                "type": "PARENTHESIZED_EXPR"
+            },
+            "type": "BINARY_EXPR"
+        },
+        "name": "foo",
+        "type": "GLOBAL_VARIABLE",
+        "variable_type": "number"
+    },
+    {
+        "type": "GLOBAL_EMPTY_LINE"
+    },
+    {
+        "name": "on_a",
+        "statements": [
+            {
+                "arguments": [
+                    {
+                        "str": "foo",
+                        "type": "IDENTIFIER_EXPR"
+                    }
+                ],
+                "name": "initialize",
+                "type": "CALL_STATEMENT"
+            }
+        ],
+        "type": "GLOBAL_ON_FN"
+    }
+]

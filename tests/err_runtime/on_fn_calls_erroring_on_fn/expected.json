@@ -1,1 +1,29 @@
-[{"type":"GLOBAL_ON_FN","name":"on_a","statements":[{"type":"CALL_STATEMENT","name":"call_on_b_fn"},{"type":"CALL_STATEMENT","name":"nothing"}]},{"type":"GLOBAL_EMPTY_LINE"},{"type":"GLOBAL_ON_FN","name":"on_b","statements":[{"type":"CALL_STATEMENT","name":"cause_game_fn_error"}]}]
+[
+    {
+        "name": "on_a",
+        "statements": [
+            {
+                "name": "call_on_b_fn",
+                "type": "CALL_STATEMENT"
+            },
+            {
+                "name": "nothing",
+                "type": "CALL_STATEMENT"
+            }
+        ],
+        "type": "GLOBAL_ON_FN"
+    },
+    {
+        "type": "GLOBAL_EMPTY_LINE"
+    },
+    {
+        "name": "on_b",
+        "statements": [
+            {
+                "name": "cause_game_fn_error",
+                "type": "CALL_STATEMENT"
+            }
+        ],
+        "type": "GLOBAL_ON_FN"
+    }
+]

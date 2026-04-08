@@ -1,1 +1,11 @@
-[{"type":"GLOBAL_VARIABLE","name":"foo","variable_type":"string","assignment":{"type":"STRING_EXPR","str":"a\u0007b"}}]
+[
+    {
+        "assignment": {
+            "str": "a\u0007b",
+            "type": "STRING_EXPR"
+        },
+        "name": "foo",
+        "type": "GLOBAL_VARIABLE",
+        "variable_type": "string"
+    }
+]

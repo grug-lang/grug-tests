@@ -1,1 +1,12 @@
-[{"type":"GLOBAL_ON_FN","name":"on_a","statements":[{"type":"CALL_STATEMENT","name":"blocked_alrm"}]}]
+[
+    {
+        "name": "on_a",
+        "statements": [
+            {
+                "name": "blocked_alrm",
+                "type": "CALL_STATEMENT"
+            }
+        ],
+        "type": "GLOBAL_ON_FN"
+    }
+]

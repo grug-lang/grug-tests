@@ -65,30 +65,26 @@ jobs:
         if: matrix.sanitizer == 'valgrind'
         run: sudo apt-get update && sudo apt-get install -y valgrind
 
-      - name: Configure CMake
+      - name: Build and run tests (Debug + Release)
         run: |
-          CMAKE_FLAGS="-G Ninja"
-          if [ "${{ matrix.sanitizer }}" == "asan" ]; then
-            CMAKE_FLAGS="$CMAKE_FLAGS -DASAN=ON"
-          fi
-          cmake -S . -B ./build $CMAKE_FLAGS
-        env:
-          CC: ${{ matrix.compiler }}
+          for BUILD_TYPE in Debug Release; do
+            echo "=== Building $BUILD_TYPE ==="
+            CMAKE_FLAGS="-G Ninja -DCMAKE_BUILD_TYPE=$BUILD_TYPE"
+            if [ "${{ matrix.sanitizer }}" == "asan" ]; then
+              CMAKE_FLAGS="$CMAKE_FLAGS -DASAN=ON"
+            fi
+            cmake -S . -B ./build-$BUILD_TYPE $CMAKE_FLAGS
+            cmake --build ./build-$BUILD_TYPE
 
-      - name: Build smoke tests
-        run: cmake --build ./build
-        env:
-          CC: ${{ matrix.compiler }}
+            echo "=== Running tests ($BUILD_TYPE) ==="
+            TEST_EXE=$(find ./build-$BUILD_TYPE -type f \( -name "smoketest" -o -name "smoketest.exe" \) | head -n 1)
 
-      - name: Run smoke tests
-        run: |
-          TEST_EXE=$(find ./build -type f \( -name "smoketest" -o -name "smoketest.exe" \) | head -n 1)
-          
-          if [ "${{ matrix.sanitizer }}" == "valgrind" ]; then
-            valgrind "$TEST_EXE"
-          else
-            "$TEST_EXE"
-          fi
+            if [ "${{ matrix.sanitizer }}" == "valgrind" ]; then
+              valgrind "$TEST_EXE"
+            else
+              "$TEST_EXE"
+            fi
+          done
         env:
           CC: ${{ matrix.compiler }}
           ASAN: ${{ matrix.sanitizer == 'asan' && 1 || '' }}

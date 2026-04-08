@@ -92,7 +92,10 @@ static const char *get_type_name[] = {
 	\
 	if ((rsp & 0xf) != 0) {\
 		static char msg[] = "The stack was not 16-byte aligned!\n";\
+		_Pragma("GCC diagnostic push")\
+		_Pragma("GCC diagnostic ignored \"-Wunused-result\"")\
 		write(STDERR_FILENO, msg, sizeof(msg) - 1);\
+		_Pragma("GCC diagnostic pop")\
 		abort();\
 	}\
 } while (0)
@@ -104,7 +107,10 @@ static const char *get_type_name[] = {
 	\
 	if ((rsp & 0xf) != 0) {\
 		static char msg[] = "The stack was not 16-byte aligned!\n";\
+		_Pragma("GCC diagnostic push")\
+		_Pragma("GCC diagnostic ignored \"-Wunused-result\"")\
 		write(STDERR_FILENO, msg, sizeof(msg) - 1);\
+		_Pragma("GCC diagnostic pop")\
 		abort();\
 	}\
 } while (0)

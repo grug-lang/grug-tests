@@ -721,6 +721,9 @@ static void* load_sym(void *h, const char *name) {
 }
 
 static void load_tests_so(void) {
+    #ifndef BUILD_DIR
+    #define BUILD_DIR "./build"
+    #endif
 
 	#if defined(__linux__)
 	#define LIBNAME "libtests.so"
@@ -728,7 +731,7 @@ static void load_tests_so(void) {
 	#define LIBNAME "tests.dll"
 	#endif
 
-    DllLib h = load_library("./build/" LIBNAME);
+    DllLib h = load_library(BUILD_DIR "/" LIBNAME);
     assert(h && "Could not load shared library");
 
     #pragma GCC diagnostic push

@@ -722,7 +722,7 @@ static void* load_sym(void *h, const char *name) {
 
 static void load_tests_so(void) {
     #ifndef BUILD_DIR
-    #define BUILD_DIR "./build"
+    #define BUILD_DIR "build"
     #endif
 
 	#if defined(__linux__)
@@ -731,8 +731,12 @@ static void load_tests_so(void) {
 	#define LIBNAME "tests.dll"
 	#endif
 
-    DllLib h = load_library(BUILD_DIR "/" LIBNAME);
-    assert(h && "Could not load shared library");
+    const char *path = BUILD_DIR "/" LIBNAME;
+    DllLib h = load_library(path);
+    if (!h) {
+        fprintf(stderr, "Could not load shared library at %s", path);
+        exit(EXIT_FAILURE);
+    }
 
     #pragma GCC diagnostic push
     #pragma GCC diagnostic ignored "-Wpedantic"

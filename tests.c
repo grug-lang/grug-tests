@@ -1322,6 +1322,7 @@ static void reset(void) {
 	game_fn_draw_call_count = 0;
 	game_fn_blocked_alrm_call_count = 0;
 	game_fn_spawn_call_count = 0;
+	game_fn_spawn_d_call_count = 0;
 	game_fn_has_resource_call_count = 0;
 	game_fn_has_entity_call_count = 0;
 	game_fn_has_string_call_count = 0;
@@ -1340,6 +1341,7 @@ static void reset(void) {
 	game_fn_cause_game_fn_error_call_count = 0;
 	game_fn_call_on_b_fn_call_count = 0;
 	game_fn_store_call_count = 0;
+	game_fn_print_csv_call_count = 0;
 	game_fn_retrieve_call_count = 0;
 	game_fn_box_number_call_count = 0;
 }

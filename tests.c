@@ -993,8 +993,8 @@ static void print_string_debug(const char* str) {
 // https://blog.codinghorror.com/the-danger-of-naivete/
 #ifdef SHUFFLES
 #define SHUFFLE(arr, size, T) do {\
-	for (int i = size; i > 0; i--) {\
-		int n = rand() % i;\
+	for (size_t i = size; i > 0; i--) {\
+		size_t n = (size_t)rand() % i;\
 		\
 		T old = arr[i-1];\
 		arr[i-1] = arr[n];\

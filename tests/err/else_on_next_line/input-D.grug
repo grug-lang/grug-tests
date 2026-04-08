@@ -1,0 +1,6 @@
+on_a() {
+    if true {
+    }
+    else {
+    }
+}

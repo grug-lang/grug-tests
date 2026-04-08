@@ -1154,15 +1154,24 @@ static void free_directory_entries(char **filenames, size_t count) {
 static void run_single_test(struct grug_state *grug_state, const char *dir_path, const char *filename) {
     char grug_path[4096];
     int grug_len = snprintf(grug_path, sizeof(grug_path), "%s"SLASH"%s", dir_path, filename);
-    assert(grug_len >= 0 && (size_t)grug_len < sizeof(grug_path));
+    if (grug_len < 0 || (size_t)grug_len >= sizeof(grug_path)) {
+		fprintf(stderr, "Error: Filling grug_path failed\n");
+		exit(EXIT_FAILURE);
+	}
 
     // This version does not have the tests/ prefix
     char relative_path[4096];
     int rel_len = snprintf(relative_path, sizeof(relative_path), "err_spaces"SLASH"%s", filename);
-    assert(rel_len >= 0 && (size_t)rel_len < sizeof(relative_path));
+    if (rel_len < 0 || (size_t)rel_len >= sizeof(relative_path)) {
+		fprintf(stderr, "Error: Filling relative_path failed\n");
+		exit(EXIT_FAILURE);
+	}
 
     struct stat st;
-    assert(stat(grug_path, &st) == 0);
+    if (stat(grug_path, &st) < 0) {
+		perror("stat");
+		exit(EXIT_FAILURE);
+	}
 
     // Skip non-regular files (like directories, "." or "..")
     if (!S_ISREG(st.st_mode)) {
@@ -1183,7 +1192,10 @@ static void run_single_test(struct grug_state *grug_state, const char *dir_path,
 static void run_err_spaces_tests(struct grug_state *grug_state) {
     char dir_path[4096];
     int dir_len = snprintf(dir_path, sizeof(dir_path), "%s"SLASH"err_spaces", tests_dir_path);
-    assert(dir_len >= 0 && (size_t)dir_len < sizeof(dir_path));
+    if (dir_len < 0 || (size_t)dir_len >= sizeof(dir_path)) {
+		fprintf(stderr, "Error: Filling dir_path failed\n");
+		exit(EXIT_FAILURE);
+	}
 
     char **filenames = NULL;
     size_t count = 0;

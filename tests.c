@@ -204,10 +204,10 @@ static size_t game_fn_box_number_call_count;
 
 static bool had_runtime_error = false;
 static size_t error_handler_call_count = 0;
-static const char *runtime_error_reason = NULL;
+static char runtime_error_reason[256];
 static enum grug_runtime_error_type runtime_error_type = 0;
-static const char *runtime_error_on_fn_name = NULL;
-static const char *runtime_error_on_fn_path = NULL;
+static char runtime_error_on_fn_name[256];
+static char runtime_error_on_fn_path[256];
 
 static bool streq(const char *a, const char *b) {
 	return strcmp(a, b) == 0;
@@ -272,13 +272,13 @@ union grug_value game_fn_max(struct grug_state* grug_state, const union grug_val
 
 	return args[0]._number > args[1]._number ? args[0] : args[1];
 }
-static const char *game_fn_say_message;
+static char game_fn_say_message[256];
 union grug_value game_fn_say(struct grug_state* grug_state, const union grug_value args[]) {
 	(void)(grug_state);
 	ASSERT_16_BYTE_STACK_ALIGNED();
 	game_fn_say_call_count++;
 
-	game_fn_say_message = strdup(args[0]._string);
+	strcpy(game_fn_say_message, args[0]._string);
 	return (union grug_value) {0};
 }
 static double game_fn_sin_x;
@@ -314,7 +314,7 @@ static double game_fn_mega_f6;
 static double game_fn_mega_f7;
 static double game_fn_mega_f8;
 static uint64_t game_fn_mega_id;
-static const char *game_fn_mega_str;
+static char game_fn_mega_str[256];
 union grug_value game_fn_mega(struct grug_state* grug_state, const union grug_value args[]) {
 	(void)(grug_state);
 	ASSERT_16_BYTE_STACK_ALIGNED();
@@ -333,7 +333,7 @@ union grug_value game_fn_mega(struct grug_state* grug_state, const union grug_va
 	game_fn_mega_f7 = args[10]._number;
 	game_fn_mega_f8 = args[11]._number;
 	game_fn_mega_id = args[12]._id;
-	game_fn_mega_str = strdup(args[13]._string);
+	strcpy(game_fn_mega_str, args[13]._string);
 	return (union grug_value) {0};
 }
 union grug_value game_fn_get_false(struct grug_state* grug_state, const union grug_value args[]) {
@@ -399,12 +399,12 @@ union grug_value game_fn_mega_i32(struct grug_state* grug_state, const union gru
 	game_fn_mega_i32_i7 = args[6]._number;
 	return (union grug_value) {0};
 }
-static const char *game_fn_draw_sprite_path;
+static char game_fn_draw_sprite_path[256];
 union grug_value game_fn_draw(struct grug_state* grug_state, const union grug_value args[]) {
 	(void)(grug_state);
 	ASSERT_16_BYTE_STACK_ALIGNED();
 	game_fn_draw_call_count++;
-	game_fn_draw_sprite_path = strdup(args[0]._string);
+	strcpy(game_fn_draw_sprite_path, args[0]._string);
 	return (union grug_value) {0};
 }
 union grug_value game_fn_blocked_alrm(struct grug_state* grug_state, const union grug_value args[]) {
@@ -414,42 +414,42 @@ union grug_value game_fn_blocked_alrm(struct grug_state* grug_state, const union
 	game_fn_blocked_alrm_call_count++;
 	return (union grug_value) {0};
 }
-static const char *game_fn_spawn_name;
+static char game_fn_spawn_name[256];
 union grug_value game_fn_spawn(struct grug_state* grug_state, const union grug_value args[]) {
 	(void)(grug_state);
 	ASSERT_16_BYTE_STACK_ALIGNED();
 	game_fn_spawn_call_count++;
 
-	game_fn_spawn_name = strdup(args[0]._string);
+	strcpy(game_fn_spawn_name, args[0]._string);
 	return (union grug_value) {0};
 }
-static const char *game_fn_has_resource_path;
+static char game_fn_has_resource_path[256];
 union grug_value game_fn_has_resource(struct grug_state* grug_state, const union grug_value args[]) {
 	(void)(grug_state);
 	ASSERT_16_BYTE_STACK_ALIGNED();
 	game_fn_has_resource_call_count++;
 
-	game_fn_has_resource_path = strdup(args[0]._string);
+	strcpy(game_fn_has_resource_path, args[0]._string);
 
 	return grug_bool(true);
 }
-static const char *game_fn_has_entity_name;
+static char game_fn_has_entity_name[256];
 union grug_value game_fn_has_entity(struct grug_state* grug_state, const union grug_value args[]) {
 	(void)(grug_state);
 	ASSERT_16_BYTE_STACK_ALIGNED();
 	game_fn_has_entity_call_count++;
 
-	game_fn_has_entity_name = strdup(args[0]._string);
+	strcpy(game_fn_has_entity_name, args[0]._string);
 
 	return grug_bool(true);
 }
-static const char *game_fn_has_string_str;
+static char game_fn_has_string_str[256];
 union grug_value game_fn_has_string(struct grug_state* grug_state, const union grug_value args[]) {
 	(void)(grug_state);
 	ASSERT_16_BYTE_STACK_ALIGNED();
 	game_fn_has_string_call_count++;
 
-	game_fn_has_string_str = strdup(args[0]._string);
+	strcpy(game_fn_has_string_str, args[0]._string);
 
 	return grug_bool(true);
 }
@@ -571,21 +571,21 @@ union grug_value game_fn_motherload_subless(struct grug_state* grug_state, const
 	game_fn_motherload_subless_f10 = args[17]._number;
 	return (union grug_value) {0};
 }
-static const char *game_fn_offset_32_bit_f32_s1;
-static const char *game_fn_offset_32_bit_f32_s2;
-static const char *game_fn_offset_32_bit_f32_s3;
-static const char *game_fn_offset_32_bit_f32_s4;
-static const char *game_fn_offset_32_bit_f32_s5;
-static const char *game_fn_offset_32_bit_f32_s6;
-static const char *game_fn_offset_32_bit_f32_s7;
-static const char *game_fn_offset_32_bit_f32_s8;
-static const char *game_fn_offset_32_bit_f32_s9;
-static const char *game_fn_offset_32_bit_f32_s10;
-static const char *game_fn_offset_32_bit_f32_s11;
-static const char *game_fn_offset_32_bit_f32_s12;
-static const char *game_fn_offset_32_bit_f32_s13;
-static const char *game_fn_offset_32_bit_f32_s14;
-static const char *game_fn_offset_32_bit_f32_s15;
+static char game_fn_offset_32_bit_f32_s1[256];
+static char game_fn_offset_32_bit_f32_s2[256];
+static char game_fn_offset_32_bit_f32_s3[256];
+static char game_fn_offset_32_bit_f32_s4[256];
+static char game_fn_offset_32_bit_f32_s5[256];
+static char game_fn_offset_32_bit_f32_s6[256];
+static char game_fn_offset_32_bit_f32_s7[256];
+static char game_fn_offset_32_bit_f32_s8[256];
+static char game_fn_offset_32_bit_f32_s9[256];
+static char game_fn_offset_32_bit_f32_s10[256];
+static char game_fn_offset_32_bit_f32_s11[256];
+static char game_fn_offset_32_bit_f32_s12[256];
+static char game_fn_offset_32_bit_f32_s13[256];
+static char game_fn_offset_32_bit_f32_s14[256];
+static char game_fn_offset_32_bit_f32_s15[256];
 static double game_fn_offset_32_bit_f32_f1;
 static double game_fn_offset_32_bit_f32_f2;
 static double game_fn_offset_32_bit_f32_f3;
@@ -600,21 +600,21 @@ union grug_value game_fn_offset_32_bit_f32(struct grug_state* grug_state, const 
 	ASSERT_16_BYTE_STACK_ALIGNED();
 	game_fn_offset_32_bit_f32_call_count++;
 
-	game_fn_offset_32_bit_f32_s1 = strdup(args[0]._string);
-	game_fn_offset_32_bit_f32_s2 = strdup(args[1]._string);
-	game_fn_offset_32_bit_f32_s3 = strdup(args[2]._string);
-	game_fn_offset_32_bit_f32_s4 = strdup(args[3]._string);
-	game_fn_offset_32_bit_f32_s5 = strdup(args[4]._string);
-	game_fn_offset_32_bit_f32_s6 = strdup(args[5]._string);
-	game_fn_offset_32_bit_f32_s7 = strdup(args[6]._string);
-	game_fn_offset_32_bit_f32_s8 = strdup(args[7]._string);
-	game_fn_offset_32_bit_f32_s9 = strdup(args[8]._string);
-	game_fn_offset_32_bit_f32_s10 = strdup(args[9]._string);
-	game_fn_offset_32_bit_f32_s11 = strdup(args[10]._string);
-	game_fn_offset_32_bit_f32_s12 = strdup(args[11]._string);
-	game_fn_offset_32_bit_f32_s13 = strdup(args[12]._string);
-	game_fn_offset_32_bit_f32_s14 = strdup(args[13]._string);
-	game_fn_offset_32_bit_f32_s15 = strdup(args[14]._string);
+	strcpy(game_fn_offset_32_bit_f32_s1, args[0]._string);
+	strcpy(game_fn_offset_32_bit_f32_s2, args[1]._string);
+	strcpy(game_fn_offset_32_bit_f32_s3, args[2]._string);
+	strcpy(game_fn_offset_32_bit_f32_s4, args[3]._string);
+	strcpy(game_fn_offset_32_bit_f32_s5, args[4]._string);
+	strcpy(game_fn_offset_32_bit_f32_s6, args[5]._string);
+	strcpy(game_fn_offset_32_bit_f32_s7, args[6]._string);
+	strcpy(game_fn_offset_32_bit_f32_s8, args[7]._string);
+	strcpy(game_fn_offset_32_bit_f32_s9, args[8]._string);
+	strcpy(game_fn_offset_32_bit_f32_s10, args[9]._string);
+	strcpy(game_fn_offset_32_bit_f32_s11, args[10]._string);
+	strcpy(game_fn_offset_32_bit_f32_s12, args[11]._string);
+	strcpy(game_fn_offset_32_bit_f32_s13, args[12]._string);
+	strcpy(game_fn_offset_32_bit_f32_s14, args[13]._string);
+	strcpy(game_fn_offset_32_bit_f32_s15, args[14]._string);
 	game_fn_offset_32_bit_f32_f1 = args[15]._number;
 	game_fn_offset_32_bit_f32_f2 = args[16]._number;
 	game_fn_offset_32_bit_f32_f3 = args[17]._number;
@@ -735,11 +735,11 @@ static double game_fn_offset_32_bit_string_f27;
 static double game_fn_offset_32_bit_string_f28;
 static double game_fn_offset_32_bit_string_f29;
 static double game_fn_offset_32_bit_string_f30;
-static const char *game_fn_offset_32_bit_string_s1;
-static const char *game_fn_offset_32_bit_string_s2;
-static const char *game_fn_offset_32_bit_string_s3;
-static const char *game_fn_offset_32_bit_string_s4;
-static const char *game_fn_offset_32_bit_string_s5;
+static char game_fn_offset_32_bit_string_s1[256];
+static char game_fn_offset_32_bit_string_s2[256];
+static char game_fn_offset_32_bit_string_s3[256];
+static char game_fn_offset_32_bit_string_s4[256];
+static char game_fn_offset_32_bit_string_s5[256];
 static double game_fn_offset_32_bit_string_g;
 union grug_value game_fn_offset_32_bit_string(struct grug_state* grug_state, const union grug_value args[]) {
 	(void)(grug_state);
@@ -776,27 +776,27 @@ union grug_value game_fn_offset_32_bit_string(struct grug_state* grug_state, con
 	game_fn_offset_32_bit_string_f28 = args[27]._number;
 	game_fn_offset_32_bit_string_f29 = args[28]._number;
 	game_fn_offset_32_bit_string_f30 = args[29]._number;
-	game_fn_offset_32_bit_string_s1 = strdup(args[30]._string);
-	game_fn_offset_32_bit_string_s2 = strdup(args[31]._string);
-	game_fn_offset_32_bit_string_s3 = strdup(args[32]._string);
-	game_fn_offset_32_bit_string_s4 = strdup(args[33]._string);
-	game_fn_offset_32_bit_string_s5 = strdup(args[34]._string);
+	strcpy(game_fn_offset_32_bit_string_s1, args[30]._string);
+	strcpy(game_fn_offset_32_bit_string_s2, args[31]._string);
+	strcpy(game_fn_offset_32_bit_string_s3, args[32]._string);
+	strcpy(game_fn_offset_32_bit_string_s4, args[33]._string);
+	strcpy(game_fn_offset_32_bit_string_s5, args[34]._string);
 	game_fn_offset_32_bit_string_g = args[35]._number;
 	return (union grug_value) {0};
 }
-static const char *game_fn_talk_message1;
-static const char *game_fn_talk_message2;
-static const char *game_fn_talk_message3;
-static const char *game_fn_talk_message4;
+static char game_fn_talk_message1[256];
+static char game_fn_talk_message2[256];
+static char game_fn_talk_message3[256];
+static char game_fn_talk_message4[256];
 union grug_value game_fn_talk(struct grug_state* grug_state, const union grug_value args[]) {
 	(void)(grug_state);
 	ASSERT_16_BYTE_STACK_ALIGNED();
 	game_fn_talk_call_count++;
 
-	game_fn_talk_message1 = strdup(args[0]._string);
-	game_fn_talk_message2 = strdup(args[1]._string);
-	game_fn_talk_message3 = strdup(args[2]._string);
-	game_fn_talk_message4 = strdup(args[3]._string);
+	strcpy(game_fn_talk_message1, args[0]._string);
+	strcpy(game_fn_talk_message2, args[1]._string);
+	strcpy(game_fn_talk_message3, args[2]._string);
+	strcpy(game_fn_talk_message4, args[3]._string);
 	return (union grug_value) {0};
 }
 union grug_value game_fn_get_position(struct grug_state* grug_state, const union grug_value args[]) {
@@ -857,46 +857,6 @@ union grug_value game_fn_box_number(struct grug_state* grug_state, const union g
 	game_fn_box_number_call_count++;
 
 	return grug_id((uint64_t)args[0]._number);
-}
-
-static void reset_call_counts(void) {
-	game_fn_nothing_call_count = 0;
-	game_fn_magic_call_count = 0;
-	game_fn_initialize_call_count = 0;
-	game_fn_initialize_bool_call_count = 0;
-	game_fn_identity_call_count = 0;
-	game_fn_max_call_count = 0;
-	game_fn_say_call_count = 0;
-	game_fn_sin_call_count = 0;
-	game_fn_cos_call_count = 0;
-	game_fn_mega_call_count = 0;
-	game_fn_get_false_call_count = 0;
-	game_fn_set_is_happy_call_count = 0;
-	game_fn_mega_f32_call_count = 0;
-	game_fn_mega_i32_call_count = 0;
-	game_fn_draw_call_count = 0;
-	game_fn_blocked_alrm_call_count = 0;
-	game_fn_spawn_call_count = 0;
-	game_fn_has_resource_call_count = 0;
-	game_fn_has_entity_call_count = 0;
-	game_fn_has_string_call_count = 0;
-	game_fn_get_opponent_call_count = 0;
-	game_fn_get_os_call_count = 0;
-	game_fn_set_d_call_count = 0;
-	game_fn_set_opponent_call_count = 0;
-	game_fn_motherload_call_count = 0;
-	game_fn_motherload_subless_call_count = 0;
-	game_fn_offset_32_bit_f32_call_count = 0;
-	game_fn_offset_32_bit_i32_call_count = 0;
-	game_fn_offset_32_bit_string_call_count = 0;
-	game_fn_talk_call_count = 0;
-	game_fn_get_position_call_count = 0;
-	game_fn_set_position_call_count = 0;
-	game_fn_cause_game_fn_error_call_count = 0;
-	game_fn_call_on_b_fn_call_count = 0;
-	game_fn_store_call_count = 0;
-	game_fn_retrieve_call_count = 0;
-	game_fn_box_number_call_count = 0;
 }
 
 static void check(int status, const char *fn_name, const char *msg) {
@@ -1189,19 +1149,50 @@ static void diff_roundtrip(
 	}
 }
 
-static void reset_runtime_error_data(void) {
-	runtime_error_reason = NULL;
+static void reset(void) {
 	had_runtime_error = false;
 	error_handler_call_count = 0;
 	runtime_error_type = 0;
-	runtime_error_on_fn_name = NULL;
-	runtime_error_on_fn_path = NULL;
+	game_fn_nothing_call_count = 0;
+	game_fn_magic_call_count = 0;
+	game_fn_initialize_call_count = 0;
+	game_fn_initialize_bool_call_count = 0;
+	game_fn_identity_call_count = 0;
+	game_fn_max_call_count = 0;
+	game_fn_say_call_count = 0;
+	game_fn_sin_call_count = 0;
+	game_fn_cos_call_count = 0;
+	game_fn_mega_call_count = 0;
+	game_fn_get_false_call_count = 0;
+	game_fn_set_is_happy_call_count = 0;
+	game_fn_mega_f32_call_count = 0;
+	game_fn_mega_i32_call_count = 0;
+	game_fn_draw_call_count = 0;
+	game_fn_blocked_alrm_call_count = 0;
+	game_fn_spawn_call_count = 0;
+	game_fn_has_resource_call_count = 0;
+	game_fn_has_entity_call_count = 0;
+	game_fn_has_string_call_count = 0;
+	game_fn_get_opponent_call_count = 0;
+	game_fn_get_os_call_count = 0;
+	game_fn_set_d_call_count = 0;
+	game_fn_set_opponent_call_count = 0;
+	game_fn_motherload_call_count = 0;
+	game_fn_motherload_subless_call_count = 0;
+	game_fn_offset_32_bit_f32_call_count = 0;
+	game_fn_offset_32_bit_i32_call_count = 0;
+	game_fn_offset_32_bit_string_call_count = 0;
+	game_fn_talk_call_count = 0;
+	game_fn_get_position_call_count = 0;
+	game_fn_set_position_call_count = 0;
+	game_fn_cause_game_fn_error_call_count = 0;
+	game_fn_call_on_b_fn_call_count = 0;
+	game_fn_store_call_count = 0;
+	game_fn_retrieve_call_count = 0;
+	game_fn_box_number_call_count = 0;
 }
 
 static void* prologue(void* grug_state, const char *grug_path, const char *results_path) {
-	reset_call_counts();
-	reset_runtime_error_data();
-
 	rm_rf(results_path);
 	make_results_dir(results_path);
 
@@ -3026,10 +3017,10 @@ void grug_tests_runtime_error_handler(const char *reason, enum grug_runtime_erro
 	had_runtime_error = true;
 	error_handler_call_count++;
 
-	runtime_error_reason = strdup(reason);
+	strcpy(runtime_error_reason, reason);
 	runtime_error_type = type;
-	runtime_error_on_fn_name = strdup(on_fn_name);
-	runtime_error_on_fn_path = strdup(on_fn_path);
+	strcpy(runtime_error_on_fn_name, on_fn_name);
+	strcpy(runtime_error_on_fn_path, on_fn_path);
 }
 
 static void runtime_error_all(void* grug_state, void* file_id) {
@@ -3690,6 +3681,7 @@ void grug_tests_run(
 		struct ok_test_data* fn_data = &ok_test_datas[i];
 
 		printf("Running tests/ok/%s...\n", fn_data->test_name_str);
+		reset();
 
 		void* file_id = prologue(grug_state, fn_data->grug_path, fn_data->results_path);
 
@@ -3705,7 +3697,7 @@ void grug_tests_run(
 		struct ok_test_data* fn_data = &ok_test_datas[i];
 
 		printf("Rerunning tests/ok/%s...\n", fn_data->test_name_str);
-		reset_call_counts();
+		reset();
 
 		init_globals(grug_state, fn_data->file_id);
 		current_file_id = fn_data->file_id;
@@ -3716,6 +3708,7 @@ void grug_tests_run(
 		struct runtime_error_test_data* fn_data = &runtime_error_test_datas[i];
 
 		printf("Running tests/err_runtime/%s...\n", fn_data->test_name_str);
+		reset();
 
 		void* file_id = prologue(grug_state, fn_data->grug_path, fn_data->results_path);
 
@@ -3744,8 +3737,7 @@ void grug_tests_run(
 		struct runtime_error_test_data* fn_data = &runtime_error_test_datas[i];
 
 		printf("Rerunning tests/err_runtime/%s...\n", fn_data->test_name_str);
-		reset_call_counts();
-		reset_runtime_error_data();
+		reset();
 
 		init_globals(grug_state, fn_data->file_id);
 		current_file_id = fn_data->file_id;

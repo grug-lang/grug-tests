@@ -82,11 +82,11 @@ jobs:
             echo "BUILD_DIR=$BUILD_DIR" >> $GITHUB_ENV  # set as environment variable for CMake
 
             CMAKE_FLAGS="-G Ninja -DCMAKE_BUILD_TYPE=$BUILD_TYPE"
-            cmake -S . -B ./$BUILD_DIR $CMAKE_FLAGS
-            cmake --build ./$BUILD_DIR
+            cmake -S . -B $BUILD_DIR $CMAKE_FLAGS
+            cmake --build $BUILD_DIR
 
             echo "=== Running tests ($BUILD_TYPE) ==="
-            TEST_EXE=$(find ./$BUILD_DIR -type f \( -name "smoketest" -o -name "smoketest.exe" \) | head -n 1)
+            TEST_EXE=$(find $BUILD_DIR -type f \( -name "smoketest" -o -name "smoketest.exe" \) | head -n 1)
 
             if [ ! -z "$VALGRIND" ]; then
               valgrind "$TEST_EXE"

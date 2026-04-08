@@ -5,7 +5,6 @@ project(grug C)
 # Compiler selection
 # -----------------------------
 # Respect CC if provided, default to clang
-
 if(NOT CMAKE_C_COMPILER)
     set(CMAKE_C_COMPILER clang CACHE STRING "" FORCE)
 endif()
@@ -66,6 +65,13 @@ if(DEFINED ENV{SHUFFLES})
     add_compile_definitions(SHUFFLES=$ENV{SHUFFLES})
 endif()
 
+# BUILD_DIR
+if(DEFINED ENV{BUILD_DIR})
+    # Quote the string so C sees it as a literal
+    message(STATUS "BUILD_DIR=\"$ENV{BUILD_DIR}\" was passed")
+    add_compile_definitions(BUILD_DIR="\"$ENV{BUILD_DIR}\"")
+endif()
+
 # VALGRIND (runtime only, informational)
 if(DEFINED ENV{VALGRIND})
     message(STATUS "VALGRIND was turned on")
@@ -91,7 +97,7 @@ set_target_properties(tests PROPERTIES
     POSITION_INDEPENDENT_CODE ON
 )
 if (DEFINED WIN32) 
-	set_target_properties(tests PROPERTIES PREFIX "")
+    set_target_properties(tests PROPERTIES PREFIX "")
 endif()
 
 target_link_libraries(tests

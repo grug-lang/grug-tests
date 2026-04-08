@@ -1,1 +1,50 @@
-[{"type":"GLOBAL_ON_FN","name":"on_a","statements":[{"type":"CALL_STATEMENT","name":"nothing"},{"type":"CALL_STATEMENT","name":"magic"},{"type":"CALL_STATEMENT","name":"initialize","arguments":[{"type":"NUMBER_EXPR","value":"42"}]},{"type":"CALL_STATEMENT","name":"identity","arguments":[{"type":"NUMBER_EXPR","value":"69"}]},{"type":"CALL_STATEMENT","name":"max","arguments":[{"type":"NUMBER_EXPR","value":"1337"},{"type":"NUMBER_EXPR","value":"8192"}]}]}]
+[
+    {
+        "name": "on_a",
+        "statements": [
+            {
+                "name": "nothing",
+                "type": "CALL_STATEMENT"
+            },
+            {
+                "name": "magic",
+                "type": "CALL_STATEMENT"
+            },
+            {
+                "arguments": [
+                    {
+                        "type": "NUMBER_EXPR",
+                        "value": "42"
+                    }
+                ],
+                "name": "initialize",
+                "type": "CALL_STATEMENT"
+            },
+            {
+                "arguments": [
+                    {
+                        "type": "NUMBER_EXPR",
+                        "value": "69"
+                    }
+                ],
+                "name": "identity",
+                "type": "CALL_STATEMENT"
+            },
+            {
+                "arguments": [
+                    {
+                        "type": "NUMBER_EXPR",
+                        "value": "1337"
+                    },
+                    {
+                        "type": "NUMBER_EXPR",
+                        "value": "8192"
+                    }
+                ],
+                "name": "max",
+                "type": "CALL_STATEMENT"
+            }
+        ],
+        "type": "GLOBAL_ON_FN"
+    }
+]

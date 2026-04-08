@@ -1,1 +1,34 @@
-[{"type":"GLOBAL_VARIABLE","name":"foo","variable_type":"number","assignment":{"type":"UNARY_EXPR","operator":"MINUS_TOKEN","expr":{"type":"NUMBER_EXPR","value":"2"}}},{"type":"GLOBAL_EMPTY_LINE"},{"type":"GLOBAL_ON_FN","name":"on_a","statements":[{"type":"CALL_STATEMENT","name":"initialize","arguments":[{"type":"IDENTIFIER_EXPR","str":"foo"}]}]}]
+[
+    {
+        "assignment": {
+            "expr": {
+                "type": "NUMBER_EXPR",
+                "value": "2"
+            },
+            "operator": "MINUS_TOKEN",
+            "type": "UNARY_EXPR"
+        },
+        "name": "foo",
+        "type": "GLOBAL_VARIABLE",
+        "variable_type": "number"
+    },
+    {
+        "type": "GLOBAL_EMPTY_LINE"
+    },
+    {
+        "name": "on_a",
+        "statements": [
+            {
+                "arguments": [
+                    {
+                        "str": "foo",
+                        "type": "IDENTIFIER_EXPR"
+                    }
+                ],
+                "name": "initialize",
+                "type": "CALL_STATEMENT"
+            }
+        ],
+        "type": "GLOBAL_ON_FN"
+    }
+]

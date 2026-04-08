@@ -1,1 +1,11 @@
-[{"type":"GLOBAL_ON_FN","name":"on_a","statements":[{"type":"RETURN_STATEMENT"}]}]
+[
+    {
+        "name": "on_a",
+        "statements": [
+            {
+                "type": "RETURN_STATEMENT"
+            }
+        ],
+        "type": "GLOBAL_ON_FN"
+    }
+]

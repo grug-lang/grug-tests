@@ -1,1 +1,27 @@
-[{"type":"GLOBAL_ON_FN","name":"on_a","statements":[{"type":"VARIABLE_STATEMENT","name":"foo","variable_type":"id","assignment":{"type":"CALL_EXPR","name":"retrieve"}},{"type":"CALL_STATEMENT","name":"store","arguments":[{"type":"IDENTIFIER_EXPR","str":"foo"}]}]}]
+[
+    {
+        "name": "on_a",
+        "statements": [
+            {
+                "assignment": {
+                    "name": "retrieve",
+                    "type": "CALL_EXPR"
+                },
+                "name": "foo",
+                "type": "VARIABLE_STATEMENT",
+                "variable_type": "id"
+            },
+            {
+                "arguments": [
+                    {
+                        "str": "foo",
+                        "type": "IDENTIFIER_EXPR"
+                    }
+                ],
+                "name": "store",
+                "type": "CALL_STATEMENT"
+            }
+        ],
+        "type": "GLOBAL_ON_FN"
+    }
+]

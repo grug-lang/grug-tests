@@ -1,1 +1,36 @@
-[{"type":"GLOBAL_VARIABLE","name":"pos","variable_type":"Position","assignment":{"type":"CALL_EXPR","name":"get_position","arguments":[{"type":"IDENTIFIER_EXPR","str":"me"}]}},{"type":"GLOBAL_EMPTY_LINE"},{"type":"GLOBAL_ON_FN","name":"on_a","statements":[{"type":"CALL_STATEMENT","name":"set_position","arguments":[{"type":"IDENTIFIER_EXPR","str":"pos"}]}]}]
+[
+    {
+        "assignment": {
+            "arguments": [
+                {
+                    "str": "me",
+                    "type": "IDENTIFIER_EXPR"
+                }
+            ],
+            "name": "get_position",
+            "type": "CALL_EXPR"
+        },
+        "name": "pos",
+        "type": "GLOBAL_VARIABLE",
+        "variable_type": "Position"
+    },
+    {
+        "type": "GLOBAL_EMPTY_LINE"
+    },
+    {
+        "name": "on_a",
+        "statements": [
+            {
+                "arguments": [
+                    {
+                        "str": "pos",
+                        "type": "IDENTIFIER_EXPR"
+                    }
+                ],
+                "name": "set_position",
+                "type": "CALL_STATEMENT"
+            }
+        ],
+        "type": "GLOBAL_ON_FN"
+    }
+]

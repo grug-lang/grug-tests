@@ -1,1 +1,146 @@
-[{"type":"GLOBAL_VARIABLE","name":"v1","variable_type":"Opponent","assignment":{"type":"CALL_EXPR","name":"get_opponent"}},{"type":"GLOBAL_VARIABLE","name":"v2","variable_type":"Opponent","assignment":{"type":"CALL_EXPR","name":"get_opponent"}},{"type":"GLOBAL_VARIABLE","name":"v3","variable_type":"Opponent","assignment":{"type":"CALL_EXPR","name":"get_opponent"}},{"type":"GLOBAL_VARIABLE","name":"v4","variable_type":"Opponent","assignment":{"type":"CALL_EXPR","name":"get_opponent"}},{"type":"GLOBAL_VARIABLE","name":"v5","variable_type":"Opponent","assignment":{"type":"CALL_EXPR","name":"get_opponent"}},{"type":"GLOBAL_VARIABLE","name":"v6","variable_type":"Opponent","assignment":{"type":"CALL_EXPR","name":"get_opponent"}},{"type":"GLOBAL_VARIABLE","name":"v7","variable_type":"Opponent","assignment":{"type":"CALL_EXPR","name":"get_opponent"}},{"type":"GLOBAL_VARIABLE","name":"v8","variable_type":"Opponent","assignment":{"type":"CALL_EXPR","name":"get_opponent"}},{"type":"GLOBAL_VARIABLE","name":"v9","variable_type":"Opponent","assignment":{"type":"CALL_EXPR","name":"get_opponent"}},{"type":"GLOBAL_VARIABLE","name":"v10","variable_type":"Opponent","assignment":{"type":"CALL_EXPR","name":"get_opponent"}},{"type":"GLOBAL_VARIABLE","name":"v11","variable_type":"Opponent","assignment":{"type":"CALL_EXPR","name":"get_opponent"}},{"type":"GLOBAL_VARIABLE","name":"v12","variable_type":"Opponent","assignment":{"type":"CALL_EXPR","name":"get_opponent"}},{"type":"GLOBAL_VARIABLE","name":"v13","variable_type":"Opponent","assignment":{"type":"CALL_EXPR","name":"get_opponent"}},{"type":"GLOBAL_VARIABLE","name":"v14","variable_type":"Opponent","assignment":{"type":"CALL_EXPR","name":"get_opponent"}},{"type":"GLOBAL_VARIABLE","name":"v15","variable_type":"Opponent","assignment":{"type":"CALL_EXPR","name":"get_opponent"}},{"type":"GLOBAL_VARIABLE","name":"v16","variable_type":"Opponent","assignment":{"type":"CALL_EXPR","name":"get_opponent"}}]
+[
+    {
+        "assignment": {
+            "name": "get_opponent",
+            "type": "CALL_EXPR"
+        },
+        "name": "v1",
+        "type": "GLOBAL_VARIABLE",
+        "variable_type": "Opponent"
+    },
+    {
+        "assignment": {
+            "name": "get_opponent",
+            "type": "CALL_EXPR"
+        },
+        "name": "v2",
+        "type": "GLOBAL_VARIABLE",
+        "variable_type": "Opponent"
+    },
+    {
+        "assignment": {
+            "name": "get_opponent",
+            "type": "CALL_EXPR"
+        },
+        "name": "v3",
+        "type": "GLOBAL_VARIABLE",
+        "variable_type": "Opponent"
+    },
+    {
+        "assignment": {
+            "name": "get_opponent",
+            "type": "CALL_EXPR"
+        },
+        "name": "v4",
+        "type": "GLOBAL_VARIABLE",
+        "variable_type": "Opponent"
+    },
+    {
+        "assignment": {
+            "name": "get_opponent",
+            "type": "CALL_EXPR"
+        },
+        "name": "v5",
+        "type": "GLOBAL_VARIABLE",
+        "variable_type": "Opponent"
+    },
+    {
+        "assignment": {
+            "name": "get_opponent",
+            "type": "CALL_EXPR"
+        },
+        "name": "v6",
+        "type": "GLOBAL_VARIABLE",
+        "variable_type": "Opponent"
+    },
+    {
+        "assignment": {
+            "name": "get_opponent",
+            "type": "CALL_EXPR"
+        },
+        "name": "v7",
+        "type": "GLOBAL_VARIABLE",
+        "variable_type": "Opponent"
+    },
+    {
+        "assignment": {
+            "name": "get_opponent",
+            "type": "CALL_EXPR"
+        },
+        "name": "v8",
+        "type": "GLOBAL_VARIABLE",
+        "variable_type": "Opponent"
+    },
+    {
+        "assignment": {
+            "name": "get_opponent",
+            "type": "CALL_EXPR"
+        },
+        "name": "v9",
+        "type": "GLOBAL_VARIABLE",
+        "variable_type": "Opponent"
+    },
+    {
+        "assignment": {
+            "name": "get_opponent",
+            "type": "CALL_EXPR"
+        },
+        "name": "v10",
+        "type": "GLOBAL_VARIABLE",
+        "variable_type": "Opponent"
+    },
+    {
+        "assignment": {
+            "name": "get_opponent",
+            "type": "CALL_EXPR"
+        },
+        "name": "v11",
+        "type": "GLOBAL_VARIABLE",
+        "variable_type": "Opponent"
+    },
+    {
+        "assignment": {
+            "name": "get_opponent",
+            "type": "CALL_EXPR"
+        },
+        "name": "v12",
+        "type": "GLOBAL_VARIABLE",
+        "variable_type": "Opponent"
+    },
+    {
+        "assignment": {
+            "name": "get_opponent",
+            "type": "CALL_EXPR"
+        },
+        "name": "v13",
+        "type": "GLOBAL_VARIABLE",
+        "variable_type": "Opponent"
+    },
+    {
+        "assignment": {
+            "name": "get_opponent",
+            "type": "CALL_EXPR"
+        },
+        "name": "v14",
+        "type": "GLOBAL_VARIABLE",
+        "variable_type": "Opponent"
+    },
+    {
+        "assignment": {
+            "name": "get_opponent",
+            "type": "CALL_EXPR"
+        },
+        "name": "v15",
+        "type": "GLOBAL_VARIABLE",
+        "variable_type": "Opponent"
+    },
+    {
+        "assignment": {
+            "name": "get_opponent",
+            "type": "CALL_EXPR"
+        },
+        "name": "v16",
+        "type": "GLOBAL_VARIABLE",
+        "variable_type": "Opponent"
+    }
+]

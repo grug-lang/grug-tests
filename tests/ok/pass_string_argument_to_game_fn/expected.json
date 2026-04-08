@@ -1,1 +1,18 @@
-[{"type":"GLOBAL_ON_FN","name":"on_a","statements":[{"type":"CALL_STATEMENT","name":"say","arguments":[{"type":"STRING_EXPR","str":"foo"}]}]}]
+[
+    {
+        "name": "on_a",
+        "statements": [
+            {
+                "arguments": [
+                    {
+                        "str": "foo",
+                        "type": "STRING_EXPR"
+                    }
+                ],
+                "name": "say",
+                "type": "CALL_STATEMENT"
+            }
+        ],
+        "type": "GLOBAL_ON_FN"
+    }
+]

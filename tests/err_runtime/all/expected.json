@@ -1,1 +1,55 @@
-[{"type":"GLOBAL_ON_FN","name":"on_a","statements":[{"type":"CALL_STATEMENT","name":"helper_foo"},{"type":"EMPTY_LINE_STATEMENT"},{"type":"WHILE_STATEMENT","condition":{"type":"TRUE_EXPR"},"statements":[]},{"type":"EMPTY_LINE_STATEMENT"},{"type":"VARIABLE_STATEMENT","name":"foo","variable_type":"number","assignment":{"type":"BINARY_EXPR","left_expr":{"type":"NUMBER_EXPR","value":"1"},"operator":"PLUS_TOKEN","right_expr":{"type":"NUMBER_EXPR","value":"1"}}}]},{"type":"GLOBAL_EMPTY_LINE"},{"type":"GLOBAL_HELPER_FN","name":"helper_foo","statements":[{"type":"CALL_STATEMENT","name":"helper_foo"}]}]
+[
+    {
+        "name": "on_a",
+        "statements": [
+            {
+                "name": "helper_foo",
+                "type": "CALL_STATEMENT"
+            },
+            {
+                "type": "EMPTY_LINE_STATEMENT"
+            },
+            {
+                "condition": {
+                    "type": "TRUE_EXPR"
+                },
+                "statements": [],
+                "type": "WHILE_STATEMENT"
+            },
+            {
+                "type": "EMPTY_LINE_STATEMENT"
+            },
+            {
+                "assignment": {
+                    "left_expr": {
+                        "type": "NUMBER_EXPR",
+                        "value": "1"
+                    },
+                    "operator": "PLUS_TOKEN",
+                    "right_expr": {
+                        "type": "NUMBER_EXPR",
+                        "value": "1"
+                    },
+                    "type": "BINARY_EXPR"
+                },
+                "name": "foo",
+                "type": "VARIABLE_STATEMENT",
+                "variable_type": "number"
+            }
+        ],
+        "type": "GLOBAL_ON_FN"
+    },
+    {
+        "type": "GLOBAL_EMPTY_LINE"
+    },
+    {
+        "name": "helper_foo",
+        "statements": [
+            {
+                "name": "helper_foo",
+                "type": "CALL_STATEMENT"
+            }
+        ],
+        "type": "GLOBAL_HELPER_FN"
+    }
+]

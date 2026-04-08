@@ -1,1 +1,80 @@
-[{"type":"GLOBAL_ON_FN","name":"on_a","statements":[{"type":"CALL_STATEMENT","name":"helper_foo","arguments":[{"type":"NUMBER_EXPR","value":"2"},{"type":"NUMBER_EXPR","value":"3.0"}]}]},{"type":"GLOBAL_EMPTY_LINE"},{"type":"GLOBAL_HELPER_FN","name":"helper_foo","arguments":[{"name":"i","type":"number"},{"name":"f","type":"number"}],"statements":[{"type":"VARIABLE_STATEMENT","name":"i","assignment":{"type":"NUMBER_EXPR","value":"20"}},{"type":"CALL_STATEMENT","name":"initialize","arguments":[{"type":"IDENTIFIER_EXPR","str":"i"}]},{"type":"EMPTY_LINE_STATEMENT"},{"type":"VARIABLE_STATEMENT","name":"f","assignment":{"type":"NUMBER_EXPR","value":"30.0"}},{"type":"CALL_STATEMENT","name":"sin","arguments":[{"type":"IDENTIFIER_EXPR","str":"f"}]}]}]
+[
+    {
+        "name": "on_a",
+        "statements": [
+            {
+                "arguments": [
+                    {
+                        "type": "NUMBER_EXPR",
+                        "value": "2"
+                    },
+                    {
+                        "type": "NUMBER_EXPR",
+                        "value": "3.0"
+                    }
+                ],
+                "name": "helper_foo",
+                "type": "CALL_STATEMENT"
+            }
+        ],
+        "type": "GLOBAL_ON_FN"
+    },
+    {
+        "type": "GLOBAL_EMPTY_LINE"
+    },
+    {
+        "arguments": [
+            {
+                "name": "i",
+                "type": "number"
+            },
+            {
+                "name": "f",
+                "type": "number"
+            }
+        ],
+        "name": "helper_foo",
+        "statements": [
+            {
+                "assignment": {
+                    "type": "NUMBER_EXPR",
+                    "value": "20"
+                },
+                "name": "i",
+                "type": "VARIABLE_STATEMENT"
+            },
+            {
+                "arguments": [
+                    {
+                        "str": "i",
+                        "type": "IDENTIFIER_EXPR"
+                    }
+                ],
+                "name": "initialize",
+                "type": "CALL_STATEMENT"
+            },
+            {
+                "type": "EMPTY_LINE_STATEMENT"
+            },
+            {
+                "assignment": {
+                    "type": "NUMBER_EXPR",
+                    "value": "30.0"
+                },
+                "name": "f",
+                "type": "VARIABLE_STATEMENT"
+            },
+            {
+                "arguments": [
+                    {
+                        "str": "f",
+                        "type": "IDENTIFIER_EXPR"
+                    }
+                ],
+                "name": "sin",
+                "type": "CALL_STATEMENT"
+            }
+        ],
+        "type": "GLOBAL_HELPER_FN"
+    }
+]

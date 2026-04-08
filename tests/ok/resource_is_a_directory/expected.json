@@ -1,1 +1,18 @@
-[{"type":"GLOBAL_ON_FN","name":"on_a","statements":[{"type":"CALL_STATEMENT","name":"draw","arguments":[{"type":"STRING_EXPR","str":"resource_is_a_directory"}]}]}]
+[
+    {
+        "name": "on_a",
+        "statements": [
+            {
+                "arguments": [
+                    {
+                        "str": "resource_is_a_directory",
+                        "type": "STRING_EXPR"
+                    }
+                ],
+                "name": "draw",
+                "type": "CALL_STATEMENT"
+            }
+        ],
+        "type": "GLOBAL_ON_FN"
+    }
+]

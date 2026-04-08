@@ -1,1 +1,39 @@
-[{"type":"GLOBAL_VARIABLE","name":"foo","variable_type":"Opponent","assignment":{"type":"CALL_EXPR","name":"get_opponent"}},{"type":"GLOBAL_VARIABLE","name":"bar","variable_type":"Opponent","assignment":{"type":"IDENTIFIER_EXPR","str":"foo"}},{"type":"GLOBAL_EMPTY_LINE"},{"type":"GLOBAL_ON_FN","name":"on_a","statements":[{"type":"CALL_STATEMENT","name":"set_opponent","arguments":[{"type":"IDENTIFIER_EXPR","str":"bar"}]}]}]
+[
+    {
+        "assignment": {
+            "name": "get_opponent",
+            "type": "CALL_EXPR"
+        },
+        "name": "foo",
+        "type": "GLOBAL_VARIABLE",
+        "variable_type": "Opponent"
+    },
+    {
+        "assignment": {
+            "str": "foo",
+            "type": "IDENTIFIER_EXPR"
+        },
+        "name": "bar",
+        "type": "GLOBAL_VARIABLE",
+        "variable_type": "Opponent"
+    },
+    {
+        "type": "GLOBAL_EMPTY_LINE"
+    },
+    {
+        "name": "on_a",
+        "statements": [
+            {
+                "arguments": [
+                    {
+                        "str": "bar",
+                        "type": "IDENTIFIER_EXPR"
+                    }
+                ],
+                "name": "set_opponent",
+                "type": "CALL_STATEMENT"
+            }
+        ],
+        "type": "GLOBAL_ON_FN"
+    }
+]

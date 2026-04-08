@@ -1,1 +1,578 @@
-[{"type":"GLOBAL_VARIABLE","name":"g1","variable_type":"number","assignment":{"type":"NUMBER_EXPR","value":"1"}},{"type":"GLOBAL_VARIABLE","name":"g2","variable_type":"number","assignment":{"type":"NUMBER_EXPR","value":"2"}},{"type":"GLOBAL_VARIABLE","name":"g3","variable_type":"number","assignment":{"type":"NUMBER_EXPR","value":"3"}},{"type":"GLOBAL_VARIABLE","name":"g4","variable_type":"number","assignment":{"type":"NUMBER_EXPR","value":"4"}},{"type":"GLOBAL_VARIABLE","name":"g5","variable_type":"number","assignment":{"type":"NUMBER_EXPR","value":"5"}},{"type":"GLOBAL_VARIABLE","name":"g6","variable_type":"number","assignment":{"type":"NUMBER_EXPR","value":"6"}},{"type":"GLOBAL_VARIABLE","name":"g7","variable_type":"number","assignment":{"type":"NUMBER_EXPR","value":"7"}},{"type":"GLOBAL_VARIABLE","name":"g8","variable_type":"number","assignment":{"type":"NUMBER_EXPR","value":"8"}},{"type":"GLOBAL_VARIABLE","name":"g9","variable_type":"number","assignment":{"type":"NUMBER_EXPR","value":"9"}},{"type":"GLOBAL_VARIABLE","name":"g10","variable_type":"number","assignment":{"type":"NUMBER_EXPR","value":"10"}},{"type":"GLOBAL_VARIABLE","name":"g11","variable_type":"number","assignment":{"type":"NUMBER_EXPR","value":"11"}},{"type":"GLOBAL_VARIABLE","name":"g12","variable_type":"number","assignment":{"type":"NUMBER_EXPR","value":"12"}},{"type":"GLOBAL_VARIABLE","name":"g13","variable_type":"number","assignment":{"type":"NUMBER_EXPR","value":"13"}},{"type":"GLOBAL_VARIABLE","name":"g14","variable_type":"number","assignment":{"type":"NUMBER_EXPR","value":"14"}},{"type":"GLOBAL_VARIABLE","name":"g15","variable_type":"number","assignment":{"type":"NUMBER_EXPR","value":"15"}},{"type":"GLOBAL_VARIABLE","name":"g16","variable_type":"number","assignment":{"type":"NUMBER_EXPR","value":"16"}},{"type":"GLOBAL_VARIABLE","name":"g17","variable_type":"number","assignment":{"type":"NUMBER_EXPR","value":"17"}},{"type":"GLOBAL_VARIABLE","name":"g18","variable_type":"number","assignment":{"type":"NUMBER_EXPR","value":"18"}},{"type":"GLOBAL_VARIABLE","name":"g19","variable_type":"number","assignment":{"type":"NUMBER_EXPR","value":"19"}},{"type":"GLOBAL_VARIABLE","name":"g20","variable_type":"number","assignment":{"type":"NUMBER_EXPR","value":"20"}},{"type":"GLOBAL_VARIABLE","name":"g21","variable_type":"number","assignment":{"type":"NUMBER_EXPR","value":"21"}},{"type":"GLOBAL_VARIABLE","name":"g22","variable_type":"number","assignment":{"type":"NUMBER_EXPR","value":"22"}},{"type":"GLOBAL_VARIABLE","name":"g23","variable_type":"number","assignment":{"type":"NUMBER_EXPR","value":"23"}},{"type":"GLOBAL_VARIABLE","name":"g24","variable_type":"number","assignment":{"type":"NUMBER_EXPR","value":"24"}},{"type":"GLOBAL_VARIABLE","name":"g25","variable_type":"number","assignment":{"type":"NUMBER_EXPR","value":"25"}},{"type":"GLOBAL_VARIABLE","name":"g26","variable_type":"number","assignment":{"type":"NUMBER_EXPR","value":"26"}},{"type":"GLOBAL_VARIABLE","name":"g27","variable_type":"number","assignment":{"type":"NUMBER_EXPR","value":"27"}},{"type":"GLOBAL_VARIABLE","name":"g28","variable_type":"number","assignment":{"type":"NUMBER_EXPR","value":"28"}},{"type":"GLOBAL_VARIABLE","name":"g29","variable_type":"number","assignment":{"type":"NUMBER_EXPR","value":"29"}},{"type":"GLOBAL_VARIABLE","name":"g30","variable_type":"number","assignment":{"type":"NUMBER_EXPR","value":"30"}},{"type":"GLOBAL_VARIABLE","name":"g31","variable_type":"number","assignment":{"type":"NUMBER_EXPR","value":"31"}},{"type":"GLOBAL_VARIABLE","name":"g32","variable_type":"number","assignment":{"type":"NUMBER_EXPR","value":"32"}},{"type":"GLOBAL_VARIABLE","name":"g33","variable_type":"number","assignment":{"type":"NUMBER_EXPR","value":"33"}},{"type":"GLOBAL_VARIABLE","name":"g34","variable_type":"number","assignment":{"type":"NUMBER_EXPR","value":"34"}},{"type":"GLOBAL_VARIABLE","name":"g35","variable_type":"number","assignment":{"type":"NUMBER_EXPR","value":"35"}},{"type":"GLOBAL_VARIABLE","name":"g36","variable_type":"number","assignment":{"type":"NUMBER_EXPR","value":"36"}},{"type":"GLOBAL_VARIABLE","name":"g37","variable_type":"number","assignment":{"type":"NUMBER_EXPR","value":"37"}},{"type":"GLOBAL_VARIABLE","name":"g38","variable_type":"number","assignment":{"type":"NUMBER_EXPR","value":"38"}},{"type":"GLOBAL_VARIABLE","name":"g39","variable_type":"number","assignment":{"type":"NUMBER_EXPR","value":"39"}},{"type":"GLOBAL_VARIABLE","name":"g40","variable_type":"number","assignment":{"type":"NUMBER_EXPR","value":"40"}},{"type":"GLOBAL_VARIABLE","name":"g41","variable_type":"number","assignment":{"type":"NUMBER_EXPR","value":"41"}},{"type":"GLOBAL_VARIABLE","name":"g42","variable_type":"number","assignment":{"type":"NUMBER_EXPR","value":"42"}},{"type":"GLOBAL_VARIABLE","name":"g43","variable_type":"number","assignment":{"type":"NUMBER_EXPR","value":"43"}},{"type":"GLOBAL_VARIABLE","name":"g44","variable_type":"number","assignment":{"type":"NUMBER_EXPR","value":"44"}},{"type":"GLOBAL_VARIABLE","name":"g45","variable_type":"number","assignment":{"type":"NUMBER_EXPR","value":"45"}},{"type":"GLOBAL_VARIABLE","name":"g46","variable_type":"number","assignment":{"type":"NUMBER_EXPR","value":"46"}},{"type":"GLOBAL_VARIABLE","name":"g47","variable_type":"number","assignment":{"type":"NUMBER_EXPR","value":"47"}},{"type":"GLOBAL_VARIABLE","name":"g48","variable_type":"number","assignment":{"type":"NUMBER_EXPR","value":"48"}},{"type":"GLOBAL_VARIABLE","name":"g49","variable_type":"number","assignment":{"type":"NUMBER_EXPR","value":"49"}},{"type":"GLOBAL_VARIABLE","name":"g50","variable_type":"number","assignment":{"type":"NUMBER_EXPR","value":"50"}},{"type":"GLOBAL_VARIABLE","name":"g51","variable_type":"number","assignment":{"type":"NUMBER_EXPR","value":"51"}},{"type":"GLOBAL_VARIABLE","name":"g52","variable_type":"number","assignment":{"type":"NUMBER_EXPR","value":"52"}},{"type":"GLOBAL_VARIABLE","name":"g53","variable_type":"number","assignment":{"type":"NUMBER_EXPR","value":"53"}},{"type":"GLOBAL_VARIABLE","name":"g54","variable_type":"number","assignment":{"type":"NUMBER_EXPR","value":"54"}},{"type":"GLOBAL_VARIABLE","name":"g55","variable_type":"number","assignment":{"type":"NUMBER_EXPR","value":"55"}},{"type":"GLOBAL_VARIABLE","name":"g56","variable_type":"number","assignment":{"type":"NUMBER_EXPR","value":"56"}},{"type":"GLOBAL_VARIABLE","name":"g57","variable_type":"number","assignment":{"type":"NUMBER_EXPR","value":"57"}},{"type":"GLOBAL_VARIABLE","name":"g58","variable_type":"number","assignment":{"type":"NUMBER_EXPR","value":"58"}},{"type":"GLOBAL_VARIABLE","name":"g59","variable_type":"number","assignment":{"type":"NUMBER_EXPR","value":"59"}},{"type":"GLOBAL_VARIABLE","name":"g60","variable_type":"number","assignment":{"type":"NUMBER_EXPR","value":"60"}},{"type":"GLOBAL_VARIABLE","name":"g61","variable_type":"number","assignment":{"type":"NUMBER_EXPR","value":"61"}},{"type":"GLOBAL_VARIABLE","name":"g62","variable_type":"number","assignment":{"type":"NUMBER_EXPR","value":"62"}},{"type":"GLOBAL_VARIABLE","name":"g63","variable_type":"number","assignment":{"type":"NUMBER_EXPR","value":"63"}},{"type":"GLOBAL_VARIABLE","name":"g64","variable_type":"number","assignment":{"type":"NUMBER_EXPR","value":"64"}}]
+[
+    {
+        "assignment": {
+            "type": "NUMBER_EXPR",
+            "value": "1"
+        },
+        "name": "g1",
+        "type": "GLOBAL_VARIABLE",
+        "variable_type": "number"
+    },
+    {
+        "assignment": {
+            "type": "NUMBER_EXPR",
+            "value": "2"
+        },
+        "name": "g2",
+        "type": "GLOBAL_VARIABLE",
+        "variable_type": "number"
+    },
+    {
+        "assignment": {
+            "type": "NUMBER_EXPR",
+            "value": "3"
+        },
+        "name": "g3",
+        "type": "GLOBAL_VARIABLE",
+        "variable_type": "number"
+    },
+    {
+        "assignment": {
+            "type": "NUMBER_EXPR",
+            "value": "4"
+        },
+        "name": "g4",
+        "type": "GLOBAL_VARIABLE",
+        "variable_type": "number"
+    },
+    {
+        "assignment": {
+            "type": "NUMBER_EXPR",
+            "value": "5"
+        },
+        "name": "g5",
+        "type": "GLOBAL_VARIABLE",
+        "variable_type": "number"
+    },
+    {
+        "assignment": {
+            "type": "NUMBER_EXPR",
+            "value": "6"
+        },
+        "name": "g6",
+        "type": "GLOBAL_VARIABLE",
+        "variable_type": "number"
+    },
+    {
+        "assignment": {
+            "type": "NUMBER_EXPR",
+            "value": "7"
+        },
+        "name": "g7",
+        "type": "GLOBAL_VARIABLE",
+        "variable_type": "number"
+    },
+    {
+        "assignment": {
+            "type": "NUMBER_EXPR",
+            "value": "8"
+        },
+        "name": "g8",
+        "type": "GLOBAL_VARIABLE",
+        "variable_type": "number"
+    },
+    {
+        "assignment": {
+            "type": "NUMBER_EXPR",
+            "value": "9"
+        },
+        "name": "g9",
+        "type": "GLOBAL_VARIABLE",
+        "variable_type": "number"
+    },
+    {
+        "assignment": {
+            "type": "NUMBER_EXPR",
+            "value": "10"
+        },
+        "name": "g10",
+        "type": "GLOBAL_VARIABLE",
+        "variable_type": "number"
+    },
+    {
+        "assignment": {
+            "type": "NUMBER_EXPR",
+            "value": "11"
+        },
+        "name": "g11",
+        "type": "GLOBAL_VARIABLE",
+        "variable_type": "number"
+    },
+    {
+        "assignment": {
+            "type": "NUMBER_EXPR",
+            "value": "12"
+        },
+        "name": "g12",
+        "type": "GLOBAL_VARIABLE",
+        "variable_type": "number"
+    },
+    {
+        "assignment": {
+            "type": "NUMBER_EXPR",
+            "value": "13"
+        },
+        "name": "g13",
+        "type": "GLOBAL_VARIABLE",
+        "variable_type": "number"
+    },
+    {
+        "assignment": {
+            "type": "NUMBER_EXPR",
+            "value": "14"
+        },
+        "name": "g14",
+        "type": "GLOBAL_VARIABLE",
+        "variable_type": "number"
+    },
+    {
+        "assignment": {
+            "type": "NUMBER_EXPR",
+            "value": "15"
+        },
+        "name": "g15",
+        "type": "GLOBAL_VARIABLE",
+        "variable_type": "number"
+    },
+    {
+        "assignment": {
+            "type": "NUMBER_EXPR",
+            "value": "16"
+        },
+        "name": "g16",
+        "type": "GLOBAL_VARIABLE",
+        "variable_type": "number"
+    },
+    {
+        "assignment": {
+            "type": "NUMBER_EXPR",
+            "value": "17"
+        },
+        "name": "g17",
+        "type": "GLOBAL_VARIABLE",
+        "variable_type": "number"
+    },
+    {
+        "assignment": {
+            "type": "NUMBER_EXPR",
+            "value": "18"
+        },
+        "name": "g18",
+        "type": "GLOBAL_VARIABLE",
+        "variable_type": "number"
+    },
+    {
+        "assignment": {
+            "type": "NUMBER_EXPR",
+            "value": "19"
+        },
+        "name": "g19",
+        "type": "GLOBAL_VARIABLE",
+        "variable_type": "number"
+    },
+    {
+        "assignment": {
+            "type": "NUMBER_EXPR",
+            "value": "20"
+        },
+        "name": "g20",
+        "type": "GLOBAL_VARIABLE",
+        "variable_type": "number"
+    },
+    {
+        "assignment": {
+            "type": "NUMBER_EXPR",
+            "value": "21"
+        },
+        "name": "g21",
+        "type": "GLOBAL_VARIABLE",
+        "variable_type": "number"
+    },
+    {
+        "assignment": {
+            "type": "NUMBER_EXPR",
+            "value": "22"
+        },
+        "name": "g22",
+        "type": "GLOBAL_VARIABLE",
+        "variable_type": "number"
+    },
+    {
+        "assignment": {
+            "type": "NUMBER_EXPR",
+            "value": "23"
+        },
+        "name": "g23",
+        "type": "GLOBAL_VARIABLE",
+        "variable_type": "number"
+    },
+    {
+        "assignment": {
+            "type": "NUMBER_EXPR",
+            "value": "24"
+        },
+        "name": "g24",
+        "type": "GLOBAL_VARIABLE",
+        "variable_type": "number"
+    },
+    {
+        "assignment": {
+            "type": "NUMBER_EXPR",
+            "value": "25"
+        },
+        "name": "g25",
+        "type": "GLOBAL_VARIABLE",
+        "variable_type": "number"
+    },
+    {
+        "assignment": {
+            "type": "NUMBER_EXPR",
+            "value": "26"
+        },
+        "name": "g26",
+        "type": "GLOBAL_VARIABLE",
+        "variable_type": "number"
+    },
+    {
+        "assignment": {
+            "type": "NUMBER_EXPR",
+            "value": "27"
+        },
+        "name": "g27",
+        "type": "GLOBAL_VARIABLE",
+        "variable_type": "number"
+    },
+    {
+        "assignment": {
+            "type": "NUMBER_EXPR",
+            "value": "28"
+        },
+        "name": "g28",
+        "type": "GLOBAL_VARIABLE",
+        "variable_type": "number"
+    },
+    {
+        "assignment": {
+            "type": "NUMBER_EXPR",
+            "value": "29"
+        },
+        "name": "g29",
+        "type": "GLOBAL_VARIABLE",
+        "variable_type": "number"
+    },
+    {
+        "assignment": {
+            "type": "NUMBER_EXPR",
+            "value": "30"
+        },
+        "name": "g30",
+        "type": "GLOBAL_VARIABLE",
+        "variable_type": "number"
+    },
+    {
+        "assignment": {
+            "type": "NUMBER_EXPR",
+            "value": "31"
+        },
+        "name": "g31",
+        "type": "GLOBAL_VARIABLE",
+        "variable_type": "number"
+    },
+    {
+        "assignment": {
+            "type": "NUMBER_EXPR",
+            "value": "32"
+        },
+        "name": "g32",
+        "type": "GLOBAL_VARIABLE",
+        "variable_type": "number"
+    },
+    {
+        "assignment": {
+            "type": "NUMBER_EXPR",
+            "value": "33"
+        },
+        "name": "g33",
+        "type": "GLOBAL_VARIABLE",
+        "variable_type": "number"
+    },
+    {
+        "assignment": {
+            "type": "NUMBER_EXPR",
+            "value": "34"
+        },
+        "name": "g34",
+        "type": "GLOBAL_VARIABLE",
+        "variable_type": "number"
+    },
+    {
+        "assignment": {
+            "type": "NUMBER_EXPR",
+            "value": "35"
+        },
+        "name": "g35",
+        "type": "GLOBAL_VARIABLE",
+        "variable_type": "number"
+    },
+    {
+        "assignment": {
+            "type": "NUMBER_EXPR",
+            "value": "36"
+        },
+        "name": "g36",
+        "type": "GLOBAL_VARIABLE",
+        "variable_type": "number"
+    },
+    {
+        "assignment": {
+            "type": "NUMBER_EXPR",
+            "value": "37"
+        },
+        "name": "g37",
+        "type": "GLOBAL_VARIABLE",
+        "variable_type": "number"
+    },
+    {
+        "assignment": {
+            "type": "NUMBER_EXPR",
+            "value": "38"
+        },
+        "name": "g38",
+        "type": "GLOBAL_VARIABLE",
+        "variable_type": "number"
+    },
+    {
+        "assignment": {
+            "type": "NUMBER_EXPR",
+            "value": "39"
+        },
+        "name": "g39",
+        "type": "GLOBAL_VARIABLE",
+        "variable_type": "number"
+    },
+    {
+        "assignment": {
+            "type": "NUMBER_EXPR",
+            "value": "40"
+        },
+        "name": "g40",
+        "type": "GLOBAL_VARIABLE",
+        "variable_type": "number"
+    },
+    {
+        "assignment": {
+            "type": "NUMBER_EXPR",
+            "value": "41"
+        },
+        "name": "g41",
+        "type": "GLOBAL_VARIABLE",
+        "variable_type": "number"
+    },
+    {
+        "assignment": {
+            "type": "NUMBER_EXPR",
+            "value": "42"
+        },
+        "name": "g42",
+        "type": "GLOBAL_VARIABLE",
+        "variable_type": "number"
+    },
+    {
+        "assignment": {
+            "type": "NUMBER_EXPR",
+            "value": "43"
+        },
+        "name": "g43",
+        "type": "GLOBAL_VARIABLE",
+        "variable_type": "number"
+    },
+    {
+        "assignment": {
+            "type": "NUMBER_EXPR",
+            "value": "44"
+        },
+        "name": "g44",
+        "type": "GLOBAL_VARIABLE",
+        "variable_type": "number"
+    },
+    {
+        "assignment": {
+            "type": "NUMBER_EXPR",
+            "value": "45"
+        },
+        "name": "g45",
+        "type": "GLOBAL_VARIABLE",
+        "variable_type": "number"
+    },
+    {
+        "assignment": {
+            "type": "NUMBER_EXPR",
+            "value": "46"
+        },
+        "name": "g46",
+        "type": "GLOBAL_VARIABLE",
+        "variable_type": "number"
+    },
+    {
+        "assignment": {
+            "type": "NUMBER_EXPR",
+            "value": "47"
+        },
+        "name": "g47",
+        "type": "GLOBAL_VARIABLE",
+        "variable_type": "number"
+    },
+    {
+        "assignment": {
+            "type": "NUMBER_EXPR",
+            "value": "48"
+        },
+        "name": "g48",
+        "type": "GLOBAL_VARIABLE",
+        "variable_type": "number"
+    },
+    {
+        "assignment": {
+            "type": "NUMBER_EXPR",
+            "value": "49"
+        },
+        "name": "g49",
+        "type": "GLOBAL_VARIABLE",
+        "variable_type": "number"
+    },
+    {
+        "assignment": {
+            "type": "NUMBER_EXPR",
+            "value": "50"
+        },
+        "name": "g50",
+        "type": "GLOBAL_VARIABLE",
+        "variable_type": "number"
+    },
+    {
+        "assignment": {
+            "type": "NUMBER_EXPR",
+            "value": "51"
+        },
+        "name": "g51",
+        "type": "GLOBAL_VARIABLE",
+        "variable_type": "number"
+    },
+    {
+        "assignment": {
+            "type": "NUMBER_EXPR",
+            "value": "52"
+        },
+        "name": "g52",
+        "type": "GLOBAL_VARIABLE",
+        "variable_type": "number"
+    },
+    {
+        "assignment": {
+            "type": "NUMBER_EXPR",
+            "value": "53"
+        },
+        "name": "g53",
+        "type": "GLOBAL_VARIABLE",
+        "variable_type": "number"
+    },
+    {
+        "assignment": {
+            "type": "NUMBER_EXPR",
+            "value": "54"
+        },
+        "name": "g54",
+        "type": "GLOBAL_VARIABLE",
+        "variable_type": "number"
+    },
+    {
+        "assignment": {
+            "type": "NUMBER_EXPR",
+            "value": "55"
+        },
+        "name": "g55",
+        "type": "GLOBAL_VARIABLE",
+        "variable_type": "number"
+    },
+    {
+        "assignment": {
+            "type": "NUMBER_EXPR",
+            "value": "56"
+        },
+        "name": "g56",
+        "type": "GLOBAL_VARIABLE",
+        "variable_type": "number"
+    },
+    {
+        "assignment": {
+            "type": "NUMBER_EXPR",
+            "value": "57"
+        },
+        "name": "g57",
+        "type": "GLOBAL_VARIABLE",
+        "variable_type": "number"
+    },
+    {
+        "assignment": {
+            "type": "NUMBER_EXPR",
+            "value": "58"
+        },
+        "name": "g58",
+        "type": "GLOBAL_VARIABLE",
+        "variable_type": "number"
+    },
+    {
+        "assignment": {
+            "type": "NUMBER_EXPR",
+            "value": "59"
+        },
+        "name": "g59",
+        "type": "GLOBAL_VARIABLE",
+        "variable_type": "number"
+    },
+    {
+        "assignment": {
+            "type": "NUMBER_EXPR",
+            "value": "60"
+        },
+        "name": "g60",
+        "type": "GLOBAL_VARIABLE",
+        "variable_type": "number"
+    },
+    {
+        "assignment": {
+            "type": "NUMBER_EXPR",
+            "value": "61"
+        },
+        "name": "g61",
+        "type": "GLOBAL_VARIABLE",
+        "variable_type": "number"
+    },
+    {
+        "assignment": {
+            "type": "NUMBER_EXPR",
+            "value": "62"
+        },
+        "name": "g62",
+        "type": "GLOBAL_VARIABLE",
+        "variable_type": "number"
+    },
+    {
+        "assignment": {
+            "type": "NUMBER_EXPR",
+            "value": "63"
+        },
+        "name": "g63",
+        "type": "GLOBAL_VARIABLE",
+        "variable_type": "number"
+    },
+    {
+        "assignment": {
+            "type": "NUMBER_EXPR",
+            "value": "64"
+        },
+        "name": "g64",
+        "type": "GLOBAL_VARIABLE",
+        "variable_type": "number"
+    }
+]

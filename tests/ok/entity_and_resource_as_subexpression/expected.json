@@ -1,1 +1,52 @@
-[{"type":"GLOBAL_ON_FN","name":"on_a","statements":[{"type":"CALL_STATEMENT","name":"initialize_bool","arguments":[{"type":"LOGICAL_EXPR","left_expr":{"type":"LOGICAL_EXPR","left_expr":{"type":"CALL_EXPR","name":"has_resource","arguments":[{"type":"STRING_EXPR","str":"entity_and_resource_as_subexpression/foo.txt"}]},"operator":"AND_TOKEN","right_expr":{"type":"CALL_EXPR","name":"has_string","arguments":[{"type":"STRING_EXPR","str":"bar"}]}},"operator":"AND_TOKEN","right_expr":{"type":"CALL_EXPR","name":"has_entity","arguments":[{"type":"STRING_EXPR","str":"baz"}]}}]}]}]
+[
+    {
+        "name": "on_a",
+        "statements": [
+            {
+                "arguments": [
+                    {
+                        "left_expr": {
+                            "left_expr": {
+                                "arguments": [
+                                    {
+                                        "str": "entity_and_resource_as_subexpression/foo.txt",
+                                        "type": "STRING_EXPR"
+                                    }
+                                ],
+                                "name": "has_resource",
+                                "type": "CALL_EXPR"
+                            },
+                            "operator": "AND_TOKEN",
+                            "right_expr": {
+                                "arguments": [
+                                    {
+                                        "str": "bar",
+                                        "type": "STRING_EXPR"
+                                    }
+                                ],
+                                "name": "has_string",
+                                "type": "CALL_EXPR"
+                            },
+                            "type": "LOGICAL_EXPR"
+                        },
+                        "operator": "AND_TOKEN",
+                        "right_expr": {
+                            "arguments": [
+                                {
+                                    "str": "baz",
+                                    "type": "STRING_EXPR"
+                                }
+                            ],
+                            "name": "has_entity",
+                            "type": "CALL_EXPR"
+                        },
+                        "type": "LOGICAL_EXPR"
+                    }
+                ],
+                "name": "initialize_bool",
+                "type": "CALL_STATEMENT"
+            }
+        ],
+        "type": "GLOBAL_ON_FN"
+    }
+]

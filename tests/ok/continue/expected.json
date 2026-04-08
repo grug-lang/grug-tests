@@ -1,1 +1,73 @@
-[{"type":"GLOBAL_ON_FN","name":"on_a","statements":[{"type":"VARIABLE_STATEMENT","name":"i","variable_type":"number","assignment":{"type":"NUMBER_EXPR","value":"0"}},{"type":"EMPTY_LINE_STATEMENT"},{"type":"WHILE_STATEMENT","condition":{"type":"BINARY_EXPR","left_expr":{"type":"IDENTIFIER_EXPR","str":"i"},"operator":"LESS_TOKEN","right_expr":{"type":"NUMBER_EXPR","value":"2"}},"statements":[{"type":"CALL_STATEMENT","name":"nothing"},{"type":"EMPTY_LINE_STATEMENT"},{"type":"VARIABLE_STATEMENT","name":"i","assignment":{"type":"BINARY_EXPR","left_expr":{"type":"IDENTIFIER_EXPR","str":"i"},"operator":"PLUS_TOKEN","right_expr":{"type":"NUMBER_EXPR","value":"1"}}},{"type":"EMPTY_LINE_STATEMENT"},{"type":"CONTINUE_STATEMENT"},{"type":"EMPTY_LINE_STATEMENT"},{"type":"CALL_STATEMENT","name":"nothing"}]}]}]
+[
+    {
+        "name": "on_a",
+        "statements": [
+            {
+                "assignment": {
+                    "type": "NUMBER_EXPR",
+                    "value": "0"
+                },
+                "name": "i",
+                "type": "VARIABLE_STATEMENT",
+                "variable_type": "number"
+            },
+            {
+                "type": "EMPTY_LINE_STATEMENT"
+            },
+            {
+                "condition": {
+                    "left_expr": {
+                        "str": "i",
+                        "type": "IDENTIFIER_EXPR"
+                    },
+                    "operator": "LESS_TOKEN",
+                    "right_expr": {
+                        "type": "NUMBER_EXPR",
+                        "value": "2"
+                    },
+                    "type": "BINARY_EXPR"
+                },
+                "statements": [
+                    {
+                        "name": "nothing",
+                        "type": "CALL_STATEMENT"
+                    },
+                    {
+                        "type": "EMPTY_LINE_STATEMENT"
+                    },
+                    {
+                        "assignment": {
+                            "left_expr": {
+                                "str": "i",
+                                "type": "IDENTIFIER_EXPR"
+                            },
+                            "operator": "PLUS_TOKEN",
+                            "right_expr": {
+                                "type": "NUMBER_EXPR",
+                                "value": "1"
+                            },
+                            "type": "BINARY_EXPR"
+                        },
+                        "name": "i",
+                        "type": "VARIABLE_STATEMENT"
+                    },
+                    {
+                        "type": "EMPTY_LINE_STATEMENT"
+                    },
+                    {
+                        "type": "CONTINUE_STATEMENT"
+                    },
+                    {
+                        "type": "EMPTY_LINE_STATEMENT"
+                    },
+                    {
+                        "name": "nothing",
+                        "type": "CALL_STATEMENT"
+                    }
+                ],
+                "type": "WHILE_STATEMENT"
+            }
+        ],
+        "type": "GLOBAL_ON_FN"
+    }
+]

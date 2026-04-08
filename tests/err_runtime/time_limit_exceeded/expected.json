@@ -1,1 +1,15 @@
-[{"type":"GLOBAL_ON_FN","name":"on_a","statements":[{"type":"WHILE_STATEMENT","condition":{"type":"TRUE_EXPR"},"statements":[]}]}]
+[
+    {
+        "name": "on_a",
+        "statements": [
+            {
+                "condition": {
+                    "type": "TRUE_EXPR"
+                },
+                "statements": [],
+                "type": "WHILE_STATEMENT"
+            }
+        ],
+        "type": "GLOBAL_ON_FN"
+    }
+]

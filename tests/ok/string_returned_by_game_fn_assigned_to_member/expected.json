@@ -1,1 +1,30 @@
-[{"type":"GLOBAL_VARIABLE","name":"os","variable_type":"string","assignment":{"type":"CALL_EXPR","name":"get_os"}},{"type":"GLOBAL_EMPTY_LINE"},{"type":"GLOBAL_ON_FN","name":"on_a","statements":[{"type":"CALL_STATEMENT","name":"has_string","arguments":[{"type":"IDENTIFIER_EXPR","str":"os"}]}]}]
+[
+    {
+        "assignment": {
+            "name": "get_os",
+            "type": "CALL_EXPR"
+        },
+        "name": "os",
+        "type": "GLOBAL_VARIABLE",
+        "variable_type": "string"
+    },
+    {
+        "type": "GLOBAL_EMPTY_LINE"
+    },
+    {
+        "name": "on_a",
+        "statements": [
+            {
+                "arguments": [
+                    {
+                        "str": "os",
+                        "type": "IDENTIFIER_EXPR"
+                    }
+                ],
+                "name": "has_string",
+                "type": "CALL_STATEMENT"
+            }
+        ],
+        "type": "GLOBAL_ON_FN"
+    }
+]

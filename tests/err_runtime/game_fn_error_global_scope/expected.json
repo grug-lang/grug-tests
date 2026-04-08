@@ -1,1 +1,11 @@
-[{"type":"GLOBAL_VARIABLE","name":"b","variable_type":"bool","assignment":{"type":"CALL_EXPR","name":"cause_game_fn_error"}}]
+[
+    {
+        "assignment": {
+            "name": "cause_game_fn_error",
+            "type": "CALL_EXPR"
+        },
+        "name": "b",
+        "type": "GLOBAL_VARIABLE",
+        "variable_type": "bool"
+    }
+]

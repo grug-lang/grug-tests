@@ -65,19 +65,19 @@ jobs:
         if: matrix.sanitizer == 'valgrind'
         run: sudo apt-get update && sudo apt-get install -y valgrind
 
-      - name: Set sanitizer environment variables
-        run: |
-          if [ "${{ matrix.sanitizer }}" == "asan" ]; then
-            echo "ASAN=1" >> $GITHUB_ENV
-          fi
-          if [ "${{ matrix.sanitizer }}" == "valgrind" ]; then
-            echo "VALGRIND=1" >> $GITHUB_ENV
-          fi
-
       - name: Build and run tests (Debug + Release)
         run: |
+          # Set sanitizer flags
+          if [ "${{ matrix.sanitizer }}" == "asan" ]; then
+            export ASAN=1
+          fi
+          if [ "${{ matrix.sanitizer }}" == "valgrind" ]; then
+            export VALGRIND=1
+          fi
+
           for BUILD_TYPE in Debug Release; do
             echo "=== Building $BUILD_TYPE ==="
+
             # The ,, lowercases it to build-debug and build-release
             export BUILD_DIR=build-${BUILD_TYPE,,} 
             

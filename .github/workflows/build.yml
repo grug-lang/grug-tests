@@ -78,9 +78,9 @@ jobs:
         run: |
           for BUILD_TYPE in Debug Release; do
             echo "=== Building $BUILD_TYPE ==="
-            BUILD_DIR=build-${BUILD_TYPE,,}  # lowercase: build-debug/build-release
-            echo "BUILD_DIR=$BUILD_DIR" >> $GITHUB_ENV  # set as environment variable for CMake
-
+            # The ,, lowercases it to build-debug and build-release
+            export BUILD_DIR=build-${BUILD_TYPE,,} 
+            
             CMAKE_FLAGS="-G Ninja -DCMAKE_BUILD_TYPE=$BUILD_TYPE"
             cmake -S . -B $BUILD_DIR $CMAKE_FLAGS
             cmake --build $BUILD_DIR

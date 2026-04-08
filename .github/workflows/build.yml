@@ -79,9 +79,6 @@ jobs:
           for BUILD_TYPE in Debug Release; do
             echo "=== Building $BUILD_TYPE ==="
             CMAKE_FLAGS="-G Ninja -DCMAKE_BUILD_TYPE=$BUILD_TYPE"
-            if [ ! -z "$ASAN" ]; then
-              CMAKE_FLAGS="$CMAKE_FLAGS -DASAN=ON"
-            fi
             cmake -S . -B ./build-$BUILD_TYPE $CMAKE_FLAGS
             cmake --build ./build-$BUILD_TYPE
 

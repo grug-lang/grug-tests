@@ -1055,6 +1055,10 @@ static size_t read_file(const char *path, uint8_t *bytes) {
 		exit(EXIT_FAILURE);
 	}
 
+	if (len == 0) {
+		return 0;
+	}
+
 	if (bytes[len - 1] == '\n') {
 		len--;
 		if (bytes[len - 1] == '\r') {

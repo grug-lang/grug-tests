@@ -3657,7 +3657,7 @@ void grug_tests_run(
 	#ifdef SEED
 	unsigned int seed = SEED;
 	#else
-	unsigned int seed = time(NULL);
+	unsigned int seed = (unsigned int)time(NULL);
 	#endif
 
 	printf("The seed is %u\n", seed);

@@ -1290,7 +1290,7 @@ static void diff_roundtrip(
 	applied_path_bytes[applied_path_bytes_len] = '\0';
 
 	if (!streq((const char *)grug_path_bytes, (const char *)applied_path_bytes)) {
-		fprintf(stderr, "\nError: The output differs from the expected output.\n");
+		fprintf(stderr, "\nError: The roundtrip output differs from the expected output.\n");
 		fprintf(stderr, "Output:\n");
 		print_string_debug((const char *)applied_path_bytes);
 
@@ -3439,6 +3439,7 @@ static void add_error_tests(void) {
 	ADD_TEST_ERROR(entity_mod_name_cant_be_current_mod, "D");
 	ADD_TEST_ERROR(entity_mod_name_is_missing, "D");
 	ADD_TEST_ERROR(entity_name_is_missing, "D");
+	ADD_TEST_ERROR(entity_string_must_be_prefixed, "D");
 	ADD_TEST_ERROR(entity_type_for_helper_fn_return_type, "D");
 	ADD_TEST_ERROR(f32_missing_digit_after_decimal_point, "D");
 	ADD_TEST_ERROR(f32_too_big, "D");
@@ -3573,6 +3574,7 @@ static void add_error_tests(void) {
 	ADD_TEST_ERROR(resource_cant_refer_to_current_directory_2, "D");
 	ADD_TEST_ERROR(resource_cant_refer_to_current_directory_3, "D");
 	ADD_TEST_ERROR(resource_cant_refer_to_current_directory_4, "D");
+	ADD_TEST_ERROR(resource_string_must_be_prefixed, "D");
 	ADD_TEST_ERROR(resource_type_for_global, "A");
 	ADD_TEST_ERROR(resource_type_for_helper_fn_return_type, "D");
 	ADD_TEST_ERROR(resource_type_for_local, "D");

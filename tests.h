@@ -152,7 +152,6 @@ typedef void (*game_fn_error_t)(struct grug_state* state, const char *message);
  * @param mod_api_path Path to the mod_api.json this state will be initialized with.
  * @param mods_dir Path to the mods directory this state should use.
  */
-
 typedef struct grug_state* (*create_grug_state_t) (
 	const char* mod_api_path,
 	const char* mods_dir

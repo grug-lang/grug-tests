@@ -1,3 +1,3 @@
 on_a() {
-    draw("resource_is_a_directory")
+    draw(r"resource_is_a_directory")
 }

@@ -1,4 +1,4 @@
 on_a() {
-    draw("resource_and_entity/foo.txt")
-    spawn("foo")
+    draw(r"resource_and_entity/foo.txt")
+    spawn(e"foo")
 }

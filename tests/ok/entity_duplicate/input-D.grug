@@ -1,6 +1,6 @@
 on_a() {
-    spawn("foo")
-    spawn("bar")
-    spawn("bar")
-    spawn("baz")
+    spawn(e"foo")
+    spawn(e"bar")
+    spawn(e"bar")
+    spawn(e"baz")
 }

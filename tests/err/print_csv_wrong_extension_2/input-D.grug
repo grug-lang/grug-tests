@@ -1,3 +1,3 @@
 on_a() {
-    print_csv("print_csv_wrong_extension_2/foo")
+    print_csv(r"print_csv_wrong_extension_2/foo")
 }

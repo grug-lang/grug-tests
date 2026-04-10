@@ -1,6 +1,6 @@
 on_a() {
-    draw("resource_duplicate/foo.txt")
-    draw("resource_duplicate/bar.txt")
-    draw("resource_duplicate/bar.txt")
-    draw("resource_duplicate/baz.txt")
+    draw(r"resource_duplicate/foo.txt")
+    draw(r"resource_duplicate/bar.txt")
+    draw(r"resource_duplicate/bar.txt")
+    draw(r"resource_duplicate/baz.txt")
 }

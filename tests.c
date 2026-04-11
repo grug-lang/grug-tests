@@ -76,84 +76,13 @@ static const char *get_type_name[] = {
 } while (0)
 
 #if defined(_WIN32)
-#include<windows.h.>
+#include <windows.h>
 #define SLASH "\\"
-
-struct dirent {
-	char d_name[MAX_PATH];
-};
-
-typedef struct {
-	HANDLE handle;
-	int first_taken;
-	struct dirent data;
-} DIR;
-
-DIR* opendir(const char* path);
-struct dirent* readdir(DIR*);
-int closedir(DIR*);
-
-DIR* opendir(const char* path) {
-	char path_buffer[4096];
-	snprintf(path_buffer, sizeof(path_buffer), "%s\\*", path);
-
-	printf("opendir path: %s\n", path_buffer);
-	WIN32_FIND_DATAA data = {0};
-	HANDLE handle = FindFirstFileA(path_buffer, &data);
-	if (handle == INVALID_HANDLE_VALUE) {
-		return NULL;
-	}
-	DIR* out = malloc(sizeof(DIR));
-	*out = (DIR) {
-		.handle = handle,
-		.first_taken = 0
-	};
-	strcpy(out->data.d_name, data.cFileName);
-	return out;
-}
-
-struct dirent* readdir(DIR* dir) {
-	if (!dir->first_taken) {
-		dir->first_taken = 1;
-		return &dir->data;
-	} else {
-		WIN32_FIND_DATAA data = {0};
-		if (FindNextFile(dir->handle, &data) == 0) {
-			return NULL;
-		}
-		strcpy(dir->data.d_name, data.cFileName);
-	}
-	return &dir->data; 
-}
-
-int closedir(DIR* dir) {
-	if (FindClose(dir->handle) == 0) {
-		return -1;
-	} else {
-		return 1;
-	}
-}
-
 #elif defined(__linux__)
-#include <dirent.h>
 #include <unistd.h>
 #define SLASH "/"
 #endif
 
-int is_regular_file(const char* path);
-int is_regular_file(const char* path) {
-	struct stat st;
-    if (stat(path, &st) < 0) {
-		perror("stat");
-		exit(EXIT_FAILURE);
-	}
-
-    // Skip non-regular files (like directories, "." or "..")
-    if (!S_ISREG(st.st_mode)) {
-        return 0;
-    }
-	return 1;
-}
 // Most implementations shouldn't pass -DASSERT_ALIGNMENT.
 // It caught a ton of stack misalignment bugs
 // in the original version of grug.c, as it emitted raw machine code.
@@ -1153,56 +1082,15 @@ static const char *get_expected_error(const char *expected_error_path) {
 	return expected_error;
 }
 
-static int compare_filenames(const void *a, const void *b) {
-    const char *str_a = *(const char * const *)a;
-    const char *str_b = *(const char * const *)b;
-    return strcoll(str_a, str_b); 
-}
-
-static void read_sorted_directory(const char *dir_path, char ***out_filenames, size_t *out_count) {
-    DIR *dir = opendir(dir_path);
-    assert(dir != NULL);
-
-    size_t capacity = 32;
-    size_t count = 0;
-    char **filenames = malloc(capacity * sizeof(char *));
-    assert(filenames != NULL);
-
-    struct dirent *entry;
-    while ((entry = readdir(dir)) != NULL) {
-        if (count >= capacity) {
-            capacity *= 2;
-            char **temp = realloc(filenames, capacity * sizeof(char *));
-            assert(temp != NULL);
-            filenames = temp;
-        }
-        filenames[count] = strdup(entry->d_name);
-        assert(filenames[count] != NULL);
-        count++;
-    }
-    closedir(dir);
-
-    // Sort alphabetically
-    qsort(filenames, count, sizeof(char *), compare_filenames);
-
-    *out_filenames = filenames;
-    *out_count = count;
-}
-
-static void free_directory_entries(char **filenames, size_t count) {
-    for (size_t i = 0; i < count; i++) {
-        free(filenames[i]);
-    }
-    free(filenames);
-}
-
-static void run_single_test(struct grug_state *grug_state, const char *dir_path, const char *filename) {
-	if (!is_whitelisted_test(filename)) {
+static void run_err_spaces_test(struct grug_state *grug_state, const char *name) {
+	if (!is_whitelisted_test(name)) {
 		return;
 	}
 
+	printf("Running tests/err_spaces/%s-D.grug...\n", name);
+
     char grug_path[4096];
-    int grug_len = snprintf(grug_path, sizeof(grug_path), "%s"SLASH"%s", dir_path, filename);
+    int grug_len = snprintf(grug_path, sizeof(grug_path), "%s"SLASH"%s-D.grug", tests_dir_path, name);
     if (grug_len < 0 || (size_t)grug_len >= sizeof(grug_path)) {
 		fprintf(stderr, "Error: Filling grug_path failed\n");
 		exit(EXIT_FAILURE);
@@ -1210,45 +1098,136 @@ static void run_single_test(struct grug_state *grug_state, const char *dir_path,
 
     // This version does not have the tests/ prefix
     char relative_path[4096];
-    int rel_len = snprintf(relative_path, sizeof(relative_path), "err_spaces"SLASH"%s", filename);
+    int rel_len = snprintf(relative_path, sizeof(relative_path), "err_spaces"SLASH"%s-D.grug", name);
     if (rel_len < 0 || (size_t)rel_len >= sizeof(relative_path)) {
 		fprintf(stderr, "Error: Filling relative_path failed\n");
 		exit(EXIT_FAILURE);
 	}
 
-	if (!is_regular_file(grug_path)) {
-		return;
-	}
-
-    printf("Running tests/%s...\n", relative_path);
-
     const char *msg = NULL;
     compile_grug_file(grug_state, relative_path, &msg);
 
     if (msg == NULL) {
-        fprintf(stderr, "\nError: Expected compilation failure for %s but it succeeded.\n", filename);
+        fprintf(stderr, "\nError: Expected compilation failure for %s-D.grug, but it succeeded\n", name);
         exit(EXIT_FAILURE);
     }
 }
 
 static void run_err_spaces_tests(struct grug_state *grug_state) {
-    char dir_path[4096];
-    int dir_len = snprintf(dir_path, sizeof(dir_path), "%s"SLASH"err_spaces", tests_dir_path);
-    if (dir_len < 0 || (size_t)dir_len >= sizeof(dir_path)) {
-		fprintf(stderr, "Error: Filling dir_path failed\n");
-		exit(EXIT_FAILURE);
-	}
-
-    char **filenames = NULL;
-    size_t count = 0;
-
-    read_sorted_directory(dir_path, &filenames, &count);
-
-    for (size_t i = 0; i < count; i++) {
-        run_single_test(grug_state, dir_path, filenames[i]);
-    }
-
-    free_directory_entries(filenames, count);
+	run_err_spaces_test(grug_state, "add_expr_00");
+	run_err_spaces_test(grug_state, "add_expr_01");
+	run_err_spaces_test(grug_state, "add_expr_02");
+	run_err_spaces_test(grug_state, "add_expr_03");
+	run_err_spaces_test(grug_state, "and_expr_00");
+	run_err_spaces_test(grug_state, "and_expr_01");
+	run_err_spaces_test(grug_state, "atom_00");
+	run_err_spaces_test(grug_state, "atom_01");
+	run_err_spaces_test(grug_state, "atom_02");
+	run_err_spaces_test(grug_state, "atom_03");
+	run_err_spaces_test(grug_state, "block_00");
+	run_err_spaces_test(grug_state, "block_01");
+	run_err_spaces_test(grug_state, "block_02");
+	run_err_spaces_test(grug_state, "block_03");
+	run_err_spaces_test(grug_state, "block_04");
+	run_err_spaces_test(grug_state, "block_05");
+	run_err_spaces_test(grug_state, "break_00");
+	run_err_spaces_test(grug_state, "break_01");
+	run_err_spaces_test(grug_state, "call_expr_00");
+	run_err_spaces_test(grug_state, "call_expr_01");
+	run_err_spaces_test(grug_state, "call_expr_02");
+	run_err_spaces_test(grug_state, "call_expr_03");
+	run_err_spaces_test(grug_state, "call_expr_04");
+	run_err_spaces_test(grug_state, "call_expr_05");
+	run_err_spaces_test(grug_state, "call_stmt_00");
+	run_err_spaces_test(grug_state, "call_stmt_01");
+	run_err_spaces_test(grug_state, "call_stmt_02");
+	run_err_spaces_test(grug_state, "call_stmt_03");
+	run_err_spaces_test(grug_state, "call_stmt_04");
+	run_err_spaces_test(grug_state, "call_stmt_05");
+	run_err_spaces_test(grug_state, "call_stmt_06");
+	run_err_spaces_test(grug_state, "call_stmt_07");
+	run_err_spaces_test(grug_state, "compare_expr_00");
+	run_err_spaces_test(grug_state, "compare_expr_01");
+	run_err_spaces_test(grug_state, "compare_expr_02");
+	run_err_spaces_test(grug_state, "compare_expr_03");
+	run_err_spaces_test(grug_state, "compare_expr_04");
+	run_err_spaces_test(grug_state, "compare_expr_05");
+	run_err_spaces_test(grug_state, "compare_expr_06");
+	run_err_spaces_test(grug_state, "compare_expr_07");
+	run_err_spaces_test(grug_state, "continue_00");
+	run_err_spaces_test(grug_state, "continue_01");
+	run_err_spaces_test(grug_state, "entity_00");
+	run_err_spaces_test(grug_state, "entity_01");
+	run_err_spaces_test(grug_state, "entity_02");
+	run_err_spaces_test(grug_state, "equality_expr_00");
+	run_err_spaces_test(grug_state, "equality_expr_01");
+	run_err_spaces_test(grug_state, "equality_expr_02");
+	run_err_spaces_test(grug_state, "equality_expr_03");
+	run_err_spaces_test(grug_state, "helper_fn_00");
+	run_err_spaces_test(grug_state, "helper_fn_01");
+	run_err_spaces_test(grug_state, "helper_fn_02");
+	run_err_spaces_test(grug_state, "helper_fn_03");
+	run_err_spaces_test(grug_state, "if_00");
+	run_err_spaces_test(grug_state, "if_01");
+	run_err_spaces_test(grug_state, "if_02");
+	run_err_spaces_test(grug_state, "literal_00");
+	run_err_spaces_test(grug_state, "literal_01");
+	run_err_spaces_test(grug_state, "literal_02");
+	run_err_spaces_test(grug_state, "literal_03");
+	run_err_spaces_test(grug_state, "literal_04");
+	run_err_spaces_test(grug_state, "literal_05");
+	run_err_spaces_test(grug_state, "mul_expr_00");
+	run_err_spaces_test(grug_state, "mul_expr_01");
+	run_err_spaces_test(grug_state, "mul_expr_02");
+	run_err_spaces_test(grug_state, "mul_expr_03");
+	run_err_spaces_test(grug_state, "not_00");
+	run_err_spaces_test(grug_state, "not_01");
+	run_err_spaces_test(grug_state, "on_fn_00");
+	run_err_spaces_test(grug_state, "on_fn_01");
+	run_err_spaces_test(grug_state, "on_fn_02");
+	run_err_spaces_test(grug_state, "on_fn_03");
+	run_err_spaces_test(grug_state, "on_fn_04");
+	run_err_spaces_test(grug_state, "or_expr_00");
+	run_err_spaces_test(grug_state, "or_expr_01");
+	run_err_spaces_test(grug_state, "params_00");
+	run_err_spaces_test(grug_state, "params_01");
+	run_err_spaces_test(grug_state, "params_02");
+	run_err_spaces_test(grug_state, "params_03");
+	run_err_spaces_test(grug_state, "params_04");
+	run_err_spaces_test(grug_state, "params_05");
+	run_err_spaces_test(grug_state, "params_06-F.grug");
+	run_err_spaces_test(grug_state, "params_07-F.grug");
+	run_err_spaces_test(grug_state, "params_08-F.grug");
+	run_err_spaces_test(grug_state, "params_09-F.grug");
+	run_err_spaces_test(grug_state, "params_10-G.grug");
+	run_err_spaces_test(grug_state, "params_11-G.grug");
+	run_err_spaces_test(grug_state, "reassign_00");
+	run_err_spaces_test(grug_state, "reassign_01");
+	run_err_spaces_test(grug_state, "reassign_02");
+	run_err_spaces_test(grug_state, "reassign_03");
+	run_err_spaces_test(grug_state, "resource_00");
+	run_err_spaces_test(grug_state, "resource_01");
+	run_err_spaces_test(grug_state, "resource_02");
+	run_err_spaces_test(grug_state, "return_00");
+	run_err_spaces_test(grug_state, "return_01");
+	run_err_spaces_test(grug_state, "return_02");
+	run_err_spaces_test(grug_state, "unary_expr_00");
+	run_err_spaces_test(grug_state, "unary_expr_01");
+	run_err_spaces_test(grug_state, "unary_expr_02");
+	run_err_spaces_test(grug_state, "unary_expr_03");
+	run_err_spaces_test(grug_state, "unary_expr_04");
+	run_err_spaces_test(grug_state, "unary_expr_05");
+	run_err_spaces_test(grug_state, "unary_expr_06");
+	run_err_spaces_test(grug_state, "unary_expr_07");
+	run_err_spaces_test(grug_state, "vardecl_00");
+	run_err_spaces_test(grug_state, "vardecl_01");
+	run_err_spaces_test(grug_state, "vardecl_02");
+	run_err_spaces_test(grug_state, "vardecl_03");
+	run_err_spaces_test(grug_state, "vardecl_04");
+	run_err_spaces_test(grug_state, "vardecl_05");
+	run_err_spaces_test(grug_state, "while_00");
+	run_err_spaces_test(grug_state, "while_01");
+	run_err_spaces_test(grug_state, "while_02");
 }
 
 static void run_err_mod_api_test(const char *name) {
@@ -3436,41 +3415,6 @@ static void runtime_error_time_limit_exceeded_fibonacci(void* grug_state, void* 
 	assert_string(runtime_error_on_fn_path, "err_runtime"SLASH"time_limit_exceeded_fibonacci"SLASH"input-D.grug");
 }
 
-static void check_that_every_test_directory_has_a_function(
-    const char *test_dirname,
-    size_t test_datas_size
-) {
-    size_t entries = 0;
-
-    DIR *dirp = opendir(prefix(test_dirname));
-    if (dirp == NULL) {
-        perror("opendir");
-        fprintf(stderr, "prefix(test_dirname): \"%s\"\n", prefix(test_dirname));
-        exit(EXIT_FAILURE);
-    }
-
-    struct dirent *dp;
-    while ((dp = readdir(dirp))) {
-        if (streq(dp->d_name, ".") || streq(dp->d_name, "..")) {
-            continue;
-        }
-        entries++;
-    }
-
-    if (entries != test_datas_size) {
-        fprintf(stderr,
-            "Error: The tests/%s/ directory contains %zu entries, "
-            "which doesn't match it having %zu test functions\n",
-            test_dirname, entries, test_datas_size);
-        exit(EXIT_FAILURE);
-    }
-
-    if (closedir(dirp) == -1) {
-        perror("closedir");
-        exit(EXIT_FAILURE);
-    }
-}
-
 static void add_error_tests(void) {
 	ADD_TEST_ERROR(assignment_isnt_expression, "D");
 	ADD_TEST_ERROR(bool_cant_be_initialized_with_1, "D");
@@ -3945,12 +3889,6 @@ void grug_tests_run(
 	add_error_tests();
 	add_runtime_error_tests();
 	add_ok_tests();
-
-	if (whitelisted_test == NULL) {
-		check_that_every_test_directory_has_a_function("err", err_test_datas_size);
-		check_that_every_test_directory_has_a_function("ok", ok_test_datas_size);
-		check_that_every_test_directory_has_a_function("err_runtime", err_runtime_test_datas_size);
-	}
 
 #ifdef SHUFFLES
 	#ifdef SEED

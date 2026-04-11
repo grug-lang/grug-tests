@@ -146,11 +146,10 @@ typedef void (*game_fn_error_t)(struct grug_state* state, const char *message);
 /**
  * @typedef create_grug_state_t
  * @brief Create an instance of `grug_state` that can be passed to all other functions.
- * It is valid to return a null pointer here if no state is needed or if the
- * state is stored in a global.
  *
  * @param mod_api_path Path to the mod_api.json this state will be initialized with.
  * @param mods_dir Path to the mods directory this state should use.
+ * @return Null if an error occurred. If no state is needed, return a dummy value like 42.
  */
 typedef struct grug_state* (*create_grug_state_t) (
 	const char* mod_api_path,

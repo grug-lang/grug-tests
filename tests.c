@@ -4,12 +4,12 @@
 #include <ctype.h>
 #include <errno.h>
 #include <fcntl.h>
-#include <ftw.h>
 #include <inttypes.h>
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/stat.h>
 #include <time.h>
 
 #define assert_call_count(game_fn_name, expected_count) do { \

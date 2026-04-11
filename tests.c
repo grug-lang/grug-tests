@@ -1285,6 +1285,7 @@ static void test_error(
 	}
 
 	FILE *f = fopen(prefix(grug_output_path), "w");
+	check_null(f, "fopen", grug_output_path);
 
 	size_t msg_len = strlen(msg);
 

@@ -143,6 +143,19 @@ int closedir(DIR* dir) {
 #define SLASH "/"
 #endif
 
+int is_regular_file(const char* path) {
+	struct stat st;
+    if (stat(path, &st) < 0) {
+		perror("stat");
+		exit(EXIT_FAILURE);
+	}
+
+    // Skip non-regular files (like directories, "." or "..")
+    if (!S_ISREG(st.st_mode)) {
+        return 0;
+    }
+	return 1;
+}
 // Most implementations shouldn't pass -DASSERT_ALIGNMENT.
 // It caught a ton of stack misalignment bugs
 // in the original version of grug.c, as it emitted raw machine code.
@@ -1142,29 +1155,32 @@ static const char *get_expected_error(const char *expected_error_path) {
 	return expected_error;
 }
 
-static void make_results_dir(const char *results_path) {
-	if (mkdir(prefix(results_path)) == -1 && errno != EEXIST) {
-		perror("mkdir");
-		fprintf(stderr, "prefix(results_path): \"%s\"\n", prefix(results_path));\
-		exit(EXIT_FAILURE);
-	}
-}
+/* static void make_results_dir(const char *results_path) { */
+/* 	if (mkdir(prefix(results_path)) == -1 && errno != EEXIST) { */
+/* 		perror("mkdir"); */
+/* 		fprintf(stderr, "prefix(results_path): \"%s\"\n", prefix(results_path));\ */
+/* 		exit(EXIT_FAILURE); */
+/* 	} */
+/* } */
 
-static int remove_callback(const char *entry_path, const struct stat *entry_info, int entry_type, struct FTW *ftw) {
-	(void)entry_info;
-	(void)entry_type;
-	(void)ftw;
+/* static int remove_callback(const char *entry_path, const struct stat *entry_info, int entry_type, struct FTW *ftw) { */
+/* 	(void)entry_info; */
+/* 	(void)entry_type; */
+/* 	(void)ftw; */
 
-	int rv = remove(entry_path);
-	check(rv, "remove", entry_path);
+/* 	int rv = remove(entry_path); */
+/* 	check(rv, "remove", entry_path); */
 
-	return rv;
-}
+/* 	return rv; */
+/* } */
 
-static int rm_rf(const char *path) {
-	int fd_limit = 42;
-	return nftw(path, remove_callback, fd_limit, FTW_DEPTH | FTW_PHYS);
-}
+/* static void rm_rf(const char *path) { */
+/* 	int fd_limit = 42; */
+/* 	char buffer[4096]; */
+/* 	prefix_buf(path, buffer); */
+/* 	printf("rm_rf_path: %s\n", buffer); */
+/* 	check(nftw(path, remove_callback, fd_limit, FTW_DEPTH | FTW_PHYS), "nftw", path); */
+/* } */
 
 static int compare_filenames(const void *a, const void *b) {
     const char *str_a = *(const char * const *)a;
@@ -1229,16 +1245,9 @@ static void run_single_test(struct grug_state *grug_state, const char *dir_path,
 		exit(EXIT_FAILURE);
 	}
 
-    struct stat st;
-    if (stat(grug_path, &st) < 0) {
-		perror("stat");
-		exit(EXIT_FAILURE);
+	if (!is_regular_file(grug_path)) {
+		return;
 	}
-
-    // Skip non-regular files (like directories, "." or "..")
-    if (!S_ISREG(st.st_mode)) {
-        return;
-    }
 
     printf("Running tests/%s...\n", relative_path);
 
@@ -1313,8 +1322,8 @@ static void test_error(
 ) {
 	printf("Running tests/err/%s...\n", test_name);
 
-	rm_rf(results_path);
-	make_results_dir(results_path);
+	/* rm_rf(results_path); */
+	/* make_results_dir(results_path); */
 
 	const char* msg = NULL;
 	compile_grug_file(grug_state, grug_path, &msg);
@@ -1441,8 +1450,8 @@ static void reset(void) {
 }
 
 static void* prologue(void* grug_state, const char *grug_path, const char *results_path) {
-	rm_rf(results_path);
-	make_results_dir(results_path);
+	/* rm_rf(results_path); */
+	/* make_results_dir(results_path); */
 
 	const char *msg = NULL;
 	void *file_id = compile_grug_file(grug_state, grug_path, &msg);

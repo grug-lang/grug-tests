@@ -76,10 +76,10 @@ static const char *get_type_name[] = {
 } while (0)
 
 #if defined(_WIN32)
-#include <windows.h>
+#define mkdir(dir_path) mkdir(dir_path)
 #define SLASH "\\"
 #elif defined(__linux__)
-#include <unistd.h>
+#define mkdir(dir_path) mkdir(dir_path, 0755)
 #define SLASH "/"
 #endif
 
@@ -1082,6 +1082,15 @@ static const char *get_expected_error(const char *expected_error_path) {
 	return expected_error;
 }
 
+static void make_dir(const char *results_path) {
+	// If the directory already exists, just ignores the error.
+	if (mkdir(prefix(results_path)) == -1 && errno != EEXIST) {
+		perror("mkdir");
+		fprintf(stderr, "prefix(results_path): \"%s\"\n", prefix(results_path));\
+		exit(EXIT_FAILURE);
+	}
+}
+
 static void run_err_spaces_test(struct grug_state *grug_state, const char *name) {
 	if (!is_whitelisted_test(name)) {
 		return;
@@ -1270,8 +1279,9 @@ static void test_error(
 	const char *results_path,
 	const char *grug_output_path
 ) {
-	(void)(results_path);
 	printf("Running tests/err/%s...\n", test_name);
+
+	make_dir(results_path);
 
 	const char* msg = NULL;
 	compile_grug_file(grug_state, grug_path, &msg);
@@ -1399,7 +1409,7 @@ static void reset(void) {
 }
 
 static void* prologue(void* grug_state, const char *grug_path, const char *results_path) {
-	(void)(results_path);
+	make_dir(results_path);
 
 	const char *msg = NULL;
 	void *file_id = compile_grug_file(grug_state, grug_path, &msg);

@@ -2,7 +2,7 @@
 
 #include <assert.h>
 #include <ctype.h>
-#include <dirent.h>
+/* #include <dirent.h> */
 #include <errno.h>
 #include <fcntl.h>
 #include <ftw.h>
@@ -12,7 +12,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
-#include <unistd.h>
+/* #include <unistd.h> */
 
 #define assert_call_count(game_fn_name, expected_count) do { \
 	size_t count = game_fn_ ## game_fn_name ## _call_count; \
@@ -78,9 +78,67 @@ static const char *get_type_name[] = {
 } while (0)
 
 #if defined(_WIN32)
+#include<windows.h.>
 #define mkdir(dir_path) mkdir(dir_path)
 #define SLASH "\\"
+
+struct dirent {
+	char d_name[MAX_PATH];
+};
+
+typedef struct {
+	HANDLE handle;
+	int first_taken;
+	struct dirent data;
+} DIR;
+
+DIR* opendir(const char* path);
+struct dirent* readdir(DIR*);
+int closedir(DIR*);
+
+DIR* opendir(const char* path) {
+	char path_buffer[4096];
+	snprintf(path_buffer, sizeof(path_buffer), "%s\\*", path);
+
+	printf("opendir path: %s\n", path_buffer);
+	WIN32_FIND_DATAA data = {0};
+	HANDLE handle = FindFirstFileA(path_buffer, &data);
+	if (handle == INVALID_HANDLE_VALUE) {
+		return NULL;
+	}
+	DIR* out = malloc(sizeof(DIR));
+	*out = (DIR) {
+		.handle = handle,
+		.first_taken = 0
+	};
+	strcpy(out->data.d_name, data.cFileName);
+	return out;
+}
+
+struct dirent* readdir(DIR* dir) {
+	if (!dir->first_taken) {
+		dir->first_taken = 1;
+		return &dir->data;
+	} else {
+		WIN32_FIND_DATAA data = {0};
+		if (FindNextFile(dir->handle, &data) == 0) {
+			return NULL;
+		}
+		strcpy(dir->data.d_name, data.cFileName);
+	}
+	return &dir->data; 
+}
+
+int closedir(DIR* dir) {
+	if (FindClose(dir->handle) == 0) {
+		return -1;
+	} else {
+		return 1;
+	}
+}
+
 #elif defined(__linux__)
+#include <dirent.h>
 #define mkdir(dir_path) mkdir(dir_path, 0755)
 #define SLASH "/"
 #endif

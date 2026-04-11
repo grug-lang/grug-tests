@@ -25,3 +25,4 @@ tests.so
 tests.out
 tests.o
 build/*
+makefile

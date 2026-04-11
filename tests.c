@@ -2,7 +2,6 @@
 
 #include <assert.h>
 #include <ctype.h>
-/* #include <dirent.h> */
 #include <errno.h>
 #include <fcntl.h>
 #include <ftw.h>
@@ -12,7 +11,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
-/* #include <unistd.h> */
 
 #define assert_call_count(game_fn_name, expected_count) do { \
 	size_t count = game_fn_ ## game_fn_name ## _call_count; \
@@ -79,7 +77,6 @@ static const char *get_type_name[] = {
 
 #if defined(_WIN32)
 #include<windows.h.>
-#define mkdir(dir_path) mkdir(dir_path)
 #define SLASH "\\"
 
 struct dirent {
@@ -139,10 +136,11 @@ int closedir(DIR* dir) {
 
 #elif defined(__linux__)
 #include <dirent.h>
-#define mkdir(dir_path) mkdir(dir_path, 0755)
+#include <unistd.h>
 #define SLASH "/"
 #endif
 
+int is_regular_file(const char* path);
 int is_regular_file(const char* path) {
 	struct stat st;
     if (stat(path, &st) < 0) {
@@ -1155,33 +1153,6 @@ static const char *get_expected_error(const char *expected_error_path) {
 	return expected_error;
 }
 
-/* static void make_results_dir(const char *results_path) { */
-/* 	if (mkdir(prefix(results_path)) == -1 && errno != EEXIST) { */
-/* 		perror("mkdir"); */
-/* 		fprintf(stderr, "prefix(results_path): \"%s\"\n", prefix(results_path));\ */
-/* 		exit(EXIT_FAILURE); */
-/* 	} */
-/* } */
-
-/* static int remove_callback(const char *entry_path, const struct stat *entry_info, int entry_type, struct FTW *ftw) { */
-/* 	(void)entry_info; */
-/* 	(void)entry_type; */
-/* 	(void)ftw; */
-
-/* 	int rv = remove(entry_path); */
-/* 	check(rv, "remove", entry_path); */
-
-/* 	return rv; */
-/* } */
-
-/* static void rm_rf(const char *path) { */
-/* 	int fd_limit = 42; */
-/* 	char buffer[4096]; */
-/* 	prefix_buf(path, buffer); */
-/* 	printf("rm_rf_path: %s\n", buffer); */
-/* 	check(nftw(path, remove_callback, fd_limit, FTW_DEPTH | FTW_PHYS), "nftw", path); */
-/* } */
-
 static int compare_filenames(const void *a, const void *b) {
     const char *str_a = *(const char * const *)a;
     const char *str_b = *(const char * const *)b;
@@ -1320,10 +1291,8 @@ static void test_error(
 	const char *results_path,
 	const char *grug_output_path
 ) {
+	(void)(results_path);
 	printf("Running tests/err/%s...\n", test_name);
-
-	/* rm_rf(results_path); */
-	/* make_results_dir(results_path); */
 
 	const char* msg = NULL;
 	compile_grug_file(grug_state, grug_path, &msg);
@@ -1450,8 +1419,7 @@ static void reset(void) {
 }
 
 static void* prologue(void* grug_state, const char *grug_path, const char *results_path) {
-	/* rm_rf(results_path); */
-	/* make_results_dir(results_path); */
+	(void)(results_path);
 
 	const char *msg = NULL;
 	void *file_id = compile_grug_file(grug_state, grug_path, &msg);

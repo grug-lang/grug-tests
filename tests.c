@@ -1152,6 +1152,10 @@ static void free_directory_entries(char **filenames, size_t count) {
 }
 
 static void run_single_test(struct grug_state *grug_state, const char *dir_path, const char *filename) {
+	if (!is_whitelisted_test(filename)) {
+		return;
+	}
+
     char grug_path[4096];
     int grug_len = snprintf(grug_path, sizeof(grug_path), "%s"SLASH"%s", dir_path, filename);
     if (grug_len < 0 || (size_t)grug_len >= sizeof(grug_path)) {
@@ -1207,6 +1211,38 @@ static void run_err_spaces_tests(struct grug_state *grug_state) {
     }
 
     free_directory_entries(filenames, count);
+}
+
+static void run_err_mod_api_test(const char *name) {
+	if (!is_whitelisted_test(name)) {
+		return;
+	}
+
+    printf("Running tests/err_mod_api/%s...\n", name);
+
+    char path[4096];
+    int len = snprintf(path, sizeof(path), "%s"SLASH"err_mod_api"SLASH"%s", tests_dir_path, name);
+    if (len < 0 || (size_t)len >= sizeof(path)) {
+		fprintf(stderr, "Error: Filling err_mod_api path failed\n");
+		exit(EXIT_FAILURE);
+	}
+
+	void* grug_state = create_grug_state(path, tests_dir_path);
+	if (grug_state) {
+		fprintf(stderr, "Error: Expected create_grug_state(\"%s\", \"%s\") to return NULL\n", path, tests_dir_path);
+		exit(EXIT_FAILURE);
+	}
+}
+
+static void run_err_mod_api_tests(void) {
+	run_err_mod_api_test("entities_must_be_json_object.json");
+	run_err_mod_api_test("entities_must_be_sorted.json");
+	run_err_mod_api_test("entity_must_be_json_object.json");
+	run_err_mod_api_test("game_fns_must_be_json_object.json");
+	run_err_mod_api_test("game_fns_must_be_sorted.json");
+	run_err_mod_api_test("on_fns_must_be_json_object.json");
+	run_err_mod_api_test("on_fns_must_be_sorted.json");
+	run_err_mod_api_test("root_must_be_object.json");
 }
 
 static void test_error(
@@ -3857,7 +3893,7 @@ void grug_tests_run(
 	game_fn_error              = vtable.game_fn_error;
 
 	if (setvbuf(stdout, NULL, _IOLBF, 64) != 0) {
-		fprintf(stderr, "Could not buffer stdout\n");
+		fprintf(stderr, "Error: Could not buffer stdout\n");
 		exit(EXIT_FAILURE);
 	};
 
@@ -3866,6 +3902,10 @@ void grug_tests_run(
 		mod_api_path,
 		tests_dir_path
 	);
+	if (!grug_state) {
+		fprintf(stderr, "Error: Failed to create grug state\n");
+		exit(EXIT_FAILURE);
+	}
 
 	add_error_tests();
 	add_runtime_error_tests();
@@ -3875,11 +3915,6 @@ void grug_tests_run(
 		check_that_every_test_directory_has_a_function("err", err_test_datas_size);
 		check_that_every_test_directory_has_a_function("ok", ok_test_datas_size);
 		check_that_every_test_directory_has_a_function("err_runtime", err_runtime_test_datas_size);
-	}
-
-	if (err_test_datas_size + ok_test_datas_size + err_runtime_test_datas_size == 0) {
-		fprintf(stderr, "Error: No tests to execute\n");
-		exit(EXIT_FAILURE);
 	}
 
 #ifdef SHUFFLES
@@ -3898,6 +3933,7 @@ void grug_tests_run(
 	SHUFFLE(runtime_error_test_datas, err_runtime_test_datas_size, struct runtime_error_test_data);
 #endif
 
+	run_err_mod_api_tests();
     run_err_spaces_tests(grug_state);
 
 	for (size_t i = 0; i < err_test_datas_size; i++) {

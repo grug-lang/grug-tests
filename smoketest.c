@@ -801,10 +801,12 @@ static void load_tests_so(void) {
     #pragma GCC diagnostic pop
 }
 
-static struct grug_state* create_grug_state(const char* mod_api_dir, const char* mods_dir) {
-	(void)mod_api_dir;
+static struct grug_state* create_grug_state(const char* mod_api_path, const char* mods_dir) {
 	(void)mods_dir;
-	return NULL;
+    if (starts_with(mod_api_path, "tests"SLASH"err_mod_api"SLASH)) {
+        return NULL;
+    }
+	return (struct grug_state*)42;
 }
 
 static void destroy_grug_state(struct grug_state* grug_state) {

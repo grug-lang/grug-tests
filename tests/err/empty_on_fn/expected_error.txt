@@ -1,1 +1,4 @@
-on_a() can't be empty
+TODO: line number of error?
+  in on_a (err/empty_on_fn/input-D.grug:1:1)
+Error: on_a() can't be empty
+1 $ on_a() {

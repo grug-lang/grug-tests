@@ -1,3 +1,3 @@
   in on_a (err/empty_line_after_group/input-D.grug:4:1)
-Error: Unexpected empty line, on line 4
+Error: Unexpected empty line
 4 $ 

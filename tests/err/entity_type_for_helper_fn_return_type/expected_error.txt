@@ -1,1 +1,3 @@
-The function 'helper_foo' can't have 'entity' as its return type
+  in helper_foo (err/entity_type_for_helper_fn_return_type/input-D.grug:5:14)
+Error: The function 'helper_foo' can't have 'entity' as its return type
+5 $ helper_foo() entity {

@@ -1,1 +1,5 @@
-'GREATER_TOKEN' operator expects number
+TODO: Should column be be 21 or 26?
+21 points at the first 'true' but 26 points at the operator
+  in on_a (err/bool_gt//input-D.grug:2:21)
+Error: '>' operator expects number
+2 $ initialize_bool(true > true)

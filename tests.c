@@ -1282,6 +1282,7 @@ static void test_error(
 	const char *grug_output_path
 ) {
 	printf("Running tests/err/%s...\n", test_name);
+	fflush(stdout);
 
 	make_dir_if_not_exists(results_path);
 
@@ -2759,7 +2760,7 @@ static void ok_resource_can_contain_dot_dot_dot(void* grug_state, void* file_id)
     call_export_fn_argless(grug_state, file_id, "on_a");
 	assert_call_count(draw, 1);
 
-	assert_string(game_fn_draw_sprite_path, "ok"SLASH"...foo");
+	assert_string(game_fn_draw_sprite_path, "ok"SLASH"resource_can_contain_dot_dot_dot/...foo");
 }
 
 static void ok_resource_duplicate(void* grug_state, void* file_id) {
@@ -3939,6 +3940,7 @@ void grug_tests_run(
 		struct ok_test_data* fn_data = &ok_test_datas[i];
 
 		printf("Running tests/ok/%s...\n", fn_data->test_name_str);
+		fflush(stdout);
 		reset();
 
 		void* file_id = prologue(grug_state, fn_data->grug_path, fn_data->results_path);
@@ -3955,6 +3957,7 @@ void grug_tests_run(
 		struct ok_test_data* fn_data = &ok_test_datas[i];
 
 		printf("Rerunning tests/ok/%s...\n", fn_data->test_name_str);
+		fflush(stdout);
 		reset();
 
 		init_globals(grug_state, fn_data->file_id);

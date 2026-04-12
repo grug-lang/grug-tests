@@ -22,7 +22,7 @@ jobs:
             compiler: gcc
             sanitizer: none
           - os: windows-latest
-            compiler: msvc
+            compiler: cl
             sanitizer: none
 
     steps:

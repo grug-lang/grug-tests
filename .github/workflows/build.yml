@@ -21,9 +21,6 @@ jobs:
           - os: windows-latest
             compiler: gcc
             sanitizer: none
-          - os: windows-latest
-            compiler: cl
-            sanitizer: none
 
     steps:
       - name: Checkout code

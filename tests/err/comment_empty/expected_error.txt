@@ -1,1 +1,3 @@
-Expected the comment to contain some text on line 1
+  in member scope (err/comment_empty/input-A.grug:1:2)
+Error: Expected the comment to contain some text
+2 $ # 

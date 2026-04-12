@@ -1,1 +1,4 @@
-You can't use the PLUS_TOKEN operator on a string
+TODO: column on operator or operand?
+  in on_a (err/cant_add_strings/input-D.grug:2:15)
+Error: You can't add strings with '+' 
+2 $ say("foo" + "bar")

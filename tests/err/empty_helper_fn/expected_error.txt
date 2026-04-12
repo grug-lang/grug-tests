@@ -1,1 +1,5 @@
-helper_foo() can't be empty
+TODO: Which line should this point at? Maybe this should display the entire
+function?
+  in helper_foo (err/empty_helper_fn/input-D.grug:5:1)
+Error: helper_foo() can't be empty
+5 $ helper_foo() {

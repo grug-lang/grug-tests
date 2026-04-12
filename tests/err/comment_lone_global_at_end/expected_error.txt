@@ -1,1 +1,4 @@
-token_index 1 was out of bounds in peek_token()
+TODO: This message should be better, what should be the location?
+  in member scope (err/comment_lone_global_at_end/input-A.grug:1:1)
+Error: token_index 1 was out of bounds in peek_token()
+1 $ # foo

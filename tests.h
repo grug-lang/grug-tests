@@ -216,6 +216,7 @@ void grug_tests_runtime_error_handler(const char *reason,
 /**
  * @brief Game functions that the bindings must call.
  */
+typedef union grug_value (*game_fn)           (struct grug_state* grug_state, const union grug_value args[]);
 union grug_value game_fn_nothing              (struct grug_state* grug_state, const union grug_value args[]);
 union grug_value game_fn_magic                (struct grug_state* grug_state, const union grug_value args[]);
 union grug_value game_fn_initialize           (struct grug_state* grug_state, const union grug_value args[]);

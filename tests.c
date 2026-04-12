@@ -9,7 +9,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <sys/stat.h>
 #include <time.h>
 
 #define assert_call_count(game_fn_name, expected_count) do { \
@@ -76,10 +75,10 @@ static const char *get_type_name[] = {
 } while (0)
 
 #if defined(_WIN32)
-#define mkdir(dir_path) mkdir(dir_path)
+#include <windows.h>
 #define SLASH "\\"
 #elif defined(__linux__)
-#define mkdir(dir_path) mkdir(dir_path, 0755)
+#include <sys/stat.h>
 #define SLASH "/"
 #endif
 
@@ -1082,9 +1081,12 @@ static const char *get_expected_error(const char *expected_error_path) {
 	return expected_error;
 }
 
-static void make_dir(const char *results_path) {
-	// If the directory already exists, just ignores the error.
-	if (mkdir(prefix(results_path)) == -1 && errno != EEXIST) {
+static void make_dir_if_not_exists(const char* results_path) {
+	#if defined(__linux__)
+	if (mkdir(prefix(results_path), 0755) == -1 && errno != EEXIST) {
+	#elif defined(WIN32)
+	if (CreateDirectory(prefix(results_path), NULL) == 0 && GetLastError() != ERROR_ALREADY_EXISTS) {
+	#endif
 		perror("mkdir");
 		fprintf(stderr, "prefix(results_path): \"%s\"\n", prefix(results_path));\
 		exit(EXIT_FAILURE);
@@ -1281,7 +1283,7 @@ static void test_error(
 ) {
 	printf("Running tests/err/%s...\n", test_name);
 
-	make_dir(results_path);
+	make_dir_if_not_exists(results_path);
 
 	const char* msg = NULL;
 	compile_grug_file(grug_state, grug_path, &msg);
@@ -1409,7 +1411,7 @@ static void reset(void) {
 }
 
 static void* prologue(void* grug_state, const char *grug_path, const char *results_path) {
-	make_dir(results_path);
+	make_dir_if_not_exists(results_path);
 
 	const char *msg = NULL;
 	void *file_id = compile_grug_file(grug_state, grug_path, &msg);

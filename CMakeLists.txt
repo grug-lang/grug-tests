@@ -14,20 +14,48 @@ message(STATUS "Compilation will use ${CMAKE_C_COMPILER_ID}")
 # -----------------------------
 # Base compiler flags
 # -----------------------------
-set(BASE_WARNINGS
-    -g
-    -Wall
-    -Wextra
-    -pedantic
-    -Wconversion
-    -Werror
-    -Wfatal-errors
-    -Wstrict-prototypes
-    -Wmissing-prototypes
-    -Wshadow
-    -Wuninitialized
-    -Wunused-macros
-)
+
+set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
+if (MSVC)
+	add_definitions(-D_CRT_SECURE_NO_WARNINGS)    
+	set(BASE_WARNINGS
+		/W4
+		/WX
+		/analyze
+        /w14242  # conversion loss
+        /w14254  # conversion truncation
+        /w14263  # uninitialized use
+        /w14265  # class member padding / issues
+        /w14287  # unsigned/negative mismatch
+        /w14456  # shadowing (local)
+        /w14457  # shadowing (parameter)
+		/wd4068  # ignore unknown pragmas to ignore GCC diagnostic pragmas
+	)
+	set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR} )
+	set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR} )
+	set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR} )
+	set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY_DEBUG ${CMAKE_BINARY_DIR} )
+	set(CMAKE_LIBRARY_OUTPUT_DIRECTORY_DEBUG ${CMAKE_BINARY_DIR} )
+	set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG ${CMAKE_BINARY_DIR} )
+	set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY_RELEASE ${CMAKE_BINARY_DIR} )
+	set(CMAKE_LIBRARY_OUTPUT_DIRECTORY_RELEASE ${CMAKE_BINARY_DIR} )
+	set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE ${CMAKE_BINARY_DIR} )
+else() 
+	set(BASE_WARNINGS
+		-g
+		-Wall
+		-Wextra
+		-pedantic
+		-Wconversion
+		-Werror
+		# -Wfatal-errors
+		-Wstrict-prototypes
+		-Wmissing-prototypes
+		-Wshadow
+		-Wuninitialized
+		-Wunused-macros
+	)
+endif()
 
 add_compile_options(${BASE_WARNINGS})
 
@@ -100,10 +128,12 @@ if (DEFINED WIN32)
     set_target_properties(tests PROPERTIES PREFIX "")
 endif()
 
-target_link_libraries(tests
-    PRIVATE
-        m
-)
+if (NOT(MSVC))
+	target_link_libraries(tests
+		PRIVATE
+			m
+	)
+endif()
 
 # Needed to match -rdynamic behavior
 if(UNIX AND NOT APPLE)

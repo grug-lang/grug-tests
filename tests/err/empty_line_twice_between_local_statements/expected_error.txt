@@ -1,1 +1,3 @@
-Unexpected empty line, on line 4
+  in on_a (err/empty_line_twice_between_local_statements/input-D.grug:4:1)
+Error: Unexpected empty line
+4 $ 

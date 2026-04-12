@@ -1,1 +1,3 @@
-Entities can't be empty strings
+  in on_a (err/entity_cant_be_empty_string/input-D.grug:2:11)
+Error: Entities can't be empty strings
+2 $ spawn(e"")

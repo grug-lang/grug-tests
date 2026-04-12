@@ -1,1 +1,4 @@
-Entity 'foo:bAr' its entity name contains the invalid character 'A'
+TODO: Should this point at the entire string or the location of the 'A'
+  in on_a (err/entity_has_invalid_entity_name_uppercase/input-D.grug:2:11)
+Error: Entity 'foo:bAr' its entity name contains the invalid character 'A'
+2 $ spawn(e"foo:bAr")

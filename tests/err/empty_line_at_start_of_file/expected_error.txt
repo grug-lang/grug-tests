@@ -1,3 +1,3 @@
   in member scope (err/empty_line_at_start_of_file/input-D.grug:1:1)
-Error: Unexpected empty line, on line 1
+Error: Unexpected empty line
 1 $ 

@@ -1,1 +1,4 @@
-Entity 'err:foo' its mod name 'err' is invalid, since the file it is in refers to its own mod; just change it to 'foo'
+TODO: cleanup error message
+  in on_a (err/entity_mod_name_cant_be_current_mod/input-D.grug:2:11)
+Error: Entity 'err:foo' its mod name 'err' is invalid, since the file it is in refers to its own mod; just change it to 'foo'
+2 $ spawn(e"err:foo")

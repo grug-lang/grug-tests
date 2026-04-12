@@ -1,1 +1,4 @@
-Unexpected empty line, on line 4
+TODO: This isn't empty line twice, it's newline twice
+  in member scope (err/empty_line_twice_at_end_of_file/input-D.grug:4:1)
+Error: Unexpected empty line
+4 $ 

@@ -1,1 +1,3 @@
-The global variable 'a' shadows an earlier global variable
+  in member scope (err/cant_redefine_global/input-D.grug:2:1)
+Error: The global variable 'a' shadows an earlier global variable
+2 $ a: number = 1.0

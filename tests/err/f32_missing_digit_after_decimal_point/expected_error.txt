@@ -1,1 +1,3 @@
-Missing digit after decimal point in '4.'
+  in on_a (err/f32_missing_digit_after_decimal_point/input-D.grug:2:9)
+Error: Missing digit after decimal point in '4.'
+2 $ sin(4.)

@@ -1,1 +1,3 @@
-There is a break statement that isn't inside of a while loop
+  in on_a (err/cant_break_outside_of_loop/input-D.grug:2:5)
+Error: There is a break statement that isn't inside of a while loop
+2 $ break

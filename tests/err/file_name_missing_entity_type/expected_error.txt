@@ -1,1 +1,2 @@
-'input-.grug' is missing an entity type in its name
+Error: 'input-.grug' is missing an entity type in its name
+  err/file_name_missing_entity_type/input-.grug

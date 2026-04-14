@@ -1,1 +1,3 @@
-The local variable 'foo' shadows an earlier global variable
+  in on_a (err/global_variable_already_uses_local_variable_name/input-D.grug:4:5)
+Error: The local variable 'foo' shadows an earlier global variable
+4 $ foo: number = 42

@@ -1,1 +1,4 @@
-Mods aren't allowed to call their own on_ functions, but 'on_a' was called
+ TODO: remove secondary clause
+  in member scope (err/global_cant_call_on_fn/input-D.grug:1:15)
+Error: Mods aren't allowed to call their own on_ functions, but 'on_a' was called
+1 $ foo: number = on_a()

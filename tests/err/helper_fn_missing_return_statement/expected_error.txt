@@ -1,1 +1,3 @@
+TODO: What is the error location here?
+  in helper_foo
 Function 'helper_foo' is supposed to return number as its last line

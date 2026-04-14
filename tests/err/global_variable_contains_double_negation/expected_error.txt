@@ -1,1 +1,3 @@
-Found 'MINUS_TOKEN' directly next to another 'MINUS_TOKEN', which can be simplified by just removing both of them
+  in member scope (err/global_variable_contains_double_negation/input-A.grug:1:15)
+Error: Found 'MINUS_TOKEN' directly next to another 'MINUS_TOKEN', which can be simplified by just removing both of them
+1 $ foo: number = --2

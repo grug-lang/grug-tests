@@ -1,1 +1,3 @@
-Global id variables can't be reassigned
+  in on_a (err/global_id_cant_be_reassigned/input-D.grug:4:5)
+Error: Global id variables can't be reassigned
+4 $ foo = get_opponent()

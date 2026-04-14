@@ -1,1 +1,3 @@
-The variable 'foo' does not exist
+  in member scope (err/global_variable_definition_cant_use_itself/input-A.grug:1:15)
+Error: The variable 'foo' does not exist
+1 $ foo: number = foo

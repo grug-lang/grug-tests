@@ -1,1 +1,3 @@
-Move the global variable 'foo' so it is above the on_ functions
+  in member scope (err/global_variable_after_on_fns/input-D.grug:5:1)
+Error: Move the global variable 'foo' so it is above the on_ functions
+5 $ foo: number = 42

@@ -1,1 +1,3 @@
-The global variable 'foo' isn't allowed to call helper functions
+  in member scope (err/global_cant_call_helper_fn/input-A.grug:1:15)
+Error: The global variable 'foo' isn't allowed to call helper functions
+1 $ foo: number = helper_bar()

@@ -1,1 +1,3 @@
-helper_bar() is defined before the first time it gets called
+  in helper_bar (err/helper_fn_defined_before_first_helper_fn_usage/input-D.grug:5:1)
+Error: helper_bar() is defined before the first time it gets called
+5 $ helper_bar() {

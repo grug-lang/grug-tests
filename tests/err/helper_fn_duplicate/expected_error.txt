@@ -1,1 +1,3 @@
-The function 'helper_foo' was defined several times in the same file
+  in helper_foo (err/helper_fn_duplicate/input-D.grug:9:1)
+Error: The function 'helper_foo' was defined several times in the same file
+9 $ helper_foo() {

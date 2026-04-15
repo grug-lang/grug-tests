@@ -1,1 +1,3 @@
-Unexpected '(' after non-identifier at line 2
+  in on_a (err/open_parenthesis_after_number/input-D.grug:2:18)
+Error: Unexpected '(' after non-identifier at line 2
+2 $ initialize(42())

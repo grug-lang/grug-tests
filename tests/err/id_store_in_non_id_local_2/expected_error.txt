@@ -1,1 +1,3 @@
-Can't assign id to 'foo', which has type D
+  in on_a (err/id_store_in_non_id_local_2/input-D.grug:3:11)
+Error: Can't assign id to 'foo', which has type D
+3 $ foo = retrieve()

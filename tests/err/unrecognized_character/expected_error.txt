@@ -1,1 +1,3 @@
-Unrecognized character '$' on line 1
+  in member scope (err/unrecognized_character/input-A.grug:1:1)
+Error: Unrecognized character '$' on line 1
+1 $ $

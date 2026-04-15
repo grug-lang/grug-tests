@@ -1,1 +1,3 @@
-Function 'helper_foo' is supposed to return Opponent, not id
+  in helper_foo (err/id_return/input-D.grug:6:12)
+Error: Function 'helper_foo' is supposed to return Opponent, not id
+6 $ return retrieve()

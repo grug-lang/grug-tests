@@ -1,1 +1,3 @@
-Mods aren't allowed to call their own on_ functions, but 'on_a' was called
+  in on_a (err/on_fn_cant_be_called_by_on_fn/input-D.grug:2:5)
+Error: Mods aren't allowed to call their own on_ functions, but 'on_a' was called
+2 $ on_a()

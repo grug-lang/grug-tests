@@ -1,1 +1,3 @@
-The function 'on_b' needs to be moved before/after a different on_ function, according to the entity 'E' in mod_api.json
+  in on_b (err/on_fn_wrong_order/input-E.grug:1:1)
+Error: The function 'on_b' needs to be moved before/after a different on_ function, according to the entity 'E' in mod_api.json
+1 $ on_b() {

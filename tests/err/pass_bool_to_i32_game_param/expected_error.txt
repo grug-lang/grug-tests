@@ -1,1 +1,3 @@
-Function call 'initialize' expected the type number for argument 'x', but got bool
+  in on_a (err/pass_bool_to_i32_game_param/input-F.grug:2:16)
+Error: Function call 'initialize' expected the type number for argument 'x', but got bool
+2 $ initialize(true)

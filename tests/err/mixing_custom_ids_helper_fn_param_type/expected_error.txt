@@ -1,1 +1,3 @@
-Function call 'helper_foo' expected the type Opponent for argument 'foo', but got D
+  in on_a (err/mixing_custom_ids_helper_fn_param_type/input-D.grug:2:16)
+Error: Function call 'helper_foo' expected the type Opponent for argument 'foo', but got D
+2 $ helper_foo(me)

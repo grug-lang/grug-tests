@@ -1,1 +1,3 @@
-The function 'on_a' was defined several times in the same file
+  in on_a (err/on_fn_duplicate/input-D.grug:5:1)
+Error: The function 'on_a' was defined several times in the same file
+5 $ on_a() {

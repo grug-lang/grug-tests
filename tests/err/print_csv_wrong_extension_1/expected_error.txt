@@ -1,1 +1,5 @@
-The resource 'print_csv_wrong_extension_1/foo.txt' was supposed to have the extension '.csv'
+TODO: I would like to pass the location of the extension instead of the
+location of the resource string
+  in on_a (err/print_csv_wrong_extension_1/input-D.grug:2:15)
+Error: The resource 'print_csv_wrong_extension_1/foo.txt' was supposed to have the extension '.csv'
+2 $ print_csv(r"print_csv_wrong_extension_1/foo.txt")

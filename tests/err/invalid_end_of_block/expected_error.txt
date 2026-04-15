@@ -1,1 +1,3 @@
-Expected indentation, newline, or '}', but got '42' on line 3
+  in on_a (err/invalid_end_of_block/input-D.grug:3:1)
+Error: Expected indentation, newline, or '}', but got '42' on line 3
+3 $ 42

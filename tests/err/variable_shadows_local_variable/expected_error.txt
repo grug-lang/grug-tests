@@ -1,1 +1,3 @@
-The local variable 'x' shadows an earlier local variable
+  in on_a (err/variable_shadows_local_variable/input-D.grug:5:9)
+Error: The local variable 'x' shadows an earlier local variable
+5 $ x: number = 69

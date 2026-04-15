@@ -1,1 +1,4 @@
-A comment has trailing whitespace on line 2
+TODO: tokenizer error
+  in on_a (err/trailing_space_in_comment/input-D.grug:2:10)
+Error: A comment has trailing whitespace on line 2
+2 $ # foo 

@@ -1,1 +1,3 @@
-Expected token type CLOSE_PARENTHESIS_TOKEN, but got NEWLINE_TOKEN on line 5
+  in helper_foo (err/indented_helper_fn_parameter/input-D.grug:5:12)
+Error: Expected token type CLOSE_PARENTHESIS_TOKEN, but got NEWLINE_TOKEN on line 5
+5 $ helper_foo(

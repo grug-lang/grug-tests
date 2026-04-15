@@ -1,1 +1,3 @@
-The variable 'foo' does not exist
+  in on_a (err/variable_used_before_definition/input-D.grug:2:16)
+Error: The variable 'foo' does not exist
+2 $ initialize(foo)

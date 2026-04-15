@@ -1,1 +1,3 @@
-Expected token type INDENTATION_TOKEN, but got CLOSE_BRACE_TOKEN on line 3
+  in on_a (err/indentation_going_down_by_2/input-D.grug:3:1)
+Error: Error: Expected token type INDENTATION_TOKEN, but got CLOSE_BRACE_TOKEN on line 3
+3 $ }

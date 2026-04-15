@@ -1,1 +1,3 @@
-Remove the '.' from the resource "."
+  in on_a (err/resource_cant_refer_to_current_directory_1/input-D.grug:2:10)
+Error: Remove the '.' from the resource "."
+2 $ draw(r".")

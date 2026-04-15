@@ -1,1 +1,4 @@
-Expected a single space after the '#' on line 2
+TODO: The tokenizer can't recognize where this is
+  in on_a (err/no_space_between_comment_character_and_comment/input-D.grug:2:6)
+Error: Expected a single space after the '#' on line 2
+2 $ #foo

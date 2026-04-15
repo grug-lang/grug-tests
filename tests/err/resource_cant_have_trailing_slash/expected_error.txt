@@ -1,1 +1,3 @@
-Remove the trailing slash from the resource "resource_cant_end_with_slash/"
+  in on_a (err/resource_cant_have_trailing_slash/input-D.grug:2:10)
+Error: Remove the trailing slash from the resource "resource_cant_end_with_slash/"
+2 $ draw(r"resource_cant_end_with_slash/")

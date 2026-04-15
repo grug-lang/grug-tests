@@ -1,1 +1,3 @@
-Replace the '//' with '/' in the resource "resource_cant_contain_double_slash//input.grug"
+  in on_a (err/resource_cant_contain_double_slash/input-D.grug:2:10)
+Error: Replace the '//' with '/' in the resource "resource_cant_contain_double_slash//input.grug"
+2 $ draw(r"resource_cant_contain_double_slash//input.grug")

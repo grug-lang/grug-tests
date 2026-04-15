@@ -1,1 +1,3 @@
-Expected an empty line, on line 2
+  in member scope (err/missing_empty_line_between_global_and_on_fn/input-D.grug:2:1)
+Error: Expected an empty line, on line 2
+2 $ on_a() {

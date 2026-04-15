@@ -1,1 +1,3 @@
-The host function 'draw' expects a resource string, so put an 'r' in front of string "foo"
+  in on_a (err/resource_string_must_be_prefixed/input-D.grug:2:10)
+Error: The host function 'draw' expects a resource string, so put an 'r' in front of string "foo"
+2 $ draw("foo")

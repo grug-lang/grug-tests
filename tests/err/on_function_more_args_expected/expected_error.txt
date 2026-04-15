@@ -1,1 +1,4 @@
-Function 'on_a' expected the parameter 'y' with type number
+TODO: Where exactly should this error point
+  in on_a (err/on_function_more_args_expected/input-G.grug:1:15)
+Error: Function 'on_a' expected the parameter 'y' with type number
+1 $ on_a(x: number) {

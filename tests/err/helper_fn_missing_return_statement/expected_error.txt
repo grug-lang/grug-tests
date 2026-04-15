@@ -1,3 +1,4 @@
 TODO: What is the error location here?
-  in helper_foo
-Function 'helper_foo' is supposed to return number as its last line
+  in helper_foo (err/helper_fn_missing_return_statement/input-D.grug:TODO)
+Error: Function 'helper_foo' is supposed to return number as its last line
+TODO $ TODO

@@ -1,1 +1,4 @@
-Expected token type NEWLINE_TOKEN, but got INDENTATION_TOKEN on line 3
+TODO: What do about INDENTATION_TOKEN?
+  in on_a (err/newline_statement/input-D.grug:2:1)
+Error: Expected token type NEWLINE_TOKEN, but got INDENTATION_TOKEN on line 3
+2 $ <>

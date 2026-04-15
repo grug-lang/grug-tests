@@ -1,1 +1,3 @@
-Function call 'set_opponent' expected the type Opponent for argument 'target', but got D
+  in on_a (err/mixing_custom_ids_helper_fn_return_type/input-D.grug:2:18)
+Error: Function call 'set_opponent' expected the type Opponent for argument 'target', but got D
+2 $ set_opponent(helper_foo())

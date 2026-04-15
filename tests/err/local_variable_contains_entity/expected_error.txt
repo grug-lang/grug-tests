@@ -1,1 +1,3 @@
-The variable 'foo' can't have 'entity' as its type
+  in on_a (err/local_variable_contains_entity/input-D.grug:2:10)
+Error: The variable 'foo' can't have 'entity' as its type
+2 $ foo: entity = "foo"

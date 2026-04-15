@@ -1,1 +1,3 @@
-The left and right operand of a binary expression ('EQUALS_TOKEN') must have the same type, but got D and Opponent
+  in on_a (err/mixing_custom_ids_binary_expr/input-D.grug:2:24)
+Error: The left and right operand of a binary expression ('EQUALS_TOKEN') must have the same type, but got D and Opponent
+2 $ initialize_bool(me == get_opponent())

@@ -1,1 +1,3 @@
-Can't assign id to 'foo', which has type D
+  in member scope (err/id_store_in_non_id_global/input-A.grug:1:10)
+Error: Can't assign id to 'foo', which has type D
+1 $ foo: D = retrieve()

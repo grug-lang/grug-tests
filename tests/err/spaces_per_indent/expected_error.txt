@@ -1,1 +1,4 @@
-Encountered 3 spaces, while indentation expects multiples of 4 spaces, on line 2
+TODO: tokenizer error, how should the source be reported?
+  in member scope (err/spaces_per_indent/input-D.grug:2:1)
+Error: Encountered 3 spaces, while indentation expects multiples of 4 spaces, on line 2
+2 $

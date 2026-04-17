@@ -1,0 +1,88 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+        "entities": {
+            "type": "object",
+            "additionalProperties": {
+                "type": "object",
+                "required": [
+                    "description"
+                ],
+                "additionalProperties": false,
+                "properties": {
+                    "description": {
+                        "type": "string"
+                    },
+                    "on_functions": {
+                        "type": "object",
+                        "additionalProperties": {
+                            "type": "object",
+                            "required": [
+                                "description"
+                            ],
+                            "additionalProperties": false,
+                            "properties": {
+                                "description": {
+                                    "type": "string"
+                                },
+                                "arguments": {
+                                    "$ref": "#/definitions/argumentsArray"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "game_functions": {
+            "type": "object",
+            "additionalProperties": {
+                "type": "object",
+                "required": [
+                    "description"
+                ],
+                "additionalProperties": false,
+                "properties": {
+                    "description": {
+                        "type": "string"
+                    },
+                    "return_type": {
+                        "type": "string"
+                    },
+                    "arguments": {
+                        "$ref": "#/definitions/argumentsArray"
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "argumentsArray": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "required": [
+                    "name",
+                    "type"
+                ],
+                "additionalProperties": false,
+                "properties": {
+                    "name": {
+                        "type": "string"
+                    },
+                    "type": {
+                        "type": "string"
+                    },
+                    "resource_extension": {
+                        "type": "string"
+                    },
+                    "entity_type": {
+                        "type": "string"
+                    }
+                }
+            }
+        }
+    }
+}

@@ -43,14 +43,14 @@ jobs:
         with:
           python-version: "3.11"
 
-      - name: Install Lark
-        run: python -m pip install lark[interegular]
+      - name: Install Python dependencies
+        run: python -m pip install lark[interegular] pyright jsonschema
 
       - name: Run grammar check
         run: python grammar.py
 
-      - name: Install Pyright
-        run: python -m pip install pyright
+      - name: Run JSON schema validation
+        run: python mod_api_schema.py
 
       - name: Run Pyright type check
         run: |

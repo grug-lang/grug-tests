@@ -710,21 +710,15 @@ static bool copy_file(const char *src_path, const char *dst_path) {
     return false;
 }
 
-static size_t dump_file_to_json(struct grug_state* grug_state, const char *input_grug_path, char *output_buffer, size_t output_buffer_len) {
+static size_t dump_file_to_json(struct grug_state* grug_state, const char *input_buffer, char *output_buffer, size_t output_buffer_len) {
 	(void)grug_state;
-    FILE *src = fopen(input_grug_path, "r");
-    if (!src) {
-        perror("Failed to open source file");
-        fprintf(stderr, "path: %s\n", input_grug_path);
-        return (size_t)(-1);
-    }
-
-	size_t bytes_read = 0;
-	size_t cur_bytes_read;
-    while ((cur_bytes_read = fread(output_buffer, 1, output_buffer_len - bytes_read - 1, src)) > 0) {bytes_read += cur_bytes_read;}
-	// The last few bytes are being duplicated for some reason on windows
-	output_buffer[((bytes_read >= 1)?bytes_read - 1:0)] = '\0';
-	return bytes_read;
+	size_t input_len = strlen(input_buffer) + 1;
+	if (output_buffer_len < input_len) {
+		output_buffer[0] = '\0';
+		return output_buffer_len;
+	}
+	memmove(output_buffer, input_buffer, input_len);
+	return input_len;
 }
 
 static size_t generate_file_from_json(struct grug_state* grug_state, const char *input_buffer, char *output_buffer, size_t output_buffer_len) {

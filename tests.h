@@ -112,13 +112,13 @@ typedef void (*call_export_fn_t)(struct grug_state* state, struct grug_file_id* 
  * should be null terminated
  *
  * @param state Current active grug state.
- * @param input_grug_path Path to the input `.grug` source file to be dumped.
+ * @param input_buffer Buffer that contains the input grug_file.
  * @param output_buffer Buffer to write the output into.
  * @param output_buffer_len Size of the output buffer currently allocated.
  * @return the number of bytes written to the output, If the returned size is
  * (size_t)(-1), it indicates an error in the function
  */
-typedef size_t (*dump_file_to_json_t)(struct grug_state* state, const char *input_grug_path, char *output_buffer, size_t output_buffer_len);
+typedef size_t (*dump_file_to_json_t)(struct grug_state* state, const char *input_buffer, char *output_buffer, size_t output_buffer_len);
 
 /**
  * @typedef generate_file_from_json_t

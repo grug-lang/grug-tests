@@ -11,6 +11,8 @@
 #include <string.h>
 #include <time.h>
 
+#define MiB(m) (m) * 1024 * 1024
+
 #define assert_call_count(game_fn_name, expected_count) do { \
 	size_t count = game_fn_ ## game_fn_name ## _call_count; \
 	if (count != expected_count) { \
@@ -1054,13 +1056,6 @@ static size_t read_file(const char *path, uint8_t *bytes) {
 		return 0;
 	}
 
-	if (bytes[len - 1] == '\n') {
-		len--;
-		if (bytes[len - 1] == '\r') {
-			len--;
-		}
-	}
-
 	bytes[len] = '\0';
 
 	return len;
@@ -1068,7 +1063,15 @@ static size_t read_file(const char *path, uint8_t *bytes) {
 
 static const char *get_expected_error(const char *expected_error_path) {
 	static char expected_error[420420];
-	read_file(expected_error_path, (uint8_t *)expected_error);
+	size_t len = read_file(expected_error_path, (uint8_t *)expected_error);
+
+	if (expected_error[len - 1] == '\n') {
+		len--;
+		if (expected_error[len - 1] == '\r') {
+			len--;
+		}
+		expected_error[len] = '\0';
+	}
 
 	return expected_error;
 }
@@ -1325,21 +1328,21 @@ static void diff_roundtrip(
 	void* grug_state,
 	const char *grug_path
 ) {
-	static char json_buf[65536 * 1024];
-	if (dump_file_to_json(grug_state, prefix(grug_path), json_buf, sizeof(json_buf)) == (size_t)(-1)) {
+	static uint8_t grug_path_bytes[MiB(1)];
+	size_t grug_path_bytes_len = read_file(grug_path, grug_path_bytes);
+	grug_path_bytes[grug_path_bytes_len] = '\0';
+
+	static char json_buf[MiB(1)];
+	if (dump_file_to_json(grug_state, (char*)grug_path_bytes, json_buf, sizeof(json_buf)) == (size_t)(-1)) {
 		fprintf(stderr, "Error: Failed to dump file AST\n");
 		exit(EXIT_FAILURE);
 	}
 
-	static char applied_buf[65536 * 1024];
+	static char applied_buf[MiB(1)];
 	if (generate_file_from_json(grug_state, json_buf, applied_buf, sizeof(applied_buf)) == (size_t)(-1)) {
 		fprintf(stderr, "Error: Failed to apply file AST\n");
 		exit(EXIT_FAILURE);
 	}
-
-	static uint8_t grug_path_bytes[420420];
-	size_t grug_path_bytes_len = read_file(grug_path, grug_path_bytes);
-	grug_path_bytes[grug_path_bytes_len] = '\0';
 
 	if (!streq((const char *)grug_path_bytes, (const char *)applied_buf)) {
 		fprintf(stderr, "\nError: The roundtrip output differs from the expected output.\n");

@@ -671,45 +671,6 @@ static void call_export_fn(struct grug_state* grug_state, struct grug_file_id* f
     }
 }
 
-static bool copy_file(const char *src_path, const char *dst_path) {
-    FILE *src = fopen(src_path, "rb");
-    if (!src) {
-        perror("Failed to open source file");
-        fprintf(stderr, "path: %s\n", src_path);
-        return true;
-    }
-
-    FILE *dst = fopen(dst_path, "wb");
-    if (!dst) {
-        perror("Failed to open destination file");
-        fprintf(stderr, "path: %s\n", dst_path);
-        fclose(src);
-        return true;
-    }
-
-    char buffer[4096];
-    size_t bytes;
-    while ((bytes = fread(buffer, 1, sizeof(buffer), src)) > 0) {
-        if (fwrite(buffer, 1, bytes, dst) != bytes) {
-            perror("Write error");
-            fclose(src);
-            fclose(dst);
-            return true;
-        }
-    }
-
-    if (ferror(src)) {
-        perror("Read error");
-        fclose(src);
-        fclose(dst);
-        return true;
-    }
-
-    fclose(src);
-    fclose(dst);
-    return false;
-}
-
 static size_t dump_file_to_json(struct grug_state* grug_state, const char *input_buffer, char *output_buffer, size_t output_buffer_len) {
 	(void)grug_state;
 	size_t input_len = strlen(input_buffer) + 1;

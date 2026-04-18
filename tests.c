@@ -160,8 +160,6 @@ struct ok_test_data {
 	const char *test_name_str;
 	const char *grug_path;
 	const char *results_path;
-	const char *dump_path;
-	const char *applied_path;
 };
 static struct ok_test_data ok_test_datas[420420];
 static size_t ok_test_datas_size;
@@ -173,8 +171,6 @@ struct runtime_error_test_data {
 	const char *grug_path;
 	const char *expected_error_path;
 	const char *results_path;
-	const char *dump_path;
-	const char *applied_path;
 };
 static struct runtime_error_test_data runtime_error_test_datas[420420];
 static size_t err_runtime_test_datas_size;
@@ -970,8 +966,6 @@ static void print_string_debug(const char* str) {
 			.test_name_str = #test_name,\
 			.grug_path = "ok"SLASH#test_name SLASH"input-"entity_type".grug",\
 			.results_path = "ok"SLASH#test_name SLASH"results",\
-			.dump_path = "ok"SLASH#test_name SLASH"results"SLASH"dump.json",\
-			.applied_path = "ok"SLASH#test_name SLASH"results"SLASH"applied.grug"\
 		};\
 	}\
 } while (0)
@@ -985,8 +979,6 @@ static void print_string_debug(const char* str) {
 			.grug_path = "err_runtime"SLASH#test_name SLASH"input-"entity_type".grug",\
 			.expected_error_path = "err_runtime"SLASH#test_name SLASH"expected_error.txt",\
 			.results_path = "err_runtime"SLASH#test_name SLASH"results",\
-			.dump_path = "err_runtime"SLASH#test_name SLASH"results"SLASH"dump.json",\
-			.applied_path = "err_runtime"SLASH#test_name SLASH"results"SLASH"applied.grug"\
 		};\
 	}\
 } while (0)
@@ -1330,17 +1322,16 @@ static void test_error(
 
 static void diff_roundtrip(
 	void* grug_state,
-	const char *grug_path,
-	const char *dump_path,
-	const char *applied_path
+	const char *grug_path
 ) {
-	static char buf[4096];
-	if (dump_file_to_json(grug_state, prefix(grug_path), prefix_buf(dump_path, buf))) {
+	static char json_buf[65536];
+	if (dump_file_to_json(grug_state, prefix(grug_path), json_buf, sizeof(json_buf)) == (size_t)(-1)) {
 		fprintf(stderr, "Error: Failed to dump file AST\n");
 		exit(EXIT_FAILURE);
 	}
 
-	if (generate_file_from_json(grug_state, prefix(dump_path), prefix_buf(applied_path, buf))) {
+	static char applied_buf[65536];
+	if (generate_file_from_json(grug_state, json_buf, applied_buf, sizeof(applied_buf)) == (size_t)(-1)) {
 		fprintf(stderr, "Error: Failed to apply file AST\n");
 		exit(EXIT_FAILURE);
 	}
@@ -1349,14 +1340,10 @@ static void diff_roundtrip(
 	size_t grug_path_bytes_len = read_file(grug_path, grug_path_bytes);
 	grug_path_bytes[grug_path_bytes_len] = '\0';
 
-	static uint8_t applied_path_bytes[420420];
-	size_t applied_path_bytes_len = read_file(applied_path, applied_path_bytes);
-	applied_path_bytes[applied_path_bytes_len] = '\0';
-
-	if (!streq((const char *)grug_path_bytes, (const char *)applied_path_bytes)) {
+	if (!streq((const char *)grug_path_bytes, (const char *)applied_buf)) {
 		fprintf(stderr, "\nError: The roundtrip output differs from the expected output.\n");
 		fprintf(stderr, "Output:\n");
-		print_string_debug((const char *)applied_path_bytes);
+		print_string_debug((const char *)applied_buf);
 
 		fprintf(stderr, "Expected:\n");
 		print_string_debug((const char *)grug_path_bytes);
@@ -3944,7 +3931,7 @@ void grug_tests_run(
 
 		void* file_id = prologue(grug_state, fn_data->grug_path, fn_data->results_path);
 
-		diff_roundtrip(grug_state, fn_data->grug_path, fn_data->dump_path, fn_data->applied_path);
+		diff_roundtrip(grug_state, fn_data->grug_path);
 
 		init_globals(grug_state, file_id);
 		fn_data->file_id = file_id;
@@ -3973,7 +3960,7 @@ void grug_tests_run(
 
 		void* file_id = prologue(grug_state, fn_data->grug_path, fn_data->results_path);
 
-		diff_roundtrip(grug_state, fn_data->grug_path, fn_data->dump_path, fn_data->applied_path);
+		diff_roundtrip(grug_state, fn_data->grug_path);
 
 		init_globals(grug_state, file_id);
 		fn_data->file_id = file_id;

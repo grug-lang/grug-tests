@@ -108,14 +108,19 @@ typedef void (*call_export_fn_t)(struct grug_state* state, struct grug_file_id* 
  * grug AST and generating a textual `.grug` source file from it.
  *
  * It should parse the grug file at `input_grug_path`, produce a JSON
- * representation of its AST, and write it to `output_json_path`.
+ * representation of its AST, and write it to `output_buffer`. The output
+ * should be null terminated
  *
  * @param state Current active grug state.
  * @param input_grug_path Path to the input `.grug` source file to be dumped.
- * @param output_json_path Path to write the produced JSON file.
- * @return `true` if an error occurred.
+ * @param output_buffer Buffer to write the output into.
+ * @param output_buffer_len Size of the output buffer currently allocated.
+ * @return the number of bytes written to the output, if the number of bytes
+ * is equal to size of the buffer, the buffer is discarded and the function is
+ * called again with a bigger buffer. If the returned size is (size_t)(-1),
+ * it indicates an error in the function
  */
-typedef bool (*dump_file_to_json_t)(struct grug_state* state, const char *input_grug_path, const char *output_json_path);
+typedef size_t (*dump_file_to_json_t)(struct grug_state* state, const char *input_grug_path, char *output_buffer, size_t output_buffer_len);
 
 /**
  * @typedef generate_file_from_json_t
@@ -124,15 +129,19 @@ typedef bool (*dump_file_to_json_t)(struct grug_state* state, const char *input_
  * All tests verify round-trip fidelity: reading a JSON representation of a
  * grug AST and generating a textual `.grug` source file from it.
  *
- * It should read the AST at `input_json_path`, generate the `.grug` text for it,
+ * It should read the AST from `input_json`, generate the `.grug` text for it,
  * and write it to `output_grug_path`.
  *
  * @param state Current active grug state.
- * @param input_json_path Path to the input JSON file containing the grug AST.
- * @param output_grug_path Path to write the generated `.grug` source file.
- * @return `true` if an error occurred.
+ * @param input_buffer Buffer containing the AST JSON.
+ * @param output_buffer Buffer to write the output into.
+ * @param output_buffer_len Size of the output buffer currently allocated.
+ * @return the number of bytes written to the output, if the number of bytes
+ * is equal to size of the buffer, the buffer is discarded and the function is
+ * called again with a bigger buffer. If the returned size is (size_t)(-1),
+ * it indicates an error in the function
  */
-typedef bool (*generate_file_from_json_t)(struct grug_state* state, const char *input_json_path, const char *output_grug_path);
+typedef size_t (*generate_file_from_json_t)(struct grug_state* state, const char *input_buffer, char *output_buffer, size_t output_buffer_len);
 
 /**
  * @typedef game_fn_error_t

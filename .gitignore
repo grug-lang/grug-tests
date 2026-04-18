@@ -26,3 +26,5 @@ tests.out
 tests.o
 build/*
 makefile
+*.svg
+*.rad

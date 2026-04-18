@@ -1325,13 +1325,13 @@ static void diff_roundtrip(
 	void* grug_state,
 	const char *grug_path
 ) {
-	static char json_buf[65536];
+	static char json_buf[65536 * 1024];
 	if (dump_file_to_json(grug_state, prefix(grug_path), json_buf, sizeof(json_buf)) == (size_t)(-1)) {
 		fprintf(stderr, "Error: Failed to dump file AST\n");
 		exit(EXIT_FAILURE);
 	}
 
-	static char applied_buf[65536];
+	static char applied_buf[65536 * 1024];
 	if (generate_file_from_json(grug_state, json_buf, applied_buf, sizeof(applied_buf)) == (size_t)(-1)) {
 		fprintf(stderr, "Error: Failed to apply file AST\n");
 		exit(EXIT_FAILURE);

@@ -11,7 +11,7 @@
 #include <string.h>
 #include <time.h>
 
-#define MiB(m) (m) * 1024 * 1024
+#define MiB (1024 * 1024)
 
 #define assert_call_count(game_fn_name, expected_count) do { \
 	size_t count = game_fn_ ## game_fn_name ## _call_count; \
@@ -1328,17 +1328,17 @@ static void diff_roundtrip(
 	void* grug_state,
 	const char *grug_path
 ) {
-	static uint8_t grug_path_bytes[MiB(1)];
+	static uint8_t grug_path_bytes[MiB];
 	size_t grug_path_bytes_len = read_file(grug_path, grug_path_bytes);
 	grug_path_bytes[grug_path_bytes_len] = '\0';
 
-	static char json_buf[MiB(1)];
+	static char json_buf[MiB];
 	if (dump_file_to_json(grug_state, (char*)grug_path_bytes, json_buf, sizeof(json_buf)) == (size_t)(-1)) {
 		fprintf(stderr, "Error: Failed to dump file AST\n");
 		exit(EXIT_FAILURE);
 	}
 
-	static char applied_buf[MiB(1)];
+	static char applied_buf[MiB];
 	if (generate_file_from_json(grug_state, json_buf, applied_buf, sizeof(applied_buf)) == (size_t)(-1)) {
 		fprintf(stderr, "Error: Failed to apply file AST\n");
 		exit(EXIT_FAILURE);

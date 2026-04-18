@@ -1,7 +1,7 @@
 {
 	"entities": {
 		"A": {
-			"on_functions": []
+			"on_functions": 42
 		}
 	}
 }

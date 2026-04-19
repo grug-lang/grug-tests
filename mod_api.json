@@ -5,27 +5,31 @@
 		},
 		"D": {
 			"description": "foo",
-			"on_functions": {
-				"on_a": {
+			"on_functions": [
+				{
+					"name": "on_a",
 					"description": "foo"
 				}
-			}
+			]
 		},
 		"E": {
 			"description": "foo",
-			"on_functions": {
-				"on_a": {
+			"on_functions": [
+				{
+					"name": "on_a",
 					"description": "foo"
 				},
-				"on_b": {
+				{
+					"name": "on_b",
 					"description": "foo"
 				}
-			}
+			]
 		},
 		"F": {
 			"description": "foo",
-			"on_functions": {
-				"on_a": {
+			"on_functions": [
+				{
+					"name": "on_a",
 					"description": "foo",
 					"arguments": [
 						{
@@ -34,12 +38,13 @@
 						}
 					]
 				}
-			}
+			]
 		},
 		"G": {
 			"description": "foo",
-			"on_functions": {
-				"on_a": {
+			"on_functions": [
+				{
+					"name": "on_a",
 					"description": "foo",
 					"arguments": [
 						{
@@ -52,26 +57,30 @@
 						}
 					]
 				}
-			}
+			]
 		},
 		"J": {
 			"description": "foo",
-			"on_functions": {
-				"on_a": {
+			"on_functions": [
+				{
+					"name": "on_a",
 					"description": "foo"
 				},
-				"on_b": {
+				{
+					"name": "on_b",
 					"description": "foo"
 				},
-				"on_c": {
+				{
+					"name": "on_c",
 					"description": "foo"
 				}
-			}
+			]
 		},
 		"R": {
 			"description": "foo",
-			"on_functions": {
-				"on_a": {
+			"on_functions": [
+				{
+					"name": "on_a",
 					"description": "foo",
 					"arguments": [
 						{
@@ -80,12 +89,13 @@
 						}
 					]
 				}
-			}
+			]
 		},
 		"S": {
 			"description": "foo",
-			"on_functions": {
-				"on_a": {
+			"on_functions": [
+				{
+					"name": "on_a",
 					"description": "foo",
 					"arguments": [
 						{
@@ -98,12 +108,13 @@
 						}
 					]
 				}
-			}
+			]
 		},
 		"T": {
 			"description": "foo",
-			"on_functions": {
-				"on_a": {
+			"on_functions": [
+				{
+					"name": "on_a",
 					"description": "foo",
 					"arguments": [
 						{
@@ -112,12 +123,13 @@
 						}
 					]
 				}
-			}
+			]
 		},
 		"U": {
 			"description": "foo",
-			"on_functions": {
-				"on_a": {
+			"on_functions": [
+				{
+					"name": "on_a",
 					"description": "foo",
 					"arguments": [
 						{
@@ -126,7 +138,7 @@
 						}
 					]
 				}
-			}
+			]
 		}
 	},
 	"game_functions": {

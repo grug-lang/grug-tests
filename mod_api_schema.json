@@ -16,14 +16,18 @@
                         "type": "string"
                     },
                     "on_functions": {
-                        "type": "object",
-                        "additionalProperties": {
+                        "type": "array",
+                        "items": {
                             "type": "object",
                             "required": [
+                                "name",
                                 "description"
                             ],
                             "additionalProperties": false,
                             "properties": {
+                                "name": {
+                                    "type": "string"
+                                },
                                 "description": {
                                     "type": "string"
                                 },

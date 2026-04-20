@@ -230,6 +230,10 @@ static bool streq(const char *a, const char *b) {
 	return strcmp(a, b) == 0;
 }
 
+static bool starts_with(const char *haystack, const char *needle) {
+    return strncmp(haystack, needle, strlen(needle)) == 0;
+}
+
 static void call_export_fn_argless(void* grug_state, void* file_id, const char *on_fn_name) {
 	call_export_fn(grug_state, file_id, on_fn_name, NULL, 0);
 }
@@ -1362,6 +1366,11 @@ static void diff_roundtrip(
 		fprintf(stderr, "Expected:\n");
 		print_string_debug((const char *)grug_path_bytes);
 
+		exit(EXIT_FAILURE);
+	}
+
+	if (grug_path_bytes[0] == '\0' && !starts_with(grug_path, "ok/empty_file/")) {
+		fprintf(stderr, "\nError: dump_file_to_json() wrote an empty file.\n");
 		exit(EXIT_FAILURE);
 	}
 }

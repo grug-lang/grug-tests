@@ -1,0 +1,20 @@
+{
+    "entities": {
+        "A": {
+            "on_functions": [
+                {
+                    "name": "on_a",
+                    "description": "foo"
+                },
+                {
+                    "name": "on_c",
+                    "description": "foo"
+                },
+                {
+                    "name": "on_b",
+                    "description": "foo"
+                }
+            ]
+        }
+    }
+}

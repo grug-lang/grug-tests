@@ -1268,7 +1268,8 @@ static void run_err_mod_api_tests(void) {
 	run_err_mod_api_test("entities_must_be_json_object.json");
 	run_err_mod_api_test("entity_must_be_json_object.json");
 	run_err_mod_api_test("game_fns_must_be_json_object.json");
-	run_err_mod_api_test("on_fns_must_be_json_object.json");
+	run_err_mod_api_test("on_fns_must_be_json_array.json");
+	run_err_mod_api_test("on_fns_must_be_sorted.json");
 	run_err_mod_api_test("root_must_be_object.json");
 }
 

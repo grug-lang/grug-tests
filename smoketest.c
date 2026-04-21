@@ -671,26 +671,25 @@ static void call_export_fn(struct grug_state* grug_state, struct grug_file_id* f
     }
 }
 
-static size_t dump_file_to_json(struct grug_state* grug_state, const char *input_buffer, char *output_buffer, size_t output_buffer_len) {
+static bool dump_file_to_json(struct grug_state* grug_state, const char *input_buffer, char *output_buffer, size_t output_buffer_len) {
 	(void)grug_state;
 	size_t input_len = strlen(input_buffer) + 1;
 	if (output_buffer_len < input_len) {
-		output_buffer[0] = '\0';
-		return output_buffer_len;
+		return 1;
 	}
 	memmove(output_buffer, input_buffer, input_len);
-	return input_len;
+	return 0;
 }
 
-static size_t generate_file_from_json(struct grug_state* grug_state, const char *input_buffer, char *output_buffer, size_t output_buffer_len) {
+static bool generate_file_from_json(struct grug_state* grug_state, const char *input_buffer, char *output_buffer, size_t output_buffer_len) {
 	(void)grug_state;
 	size_t input_len = strlen(input_buffer) + 1;
 	if (output_buffer_len < input_len) {
 		output_buffer[0] = '\0';
-		return output_buffer_len;
+		return 1;
 	}
 	memmove(output_buffer, input_buffer, input_len);
-	return input_len;
+	return 0;
 }
 
 static void game_fn_error(struct grug_state* grug_state, const char *message) {

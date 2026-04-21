@@ -1,4 +1,3 @@
-TODO: Should this point at the entire string or the location of the ':'
   in on_a (err/entity_has_invalid_entity_name_colon/input-D.grug:2:11)
 Error: Entity 'foo:x:y' its entity name contains the invalid character ':'
 2 $ spawn(e"foo:x:y")

@@ -1,5 +1,3 @@
-TODO: Is this technically member scope? you can't define members at the
-location of the error
   in member scope (err/missing_empty_line_between_on_fn_and_helper_fn/input-D.grug:4:1)
 Error: Expected an empty line, on line 4
 4 $ helper_a() {

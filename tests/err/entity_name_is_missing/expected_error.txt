@@ -1,4 +1,3 @@
-TODO: Make error message shorter
   in on_a (err/entity_name_is_missing/input-D.grug:2:11)
-Error: Entity 'foo:' specifies the mod name 'foo', but it is missing an entity name after the ':'
+Error: Entity 'foo:' missing entity name
 2 $ spawn(e"foo:")

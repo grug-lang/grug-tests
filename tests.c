@@ -1065,6 +1065,9 @@ static const char *get_expected_error(const char *expected_error_path) {
 	static char expected_error[420420];
 	size_t len = read_file(expected_error_path, (uint8_t *)expected_error);
 
+	if (len == 0) {
+		return "";
+	}
 	if (expected_error[len - 1] == '\n') {
 		len--;
 		if (expected_error[len - 1] == '\r') {

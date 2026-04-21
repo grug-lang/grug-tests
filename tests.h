@@ -108,16 +108,16 @@ typedef void (*call_export_fn_t)(struct grug_state* state, struct grug_file_id* 
  * grug AST and generating a textual `.grug` source file from it.
  *
  * It should parse the grug file at `input_grug_path`, produce a JSON
- * representation of its AST, and write it to `output_buffer`. The output
+ * representation of its AST, and write it to `output_json_buffer`. The output
  * should be null terminated
  *
  * @param state Current active grug state.
- * @param input_buffer Buffer that contains the input grug_file.
- * @param output_buffer Buffer to write the output into.
+ * @param input_grug_buffer Buffer that contains the input grug_file.
+ * @param output_json_buffer Buffer to write the output into.
  * @param output_buffer_len Size of the output buffer currently allocated.
  * @return 1 if the there was an error while dumping the json, 0 otherwise
  */
-typedef bool (*dump_file_to_json_t)(struct grug_state* state, const char *input_buffer, char *output_buffer, size_t output_buffer_len);
+typedef bool (*dump_file_to_json_t)(struct grug_state* state, const char *input_grug_buffer, char *output_json_buffer, size_t output_buffer_len);
 
 /**
  * @typedef generate_file_from_json_t
@@ -130,12 +130,12 @@ typedef bool (*dump_file_to_json_t)(struct grug_state* state, const char *input_
  * and write it to `output_grug_path`.
  *
  * @param state Current active grug state.
- * @param input_buffer Buffer containing the AST JSON.
- * @param output_buffer Buffer to write the output into.
+ * @param input_json_buffer Buffer containing the AST JSON.
+ * @param output_grug_buffer Buffer to write the output into.
  * @param output_buffer_len Size of the output buffer currently allocated.
  * @return 1 if the there was an error while dumping the grug file, 0 otherwise
  */
-typedef bool (*generate_file_from_json_t)(struct grug_state* state, const char *input_buffer, char *output_buffer, size_t output_buffer_len);
+typedef bool (*generate_file_from_json_t)(struct grug_state* state, const char *input_json_buffer, char *output_grug_buffer, size_t output_buffer_len);
 
 /**
  * @typedef game_fn_error_t

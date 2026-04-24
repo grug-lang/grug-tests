@@ -1,10 +1,8 @@
-# grug tests
+# grug tests · [![CI Build](https://github.com/MyNameIsTrez/grug-tests/actions/workflows/build.yml/badge.svg)](https://github.com/MyNameIsTrez/grug-tests/actions/workflows/build.yml)
 
 This is the test suite for all [grug](https://github.com/grug-lang/grug) implementations.
 
 ## Running the smoke tests
-
-[![CI Build](https://github.com/MyNameIsTrez/grug-tests/actions/workflows/build.yml/badge.svg)](https://github.com/MyNameIsTrez/grug-tests/actions/workflows/build.yml)
 
 1. Clone this repository, and `cd` into it.
 2. Run CMake.

@@ -120,6 +120,10 @@ endif()
 # -----------------------------
 add_library(tests SHARED tests.c cJSON.c)
 
+# Disable cJSON's explicit declspec exports.
+# They cause our `CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON` to turn OFF.
+target_compile_definitions(tests PRIVATE CJSON_HIDE_SYMBOLS)
+
 set_target_properties(tests PROPERTIES
     OUTPUT_NAME tests
     POSITION_INDEPENDENT_CODE ON

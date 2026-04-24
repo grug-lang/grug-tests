@@ -701,12 +701,12 @@ static void* load_sym(void *h, const char *name) {
 	#pragma GCC diagnostic push
 	#pragma GCC diagnostic ignored "-Wpedantic"
     void* p = load_symbol(h, name);
-    assert(p && "Failed to load required symbol from tests.so");
+    assert(p && "Failed to load required symbol from library");
     return p;
 	#pragma GCC diagnostic pop
 }
 
-static void load_tests_so(void) {
+static void load_tests_library(void) {
     #ifndef BUILD_DIR
     #define BUILD_DIR "build"
     #endif
@@ -784,7 +784,7 @@ static void destroy_grug_state(struct grug_state* grug_state) {
 }
 
 int main(int argc, const char *argv[]) {
-    load_tests_so();
+    load_tests_library();
 
     const char *whitelisted_test = NULL;
     if (argc == 2) {

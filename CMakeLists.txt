@@ -118,7 +118,7 @@ endif()
 # -----------------------------
 # Build tests.so (shared lib)
 # -----------------------------
-add_library(tests SHARED tests.c)
+add_library(tests SHARED tests.c cJSON.c)
 
 set_target_properties(tests PROPERTIES
     OUTPUT_NAME tests

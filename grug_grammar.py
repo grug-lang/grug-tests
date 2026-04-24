@@ -172,6 +172,25 @@ class GrugTransformer(Transformer[Tree[Any], Any]):
             "right_expr": items[1],
         }
 
+    # Strings
+    def string_lit(self, items: List[Any]) -> Dict[str, Any]:
+        s = str(items[0])
+        if s.startswith('"') and s.endswith('"'):
+            s = s[1:-1]
+        return {"type": "STRING_EXPR", "str": s}
+
+    def entity_lit(self, items: List[Any]) -> Dict[str, Any]:
+        s = str(items[0])
+        if s.startswith('"') and s.endswith('"'):
+            s = s[1:-1]
+        return {"type": "ENTITY_EXPR", "str": s}
+
+    def resource_lit(self, items: List[Any]) -> Dict[str, Any]:
+        s = str(items[0])
+        if s.startswith('"') and s.endswith('"'):
+            s = s[1:-1]
+        return {"type": "RESOURCE_EXPR", "str": s}
+
     # Binary operations
     def add(self, items: List[Any]) -> Dict[str, Any]:
         return self._binary_expr("PLUS_TOKEN", items)
@@ -232,12 +251,6 @@ class GrugTransformer(Transformer[Tree[Any], Any]):
     # Terminals
     def NUMBER(self, tok: Token) -> Dict[str, Any]:
         return {"type": "NUMBER_EXPR", "value": tok.value}
-
-    def STRING(self, tok: Token) -> Dict[str, Any]:
-        s: str = tok.value
-        if s.startswith('"') and s.endswith('"'):
-            s = s[1:-1]
-        return {"type": "STRING_EXPR", "str": s}
 
     def true_expr(self, items: List[Any]) -> Dict[str, str]:
         return {"type": "TRUE_EXPR"}

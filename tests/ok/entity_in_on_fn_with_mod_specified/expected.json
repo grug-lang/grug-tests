@@ -6,7 +6,7 @@
                 "arguments": [
                     {
                         "str": "wow:foo",
-                        "type": "STRING_EXPR"
+                        "type": "ENTITY_EXPR"
                     }
                 ],
                 "name": "spawn",

@@ -6,7 +6,7 @@
                 "arguments": [
                     {
                         "str": "resource_is_a_directory",
-                        "type": "STRING_EXPR"
+                        "type": "RESOURCE_EXPR"
                     }
                 ],
                 "name": "draw",

@@ -6,7 +6,7 @@
                 "arguments": [
                     {
                         "str": "print_csv/foo.csv",
-                        "type": "STRING_EXPR"
+                        "type": "RESOURCE_EXPR"
                     }
                 ],
                 "name": "print_csv",

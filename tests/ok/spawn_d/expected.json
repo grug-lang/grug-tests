@@ -6,7 +6,7 @@
                 "arguments": [
                     {
                         "str": "input",
-                        "type": "STRING_EXPR"
+                        "type": "ENTITY_EXPR"
                     }
                 ],
                 "name": "spawn_d",

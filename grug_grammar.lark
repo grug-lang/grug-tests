@@ -68,7 +68,11 @@ TYPE_NAME: "number" | "bool" | "string" | "entity" | "resource" | ID
      | ident_ref
      | "(" expr ")" -> paren_expr
 
-?literal: NUMBER | STRING | "e"STRING | "r"STRING | "true" -> true_expr | "false" -> false_expr
+?literal: NUMBER | string_lit | entity_lit | resource_lit | "true" -> true_expr | "false" -> false_expr
+
+string_lit: STRING
+entity_lit: "e" STRING
+resource_lit: "r" STRING
 
 ident_ref: NAME
 

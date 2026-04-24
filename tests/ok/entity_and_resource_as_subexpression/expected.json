@@ -10,7 +10,7 @@
                                 "arguments": [
                                     {
                                         "str": "entity_and_resource_as_subexpression/foo.txt",
-                                        "type": "STRING_EXPR"
+                                        "type": "RESOURCE_EXPR"
                                     }
                                 ],
                                 "name": "has_resource",
@@ -34,7 +34,7 @@
                             "arguments": [
                                 {
                                     "str": "baz",
-                                    "type": "STRING_EXPR"
+                                    "type": "ENTITY_EXPR"
                                 }
                             ],
                             "name": "has_entity",

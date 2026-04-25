@@ -152,7 +152,6 @@ struct error_test_data {
 	const char *test_name_str;
 	const char *grug_path;
 	const char *expected_error_path;
-	const char *grug_output_path;
 };
 static struct error_test_data error_test_datas[420420];
 static size_t err_test_datas_size;
@@ -941,7 +940,6 @@ static void print_string_debug(const char* str) {
 			.test_name_str = #test_name,\
 			.grug_path = "err"SLASH#test_name SLASH"input-"entity_type".grug",\
 			.expected_error_path = "err"SLASH#test_name SLASH"expected_error.txt",\
-			.grug_output_path = "err"SLASH#test_name SLASH"results"SLASH"grug_output.txt"\
 		};\
 	}\
 } while (0)
@@ -952,7 +950,6 @@ static void print_string_debug(const char* str) {
 			.test_name_str = #test_name,\
 			.grug_path = "err"SLASH#test_name SLASH file_name,\
 			.expected_error_path = "err"SLASH#test_name SLASH"expected_error.txt",\
-			.grug_output_path = "err"SLASH#test_name SLASH"results"SLASH"grug_output.txt"\
 		};\
 	}\
 } while (0)
@@ -1258,8 +1255,7 @@ static void test_error(
 	void* grug_state,
 	const char *test_name,
 	const char *grug_path,
-	const char *expected_error_path,
-	const char *grug_output_path
+	const char *expected_error_path
 ) {
 	printf("Running tests/err/%s...\n", test_name);
 	fflush(stdout);
@@ -1272,26 +1268,6 @@ static void test_error(
 	if (!msg) {
 		fprintf(stderr, "\nError: Compilation succeeded, but expected this error message:\n");
 		print_string_debug(expected_error);
-		exit(EXIT_FAILURE);
-	}
-
-	FILE *f = fopen(prefix(grug_output_path), "w");
-	check_null(f, "fopen", grug_output_path);
-
-	size_t msg_len = strlen(msg);
-
-	size_t written = fwrite(msg, 1, msg_len, f);
-	if (written != msg_len) {
-		if (ferror(f)) {
-			perror("fwrite");
-		} else {
-			fprintf(stderr, "fwrite: short write\n");
-		}
-		exit(EXIT_FAILURE);
-	}
-
-	if (fclose(f) == EOF) {
-		perror("fclose");
 		exit(EXIT_FAILURE);
 	}
 
@@ -4047,8 +4023,7 @@ void grug_tests_run(
 			grug_state,
 			fn_data.test_name_str,
 			fn_data.grug_path,
-			fn_data.expected_error_path,
-			fn_data.grug_output_path
+			fn_data.expected_error_path
 		);
 	}
 

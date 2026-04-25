@@ -1,6 +1,6 @@
 # grug tests · [![CI Build](https://github.com/MyNameIsTrez/grug-tests/actions/workflows/build.yml/badge.svg)](https://github.com/MyNameIsTrez/grug-tests/actions/workflows/build.yml)
 
-This is the test suite for all [grug](https://github.com/grug-lang/grug) implementations.
+This is [grug](https://github.com/grug-lang/grug) its official test suite.
 
 ## Running the smoke tests
 

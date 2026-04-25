@@ -1,4 +1,3 @@
-TODO: where should the error be, the actual error is a missing '='
-  in on_a (err/variable_definition_requires_value_i32/input-D.grug:2:5)
-Error: The variable 'foo' was not assigned a value on line 2
+  in on_a (err/variable_definition_requires_value_i32/input-D.grug:2:16)
+Error: variable 'foo' was not assigned a value
 2 $ foo: number

@@ -1,4 +1,4 @@
 TODO: Replace INDENTATION_TOKEN with `'    ' (4 spaces)`
   in on_a (err/newline_statement/input-D.grug:2:1)
-Error: Expected token type NEWLINE_TOKEN, but got INDENTATION_TOKEN on line 3
+Error: Expected line break, but got indentation (4 spaces)
 2 $ 

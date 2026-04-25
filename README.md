@@ -1,4 +1,4 @@
-# grug tests · [![CI Build](https://github.com/MyNameIsTrez/grug-tests/actions/workflows/build.yml/badge.svg)](https://github.com/MyNameIsTrez/grug-tests/actions/workflows/build.yml)
+# grug tests
 
 This is [grug](https://github.com/grug-lang/grug) its official test suite.
 

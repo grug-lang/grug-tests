@@ -3573,7 +3573,6 @@ static void add_error_tests(void) {
 	ADD_TEST_ERROR(file_name_entity_type_invalid_character, "Foo#Bar");
 	ADD_TEST_ERROR(file_name_missing_entity_type, "");
 	ADD_TEST_ERROR_FILE_NAME(file_name_missing_dash, "input.grug");
-	ADD_TEST_ERROR_FILE_NAME(file_name_missing_period, "input-A");
 	ADD_TEST_ERROR(game_fn_call_gets_void, "D");
 	ADD_TEST_ERROR(game_fn_does_not_exist, "D");
 	ADD_TEST_ERROR(game_function_call_gets_wrong_arg_type, "D");

@@ -152,7 +152,6 @@ struct error_test_data {
 	const char *test_name_str;
 	const char *grug_path;
 	const char *expected_error_path;
-	const char *results_path;
 	const char *grug_output_path;
 };
 static struct error_test_data error_test_datas[420420];
@@ -163,7 +162,6 @@ struct ok_test_data {
 	struct grug_file_id* file_id;
 	const char *test_name_str;
 	const char *grug_path;
-	const char *results_path;
 };
 static struct ok_test_data ok_test_datas[420420];
 static size_t ok_test_datas_size;
@@ -174,7 +172,6 @@ struct runtime_error_test_data {
 	const char *test_name_str;
 	const char *grug_path;
 	const char *expected_error_path;
-	const char *results_path;
 };
 static struct runtime_error_test_data runtime_error_test_datas[420420];
 static size_t err_runtime_test_datas_size;
@@ -944,7 +941,6 @@ static void print_string_debug(const char* str) {
 			.test_name_str = #test_name,\
 			.grug_path = "err"SLASH#test_name SLASH"input-"entity_type".grug",\
 			.expected_error_path = "err"SLASH#test_name SLASH"expected_error.txt",\
-			.results_path = "err"SLASH#test_name SLASH"results",\
 			.grug_output_path = "err"SLASH#test_name SLASH"results"SLASH"grug_output.txt"\
 		};\
 	}\
@@ -956,7 +952,6 @@ static void print_string_debug(const char* str) {
 			.test_name_str = #test_name,\
 			.grug_path = "err"SLASH#test_name SLASH file_name,\
 			.expected_error_path = "err"SLASH#test_name SLASH"expected_error.txt",\
-			.results_path = "err"SLASH#test_name SLASH"results",\
 			.grug_output_path = "err"SLASH#test_name SLASH"results"SLASH"grug_output.txt"\
 		};\
 	}\
@@ -969,7 +964,6 @@ static void print_string_debug(const char* str) {
 			.file_id = NULL,\
 			.test_name_str = #test_name,\
 			.grug_path = "ok"SLASH#test_name SLASH"input-"entity_type".grug",\
-			.results_path = "ok"SLASH#test_name SLASH"results",\
 		};\
 	}\
 } while (0)
@@ -982,7 +976,6 @@ static void print_string_debug(const char* str) {
 			.test_name_str = #test_name,\
 			.grug_path = "err_runtime"SLASH#test_name SLASH"input-"entity_type".grug",\
 			.expected_error_path = "err_runtime"SLASH#test_name SLASH"expected_error.txt",\
-			.results_path = "err_runtime"SLASH#test_name SLASH"results",\
 		};\
 	}\
 } while (0)
@@ -1079,18 +1072,6 @@ static const char *get_expected_error(const char *expected_error_path) {
 	}
 
 	return expected_error;
-}
-
-static void make_dir_if_not_exists(const char* results_path) {
-	#if defined(__linux__)
-	if (mkdir(prefix(results_path), 0755) == -1 && errno != EEXIST) {
-	#elif defined(WIN32)
-	if (CreateDirectory(prefix(results_path), NULL) == 0 && GetLastError() != ERROR_ALREADY_EXISTS) {
-	#endif
-		perror("mkdir");
-		fprintf(stderr, "prefix(results_path): \"%s\"\n", prefix(results_path));\
-		exit(EXIT_FAILURE);
-	}
 }
 
 static void run_err_spaces_test(struct grug_state *grug_state, const char *name) {
@@ -1278,13 +1259,10 @@ static void test_error(
 	const char *test_name,
 	const char *grug_path,
 	const char *expected_error_path,
-	const char *results_path,
 	const char *grug_output_path
 ) {
 	printf("Running tests/err/%s...\n", test_name);
 	fflush(stdout);
-
-	make_dir_if_not_exists(results_path);
 
 	const char* msg = NULL;
 	compile_grug_file(grug_state, grug_path, &msg);
@@ -1552,9 +1530,7 @@ static void reset(void) {
 	game_fn_box_number_call_count = 0;
 }
 
-static void* prologue(void* grug_state, const char *grug_path, const char *results_path) {
-	make_dir_if_not_exists(results_path);
-
+static void* prologue(void* grug_state, const char *grug_path) {
 	const char *msg = NULL;
 	void *file_id = compile_grug_file(grug_state, grug_path, &msg);
 	if (msg) {
@@ -4072,7 +4048,6 @@ void grug_tests_run(
 			fn_data.test_name_str,
 			fn_data.grug_path,
 			fn_data.expected_error_path,
-			fn_data.results_path,
 			fn_data.grug_output_path
 		);
 	}
@@ -4084,7 +4059,7 @@ void grug_tests_run(
 		fflush(stdout);
 		reset();
 
-		void* file_id = prologue(grug_state, fn_data->grug_path, fn_data->results_path);
+		void* file_id = prologue(grug_state, fn_data->grug_path);
 
 		diff_roundtrip(grug_state, fn_data->grug_path);
 
@@ -4113,7 +4088,7 @@ void grug_tests_run(
 		fflush(stdout);
 		reset();
 
-		void* file_id = prologue(grug_state, fn_data->grug_path, fn_data->results_path);
+		void* file_id = prologue(grug_state, fn_data->grug_path);
 
 		diff_roundtrip(grug_state, fn_data->grug_path);
 

@@ -101,41 +101,36 @@ typedef void (*init_globals_t)(struct grug_state* state, struct grug_file_id* fi
 typedef void (*call_export_fn_t)(struct grug_state* state, struct grug_file_id* file_id, const char* fn_name, const union grug_value* args, size_t args_count);
 
 /**
- * @typedef dump_file_to_json_t
- * @brief Function pointer type for dumping a `.grug` file's AST to JSON.
+ * @typedef grug_to_json_t
+ * @brief Function pointer type for converting a grug source buffer to JSON.
  *
- * All tests verify round-trip fidelity: reading a JSON representation of a
- * grug AST and generating a textual `.grug` source file from it.
- *
- * It should parse the grug file at `input_grug_path`, produce a JSON
- * representation of its AST, and write it to `output_json_buffer`. The output
- * should be null terminated
+ * It should parse the grug source contained in `input_grug_buffer`, produce a 
+ * JSON representation of its AST, and write it to `output_json_buffer`. 
+ * The output must be null-terminated.
  *
  * @param state Current active grug state.
- * @param input_grug_buffer Buffer that contains the input grug_file.
- * @param output_json_buffer Buffer to write the output into.
+ * @param input_grug_buffer Buffer containing the input grug source.
+ * @param output_json_buffer Buffer to write the output JSON into.
  * @param output_buffer_len Size of the output buffer currently allocated.
- * @return 1 if the there was an error while dumping the json, 0 otherwise
+ * @return true if there was an error while converting to JSON, false otherwise.
  */
-typedef bool (*dump_file_to_json_t)(struct grug_state* state, const char *input_grug_buffer, char *output_json_buffer, size_t output_buffer_len);
+typedef bool (*grug_to_json_t)(struct grug_state* state, const char *input_grug_buffer, char *output_json_buffer, size_t output_buffer_len);
 
 /**
- * @typedef generate_file_from_json_t
- * @brief Function pointer type for generating a `.grug` file from an AST JSON.
+ * @typedef json_to_grug_t
+ * @brief Function pointer type for converting a JSON source buffer to grug.
  *
- * All tests verify round-trip fidelity: reading a JSON representation of a
- * grug AST and generating a textual `.grug` source file from it.
- *
- * It should read the AST from `input_json`, generate the `.grug` text for it,
- * and write it to `output_grug_path`.
+ * It should parse the AST JSON from `input_json_buffer`, generate the 
+ * equivalent textual grug source, and write it to `output_grug_buffer`.
+ * The output must be null-terminated.
  *
  * @param state Current active grug state.
- * @param input_json_buffer Buffer containing the AST JSON.
- * @param output_grug_buffer Buffer to write the output into.
+ * @param input_json_buffer Buffer containing the input JSON source.
+ * @param output_grug_buffer Buffer to write the output grug source into.
  * @param output_buffer_len Size of the output buffer currently allocated.
- * @return 1 if the there was an error while dumping the grug file, 0 otherwise
+ * @return true if there was an error while converting to grug, false otherwise.
  */
-typedef bool (*generate_file_from_json_t)(struct grug_state* state, const char *input_json_buffer, char *output_grug_buffer, size_t output_buffer_len);
+typedef bool (*json_to_grug_t)(struct grug_state* state, const char *input_json_buffer, char *output_grug_buffer, size_t output_buffer_len);
 
 /**
  * @typedef game_fn_error_t
@@ -175,8 +170,8 @@ struct grug_state_vtable {
 	compile_grug_file_t compile_grug_file;
 	init_globals_t init_globals;
 	call_export_fn_t call_export_fn;
-	dump_file_to_json_t dump_file_to_json;
-	generate_file_from_json_t generate_file_from_json;
+	grug_to_json_t grug_to_json;
+	json_to_grug_t json_to_grug;
 	game_fn_error_t game_fn_error;
 };
 

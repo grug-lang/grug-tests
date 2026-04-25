@@ -144,8 +144,8 @@ static destroy_grug_state_t      destroy_grug_state;
 static compile_grug_file_t       compile_grug_file;
 static init_globals_t            init_globals;
 static call_export_fn_t          call_export_fn;
-static dump_file_to_json_t       dump_file_to_json;
-static generate_file_from_json_t generate_file_from_json;
+static grug_to_json_t            grug_to_json;
+static json_to_grug_t            json_to_grug;
 static game_fn_error_t           game_fn_error;
 
 struct error_test_data {
@@ -1482,7 +1482,7 @@ static void diff_roundtrip(
 	grug_path_bytes[grug_path_bytes_len] = '\0';
 
 	static char json_buf[MiB];
-	if (dump_file_to_json(grug_state, (char*)grug_path_bytes, json_buf, sizeof(json_buf))) {
+	if (grug_to_json(grug_state, (char*)grug_path_bytes, json_buf, sizeof(json_buf))) {
 		fprintf(stderr, "Error: Failed to dump file AST\n");
 		exit(EXIT_FAILURE);
 	}
@@ -1490,7 +1490,7 @@ static void diff_roundtrip(
 	assert_jsons_are_equal(json_buf, get_expected_json_path(grug_path));
 
 	static char applied_buf[MiB];
-	if (generate_file_from_json(grug_state, json_buf, applied_buf, sizeof(applied_buf))) {
+	if (json_to_grug(grug_state, json_buf, applied_buf, sizeof(applied_buf))) {
 		fprintf(stderr, "Error: Failed to apply file AST\n");
 		exit(EXIT_FAILURE);
 	}
@@ -4022,8 +4022,8 @@ void grug_tests_run(
 	compile_grug_file          = vtable.compile_grug_file;
 	init_globals               = vtable.init_globals;
 	call_export_fn             = vtable.call_export_fn;
-	dump_file_to_json          = vtable.dump_file_to_json;
-	generate_file_from_json    = vtable.generate_file_from_json;
+	grug_to_json               = vtable.grug_to_json;
+	json_to_grug               = vtable.json_to_grug;
 	game_fn_error              = vtable.game_fn_error;
 
 	if (setvbuf(stdout, NULL, _IOLBF, 64) != 0) {

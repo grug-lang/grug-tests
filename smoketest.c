@@ -752,15 +752,15 @@ static size_t read_file(const char *path, uint8_t *bytes) {
 	return len;
 }
 
-static bool dump_file_to_json(struct grug_state* grug_state, const char *input_buffer, char *output_buffer, size_t output_buffer_len) {
+static bool grug_to_json(struct grug_state* grug_state, const char *input_grug_buffer, char *output_json_buffer, size_t output_buffer_len) {
 	(void)grug_state;
-	(void)input_buffer;
+	(void)input_grug_buffer;
 
 	// Construct path to expected.json by replacing filename in saved_grug_file_path
 	char expected_json_path[1024];
 	size_t saved_path_len = strlen(saved_grug_file_path);
 	if (saved_path_len >= sizeof(expected_json_path)) {
-		return 1;
+		return true;
 	}
 	memcpy(expected_json_path, saved_grug_file_path, saved_path_len + 1);
 
@@ -773,32 +773,32 @@ static bool dump_file_to_json(struct grug_state* grug_state, const char *input_b
 	size_t file_len = strlen(filename);
 	
 	if (dir_len + file_len >= sizeof(expected_json_path)) {
-		return 1;
+		return true;
 	}
 	memcpy(expected_json_path + dir_len, filename, file_len + 1);
 
 	// Read the actual expected JSON into the output buffer
-	size_t bytes_read = read_file(expected_json_path, (uint8_t *)output_buffer);
+	size_t bytes_read = read_file(expected_json_path, (uint8_t *)output_json_buffer);
 	if (bytes_read >= output_buffer_len) {
-		return 1;
+		return true;
 	}
-	output_buffer[bytes_read] = '\0';
+	output_json_buffer[bytes_read] = '\0';
 
-	return 0;
+	return false;
 }
 
-static bool generate_file_from_json(struct grug_state* grug_state, const char *input_buffer, char *output_buffer, size_t output_buffer_len) {
+static bool json_to_grug(struct grug_state* grug_state, const char *input_json_buffer, char *output_grug_buffer, size_t output_buffer_len) {
 	(void)grug_state;
-	(void)input_buffer; // Ignore input JSON, just read the original grug file
+	(void)input_json_buffer;
 
 	// Read the original .grug file back into the output buffer
-	size_t bytes_read = read_file(saved_grug_file_path, (uint8_t *)output_buffer);
+	size_t bytes_read = read_file(saved_grug_file_path, (uint8_t *)output_grug_buffer);
 	if (bytes_read >= output_buffer_len) {
-		return 1;
+		return true;
 	}
-	output_buffer[bytes_read] = '\0';
+	output_grug_buffer[bytes_read] = '\0';
 
-	return 0;
+	return false;
 }
 
 static void game_fn_error(struct grug_state* grug_state, const char *message) {
@@ -912,8 +912,8 @@ int main(int argc, const char *argv[]) {
 			.compile_grug_file = compile_grug_file,
 			.init_globals = init_globals,
 			.call_export_fn = call_export_fn,
-			.dump_file_to_json = dump_file_to_json,
-			.generate_file_from_json = generate_file_from_json,
+			.grug_to_json = grug_to_json,
+			.json_to_grug = json_to_grug,
 			.game_fn_error = game_fn_error,
 		},
         whitelisted_test

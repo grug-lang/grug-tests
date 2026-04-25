@@ -1,4 +1,3 @@
-TODO: This message should be better, what should be the location?
   in member scope (err/comment_lone_global_at_end/input-A.grug:1:1)
 Error: unexpected end of file, expected line break
 1 $ # foo

@@ -1,4 +1,3 @@
-TODO: How should whitespace be treated
   in on_a (err/comment_at_the_end_of_another_statement/input-D.grug:2:14)
-Error: Expected token type <newline> ('\n'), but got <space> (' ')
+Error: Expected line break ('\n'), but got space (' ')
 2 $ nothing() # foo

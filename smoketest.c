@@ -93,6 +93,8 @@ static bool starts_with(const char *haystack, const char *needle) {
 static struct grug_file_id *compile_grug_file(struct grug_state* grug_state, const char *grug_file_path, const char** out_error) {
 	(void)grug_state;
 
+    saved_grug_file_path = grug_file_path; // For dump_file_to_json()
+
     if (starts_with(grug_file_path, "err_spaces"SLASH)) {
 		*out_error = "Error: Too many spaces.";
 		return NULL;
@@ -671,24 +673,131 @@ static void call_export_fn(struct grug_state* grug_state, struct grug_file_id* f
     }
 }
 
+static char tests_dir_path[] = "tests";
+
+// Fill `buf` with `path` prefixed by `tests_dir_path`. 
+static const char *prefix_buf(const char *path, char *buf) {
+	char *p = buf;
+
+	// buf = tests_dir_path
+	size_t tests_dir_path_len = strlen(tests_dir_path);
+	memcpy(p, tests_dir_path, tests_dir_path_len);
+	p += tests_dir_path_len;
+
+	// buf = tests_dir_path + "/"
+	*p = '/';
+	p++;
+
+	// buf = tests_dir_path + "/" + path
+	size_t path_len = strlen(path);
+	memcpy(p, path, path_len);
+	p += path_len;
+
+	// Null terminate
+	*p = '\0';
+
+	return buf;
+}
+
+static void check(int status, const char *fn_name, const char *msg) {
+	if (status < 0) {
+		perror(fn_name);
+		if (msg) fprintf(stderr, "Error message: '%s'\n", msg);
+		exit(EXIT_FAILURE);
+	}
+}
+
+static void check_null(void *ptr, const char *fn_name, const char *msg) {
+	if (ptr == NULL) {
+		perror(fn_name);
+		if (msg) fprintf(stderr, "Error message: '%s'\n", msg);
+		exit(EXIT_FAILURE);
+	}
+}
+
+// Returns a temporary static string that has `path` prefixed with `tests_dir_path`. 
+static const char *prefix(const char *path) {
+	static char buf[4096];
+	return prefix_buf(path, buf);
+}
+
+static size_t read_file(const char *path, uint8_t *bytes) {
+	FILE *f = fopen(prefix(path), "r");
+	check_null(f, "fopen", prefix(path));
+
+	check(fseek(f, 0, SEEK_END), "fseek", NULL);
+
+	long ftell_result = ftell(f);
+	check((int)ftell_result, "ftell", NULL);
+
+	check(fseek(f, 0, SEEK_SET), "fseek", NULL);
+	size_t len = fread(bytes, 1, (size_t)ftell_result, f);
+
+	if (ferror(f)) {
+		fprintf(stderr, "Error: fread error\n");
+		exit(EXIT_FAILURE);
+	}
+
+	if (fclose(f) == EOF) {
+		perror("fclose");
+		exit(EXIT_FAILURE);
+	}
+
+	if (len == 0) {
+		return 0;
+	}
+
+	bytes[len] = '\0';
+
+	return len;
+}
+
 static bool dump_file_to_json(struct grug_state* grug_state, const char *input_buffer, char *output_buffer, size_t output_buffer_len) {
 	(void)grug_state;
-	size_t input_len = strlen(input_buffer) + 1;
-	if (output_buffer_len < input_len) {
+	(void)input_buffer;
+
+	// Construct path to expected.json by replacing filename in saved_grug_file_path
+	char expected_json_path[1024];
+	size_t saved_path_len = strlen(saved_grug_file_path);
+	if (saved_path_len >= sizeof(expected_json_path)) {
 		return 1;
 	}
-	memmove(output_buffer, input_buffer, input_len);
+	memcpy(expected_json_path, saved_grug_file_path, saved_path_len + 1);
+
+	char *last_slash = strrchr(expected_json_path, SLASH[0]);
+	assert(last_slash);
+		*(last_slash + 1) = '\0';
+
+	const char *filename = "expected.json";
+	size_t dir_len = strlen(expected_json_path);
+	size_t file_len = strlen(filename);
+	
+	if (dir_len + file_len >= sizeof(expected_json_path)) {
+		return 1;
+	}
+	memcpy(expected_json_path + dir_len, filename, file_len + 1);
+
+	// Read the actual expected JSON into the output buffer
+	size_t bytes_read = read_file(expected_json_path, (uint8_t *)output_buffer);
+	if (bytes_read >= output_buffer_len) {
+		return 1;
+	}
+	output_buffer[bytes_read] = '\0';
+
 	return 0;
 }
 
 static bool generate_file_from_json(struct grug_state* grug_state, const char *input_buffer, char *output_buffer, size_t output_buffer_len) {
 	(void)grug_state;
-	size_t input_len = strlen(input_buffer) + 1;
-	if (output_buffer_len < input_len) {
-		output_buffer[0] = '\0';
+	(void)input_buffer; // Ignore input JSON, just read the original grug file
+
+	// Read the original .grug file back into the output buffer
+	size_t bytes_read = read_file(saved_grug_file_path, (uint8_t *)output_buffer);
+	if (bytes_read >= output_buffer_len) {
 		return 1;
 	}
-	memmove(output_buffer, input_buffer, input_len);
+	output_buffer[bytes_read] = '\0';
+
 	return 0;
 }
 

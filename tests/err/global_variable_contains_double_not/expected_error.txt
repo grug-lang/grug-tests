@@ -1,3 +1,3 @@
   in member scope (err/global_variable_contains_double_not/input-A.grug:1:15)
-Error: Found 'NOT_TOKEN' directly next to another 'NOT_TOKEN', which can be simplified by just removing both of them
+Error: Found 'not' directly next to another 'not', which can be simplified by just removing both of them
 1 $ foo: number = not not true

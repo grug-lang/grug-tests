@@ -1,2 +1,0 @@
-Error: 'input-A' is missing a period in its filename
-  err/file_name_missing_period/input-A

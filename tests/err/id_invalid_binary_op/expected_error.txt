@@ -1,3 +1,3 @@
   in on_a (err/id_invalid_binary_op/input-D.grug:2:19)
-Error: 'GREATER_OR_EQUAL_TOKEN' operator expects number
+Error: '>=' operator expects number
 2 $ initialize(me >= me)

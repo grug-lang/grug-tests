@@ -1,3 +1,3 @@
   in on_a (err/unary_plus_does_not_exist/input-D.grug:2:16)
-Error: Expected a primary expression token, but got token type PLUS_TOKEN on line 2
+Error: Expected a primary expression token, but got token type '+' on line 2
 2 $ initialize(+2)

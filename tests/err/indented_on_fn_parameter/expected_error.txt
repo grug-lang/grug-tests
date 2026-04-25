@@ -1,3 +1,3 @@
   in on_a (err/indented_on_fn_parameter/input-F.grug:1:5)
-Error: Expected token type CLOSE_PARENTHESIS_TOKEN, but got NEWLINE_TOKEN on line 1
+Error: Expected token type ')', but got line break ('\n')
 1 $ on_a(

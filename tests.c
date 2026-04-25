@@ -1,5 +1,7 @@
 #include "tests.h"
 
+#include "cJSON.h"
+
 #include <assert.h>
 #include <ctype.h>
 #include <errno.h>
@@ -1327,6 +1329,150 @@ static void test_error(
 	}
 }
 
+static void compare_nodes(cJSON *exp, cJSON *act, const char *path) {
+	if (!exp && !act) {
+		return;
+	}
+	if (!exp || !act) {
+		fprintf(stderr, "Mismatch at '%s': One side is missing.\n", path);
+		exit(EXIT_FAILURE);
+	}
+
+	if (cJSON_IsBool(exp) && cJSON_IsBool(act)) {
+		if (cJSON_IsTrue(exp) != cJSON_IsTrue(act)) {
+			fprintf(stderr, "Mismatch at '%s': Expected %s, got %s.\n",
+					path, cJSON_IsTrue(exp) ? "true" : "false", cJSON_IsTrue(act) ? "true" : "false");
+			exit(EXIT_FAILURE);
+		}
+		return;
+	}
+
+	if (exp->type != act->type) {
+		fprintf(stderr, "Mismatch at '%s': Value types differ.\n", path);
+		exit(EXIT_FAILURE);
+	}
+
+	if (cJSON_IsNumber(exp)) {
+		if (fabs(exp->valuedouble - act->valuedouble) > 1e-6) {
+			fprintf(stderr, "Mismatch at '%s': Expected %f, got %f.\n", path, exp->valuedouble, act->valuedouble);
+			exit(EXIT_FAILURE);
+		}
+		return;
+	}
+
+	if (cJSON_IsString(exp)) {
+		if (strcmp(exp->valuestring, act->valuestring) != 0) {
+			fprintf(stderr, "Mismatch at '%s': Expected '%s', got '%s'.\n", path, exp->valuestring, act->valuestring);
+			exit(EXIT_FAILURE);
+		}
+		return;
+	}
+
+	if (cJSON_IsArray(exp)) {
+		int size_exp = cJSON_GetArraySize(exp);
+		int size_act = cJSON_GetArraySize(act);
+		if (size_exp != size_act) {
+			fprintf(stderr, "Mismatch at '%s': Array size expected %d, got %d.\n", path, size_exp, size_act);
+			exit(EXIT_FAILURE);
+		}
+		for (int i = 0; i < size_exp; i++) {
+			char new_path[512];
+			snprintf(new_path, sizeof(new_path), "%s[%d]", path, i);
+			compare_nodes(cJSON_GetArrayItem(exp, i), cJSON_GetArrayItem(act, i), new_path);
+		}
+		return;
+	}
+
+	if (cJSON_IsObject(exp)) {
+		int size_exp = cJSON_GetArraySize(exp);
+		int size_act = cJSON_GetArraySize(act);
+		if (size_exp != size_act) {
+			fprintf(stderr, "Mismatch at '%s': Object key count expected %d, got %d.\n", path, size_exp, size_act);
+			exit(EXIT_FAILURE);
+		}
+
+		cJSON *child_exp = exp->child;
+		while (child_exp) {
+			cJSON *child_act = cJSON_GetObjectItemCaseSensitive(act, child_exp->string);
+			char new_path[512];
+			snprintf(new_path, sizeof(new_path), "%s.%s", path, child_exp->string);
+
+			if (!child_act) {
+				fprintf(stderr, "Mismatch at '%s': Key '%s' missing in actual output.\n", path, child_exp->string);
+				exit(EXIT_FAILURE);
+			}
+
+			compare_nodes(child_exp, child_act, new_path);
+
+			child_exp = child_exp->next;
+		}
+		return;
+	}
+
+	if (cJSON_IsNull(exp)) {
+		return;
+	}
+
+	fprintf(stderr, "Mismatch at '%s': Unhandled JSON type.\n", path);
+	exit(EXIT_FAILURE);
+}
+
+static void assert_jsons_are_equal(const char *actual_json, const char *expected_json_path) {
+	static uint8_t expected_json[MiB];
+	size_t expected_json_len = read_file(expected_json_path, expected_json);
+	expected_json[expected_json_len] = '\0';
+
+	cJSON *exp = cJSON_Parse((const char *)expected_json);
+	if (!exp) {
+		fprintf(stderr, "\nError: Failed to parse %s\n", expected_json_path);
+		exit(EXIT_FAILURE);
+	}
+
+	cJSON *act = cJSON_Parse(actual_json);
+	if (!act) {
+		cJSON_Delete(exp);
+
+		fprintf(stderr, "Error: Implementation generated malformed JSON:\n%s", actual_json);
+		exit(EXIT_FAILURE);
+	}
+
+	compare_nodes(exp, act, "root");
+
+	cJSON_Delete(exp);
+	cJSON_Delete(act);
+}
+
+static char *get_expected_json_path(const char *grug_path) {
+	static char expected_json_path[MiB];
+	size_t grug_path_len = strlen(grug_path);
+	if (grug_path_len >= sizeof(expected_json_path)) {
+		fprintf(stderr, "Error: grug_path too long\n");
+		exit(EXIT_FAILURE);
+	}
+	memcpy(expected_json_path, grug_path, grug_path_len + 1);
+		
+	// Find the last slash to replace the filename with expected.json
+	char *last_slash = strrchr(expected_json_path, SLASH[0]);
+	assert(last_slash);
+
+	// Truncate after the slash
+	*(last_slash + 1) = '\0';
+	
+	const char *filename = "expected.json";
+	size_t dir_len = strlen(expected_json_path);
+	size_t file_len = strlen(filename);
+	
+	if (dir_len + file_len >= sizeof(expected_json_path)) {
+		fprintf(stderr, "Error: expected_json_path buffer overflow\n");
+		exit(EXIT_FAILURE);
+	}
+	
+	// Use memcpy for the static string replacement
+	memcpy(expected_json_path + dir_len, filename, file_len + 1);
+
+	return expected_json_path;
+}
+
 static void diff_roundtrip(
 	void* grug_state,
 	const char *grug_path
@@ -1340,6 +1486,8 @@ static void diff_roundtrip(
 		fprintf(stderr, "Error: Failed to dump file AST\n");
 		exit(EXIT_FAILURE);
 	}
+
+	assert_jsons_are_equal(json_buf, get_expected_json_path(grug_path));
 
 	static char applied_buf[MiB];
 	if (generate_file_from_json(grug_state, json_buf, applied_buf, sizeof(applied_buf))) {

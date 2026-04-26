@@ -17,7 +17,6 @@ message(STATUS "Compilation will use ${CMAKE_C_COMPILER_ID}")
 
 set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
 if (MSVC)
-	add_definitions(-D_CRT_SECURE_NO_WARNINGS)    
 	set(BASE_WARNINGS
 		/W4
 		/WX

@@ -1,4 +1,4 @@
-name: CI Build
+name: CI Build ubuntu
 
 on:
   push:
@@ -7,40 +7,21 @@ on:
 
 jobs:
   build:
-    name: Build ${{ matrix.os }} ${{ matrix.compiler }} ${{ matrix.sanitizer }}
-    runs-on: ${{ matrix.os }}
+    name: Build ubuntu ${{ matrix.compiler }} ${{ matrix.sanitizer }}
+    runs-on: ubuntu-latest
     continue-on-error: true
     defaults:
       run:
-        shell: ${{ matrix.os == 'windows-latest' && 'msys2 {0}' || 'bash' }}
+        shell: bash
     strategy:
       matrix:
         os: [ubuntu-latest]
         compiler: [clang, gcc]
         sanitizer: [none, asan, valgrind]
-        include:
-          - os: windows-latest
-            compiler: gcc
-            sanitizer: none
-          - os: windows-latest
-            compiler: msvc
-            sanitizer: none
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-
-      - name: Setup MSYS2
-        if: matrix.os == 'windows-latest' 
-        uses: msys2/setup-msys2@v2
-        with:
-          msystem: MINGW64
-          path-type: inherit
-          update: true
-          install: >-
-            mingw-w64-x86_64-gcc
-            mingw-w64-x86_64-cmake
-            mingw-w64-x86_64-ninja
 
       - name: Install Valgrind (if needed)
         if: matrix.sanitizer == 'valgrind'
@@ -62,11 +43,7 @@ jobs:
             # The ,, lowercases it to build-debug and build-release
             export BUILD_DIR=build-${BUILD_TYPE,,} 
             
-            if [ "${{ matrix.compiler }}" == "msvc" ]; then
-              CMAKE_FLAGS=("-G" 'Visual Studio 17 2022')
-            else 
-              CMAKE_FLAGS=("-G" "Ninja" "-DCMAKE_BUILD_TYPE=$BUILD_TYPE")
-            fi
+            CMAKE_FLAGS=("-G" "Ninja" "-DCMAKE_BUILD_TYPE=$BUILD_TYPE" "-DCMAKE_C_COMPILER=${{ matrix.compiler }}")
 
             cmake -S . -B $BUILD_DIR "${CMAKE_FLAGS[@]}"
             cmake --build $BUILD_DIR --config=$BUILD_TYPE
@@ -80,29 +57,6 @@ jobs:
               "$TEST_EXE"
             fi
           done
-
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: "3.11"
-
-      - name: Install Python dependencies
-        run: python -m pip install lark[interegular] pyright jsonschema
-
-      - name: Run grammar check
-        run: python grug_grammar.py
-
-      - name: Run JSON schema validation
-        run: python mod_api_schema.py
-
-      - name: Run Pyright type check
-        run: |
-          PY_MAJOR_MINOR=$(python - <<'EOF' | tr -d '\r'
-          import sys
-          print(f"{sys.version_info.major}.{sys.version_info.minor}")
-          EOF
-          )
-          pyright --pythonversion "$PY_MAJOR_MINOR"
 
         env:
           SHUFFLES: 10

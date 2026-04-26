@@ -1,0 +1,50 @@
+name: CI Build windows
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build windows ${{ matrix.compiler }} 
+    runs-on: windows-latest
+    continue-on-error: true
+    defaults:
+      run:
+        shell: pwsh
+    strategy:
+      matrix:
+        compiler: [msvc, gcc]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Build and run tests (Debug + Release)
+        run: |
+          foreach ($BUILD_TYPE in @("Debug", "Release")) {
+            Write-Host "=== Building $BUILD_TYPE ==="
+
+            $BUILD_DIR = "build-$($BUILD_TYPE.ToLower())"
+
+            if ("${{ matrix.compiler }}" -eq "msvc") {
+              $CMAKE_FLAGS = @("-G", "Visual Studio 17 2022")
+            } else {
+              $CMAKE_FLAGS = @("-G", "Ninja", "-DCMAKE_BUILD_TYPE=$BUILD_TYPE")
+            }
+
+            cmake -S . -B $BUILD_DIR @CMAKE_FLAGS
+            cmake --build $BUILD_DIR --config=@BUILD_TYPE
+
+            Write-Host "=== Running tests ($BUILD_TYPE) ==="
+
+            $TEST_EXE = Get-ChildItem -Path $BUILD_DIR -Recurse -File |
+              Where-Object { $_.Name -eq "smoketest" -or $_.Name -eq "smoketest.exe" } |
+              Select-Object -First 1
+
+            $TEST_EXE.FullName
+          }
+
+        env:
+          SHUFFLES: 10

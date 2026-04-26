@@ -15,7 +15,7 @@ jobs:
         shell: pwsh
     strategy:
       matrix:
-        compiler: [msvc, gcc]
+        compiler: [msvc, gcc, clang]
 
     steps:
       - name: Checkout code
@@ -31,7 +31,7 @@ jobs:
             if ("${{ matrix.compiler }}" -eq "msvc") {
               $CMAKE_FLAGS = @("-G", "Visual Studio 17 2022")
             } else {
-              $CMAKE_FLAGS = @("-G", "Ninja", "-DCMAKE_BUILD_TYPE=$BUILD_TYPE")
+              $CMAKE_FLAGS = @("-G", "Ninja", "-DCMAKE_BUILD_TYPE=$BUILD_TYPE" , "-DCMAKE_C_COMPILER=${{ matrix.compiler }}")
             }
 
             cmake -S . -B $BUILD_DIR @CMAKE_FLAGS

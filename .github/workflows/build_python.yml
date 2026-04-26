@@ -1,4 +1,4 @@
-name: CI Build Grammar
+name: CI Build
 
 on:
   push:

@@ -131,7 +131,7 @@ if (DEFINED WIN32)
     set_target_properties(tests PROPERTIES PREFIX "")
 endif()
 
-if (NOT(MSVC))
+if (NOT(DEFINED WIN32))
 	target_link_libraries(tests
 		PRIVATE
 			m

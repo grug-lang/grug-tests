@@ -9,7 +9,6 @@ jobs:
   build:
     name: Grammar ${{ matrix.os }} 
     runs-on: ${{ matrix.os }}
-    continue-on-error: true
     defaults:
       run:
         shell: ${{ matrix.os == 'windows-latest' && 'msys2 {0}' || 'bash' }}

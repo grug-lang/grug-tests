@@ -28,6 +28,18 @@
 #define _CRT_SECURE_NO_DEPRECATE
 #endif
 
+/* MinGW gcc defines isnan and isinf on floats which causes conversion
+ * warnings when using them with doubles, so we use the underlying
+ * intrinsics directly */
+#if defined(__MINGW64__)
+#define is_nan(d) _isnan(d)
+#define is_inf(d) (!_finite(d))
+#else 
+#define is_nan(d) isnan(d)
+#define is_inf(d) isinf(d)
+#endif
+
+
 #ifdef __GNUC__
 #pragma GCC visibility push(default)
 #endif
@@ -609,7 +621,7 @@ static cJSON_bool print_number(const cJSON * const item, printbuffer * const out
     }
 
     /* This checks for NaN and Infinity */
-    if (isnan(d) || isinf(d))
+    if (is_nan(d) || !is_inf(d))
     {
         length = sprintf((char*)number_buffer, "null");
     }

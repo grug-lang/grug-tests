@@ -1,3 +1,4 @@
+#define _CRT_SECURE_NO_DEPRECATE
 #pragma once
 
 #define _XOPEN_SOURCE 700 // This is required to get struct FTW from ftw.h

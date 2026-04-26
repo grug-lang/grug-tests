@@ -78,7 +78,7 @@ static const char *get_type_name[] = {
 	} \
 } while (0)
 
-#if defined(_WIN32)
+#if defined(_WIN32) || defined(_WIN64)
 #include <windows.h>
 #define SLASH "\\"
 #elif defined(__linux__)

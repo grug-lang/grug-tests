@@ -14,7 +14,7 @@ typedef void* DllLib;
 #define load_symbol(lib, name) dlsym(lib, name)
 #define SLASH "/"
 
-#elif defined(WIN32) 
+#elif defined(_WIN32) || defined(_WIN64)
 
 #include <windows.h>
 

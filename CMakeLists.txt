@@ -15,6 +15,7 @@ message(STATUS "Compilation will use ${CMAKE_C_COMPILER_ID}")
 # Base compiler flags
 # -----------------------------
 
+add_definitions(-D_CRT_SECURE_NO_WARNINGS)    
 set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
 if (MSVC)
 	set(BASE_WARNINGS

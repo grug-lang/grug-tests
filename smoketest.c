@@ -757,7 +757,7 @@ static bool grug_to_json(struct grug_state* grug_state, const char *input_grug_b
 	(void)input_grug_buffer;
 
 	// Construct path to expected.json by replacing filename in saved_grug_file_path
-	char expected_json_path[1024];
+	char expected_json_path[1024] = {0};
 	size_t saved_path_len = strlen(saved_grug_file_path);
 	if (saved_path_len >= sizeof(expected_json_path)) {
 		return true;

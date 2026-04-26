@@ -1397,13 +1397,13 @@ static void assert_jsons_are_equal(const char *actual_json, const char *expected
 }
 
 static char *get_expected_json_path(const char *grug_path) {
-	static char expected_json_path[MiB];
-	size_t grug_path_len = strlen(grug_path);
+	static char expected_json_path[MiB] = {0};
+	size_t grug_path_len = strlen(grug_path) + 1;
 	if (grug_path_len >= sizeof(expected_json_path)) {
 		fprintf(stderr, "Error: grug_path too long\n");
 		exit(EXIT_FAILURE);
 	}
-	memcpy(expected_json_path, grug_path, grug_path_len + 1);
+	memcpy(expected_json_path, grug_path, grug_path_len);
 		
 	// Find the last slash to replace the filename with expected.json
 	char *last_slash = strrchr(expected_json_path, SLASH[0]);

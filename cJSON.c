@@ -1496,6 +1496,10 @@ static cJSON_bool print_value(const cJSON * const item, printbuffer * const outp
 /* Build an array from input text. */
 static cJSON_bool parse_array(cJSON * const item, parse_buffer * const input_buffer)
 {
+	if (!input_buffer) {
+		fprintf(stderr, "UNREACHABLE");
+		exit(1);
+	}
     cJSON *head = NULL; /* head of the linked list */
     cJSON *current_item = NULL;
 

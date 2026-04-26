@@ -621,7 +621,7 @@ static cJSON_bool print_number(const cJSON * const item, printbuffer * const out
     }
 
     /* This checks for NaN and Infinity */
-    if (is_nan(d) || !is_inf(d))
+    if (is_nan(d) || is_inf(d))
     {
         length = sprintf((char*)number_buffer, "null");
     }

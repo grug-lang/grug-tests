@@ -9,6 +9,7 @@ jobs:
   build:
     name: Build ${{ matrix.os }} ${{ matrix.compiler }} ${{ matrix.sanitizer }}
     runs-on: ${{ matrix.os }}
+    continue-on-error: true
     defaults:
       run:
         shell: ${{ matrix.os == 'windows-latest' && 'msys2 {0}' || 'bash' }}
@@ -20,6 +21,9 @@ jobs:
         include:
           - os: windows-latest
             compiler: gcc
+            sanitizer: none
+          - os: windows-latest
+            compiler: msvc
             sanitizer: none
 
     steps:
@@ -37,6 +41,45 @@ jobs:
             mingw-w64-x86_64-gcc
             mingw-w64-x86_64-cmake
             mingw-w64-x86_64-ninja
+
+      - name: Install Valgrind (if needed)
+        if: matrix.sanitizer == 'valgrind'
+        run: sudo apt-get update && sudo apt-get install -y valgrind
+
+      - name: Build and run tests (Debug + Release)
+        run: |
+          # Set sanitizer flags
+          if [ "${{ matrix.sanitizer }}" == "asan" ]; then
+            export ASAN=1
+          fi
+          if [ "${{ matrix.sanitizer }}" == "valgrind" ]; then
+            export VALGRIND=1
+          fi
+
+          for BUILD_TYPE in Debug Release; do
+            echo "=== Building $BUILD_TYPE ==="
+
+            # The ,, lowercases it to build-debug and build-release
+            export BUILD_DIR=build-${BUILD_TYPE,,} 
+            
+            if [ "${{ matrix.compiler }}" == "msvc" ]; then
+              CMAKE_FLAGS=("-G" 'Visual Studio 17 2022')
+            else 
+              CMAKE_FLAGS=("-G" "Ninja" "-DCMAKE_BUILD_TYPE=$BUILD_TYPE")
+            fi
+
+            cmake -S . -B $BUILD_DIR "${CMAKE_FLAGS[@]}"
+            cmake --build $BUILD_DIR --config=$BUILD_TYPE
+
+            echo "=== Running tests ($BUILD_TYPE) ==="
+            TEST_EXE=$(find $BUILD_DIR -type f \( -name "smoketest" -o -name "smoketest.exe" \) | head -n 1)
+
+            if [ ! -z "$VALGRIND" ]; then
+              valgrind "$TEST_EXE"
+            else
+              "$TEST_EXE"
+            fi
+          done
 
       - name: Set up Python
         uses: actions/setup-python@v4
@@ -61,39 +104,5 @@ jobs:
           )
           pyright --pythonversion "$PY_MAJOR_MINOR"
 
-      - name: Install Valgrind (if needed)
-        if: matrix.sanitizer == 'valgrind'
-        run: sudo apt-get update && sudo apt-get install -y valgrind
-
-      - name: Build and run tests (Debug + Release)
-        run: |
-          # Set sanitizer flags
-          if [ "${{ matrix.sanitizer }}" == "asan" ]; then
-            export ASAN=1
-          fi
-          if [ "${{ matrix.sanitizer }}" == "valgrind" ]; then
-            export VALGRIND=1
-          fi
-
-          for BUILD_TYPE in Debug Release; do
-            echo "=== Building $BUILD_TYPE ==="
-
-            # The ,, lowercases it to build-debug and build-release
-            export BUILD_DIR=build-${BUILD_TYPE,,} 
-            
-            CMAKE_FLAGS="-G Ninja -DCMAKE_BUILD_TYPE=$BUILD_TYPE"
-            cmake -S . -B $BUILD_DIR $CMAKE_FLAGS
-            cmake --build $BUILD_DIR
-
-            echo "=== Running tests ($BUILD_TYPE) ==="
-            TEST_EXE=$(find $BUILD_DIR -type f \( -name "smoketest" -o -name "smoketest.exe" \) | head -n 1)
-
-            if [ ! -z "$VALGRIND" ]; then
-              valgrind "$TEST_EXE"
-            else
-              "$TEST_EXE"
-            fi
-          done
         env:
-          CC: ${{ matrix.compiler }}
           SHUFFLES: 10

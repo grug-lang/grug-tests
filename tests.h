@@ -72,6 +72,15 @@ enum grug_runtime_error_type {
 typedef struct grug_file_id* (*compile_grug_file_t)(struct grug_state* state, const char* file_path, const char** error_out);
 
 /**
+ * @typedef update_t
+ * @brief Function pointer type for recompiling all modified grug files.
+ *
+ * @param state Current active grug state.
+ * @param error_out Out parameter for a compile error message. Outputs `NULL` on success.
+ */
+typedef void (*update_t)(struct grug_state* state, const char** error_out);
+
+/**
  * @typedef init_globals_t
  * @brief Function pointer type for initializing a grug_entity and keeping it
  * ready for subsequent calls to call_export_fn_t.
@@ -168,6 +177,7 @@ struct grug_state_vtable {
 	create_grug_state_t create_grug_state;
 	destroy_grug_state_t destroy_grug_state;
 	compile_grug_file_t compile_grug_file;
+	update_t update;
 	init_globals_t init_globals;
 	call_export_fn_t call_export_fn;
 	grug_to_json_t grug_to_json;

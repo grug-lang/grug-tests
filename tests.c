@@ -3637,6 +3637,7 @@ static void add_error_tests(void) {
 	ADD_TEST_ERROR(me_plus_me, "D");
 	ADD_TEST_ERROR(missing_empty_line_between_global_and_on_fn, "D");
 	ADD_TEST_ERROR(missing_empty_line_between_on_fn_and_helper_fn, "D");
+	ADD_TEST_ERROR(missing_trailing_newline, "D");
 	ADD_TEST_ERROR(mixing_custom_ids_binary_expr, "D");
 	ADD_TEST_ERROR(mixing_custom_ids_game_fn_param_type, "D");
 	ADD_TEST_ERROR(mixing_custom_ids_game_fn_return_type, "D");

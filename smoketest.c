@@ -674,7 +674,7 @@ static void call_export_fn(struct grug_state* grug_state, struct grug_file_id* f
         CALL_ARGLESS(grug_state, nothing);
     } else if (starts_with(grug_file_path, "ok"SLASH"write_to_global_variable"SLASH)) {
         CALL(grug_state, max, grug_number(43.0), grug_number(69.0));
-    } else if (starts_with(grug_file_path, "hot_reloading"SLASH"code_reloading-D.grug")) {
+    } else if (starts_with(grug_file_path, "hot_reloading/code_reloading-D.grug")) {
         CALL(grug_state, initialize, grug_number(update_called ? 2.0 : 1.0));
         update_called = false;
     } else {

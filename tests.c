@@ -1489,7 +1489,12 @@ static void remove_dir_recursive(const char* path) {
 #ifdef _WIN32
     char search_path[MAX_PATH];
     WIN32_FIND_DATAA find_data;
-    snprintf(search_path, MAX_PATH, "%s\\*", path);
+
+    int n = snprintf(search_path, MAX_PATH, "%s\\*", path);
+    if (n < 0 || n >= MAX_PATH) {
+        fprintf(stderr, "Error: path too long: %s\n", path);
+        exit(EXIT_FAILURE);
+    }
 
     HANDLE hFind = FindFirstFileA(search_path, &find_data);
     if (hFind == INVALID_HANDLE_VALUE) {
@@ -1510,7 +1515,14 @@ static void remove_dir_recursive(const char* path) {
             continue;
 
         char full_path[MAX_PATH];
-        snprintf(full_path, MAX_PATH, "%s\\%s", path, find_data.cFileName);
+
+        n = snprintf(full_path, MAX_PATH, "%s\\%s", path, find_data.cFileName);
+        if (n < 0 || n >= MAX_PATH) {
+            fprintf(stderr,
+                "Error: path too long: %s\\%s\n",
+                path, find_data.cFileName);
+            exit(EXIT_FAILURE);
+        }
 
         if (find_data.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) {
             remove_dir_recursive(full_path);
@@ -1552,7 +1564,13 @@ static void remove_dir_recursive(const char* path) {
             continue;
 
         char full_path[4096];
-        snprintf(full_path, sizeof(full_path), "%s/%s", path, p->d_name);
+        int n = snprintf(full_path, sizeof(full_path), "%s/%s", path, p->d_name);
+        if (n < 0 || n >= (int)sizeof(full_path)) {
+            fprintf(stderr,
+                "Error: path too long: %s/%s\n",
+                path, p->d_name);
+            exit(EXIT_FAILURE);
+        }
 
         struct stat statbuf;
         if (lstat(full_path, &statbuf) != 0)

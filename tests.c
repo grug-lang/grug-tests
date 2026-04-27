@@ -142,17 +142,19 @@ static const char *tests_dir_path;
 static const char *mod_api_path;
 static const char *whitelisted_test;
 
-static struct grug_file_id* current_file_id;
+static struct grug_entity_id* current_entity;
 
-static create_grug_state_t       create_grug_state;
-static destroy_grug_state_t      destroy_grug_state;
-static compile_grug_file_t       compile_grug_file;
-static update_t                  update;
-static init_globals_t            init_globals;
-static call_export_fn_t          call_export_fn;
-static grug_to_json_t            grug_to_json;
-static json_to_grug_t            json_to_grug;
-static game_fn_error_t           game_fn_error;
+static create_grug_state_t  create_grug_state;
+static destroy_grug_state_t destroy_grug_state;
+static compile_grug_file_t  compile_grug_file;
+static destroy_grug_file_t  destroy_grug_file;
+static create_entity_t      create_entity;
+static destroy_entity_t     destroy_entity;
+static update_t             update;
+static call_export_fn_t     call_export_fn;
+static grug_to_json_t       grug_to_json;
+static json_to_grug_t       json_to_grug;
+static game_fn_error_t      game_fn_error;
 
 struct error_test_data {
 	const char *test_name_str;
@@ -163,8 +165,8 @@ static struct error_test_data error_test_datas[420420];
 static size_t err_test_datas_size;
 
 struct ok_test_data {
-	void (*run)(void* grug_state, void* file_id);
-	struct grug_file_id* file_id;
+	void (*run)(struct grug_state* grug_state, struct grug_entity_id* entity);
+	struct grug_file_id* file;
 	const char *test_name_str;
 	const char *grug_path;
 };
@@ -172,8 +174,8 @@ static struct ok_test_data ok_test_datas[420420];
 static size_t ok_test_datas_size;
 
 struct runtime_error_test_data {
-	void (*run)(void* grug_state, void* file_id);
-	struct grug_file_id* file_id;
+	void (*run)(struct grug_state* grug_state, struct grug_entity_id* entity);
+	struct grug_file_id* file;
 	const char *test_name_str;
 	const char *grug_path;
 	const char *expected_error_path;
@@ -232,8 +234,8 @@ static bool streq(const char *a, const char *b) {
 	return strcmp(a, b) == 0;
 }
 
-static void call_export_fn_argless(void* grug_state, void* file_id, const char *on_fn_name) {
-	call_export_fn(grug_state, file_id, on_fn_name, NULL, 0);
+static void call_export_fn_argless(void* grug_state, struct grug_entity_id* entity, const char *on_fn_name) {
+	call_export_fn(grug_state, entity, on_fn_name, NULL, 0);
 }
 
 union grug_value game_fn_nothing(struct grug_state* grug_state, const union grug_value args[]) {
@@ -858,7 +860,7 @@ union grug_value game_fn_call_on_b_fn(struct grug_state* grug_state, const union
 	ASSERT_16_BYTE_STACK_ALIGNED();
 	game_fn_call_on_b_fn_call_count++;
 
-	call_export_fn_argless(grug_state, current_file_id, "on_b");
+	call_export_fn_argless(grug_state, current_entity, "on_b");
 	return (union grug_value) {0};
 }
 static uint64_t game_fn_store_id;
@@ -964,7 +966,7 @@ static void print_string_debug(const char* str) {
 	if (is_whitelisted_test(#test_name)) {\
 		ok_test_datas[ok_test_datas_size++] = (struct ok_test_data){\
 			.run = ok_##test_name,\
-			.file_id = NULL,\
+			.file = NULL,\
 			.test_name_str = #test_name,\
 			.grug_path = "ok"SLASH#test_name SLASH"input-"entity_type".grug",\
 		};\
@@ -975,7 +977,7 @@ static void print_string_debug(const char* str) {
 	if (is_whitelisted_test(#test_name)) {\
 		runtime_error_test_datas[err_runtime_test_datas_size++] = (struct runtime_error_test_data){\
 			.run = runtime_error_##test_name,\
-			.file_id = NULL,\
+			.file = NULL,\
 			.test_name_str = #test_name,\
 			.grug_path = "err_runtime"SLASH#test_name SLASH"input-"entity_type".grug",\
 			.expected_error_path = "err_runtime"SLASH#test_name SLASH"expected_error.txt",\
@@ -1050,6 +1052,8 @@ static const char *get_expected_error(const char *expected_error_path) {
 	return expected_error;
 }
 
+static char impl_forgot_to_set_msg[] = "The implementation forgot to set the error_out message to NULL on success";
+
 static void run_err_spaces_test(struct grug_state *grug_state, const char *name) {
 	if (!is_whitelisted_test(name)) {
 		return;
@@ -1073,7 +1077,7 @@ static void run_err_spaces_test(struct grug_state *grug_state, const char *name)
 		exit(EXIT_FAILURE);
 	}
 
-    const char *msg = NULL;
+    const char *msg = impl_forgot_to_set_msg;
     compile_grug_file(grug_state, relative_path, &msg);
 
     if (msg == NULL) {
@@ -1239,7 +1243,7 @@ static void test_error(
 	printf("Running tests/err/%s...\n", test_name);
 	fflush(stdout);
 
-	const char* msg = NULL;
+	const char *msg = impl_forgot_to_set_msg;
 	compile_grug_file(grug_state, grug_path, &msg);
 
 	const char *expected_error = get_expected_error(expected_error_path);
@@ -1613,8 +1617,13 @@ static void create_local_temp_dir(void) {
 }
 
 static void test_code_reloading(void) {
+	if (!is_whitelisted_test("code_reloading")) {
+		return;
+	}
+
 	printf("Running code reloading test...\n");
 	fflush(stdout);
+	reset();
 
 	create_local_temp_dir();
 
@@ -1639,52 +1648,57 @@ static void test_code_reloading(void) {
 	char grug_abs[4096];
 	snprintf(grug_abs, sizeof(grug_abs), "%s/%s", local_temp_dir_name, grug_rel);
 
-	const char *msg = NULL;
+	const char *msg = impl_forgot_to_set_msg;
 
-	// 1. Overwrite hot_reloading/code_reloading-D.grug with initialize(1)
+	// Overwrite hot_reloading/code_reloading-D.grug with initialize(1)
 	FILE *f1 = fopen(grug_abs, "w");
 	check_null(f1, "fopen", grug_abs);
 	fputs("foo: number = 1\n\non_a() {\n    initialize(foo)\n}\n", f1);
 	fclose(f1);
 
-	// 2. Call compile_grug_file(state, "hot_reloading/code_reloading-D.grug", &msg)
-	void *file_id = compile_grug_file(grug_state, grug_rel, &msg);
+	// Create file
+	struct grug_file_id *file = compile_grug_file(grug_state, grug_rel, &msg);
 	if (msg) {
 		fprintf(stderr, "Error compiling code_reloading-D.grug: %s\n", msg);
 		exit(EXIT_FAILURE);
 	}
 
-	// 3. Call on_a(), and run assert_number(game_fn_initialize_x, 1.0)
-	reset();
-	init_globals(grug_state, file_id);
-	current_file_id = file_id;
-	call_export_fn_argless(grug_state, file_id, "on_a");
+	// Create entity
+	struct grug_entity_id* entity = create_entity(grug_state, file, &msg);
+	if (msg) {
+		fprintf(stderr, "Error creating entity: %s\n", msg);
+		exit(EXIT_FAILURE);
+	}
+
+	// Call on_a(), and run assert_number(game_fn_initialize_x, 1.0)
+	call_export_fn_argless(grug_state, entity, "on_a");
 	assert_number(game_fn_initialize_x, 1.0);
 
-	// 4. Overwrite hot_reloading/code_reloading-D.grug with initialize(2)
+	// Overwrite hot_reloading/code_reloading-D.grug with initialize(2)
 	FILE *f2 = fopen(grug_abs, "w");
 	check_null(f2, "fopen", grug_abs);
 	fputs("foo: number = 2\n\non_a() {\n    initialize(foo)\n}\n", f2);
 	fclose(f2);
 
-	// 5. Call update(state, &msg)
+	// Call update()
 	update(grug_state, &msg);
 	if (msg) {
 		fprintf(stderr, "Error in update(): %s\n", msg);
 		exit(EXIT_FAILURE);
 	}
 
-	// 6. Call on_a(), and run assert_number(game_fn_initialize_x, 2.0)
-	reset();
-	call_export_fn_argless(grug_state, file_id, "on_a");
+	// Call on_a(), and run assert_number(game_fn_initialize_x, 2.0)
+	call_export_fn_argless(grug_state, entity, "on_a");
 	assert_number(game_fn_initialize_x, 2.0);
 
+	destroy_entity(grug_state, entity);
+	destroy_grug_file(grug_state, file);
 	destroy_grug_state(grug_state);
 }
 
-static void* prologue(void* grug_state, const char *grug_path) {
-	const char *msg = NULL;
-	void *file_id = compile_grug_file(grug_state, grug_path, &msg);
+static struct grug_file_id* prologue(void* grug_state, const char *grug_path) {
+	const char *msg = impl_forgot_to_set_msg;
+	struct grug_file_id *file = compile_grug_file(grug_state, grug_path, &msg);
 	if (msg) {
 		fprintf(stderr, "Error: The test wasn't supposed to print anything, but did:\n");
 		fprintf(stderr, "----\n");
@@ -1693,12 +1707,12 @@ static void* prologue(void* grug_state, const char *grug_path) {
 
 		exit(EXIT_FAILURE);
 	}
-	return file_id;
+	return file;
 }
 
-static void ok_addition_as_argument(void* grug_state, void* file_id) {
+static void ok_addition_as_argument(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	assert_call_count(initialize, 0);
-    call_export_fn_argless(grug_state, file_id, "on_a");
+    call_export_fn_argless(grug_state, entity, "on_a");
 	assert_call_count(initialize, 1);
 
 	assert_false(had_runtime_error);
@@ -1706,149 +1720,149 @@ static void ok_addition_as_argument(void* grug_state, void* file_id) {
 	assert_number(game_fn_initialize_x, 3.0);
 }
 
-static void ok_addition_as_two_arguments(void* grug_state, void* file_id) {
+static void ok_addition_as_two_arguments(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	assert_call_count(max, 0);
-    call_export_fn_argless(grug_state, file_id, "on_a");
+    call_export_fn_argless(grug_state, entity, "on_a");
 	assert_call_count(max, 1);
 
 	assert_number(game_fn_max_x, 3.0);
 	assert_number(game_fn_max_y, 9.0);
 }
 
-static void ok_addition_with_multiplication(void* grug_state, void* file_id) {
+static void ok_addition_with_multiplication(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	assert_call_count(initialize, 0);
-    call_export_fn_argless(grug_state, file_id, "on_a");
+    call_export_fn_argless(grug_state, entity, "on_a");
 	assert_call_count(initialize, 1);
 
 	assert_number(game_fn_initialize_x, 14.0);
 }
 
-static void ok_addition_with_multiplication_2(void* grug_state, void* file_id) {
+static void ok_addition_with_multiplication_2(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	assert_call_count(initialize, 0);
-    call_export_fn_argless(grug_state, file_id, "on_a");
+    call_export_fn_argless(grug_state, entity, "on_a");
 	assert_call_count(initialize, 1);
 
 	assert_number(game_fn_initialize_x, 10.0);
 }
 
-static void ok_and_false_1(void* grug_state, void* file_id) {
+static void ok_and_false_1(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	assert_call_count(initialize_bool, 0);
-    call_export_fn_argless(grug_state, file_id, "on_a");
+    call_export_fn_argless(grug_state, entity, "on_a");
 	assert_call_count(initialize_bool, 1);
 
 	assert_false(game_fn_initialize_bool_b);
 }
 
-static void ok_and_false_2(void* grug_state, void* file_id) {
+static void ok_and_false_2(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	assert_call_count(initialize_bool, 0);
-    call_export_fn_argless(grug_state, file_id, "on_a");
+    call_export_fn_argless(grug_state, entity, "on_a");
 	assert_call_count(initialize_bool, 1);
 
 	assert_false(game_fn_initialize_bool_b);
 }
 
-static void ok_and_false_3(void* grug_state, void* file_id) {
+static void ok_and_false_3(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	assert_call_count(initialize_bool, 0);
-    call_export_fn_argless(grug_state, file_id, "on_a");
+    call_export_fn_argless(grug_state, entity, "on_a");
 	assert_call_count(initialize_bool, 1);
 
 	assert_false(game_fn_initialize_bool_b);
 }
 
-static void ok_and_short_circuit(void* grug_state, void* file_id) {
+static void ok_and_short_circuit(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	assert_call_count(initialize_bool, 0);
-    call_export_fn_argless(grug_state, file_id, "on_a");
+    call_export_fn_argless(grug_state, entity, "on_a");
 	assert_call_count(initialize_bool, 1);
 
 	assert_false(game_fn_initialize_bool_b);
 }
 
-static void ok_and_true(void* grug_state, void* file_id) {
+static void ok_and_true(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	assert_call_count(initialize_bool, 0);
-    call_export_fn_argless(grug_state, file_id, "on_a");
+    call_export_fn_argless(grug_state, entity, "on_a");
 	assert_call_count(initialize_bool, 1);
 
 	assert_true(game_fn_initialize_bool_b);
 }
 
-static void ok_blocked_alrm(void* grug_state, void* file_id) {
+static void ok_blocked_alrm(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	assert_call_count(blocked_alrm, 0);
-    call_export_fn_argless(grug_state, file_id, "on_a");
+    call_export_fn_argless(grug_state, entity, "on_a");
 	assert_call_count(blocked_alrm, 1);
 }
 
-static void ok_bool_logical_not_false(void* grug_state, void* file_id) {
+static void ok_bool_logical_not_false(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	assert_call_count(initialize_bool, 0);
-    call_export_fn_argless(grug_state, file_id, "on_a");
+    call_export_fn_argless(grug_state, entity, "on_a");
 	assert_call_count(initialize_bool, 1);
 
 	assert_true(game_fn_initialize_bool_b);
 }
 
-static void ok_bool_logical_not_true(void* grug_state, void* file_id) {
+static void ok_bool_logical_not_true(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	assert_call_count(initialize_bool, 0);
-    call_export_fn_argless(grug_state, file_id, "on_a");
+    call_export_fn_argless(grug_state, entity, "on_a");
 	assert_call_count(initialize_bool, 1);
 
 	assert_false(game_fn_initialize_bool_b);
 }
 
-static void ok_bool_returned(void* grug_state, void* file_id) {
+static void ok_bool_returned(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	assert_call_count(set_is_happy, 0);
 	assert_call_count(get_false, 0);
-    call_export_fn_argless(grug_state, file_id, "on_a");
+    call_export_fn_argless(grug_state, entity, "on_a");
 	assert_call_count(set_is_happy, 1);
 	assert_call_count(get_false, 1);
 
 	assert_false(game_fn_set_is_happy_is_happy);
 }
 
-static void ok_bool_returned_global(void* grug_state, void* file_id) {
+static void ok_bool_returned_global(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	assert_call_count(set_is_happy, 0);
 	assert_call_count(get_false, 0);
-    call_export_fn_argless(grug_state, file_id, "on_a");
+    call_export_fn_argless(grug_state, entity, "on_a");
 	assert_call_count(set_is_happy, 1);
 	assert_call_count(get_false, 1);
 
 	assert_false(game_fn_set_is_happy_is_happy);
 }
 
-static void ok_bool_zero_extended_if_statement(void* grug_state, void* file_id) {
+static void ok_bool_zero_extended_if_statement(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	assert_call_count(nothing, 0);
 	assert_call_count(get_false, 0);
-    call_export_fn_argless(grug_state, file_id, "on_a");
+    call_export_fn_argless(grug_state, entity, "on_a");
 	assert_call_count(nothing, 2);
 	assert_call_count(get_false, 1);
 }
 
-static void ok_bool_zero_extended_while_statement(void* grug_state, void* file_id) {
+static void ok_bool_zero_extended_while_statement(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	assert_call_count(nothing, 0);
-    call_export_fn_argless(grug_state, file_id, "on_a");
+    call_export_fn_argless(grug_state, entity, "on_a");
 	assert_call_count(nothing, 2);
 }
 
-static void ok_break(void* grug_state, void* file_id) {
+static void ok_break(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	assert_call_count(nothing, 0);
-    call_export_fn_argless(grug_state, file_id, "on_a");
+    call_export_fn_argless(grug_state, entity, "on_a");
 	assert_call_count(nothing, 3);
 }
 
-static void ok_calls_100(void* grug_state, void* file_id) {
+static void ok_calls_100(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	assert_call_count(nothing, 0);
-    call_export_fn_argless(grug_state, file_id, "on_a");
+    call_export_fn_argless(grug_state, entity, "on_a");
 	assert_call_count(nothing, 100);
 }
 
-static void ok_calls_1000(void* grug_state, void* file_id) {
+static void ok_calls_1000(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	assert_call_count(nothing, 0);
-    call_export_fn_argless(grug_state, file_id, "on_a");
+    call_export_fn_argless(grug_state, entity, "on_a");
 	assert_call_count(nothing, 1000);
 }
 
-static void ok_calls_in_call(void* grug_state, void* file_id) {
+static void ok_calls_in_call(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	assert_call_count(max, 0);
 	assert_call_count(initialize, 0);
-    call_export_fn_argless(grug_state, file_id, "on_a");
+    call_export_fn_argless(grug_state, entity, "on_a");
 	assert_call_count(max, 3);
 	assert_call_count(initialize, 1);
 
@@ -1857,172 +1871,172 @@ static void ok_calls_in_call(void* grug_state, void* file_id) {
 	assert_number(game_fn_initialize_x, 4.0);
 }
 
-static void ok_comment_above_block(void* grug_state, void* file_id) {
+static void ok_comment_above_block(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	assert_call_count(nothing, 0);
-    call_export_fn_argless(grug_state, file_id, "on_a");
+    call_export_fn_argless(grug_state, entity, "on_a");
 	assert_call_count(nothing, 1);
 }
 
-static void ok_comment_above_block_twice(void* grug_state, void* file_id) {
+static void ok_comment_above_block_twice(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	assert_call_count(nothing, 0);
-    call_export_fn_argless(grug_state, file_id, "on_a");
+    call_export_fn_argless(grug_state, entity, "on_a");
 	assert_call_count(nothing, 1);
 }
 
-static void ok_comment_above_globals(void* grug_state, void* file_id) {
+static void ok_comment_above_globals(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	(void)grug_state;
-	(void)file_id;
+	(void)entity;
 }
 
-static void ok_comment_above_helper_fn(void* grug_state, void* file_id) {
+static void ok_comment_above_helper_fn(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	assert_call_count(nothing, 0);
-    call_export_fn_argless(grug_state, file_id, "on_a");
+    call_export_fn_argless(grug_state, entity, "on_a");
 	assert_call_count(nothing, 1);
 }
 
-static void ok_comment_above_on_fn(void* grug_state, void* file_id) {
-    call_export_fn_argless(grug_state, file_id, "on_a");
+static void ok_comment_above_on_fn(struct grug_state* grug_state, struct grug_entity_id* entity) {
+    call_export_fn_argless(grug_state, entity, "on_a");
 }
 
-static void ok_comment_between_globals(void* grug_state, void* file_id) {
+static void ok_comment_between_globals(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	(void)grug_state;
-	(void)file_id;
+	(void)entity;
 }
 
-static void ok_comment_between_statements(void* grug_state, void* file_id) {
+static void ok_comment_between_statements(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	assert_call_count(nothing, 0);
-    call_export_fn_argless(grug_state, file_id, "on_a");
+    call_export_fn_argless(grug_state, entity, "on_a");
 	assert_call_count(nothing, 2);
 }
 
-static void ok_comment_lone_block(void* grug_state, void* file_id) {
+static void ok_comment_lone_block(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	assert_call_count(nothing, 0);
-    call_export_fn_argless(grug_state, file_id, "on_a");
+    call_export_fn_argless(grug_state, entity, "on_a");
 	assert_call_count(nothing, 1);
 }
 
-static void ok_comment_lone_block_at_end(void* grug_state, void* file_id) {
-    call_export_fn_argless(grug_state, file_id, "on_a");
+static void ok_comment_lone_block_at_end(struct grug_state* grug_state, struct grug_entity_id* entity) {
+    call_export_fn_argless(grug_state, entity, "on_a");
 }
 
-static void ok_comment_lone_global(void* grug_state, void* file_id) {
-    call_export_fn_argless(grug_state, file_id, "on_a");
+static void ok_comment_lone_global(struct grug_state* grug_state, struct grug_entity_id* entity) {
+    call_export_fn_argless(grug_state, entity, "on_a");
 }
 
-static void ok_continue(void* grug_state, void* file_id) {
+static void ok_continue(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	assert_call_count(nothing, 0);
-    call_export_fn_argless(grug_state, file_id, "on_a");
+    call_export_fn_argless(grug_state, entity, "on_a");
 	assert_call_count(nothing, 2);
 }
 
-static void ok_custom_id_decays_to_id(void* grug_state, void* file_id) {
+static void ok_custom_id_decays_to_id(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	assert_call_count(store, 0);
-    call_export_fn_argless(grug_state, file_id, "on_a");
+    call_export_fn_argless(grug_state, entity, "on_a");
 	assert_call_count(store, 1);
 
 	assert_id(game_fn_store_id, 42);
 }
 
-static void ok_custom_id_transfer_between_globals(void* grug_state, void* file_id) {
+static void ok_custom_id_transfer_between_globals(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	assert_call_count(get_opponent, 1);
 	assert_call_count(set_opponent, 0);
-    call_export_fn_argless(grug_state, file_id, "on_a");
+    call_export_fn_argless(grug_state, entity, "on_a");
 	assert_call_count(get_opponent, 1); 
 	assert_call_count(set_opponent, 1);
 
 	assert_id(game_fn_set_opponent_target, 69);
 }
 
-static void ok_custom_id_with_digits(void* grug_state, void* file_id) {
+static void ok_custom_id_with_digits(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	(void)grug_state;
-	(void)file_id;
+	(void)entity;
 	assert_call_count(box_number, 1);
 }
 
-static void ok_division_negative_result(void* grug_state, void* file_id) {
+static void ok_division_negative_result(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	assert_call_count(initialize, 0);
-    call_export_fn_argless(grug_state, file_id, "on_a");
+    call_export_fn_argless(grug_state, entity, "on_a");
 	assert_call_count(initialize, 1);
 
 	assert_number(game_fn_initialize_x, -2.5);
 }
 
-static void ok_division_positive_result(void* grug_state, void* file_id) {
+static void ok_division_positive_result(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	assert_call_count(initialize, 0);
-    call_export_fn_argless(grug_state, file_id, "on_a");
+    call_export_fn_argless(grug_state, entity, "on_a");
 	assert_call_count(initialize, 1);
 
 	assert_number(game_fn_initialize_x, 2.5);
 }
 
-static void ok_double_negation_with_parentheses(void* grug_state, void* file_id) {
+static void ok_double_negation_with_parentheses(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	assert_call_count(initialize, 0);
-    call_export_fn_argless(grug_state, file_id, "on_a");
+    call_export_fn_argless(grug_state, entity, "on_a");
 	assert_call_count(initialize, 1);
 
 	assert_number(game_fn_initialize_x, 2.0);
 }
 
-static void ok_double_not_with_parentheses(void* grug_state, void* file_id) {
+static void ok_double_not_with_parentheses(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	assert_call_count(initialize_bool, 0);
-    call_export_fn_argless(grug_state, file_id, "on_a");
+    call_export_fn_argless(grug_state, entity, "on_a");
 	assert_call_count(initialize_bool, 1);
 
 	assert_true(game_fn_initialize_bool_b);
 }
 
-static void ok_else_after_else_if_false(void* grug_state, void* file_id) {
+static void ok_else_after_else_if_false(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	assert_call_count(nothing, 0);
-    call_export_fn_argless(grug_state, file_id, "on_a");
+    call_export_fn_argless(grug_state, entity, "on_a");
 	assert_call_count(nothing, 2);
 }
 
-static void ok_else_after_else_if_true(void* grug_state, void* file_id) {
+static void ok_else_after_else_if_true(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	assert_call_count(nothing, 0);
-    call_export_fn_argless(grug_state, file_id, "on_a");
+    call_export_fn_argless(grug_state, entity, "on_a");
 	assert_call_count(nothing, 3);
 }
 
-static void ok_else_false(void* grug_state, void* file_id) {
+static void ok_else_false(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	assert_call_count(nothing, 0);
-    call_export_fn_argless(grug_state, file_id, "on_a");
+    call_export_fn_argless(grug_state, entity, "on_a");
 	assert_call_count(nothing, 2);
 }
 
-static void ok_else_if_false(void* grug_state, void* file_id) {
+static void ok_else_if_false(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	assert_call_count(nothing, 0);
-    call_export_fn_argless(grug_state, file_id, "on_a");
+    call_export_fn_argless(grug_state, entity, "on_a");
 	assert_call_count(nothing, 2);
 }
 
-static void ok_else_if_true(void* grug_state, void* file_id) {
+static void ok_else_if_true(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	assert_call_count(nothing, 0);
-    call_export_fn_argless(grug_state, file_id, "on_a");
+    call_export_fn_argless(grug_state, entity, "on_a");
 	assert_call_count(nothing, 3);
 }
 
-static void ok_else_true(void* grug_state, void* file_id) {
+static void ok_else_true(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	assert_call_count(nothing, 0);
-    call_export_fn_argless(grug_state, file_id, "on_a");
+    call_export_fn_argless(grug_state, entity, "on_a");
 	assert_call_count(nothing, 3);
 }
 
-static void ok_empty_file(void* grug_state, void* file_id) {
+static void ok_empty_file(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	(void)grug_state;
-	(void)file_id;
+	(void)entity;
 }
 
-static void ok_empty_line(void* grug_state, void* file_id) {
+static void ok_empty_line(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	assert_call_count(nothing, 0);
-    call_export_fn_argless(grug_state, file_id, "on_a");
+    call_export_fn_argless(grug_state, entity, "on_a");
 	assert_call_count(nothing, 2);
 }
 
-static void ok_entity_and_resource_as_subexpression(void* grug_state, void* file_id) {
+static void ok_entity_and_resource_as_subexpression(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	assert_call_count(has_resource, 0);
 	assert_call_count(has_entity, 0);
 	assert_call_count(has_string, 0);
-    call_export_fn_argless(grug_state, file_id, "on_a");
+    call_export_fn_argless(grug_state, entity, "on_a");
 	assert_call_count(has_resource, 1);
 	assert_call_count(has_entity, 1);
 	assert_call_count(has_string, 1);
@@ -2032,234 +2046,234 @@ static void ok_entity_and_resource_as_subexpression(void* grug_state, void* file
 	assert_string(game_fn_has_string_str, "bar");
 }
 
-static void ok_entity_duplicate(void* grug_state, void* file_id) {
+static void ok_entity_duplicate(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	assert_call_count(spawn, 0);
-    call_export_fn_argless(grug_state, file_id, "on_a");
+    call_export_fn_argless(grug_state, entity, "on_a");
 	assert_call_count(spawn, 4);
 
 	assert_string(game_fn_spawn_name, "ok:baz");
 }
 
-static void ok_entity_in_on_fn(void* grug_state, void* file_id) {
+static void ok_entity_in_on_fn(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	assert_call_count(spawn, 0);
-    call_export_fn_argless(grug_state, file_id, "on_a");
+    call_export_fn_argless(grug_state, entity, "on_a");
 	assert_call_count(spawn, 1);
 
 	assert_string(game_fn_spawn_name, "ok:foo");
 }
 
-static void ok_entity_in_on_fn_with_mod_specified(void* grug_state, void* file_id) {
+static void ok_entity_in_on_fn_with_mod_specified(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	assert_call_count(spawn, 0);
-    call_export_fn_argless(grug_state, file_id, "on_a");
+    call_export_fn_argless(grug_state, entity, "on_a");
 	assert_call_count(spawn, 1);
 
 	assert_string(game_fn_spawn_name, "wow:foo");
 }
 
-static void ok_eq_false(void* grug_state, void* file_id) {
+static void ok_eq_false(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	assert_call_count(initialize_bool, 0);
-    call_export_fn_argless(grug_state, file_id, "on_a");
+    call_export_fn_argless(grug_state, entity, "on_a");
 	assert_call_count(initialize_bool, 1);
 
 	assert_false(game_fn_initialize_bool_b);
 }
 
-static void ok_eq_true(void* grug_state, void* file_id) {
+static void ok_eq_true(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	assert_call_count(initialize_bool, 0);
-    call_export_fn_argless(grug_state, file_id, "on_a");
+    call_export_fn_argless(grug_state, entity, "on_a");
 	assert_call_count(initialize_bool, 1);
 
 	assert_true(game_fn_initialize_bool_b);
 }
 
-static void ok_f32_addition(void* grug_state, void* file_id) {
+static void ok_f32_addition(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	assert_call_count(sin, 0);
-    call_export_fn_argless(grug_state, file_id, "on_a");
+    call_export_fn_argless(grug_state, entity, "on_a");
 	assert_call_count(sin, 1);
 
 	assert_number(game_fn_sin_x, 6.0);
 }
 
-static void ok_f32_argument(void* grug_state, void* file_id) {
+static void ok_f32_argument(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	assert_call_count(sin, 0);
-    call_export_fn_argless(grug_state, file_id, "on_a");
+    call_export_fn_argless(grug_state, entity, "on_a");
 	assert_call_count(sin, 1);
 
 	assert_number(game_fn_sin_x, 4.0);
 }
 
-static void ok_f32_division(void* grug_state, void* file_id) {
+static void ok_f32_division(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	assert_call_count(sin, 0);
-    call_export_fn_argless(grug_state, file_id, "on_a");
+    call_export_fn_argless(grug_state, entity, "on_a");
 	assert_call_count(sin, 1);
 
 	assert_number(game_fn_sin_x, 0.5);
 }
 
-static void ok_f32_eq_false(void* grug_state, void* file_id) {
+static void ok_f32_eq_false(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	assert_call_count(initialize_bool, 0);
-    call_export_fn_argless(grug_state, file_id, "on_a");
+    call_export_fn_argless(grug_state, entity, "on_a");
 	assert_call_count(initialize_bool, 1);
 
 	assert_false(game_fn_initialize_bool_b);
 }
 
-static void ok_f32_eq_true(void* grug_state, void* file_id) {
+static void ok_f32_eq_true(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	assert_call_count(initialize_bool, 0);
-    call_export_fn_argless(grug_state, file_id, "on_a");
+    call_export_fn_argless(grug_state, entity, "on_a");
 	assert_call_count(initialize_bool, 1);
 
 	assert_true(game_fn_initialize_bool_b);
 }
 
-static void ok_f32_ge_false(void* grug_state, void* file_id) {
+static void ok_f32_ge_false(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	assert_call_count(initialize_bool, 0);
-    call_export_fn_argless(grug_state, file_id, "on_a");
+    call_export_fn_argless(grug_state, entity, "on_a");
 	assert_call_count(initialize_bool, 1);
 
 	assert_false(game_fn_initialize_bool_b);
 }
 
-static void ok_f32_ge_true_1(void* grug_state, void* file_id) {
+static void ok_f32_ge_true_1(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	assert_call_count(initialize_bool, 0);
-    call_export_fn_argless(grug_state, file_id, "on_a");
+    call_export_fn_argless(grug_state, entity, "on_a");
 	assert_call_count(initialize_bool, 1);
 
 	assert_true(game_fn_initialize_bool_b);
 }
 
-static void ok_f32_ge_true_2(void* grug_state, void* file_id) {
+static void ok_f32_ge_true_2(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	assert_call_count(initialize_bool, 0);
-    call_export_fn_argless(grug_state, file_id, "on_a");
+    call_export_fn_argless(grug_state, entity, "on_a");
 	assert_call_count(initialize_bool, 1);
 
 	assert_true(game_fn_initialize_bool_b);
 }
 
-static void ok_f32_global_variable(void* grug_state, void* file_id) {
+static void ok_f32_global_variable(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	assert_call_count(sin, 0);
-    call_export_fn_argless(grug_state, file_id, "on_a");
+    call_export_fn_argless(grug_state, entity, "on_a");
 	assert_call_count(sin, 1);
 
 	assert_number(game_fn_sin_x, 4.0);
 }
 
-static void ok_f32_gt_false(void* grug_state, void* file_id) {
+static void ok_f32_gt_false(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	assert_call_count(initialize_bool, 0);
-    call_export_fn_argless(grug_state, file_id, "on_a");
+    call_export_fn_argless(grug_state, entity, "on_a");
 	assert_call_count(initialize_bool, 1);
 
 	assert_false(game_fn_initialize_bool_b);
 }
 
-static void ok_f32_gt_true(void* grug_state, void* file_id) {
+static void ok_f32_gt_true(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	assert_call_count(initialize_bool, 0);
-    call_export_fn_argless(grug_state, file_id, "on_a");
+    call_export_fn_argless(grug_state, entity, "on_a");
 	assert_call_count(initialize_bool, 1);
 
 	assert_true(game_fn_initialize_bool_b);
 }
 
-static void ok_f32_le_false(void* grug_state, void* file_id) {
+static void ok_f32_le_false(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	assert_call_count(initialize_bool, 0);
-    call_export_fn_argless(grug_state, file_id, "on_a");
+    call_export_fn_argless(grug_state, entity, "on_a");
 	assert_call_count(initialize_bool, 1);
 
 	assert_false(game_fn_initialize_bool_b);
 }
 
-static void ok_f32_le_true_1(void* grug_state, void* file_id) {
+static void ok_f32_le_true_1(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	assert_call_count(initialize_bool, 0);
-    call_export_fn_argless(grug_state, file_id, "on_a");
+    call_export_fn_argless(grug_state, entity, "on_a");
 	assert_call_count(initialize_bool, 1);
 
 	assert_true(game_fn_initialize_bool_b);
 }
 
-static void ok_f32_le_true_2(void* grug_state, void* file_id) {
+static void ok_f32_le_true_2(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	assert_call_count(initialize_bool, 0);
-    call_export_fn_argless(grug_state, file_id, "on_a");
+    call_export_fn_argless(grug_state, entity, "on_a");
 	assert_call_count(initialize_bool, 1);
 
 	assert_true(game_fn_initialize_bool_b);
 }
 
-static void ok_f32_local_variable(void* grug_state, void* file_id) {
+static void ok_f32_local_variable(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	assert_call_count(sin, 0);
-    call_export_fn_argless(grug_state, file_id, "on_a");
+    call_export_fn_argless(grug_state, entity, "on_a");
 	assert_call_count(sin, 1);
 
 	assert_number(game_fn_sin_x, 4.0);
 }
 
-static void ok_f32_lt_false(void* grug_state, void* file_id) {
+static void ok_f32_lt_false(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	assert_call_count(initialize_bool, 0);
-    call_export_fn_argless(grug_state, file_id, "on_a");
+    call_export_fn_argless(grug_state, entity, "on_a");
 	assert_call_count(initialize_bool, 1);
 
 	assert_false(game_fn_initialize_bool_b);
 }
 
-static void ok_f32_lt_true(void* grug_state, void* file_id) {
+static void ok_f32_lt_true(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	assert_call_count(initialize_bool, 0);
-    call_export_fn_argless(grug_state, file_id, "on_a");
+    call_export_fn_argless(grug_state, entity, "on_a");
 	assert_call_count(initialize_bool, 1);
 
 	assert_true(game_fn_initialize_bool_b);
 }
 
-static void ok_f32_multiplication(void* grug_state, void* file_id) {
+static void ok_f32_multiplication(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	assert_call_count(sin, 0);
-    call_export_fn_argless(grug_state, file_id, "on_a");
+    call_export_fn_argless(grug_state, entity, "on_a");
 	assert_call_count(sin, 1);
 
 	assert_number(game_fn_sin_x, 8.0);
 }
 
-static void ok_f32_ne_false(void* grug_state, void* file_id) {
+static void ok_f32_ne_false(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	assert_call_count(initialize_bool, 0);
-    call_export_fn_argless(grug_state, file_id, "on_a");
+    call_export_fn_argless(grug_state, entity, "on_a");
 	assert_call_count(initialize_bool, 1);
 
 	assert_false(game_fn_initialize_bool_b);
 }
 
-static void ok_f32_negated(void* grug_state, void* file_id) {
+static void ok_f32_negated(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	assert_call_count(sin, 0);
-    call_export_fn_argless(grug_state, file_id, "on_a");
+    call_export_fn_argless(grug_state, entity, "on_a");
 	assert_call_count(sin, 1);
 
 	assert_number(game_fn_sin_x, -4.0);
 }
 
-static void ok_f32_ne_true(void* grug_state, void* file_id) {
+static void ok_f32_ne_true(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	assert_call_count(initialize_bool, 0);
-    call_export_fn_argless(grug_state, file_id, "on_a");
+    call_export_fn_argless(grug_state, entity, "on_a");
 	assert_call_count(initialize_bool, 1);
 
 	assert_true(game_fn_initialize_bool_b);
 }
 
-static void ok_f32_passed_to_helper_fn(void* grug_state, void* file_id) {
+static void ok_f32_passed_to_helper_fn(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	assert_call_count(sin, 0);
-    call_export_fn_argless(grug_state, file_id, "on_a");
+    call_export_fn_argless(grug_state, entity, "on_a");
 	assert_call_count(sin, 1);
 
 	assert_number(game_fn_sin_x, 42.0);
 }
 
-static void ok_f32_passed_to_on_fn(void* grug_state, void* file_id) {
+static void ok_f32_passed_to_on_fn(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	assert_call_count(sin, 0);
-    call_export_fn(grug_state, file_id, "on_a", (const union grug_value[]){{._number=42.0}}, 1);
+    call_export_fn(grug_state, entity, "on_a", (const union grug_value[]){{._number=42.0}}, 1);
 	assert_call_count(sin, 1);
 
 	assert_number(game_fn_sin_x, 42.0);
 }
 
-static void ok_f32_passing_sin_to_cos(void* grug_state, void* file_id) {
+static void ok_f32_passing_sin_to_cos(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	assert_call_count(sin, 0);
 	assert_call_count(cos, 0);
-    call_export_fn_argless(grug_state, file_id, "on_a");
+    call_export_fn_argless(grug_state, entity, "on_a");
 	assert_call_count(sin, 1);
 	assert_call_count(cos, 1);
 
@@ -2267,161 +2281,161 @@ static void ok_f32_passing_sin_to_cos(void* grug_state, void* file_id) {
 	assert_number(game_fn_cos_x, sin(4.0));
 }
 
-static void ok_f32_subtraction(void* grug_state, void* file_id) {
+static void ok_f32_subtraction(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	assert_call_count(sin, 0);
-    call_export_fn_argless(grug_state, file_id, "on_a");
+    call_export_fn_argless(grug_state, entity, "on_a");
 	assert_call_count(sin, 1);
 
 	assert_number(game_fn_sin_x, -2.0);
 }
 
-static void ok_fibonacci(void* grug_state, void* file_id) {
+static void ok_fibonacci(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	assert_call_count(initialize, 0);
-    call_export_fn_argless(grug_state, file_id, "on_a");
+    call_export_fn_argless(grug_state, entity, "on_a");
 	assert_call_count(initialize, 1);
 
 	assert_number(game_fn_initialize_x, 55.0);
 }
 
-static void ok_ge_false(void* grug_state, void* file_id) {
+static void ok_ge_false(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	assert_call_count(initialize_bool, 0);
-    call_export_fn_argless(grug_state, file_id, "on_a");
+    call_export_fn_argless(grug_state, entity, "on_a");
 	assert_call_count(initialize_bool, 1);
 
 	assert_false(game_fn_initialize_bool_b);
 }
 
-static void ok_ge_true_1(void* grug_state, void* file_id) {
+static void ok_ge_true_1(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	assert_call_count(initialize_bool, 0);
-    call_export_fn_argless(grug_state, file_id, "on_a");
+    call_export_fn_argless(grug_state, entity, "on_a");
 	assert_call_count(initialize_bool, 1);
 
 	assert_true(game_fn_initialize_bool_b);
 }
 
-static void ok_ge_true_2(void* grug_state, void* file_id) {
+static void ok_ge_true_2(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	assert_call_count(initialize_bool, 0);
-    call_export_fn_argless(grug_state, file_id, "on_a");
+    call_export_fn_argless(grug_state, entity, "on_a");
 	assert_call_count(initialize_bool, 1);
 
 	assert_true(game_fn_initialize_bool_b);
 }
 
-static void ok_global_2_does_not_have_error_handling(void* grug_state, void* file_id) {
+static void ok_global_2_does_not_have_error_handling(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	(void)grug_state;
-	(void)file_id;
+	(void)entity;
 }
 
-static void ok_global_call_using_me(void* grug_state, void* file_id) {
-	assert_call_count(get_position, 1); // Called by init_globals()
+static void ok_global_call_using_me(struct grug_state* grug_state, struct grug_entity_id* entity) {
+	assert_call_count(get_position, 1); // Called by create_entity()
 	assert_call_count(set_position, 0);
-    call_export_fn_argless(grug_state, file_id, "on_a");
+    call_export_fn_argless(grug_state, entity, "on_a");
 	assert_call_count(get_position, 1);
 	assert_call_count(set_position, 1);
 
 	assert_id(game_fn_set_position_pos, 1337);
 }
 
-static void ok_global_can_use_earlier_global(void* grug_state, void* file_id) {
+static void ok_global_can_use_earlier_global(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	assert_call_count(initialize, 0);
-    call_export_fn_argless(grug_state, file_id, "on_a");
+    call_export_fn_argless(grug_state, entity, "on_a");
 	assert_call_count(initialize, 1);
 
 	assert_number(game_fn_initialize_x, 5.0);
 }
 
-static void ok_global_containing_negation(void* grug_state, void* file_id) {
+static void ok_global_containing_negation(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	assert_call_count(initialize, 0);
-    call_export_fn_argless(grug_state, file_id, "on_a");
+    call_export_fn_argless(grug_state, entity, "on_a");
 	assert_call_count(initialize, 1);
 
 	assert_number(game_fn_initialize_x, -2.0);
 }
 
-static void ok_global_id(void* grug_state, void* file_id) {
-	assert_call_count(get_opponent, 1); // Called by init_globals()
+static void ok_global_id(struct grug_state* grug_state, struct grug_entity_id* entity) {
+	assert_call_count(get_opponent, 1); // Called by create_entity()
 	assert_call_count(set_opponent, 0);
-    call_export_fn_argless(grug_state, file_id, "on_a");
+    call_export_fn_argless(grug_state, entity, "on_a");
 	assert_call_count(get_opponent, 1);
 	assert_call_count(set_opponent, 1);
 
 	assert_id(game_fn_set_opponent_target, 69);
 }
 
-static void ok_global_parentheses(void* grug_state, void* file_id) {
+static void ok_global_parentheses(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	assert_call_count(initialize, 0);
-    call_export_fn_argless(grug_state, file_id, "on_a");
+    call_export_fn_argless(grug_state, entity, "on_a");
 	assert_call_count(initialize, 1);
 
 	assert_number(game_fn_initialize_x, 14.0);
 }
 
-static void ok_globals(void* grug_state, void* file_id) {
+static void ok_globals(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	assert_call_count(initialize, 0);
-    call_export_fn_argless(grug_state, file_id, "on_a");
+    call_export_fn_argless(grug_state, entity, "on_a");
 	assert_call_count(initialize, 2);
 
 	assert_number(game_fn_initialize_x, 1337.0);
 }
 
-static void ok_globals_1000(void* grug_state, void* file_id) {
+static void ok_globals_1000(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	(void)grug_state;
-	(void)file_id;
+	(void)entity;
 }
 
-static void ok_globals_1000_string(void* grug_state, void* file_id) {
+static void ok_globals_1000_string(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	(void)grug_state;
-	(void)file_id;
+	(void)entity;
 }
 
-static void ok_globals_32(void* grug_state, void* file_id) {
+static void ok_globals_32(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	(void)grug_state;
-	(void)file_id;
+	(void)entity;
 }
 
-static void ok_globals_64(void* grug_state, void* file_id) {
+static void ok_globals_64(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	(void)grug_state;
-	(void)file_id;
+	(void)entity;
 }
 
-static void ok_gt_false(void* grug_state, void* file_id) {
+static void ok_gt_false(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	assert_call_count(initialize_bool, 0);
-    call_export_fn_argless(grug_state, file_id, "on_a");
+    call_export_fn_argless(grug_state, entity, "on_a");
 	assert_call_count(initialize_bool, 1);
 
 	assert_false(game_fn_initialize_bool_b);
 }
 
-static void ok_gt_true(void* grug_state, void* file_id) {
+static void ok_gt_true(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	assert_call_count(initialize_bool, 0);
-    call_export_fn_argless(grug_state, file_id, "on_a");
+    call_export_fn_argless(grug_state, entity, "on_a");
 	assert_call_count(initialize_bool, 1);
 
 	assert_true(game_fn_initialize_bool_b);
 }
 
-static void ok_helper_fn(void* grug_state, void* file_id) {
+static void ok_helper_fn(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	assert_call_count(nothing, 0);
-    call_export_fn_argless(grug_state, file_id, "on_a");
+    call_export_fn_argless(grug_state, entity, "on_a");
 	assert_call_count(nothing, 1);
 }
 
-static void ok_helper_fn_called_in_if(void* grug_state, void* file_id) {
+static void ok_helper_fn_called_in_if(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	assert_call_count(nothing, 0);
-    call_export_fn_argless(grug_state, file_id, "on_a");
+    call_export_fn_argless(grug_state, entity, "on_a");
 	assert_call_count(nothing, 1);
 }
 
-static void ok_helper_fn_called_indirectly(void* grug_state, void* file_id) {
+static void ok_helper_fn_called_indirectly(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	assert_call_count(nothing, 0);
-    call_export_fn_argless(grug_state, file_id, "on_a");
+    call_export_fn_argless(grug_state, entity, "on_a");
 	assert_call_count(nothing, 1);
 }
 
-static void ok_helper_fn_overwriting_param(void* grug_state, void* file_id) {
+static void ok_helper_fn_overwriting_param(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	assert_call_count(initialize, 0);
 	assert_call_count(sin, 0);
-    call_export_fn_argless(grug_state, file_id, "on_a");
+    call_export_fn_argless(grug_state, entity, "on_a");
 	assert_call_count(initialize, 1);
 	assert_call_count(sin, 1);
 
@@ -2429,263 +2443,263 @@ static void ok_helper_fn_overwriting_param(void* grug_state, void* file_id) {
 	assert_number(game_fn_sin_x, 30.0);
 }
 
-static void ok_helper_fn_returning_void_has_no_return(void* grug_state, void* file_id) {
+static void ok_helper_fn_returning_void_has_no_return(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	assert_call_count(nothing, 0);
-    call_export_fn_argless(grug_state, file_id, "on_a");
+    call_export_fn_argless(grug_state, entity, "on_a");
 	assert_call_count(nothing, 2);
 }
 
-static void ok_helper_fn_returning_void_returns_void(void* grug_state, void* file_id) {
+static void ok_helper_fn_returning_void_returns_void(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	assert_call_count(nothing, 0);
-    call_export_fn_argless(grug_state, file_id, "on_a");
+    call_export_fn_argless(grug_state, entity, "on_a");
 	assert_call_count(nothing, 2);
 }
 
-static void ok_helper_fn_same_param_name_as_on_fn(void* grug_state, void* file_id) {
+static void ok_helper_fn_same_param_name_as_on_fn(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	assert_call_count(nothing, 0);
-    call_export_fn(grug_state, file_id, "on_a", (const union grug_value[]){{._number=42.0}}, 1);
+    call_export_fn(grug_state, entity, "on_a", (const union grug_value[]){{._number=42.0}}, 1);
 	assert_call_count(nothing, 1);
 }
 
-static void ok_helper_fn_same_param_name_as_other_helper_fn(void* grug_state, void* file_id) {
+static void ok_helper_fn_same_param_name_as_other_helper_fn(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	assert_call_count(nothing, 0);
-    call_export_fn(grug_state, file_id, "on_a", (const union grug_value[]){{._number=42.0}}, 1);
+    call_export_fn(grug_state, entity, "on_a", (const union grug_value[]){{._number=42.0}}, 1);
 	assert_call_count(nothing, 2);
 }
 
-static void ok_i32_max(void* grug_state, void* file_id) {
+static void ok_i32_max(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	assert_call_count(initialize, 0);
-    call_export_fn_argless(grug_state, file_id, "on_a");
+    call_export_fn_argless(grug_state, entity, "on_a");
 	assert_call_count(initialize, 1);
 
 	assert_number(game_fn_initialize_x, 2147483647.0);
 }
 
-static void ok_i32_min(void* grug_state, void* file_id) {
+static void ok_i32_min(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	assert_call_count(initialize, 0);
-    call_export_fn_argless(grug_state, file_id, "on_a");
+    call_export_fn_argless(grug_state, entity, "on_a");
 	assert_call_count(initialize, 1);
 
 	assert_number(game_fn_initialize_x, -2147483648.0);
 }
 
-static void ok_i32_negated(void* grug_state, void* file_id) {
+static void ok_i32_negated(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	assert_call_count(initialize, 0);
-    call_export_fn_argless(grug_state, file_id, "on_a");
+    call_export_fn_argless(grug_state, entity, "on_a");
 	assert_call_count(initialize, 1);
 
 	assert_number(game_fn_initialize_x, -42.0);
 }
 
-static void ok_i32_negative_is_smaller_than_positive(void* grug_state, void* file_id) {
+static void ok_i32_negative_is_smaller_than_positive(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	assert_call_count(initialize_bool, 0);
-    call_export_fn_argless(grug_state, file_id, "on_a");
+    call_export_fn_argless(grug_state, entity, "on_a");
 	assert_call_count(initialize_bool, 1);
 
 	assert_true(game_fn_initialize_bool_b);
 }
 
-static void ok_id_binary_expr_false(void* grug_state, void* file_id) {
+static void ok_id_binary_expr_false(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	assert_call_count(initialize_bool, 0);
-    call_export_fn_argless(grug_state, file_id, "on_a");
+    call_export_fn_argless(grug_state, entity, "on_a");
 	assert_call_count(initialize_bool, 1);
 
 	assert_false(game_fn_initialize_bool_b);
 }
 
-static void ok_id_binary_expr_true(void* grug_state, void* file_id) {
+static void ok_id_binary_expr_true(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	assert_call_count(initialize_bool, 0);
-    call_export_fn_argless(grug_state, file_id, "on_a");
+    call_export_fn_argless(grug_state, entity, "on_a");
 	assert_call_count(initialize_bool, 1);
 
 	assert_true(game_fn_initialize_bool_b);
 }
 
-static void ok_id_eq_1(void* grug_state, void* file_id) {
+static void ok_id_eq_1(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	assert_call_count(initialize_bool, 0);
 	assert_call_count(retrieve, 0);
-    call_export_fn_argless(grug_state, file_id, "on_a");
+    call_export_fn_argless(grug_state, entity, "on_a");
 	assert_call_count(initialize_bool, 1);
 	assert_call_count(retrieve, 1);
 
 	assert_false(game_fn_initialize_bool_b);
 }
 
-static void ok_id_eq_2(void* grug_state, void* file_id) {
+static void ok_id_eq_2(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	assert_call_count(initialize_bool, 0);
 	assert_call_count(retrieve, 0);
-    call_export_fn_argless(grug_state, file_id, "on_a");
+    call_export_fn_argless(grug_state, entity, "on_a");
 	assert_call_count(initialize_bool, 1);
 	assert_call_count(retrieve, 1);
 
 	assert_false(game_fn_initialize_bool_b);
 }
 
-static void ok_id_global_with_id_to_new_id(void* grug_state, void* file_id) {
-	assert_call_count(retrieve, 1); // Called by init_globals()
+static void ok_id_global_with_id_to_new_id(struct grug_state* grug_state, struct grug_entity_id* entity) {
+	assert_call_count(retrieve, 1); // Called by create_entity()
 	assert_call_count(store, 0);
-    call_export_fn_argless(grug_state, file_id, "on_a");
-	assert_call_count(retrieve, 1); // Called by init_globals()
+    call_export_fn_argless(grug_state, entity, "on_a");
+	assert_call_count(retrieve, 1); // Called by create_entity()
 	assert_call_count(store, 1);
 
 	assert_id(game_fn_store_id, 123);
 }
 
-static void ok_id_global_with_opponent_to_new_id(void* grug_state, void* file_id) {
-	assert_call_count(get_opponent, 1); // Called by init_globals()
+static void ok_id_global_with_opponent_to_new_id(struct grug_state* grug_state, struct grug_entity_id* entity) {
+	assert_call_count(get_opponent, 1); // Called by create_entity()
 	assert_call_count(store, 0);
-    call_export_fn_argless(grug_state, file_id, "on_a");
-	assert_call_count(get_opponent, 1); // Called by init_globals()
+    call_export_fn_argless(grug_state, entity, "on_a");
+	assert_call_count(get_opponent, 1); // Called by create_entity()
 	assert_call_count(store, 1);
 
 	assert_id(game_fn_store_id, 69);
 }
 
-static void ok_id_helper_fn_param(void* grug_state, void* file_id) {
+static void ok_id_helper_fn_param(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	assert_call_count(retrieve, 0);
 	assert_call_count(store, 0);
-    call_export_fn_argless(grug_state, file_id, "on_a");
+    call_export_fn_argless(grug_state, entity, "on_a");
 	assert_call_count(retrieve, 1);
 	assert_call_count(store, 1);
 
 	assert_id(game_fn_store_id, 123);
 }
 
-static void ok_id_local_variable_get_and_set(void* grug_state, void* file_id) {
+static void ok_id_local_variable_get_and_set(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	assert_call_count(get_opponent, 0);
 	assert_call_count(set_opponent, 0);
-    call_export_fn_argless(grug_state, file_id, "on_a");
+    call_export_fn_argless(grug_state, entity, "on_a");
 	assert_call_count(get_opponent, 1);
 	assert_call_count(set_opponent, 1);
 
 	assert_id(game_fn_set_opponent_target, 69);
 }
 
-static void ok_id_ne_1(void* grug_state, void* file_id) {
+static void ok_id_ne_1(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	assert_call_count(initialize_bool, 0);
 	assert_call_count(retrieve, 0);
-    call_export_fn_argless(grug_state, file_id, "on_a");
+    call_export_fn_argless(grug_state, entity, "on_a");
 	assert_call_count(initialize_bool, 1);
 	assert_call_count(retrieve, 1);
 
 	assert_true(game_fn_initialize_bool_b);
 }
 
-static void ok_id_ne_2(void* grug_state, void* file_id) {
+static void ok_id_ne_2(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	assert_call_count(initialize_bool, 0);
 	assert_call_count(retrieve, 0);
-    call_export_fn_argless(grug_state, file_id, "on_a");
+    call_export_fn_argless(grug_state, entity, "on_a");
 	assert_call_count(initialize_bool, 1);
 	assert_call_count(retrieve, 1);
 
 	assert_true(game_fn_initialize_bool_b);
 }
 
-static void ok_id_on_fn_param(void* grug_state, void* file_id) {
+static void ok_id_on_fn_param(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	assert_call_count(store, 0);
-    call_export_fn(grug_state, file_id, "on_a", (const union grug_value[]){{._id=77}}, 1);
+    call_export_fn(grug_state, entity, "on_a", (const union grug_value[]){{._id=77}}, 1);
 	assert_call_count(store, 1);
 
 	assert_id(game_fn_store_id, 77);
 }
 
-static void ok_id_returned_from_helper(void* grug_state, void* file_id) {
+static void ok_id_returned_from_helper(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	assert_call_count(store, 0);
-    call_export_fn_argless(grug_state, file_id, "on_a");
+    call_export_fn_argless(grug_state, entity, "on_a");
 	assert_call_count(store, 1);
 
 	assert_id(game_fn_store_id, 42);
 }
 
-static void ok_id_with_d_to_new_id_and_id_to_old_id(void* grug_state, void* file_id) {
+static void ok_id_with_d_to_new_id_and_id_to_old_id(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	assert_call_count(retrieve, 0);
 	assert_call_count(store, 0);
-    call_export_fn_argless(grug_state, file_id, "on_a");
+    call_export_fn_argless(grug_state, entity, "on_a");
 	assert_call_count(retrieve, 1);
 	assert_call_count(store, 1);
 
 	assert_id(game_fn_store_id, 123);
 }
 
-static void ok_id_with_d_to_old_id(void* grug_state, void* file_id) {
+static void ok_id_with_d_to_old_id(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	assert_call_count(store, 0);
-    call_export_fn_argless(grug_state, file_id, "on_a");
+    call_export_fn_argless(grug_state, entity, "on_a");
 	assert_call_count(store, 1);
 
 	assert_id(game_fn_store_id, 42);
 }
 
-static void ok_id_with_id_to_new_id(void* grug_state, void* file_id) {
+static void ok_id_with_id_to_new_id(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	assert_call_count(retrieve, 0);
 	assert_call_count(store, 0);
-    call_export_fn_argless(grug_state, file_id, "on_a");
+    call_export_fn_argless(grug_state, entity, "on_a");
 	assert_call_count(retrieve, 1);
 	assert_call_count(store, 1);
 
 	assert_id(game_fn_store_id, 123);
 }
 
-static void ok_if_false(void* grug_state, void* file_id) {
+static void ok_if_false(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	assert_call_count(nothing, 0);
-    call_export_fn_argless(grug_state, file_id, "on_a");
+    call_export_fn_argless(grug_state, entity, "on_a");
 	assert_call_count(nothing, 2);
 }
 
-static void ok_if_true(void* grug_state, void* file_id) {
+static void ok_if_true(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	assert_call_count(nothing, 0);
-    call_export_fn_argless(grug_state, file_id, "on_a");
+    call_export_fn_argless(grug_state, entity, "on_a");
 	assert_call_count(nothing, 3);
 }
 
-static void ok_le_false(void* grug_state, void* file_id) {
+static void ok_le_false(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	assert_call_count(initialize_bool, 0);
-    call_export_fn_argless(grug_state, file_id, "on_a");
+    call_export_fn_argless(grug_state, entity, "on_a");
 	assert_call_count(initialize_bool, 1);
 
 	assert_false(game_fn_initialize_bool_b);
 }
 
-static void ok_le_true_1(void* grug_state, void* file_id) {
+static void ok_le_true_1(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	assert_call_count(initialize_bool, 0);
-    call_export_fn_argless(grug_state, file_id, "on_a");
+    call_export_fn_argless(grug_state, entity, "on_a");
 	assert_call_count(initialize_bool, 1);
 
 	assert_true(game_fn_initialize_bool_b);
 }
 
-static void ok_le_true_2(void* grug_state, void* file_id) {
+static void ok_le_true_2(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	assert_call_count(initialize_bool, 0);
-    call_export_fn_argless(grug_state, file_id, "on_a");
+    call_export_fn_argless(grug_state, entity, "on_a");
 	assert_call_count(initialize_bool, 1);
 
 	assert_true(game_fn_initialize_bool_b);
 }
 
-static void ok_local_id_can_be_reassigned(void* grug_state, void* file_id) {
+static void ok_local_id_can_be_reassigned(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	assert_call_count(get_opponent, 0);
-    call_export_fn_argless(grug_state, file_id, "on_a");
+    call_export_fn_argless(grug_state, entity, "on_a");
 	assert_call_count(get_opponent, 2);
 }
 
-static void ok_lt_false(void* grug_state, void* file_id) {
+static void ok_lt_false(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	assert_call_count(initialize_bool, 0);
-    call_export_fn_argless(grug_state, file_id, "on_a");
+    call_export_fn_argless(grug_state, entity, "on_a");
 	assert_call_count(initialize_bool, 1);
 
 	assert_false(game_fn_initialize_bool_b);
 }
 
-static void ok_lt_true(void* grug_state, void* file_id) {
+static void ok_lt_true(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	assert_call_count(initialize_bool, 0);
-    call_export_fn_argless(grug_state, file_id, "on_a");
+    call_export_fn_argless(grug_state, entity, "on_a");
 	assert_call_count(initialize_bool, 1);
 
 	assert_true(game_fn_initialize_bool_b);
 }
 
-static void ok_max_args(void* grug_state, void* file_id) {
+static void ok_max_args(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	assert_call_count(mega, 0);
-    call_export_fn_argless(grug_state, file_id, "on_a");
+    call_export_fn_argless(grug_state, entity, "on_a");
 	assert_call_count(mega, 1);
 
 	assert_number(game_fn_mega_f1, 1.0);
@@ -2704,129 +2718,129 @@ static void ok_max_args(void* grug_state, void* file_id) {
 	assert_string(game_fn_mega_str, "foo");
 }
 
-static void ok_me(void* grug_state, void* file_id) {
+static void ok_me(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	assert_call_count(set_d, 0);
-    call_export_fn_argless(grug_state, file_id, "on_a");
+    call_export_fn_argless(grug_state, entity, "on_a");
 	assert_call_count(set_d, 1);
 
 	assert_id(game_fn_set_d_target, 42);
 }
 
-static void ok_me_assigned_to_local_variable(void* grug_state, void* file_id) {
+static void ok_me_assigned_to_local_variable(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	assert_call_count(set_d, 0);
-    call_export_fn_argless(grug_state, file_id, "on_a");
+    call_export_fn_argless(grug_state, entity, "on_a");
 	assert_call_count(set_d, 1);
 
 	assert_id(game_fn_set_d_target, 42);
 }
 
-static void ok_me_passed_to_helper_fn(void* grug_state, void* file_id) {
+static void ok_me_passed_to_helper_fn(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	assert_call_count(set_d, 0);
-    call_export_fn_argless(grug_state, file_id, "on_a");
+    call_export_fn_argless(grug_state, entity, "on_a");
 	assert_call_count(set_d, 1);
 
 	assert_id(game_fn_set_d_target, 42);
 }
 
-static void ok_mov_32_bits_global_i32(void* grug_state, void* file_id) {
+static void ok_mov_32_bits_global_i32(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	(void)grug_state;
-	(void)file_id;
+	(void)entity;
 }
 
-static void ok_mov_32_bits_global_id(void* grug_state, void* file_id) {
+static void ok_mov_32_bits_global_id(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	(void)grug_state;
-	(void)file_id;
+	(void)entity;
 }
 
-static void ok_multiplication_as_two_arguments(void* grug_state, void* file_id) {
+static void ok_multiplication_as_two_arguments(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	assert_call_count(max, 0);
-    call_export_fn_argless(grug_state, file_id, "on_a");
+    call_export_fn_argless(grug_state, entity, "on_a");
 	assert_call_count(max, 1);
 
 	assert_number(game_fn_max_x, 6.0);
 	assert_number(game_fn_max_y, 20.0);
 }
 
-static void ok_ne_false(void* grug_state, void* file_id) {
+static void ok_ne_false(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	assert_call_count(initialize_bool, 0);
-    call_export_fn_argless(grug_state, file_id, "on_a");
+    call_export_fn_argless(grug_state, entity, "on_a");
 	assert_call_count(initialize_bool, 1);
 
 	assert_false(game_fn_initialize_bool_b);
 }
 
-static void ok_ne_true(void* grug_state, void* file_id) {
+static void ok_ne_true(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	assert_call_count(initialize_bool, 0);
-    call_export_fn_argless(grug_state, file_id, "on_a");
+    call_export_fn_argless(grug_state, entity, "on_a");
 	assert_call_count(initialize_bool, 1);
 
 	assert_true(game_fn_initialize_bool_b);
 }
 
-static void ok_negate_parenthesized_expr(void* grug_state, void* file_id) {
+static void ok_negate_parenthesized_expr(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	assert_call_count(initialize, 0);
-    call_export_fn_argless(grug_state, file_id, "on_a");
+    call_export_fn_argless(grug_state, entity, "on_a");
 	assert_call_count(initialize, 1);
 
 	assert_number(game_fn_initialize_x, -5.0);
 }
 
-static void ok_negative_literal(void* grug_state, void* file_id) {
+static void ok_negative_literal(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	assert_call_count(initialize, 0);
-    call_export_fn_argless(grug_state, file_id, "on_a");
+    call_export_fn_argless(grug_state, entity, "on_a");
 	assert_call_count(initialize, 1);
 
 	assert_number(game_fn_initialize_x, -42.0);
 }
 
-static void ok_nested_break(void* grug_state, void* file_id) {
+static void ok_nested_break(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	assert_call_count(nothing, 0);
-    call_export_fn_argless(grug_state, file_id, "on_a");
+    call_export_fn_argless(grug_state, entity, "on_a");
 	assert_call_count(nothing, 3);
 }
 
-static void ok_nested_continue(void* grug_state, void* file_id) {
+static void ok_nested_continue(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	assert_call_count(nothing, 0);
-    call_export_fn_argless(grug_state, file_id, "on_a");
+    call_export_fn_argless(grug_state, entity, "on_a");
 	assert_call_count(nothing, 2);
 }
 
-static void ok_no_empty_line_between_globals(void* grug_state, void* file_id) {
+static void ok_no_empty_line_between_globals(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	(void)grug_state;
-	(void)file_id;
+	(void)entity;
 }
 
-static void ok_no_empty_line_between_statements(void* grug_state, void* file_id) {
+static void ok_no_empty_line_between_statements(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	assert_call_count(nothing, 0);
-    call_export_fn_argless(grug_state, file_id, "on_a");
+    call_export_fn_argless(grug_state, entity, "on_a");
 	assert_call_count(nothing, 2);
 }
 
-static void ok_on_fn(void* grug_state, void* file_id) {
+static void ok_on_fn(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	assert_call_count(nothing, 0);
-    call_export_fn_argless(grug_state, file_id, "on_a");
+    call_export_fn_argless(grug_state, entity, "on_a");
 	assert_call_count(nothing, 1);
 }
 
-static void ok_on_fn_calling_game_fn_nothing(void* grug_state, void* file_id) {
+static void ok_on_fn_calling_game_fn_nothing(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	assert_call_count(nothing, 0);
-    call_export_fn_argless(grug_state, file_id, "on_a");
+    call_export_fn_argless(grug_state, entity, "on_a");
 	assert_call_count(nothing, 1);
 }
 
-static void ok_on_fn_calling_game_fn_nothing_twice(void* grug_state, void* file_id) {
+static void ok_on_fn_calling_game_fn_nothing_twice(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	assert_call_count(nothing, 0);
-    call_export_fn_argless(grug_state, file_id, "on_a");
+    call_export_fn_argless(grug_state, entity, "on_a");
 	assert_call_count(nothing, 2);
 }
 
-static void ok_on_fn_calling_game_fn_plt_order(void* grug_state, void* file_id) {
+static void ok_on_fn_calling_game_fn_plt_order(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	assert_call_count(nothing, 0);
 	assert_call_count(magic, 0);
 	assert_call_count(initialize, 0);
 	assert_call_count(identity, 0);
 	assert_call_count(max, 0);
-    call_export_fn_argless(grug_state, file_id, "on_a");
+    call_export_fn_argless(grug_state, entity, "on_a");
 	assert_call_count(nothing, 1);
 	assert_call_count(magic, 1);
 	assert_call_count(initialize, 1);
@@ -2839,32 +2853,32 @@ static void ok_on_fn_calling_game_fn_plt_order(void* grug_state, void* file_id) 
 	assert_number(game_fn_max_y, 8192.0);
 }
 
-static void ok_on_fn_calling_helper_fns(void* grug_state, void* file_id) {
+static void ok_on_fn_calling_helper_fns(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	assert_call_count(nothing, 0);
 	assert_call_count(initialize, 0);
-    call_export_fn_argless(grug_state, file_id, "on_a");
+    call_export_fn_argless(grug_state, entity, "on_a");
 	assert_call_count(nothing, 1);
 	assert_call_count(initialize, 1);
 
 	assert_number(game_fn_initialize_x, 42.0);
 }
 
-static void ok_on_fn_calling_no_game_fn(void* grug_state, void* file_id) {
-    call_export_fn_argless(grug_state, file_id, "on_a");
+static void ok_on_fn_calling_no_game_fn(struct grug_state* grug_state, struct grug_entity_id* entity) {
+    call_export_fn_argless(grug_state, entity, "on_a");
 }
 
-static void ok_on_fn_calling_no_game_fn_but_with_addition(void* grug_state, void* file_id) {
-    call_export_fn_argless(grug_state, file_id, "on_a");
+static void ok_on_fn_calling_no_game_fn_but_with_addition(struct grug_state* grug_state, struct grug_entity_id* entity) {
+    call_export_fn_argless(grug_state, entity, "on_a");
 }
 
-static void ok_on_fn_calling_no_game_fn_but_with_global(void* grug_state, void* file_id) {
-    call_export_fn_argless(grug_state, file_id, "on_a");
+static void ok_on_fn_calling_no_game_fn_but_with_global(struct grug_state* grug_state, struct grug_entity_id* entity) {
+    call_export_fn_argless(grug_state, entity, "on_a");
 }
 
-static void ok_on_fn_overwriting_param(void* grug_state, void* file_id) {
+static void ok_on_fn_overwriting_param(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	assert_call_count(initialize, 0);
 	assert_call_count(sin, 0);
-    call_export_fn(grug_state, file_id, "on_a", (const union grug_value[]){{._number=2.0}, {._number=3.0}}, 2);
+    call_export_fn(grug_state, entity, "on_a", (const union grug_value[]){{._number=2.0}, {._number=3.0}}, 2);
 	assert_call_count(initialize, 1);
 	assert_call_count(sin, 1);
 
@@ -2872,119 +2886,119 @@ static void ok_on_fn_overwriting_param(void* grug_state, void* file_id) {
 	assert_number(game_fn_sin_x, 30.0);
 }
 
-static void ok_on_fn_passing_argument_to_helper_fn(void* grug_state, void* file_id) {
+static void ok_on_fn_passing_argument_to_helper_fn(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	assert_call_count(initialize, 0);
-    call_export_fn_argless(grug_state, file_id, "on_a");
+    call_export_fn_argless(grug_state, entity, "on_a");
 	assert_call_count(initialize, 1);
 
 	assert_number(game_fn_initialize_x, 42.0);
 }
 
-static void ok_on_fn_passing_magic_to_initialize(void* grug_state, void* file_id) {
+static void ok_on_fn_passing_magic_to_initialize(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	assert_call_count(magic, 0);
 	assert_call_count(initialize, 0);
-    call_export_fn_argless(grug_state, file_id, "on_a");
+    call_export_fn_argless(grug_state, entity, "on_a");
 	assert_call_count(magic, 1);
 	assert_call_count(initialize, 1);
 }
 
-static void ok_on_fn_three(void* grug_state, void* file_id) {
+static void ok_on_fn_three(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	assert_call_count(nothing, 0);
-    call_export_fn_argless(grug_state, file_id, "on_a");
-    call_export_fn_argless(grug_state, file_id, "on_b");
-    call_export_fn_argless(grug_state, file_id, "on_c");
+    call_export_fn_argless(grug_state, entity, "on_a");
+    call_export_fn_argless(grug_state, entity, "on_b");
+    call_export_fn_argless(grug_state, entity, "on_c");
 	assert_call_count(nothing, 3);
 }
 
-static void ok_on_fn_three_unused_first(void* grug_state, void* file_id) {
+static void ok_on_fn_three_unused_first(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	assert_call_count(nothing, 0);
-    call_export_fn_argless(grug_state, file_id, "on_b");
-    call_export_fn_argless(grug_state, file_id, "on_c");
+    call_export_fn_argless(grug_state, entity, "on_b");
+    call_export_fn_argless(grug_state, entity, "on_c");
 	assert_call_count(nothing, 2);
 }
 
-static void ok_on_fn_three_unused_second(void* grug_state, void* file_id) {
+static void ok_on_fn_three_unused_second(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	assert_call_count(nothing, 0);
-    call_export_fn_argless(grug_state, file_id, "on_a");
-    call_export_fn_argless(grug_state, file_id, "on_c");
+    call_export_fn_argless(grug_state, entity, "on_a");
+    call_export_fn_argless(grug_state, entity, "on_c");
 	assert_call_count(nothing, 2);
 }
 
-static void ok_on_fn_three_unused_third(void* grug_state, void* file_id) {
+static void ok_on_fn_three_unused_third(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	assert_call_count(nothing, 0);
-    call_export_fn_argless(grug_state, file_id, "on_a");
-    call_export_fn_argless(grug_state, file_id, "on_b");
+    call_export_fn_argless(grug_state, entity, "on_a");
+    call_export_fn_argless(grug_state, entity, "on_b");
 	assert_call_count(nothing, 2);
 }
 
-static void ok_or_false(void* grug_state, void* file_id) {
+static void ok_or_false(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	assert_call_count(initialize_bool, 0);
-    call_export_fn_argless(grug_state, file_id, "on_a");
+    call_export_fn_argless(grug_state, entity, "on_a");
 	assert_call_count(initialize_bool, 1);
 
 	assert_false(game_fn_initialize_bool_b);
 }
 
-static void ok_or_short_circuit(void* grug_state, void* file_id) {
+static void ok_or_short_circuit(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	assert_call_count(initialize_bool, 0);
-    call_export_fn_argless(grug_state, file_id, "on_a");
+    call_export_fn_argless(grug_state, entity, "on_a");
 	assert_call_count(initialize_bool, 1);
 
 	assert_true(game_fn_initialize_bool_b);
 }
 
-static void ok_or_true_1(void* grug_state, void* file_id) {
+static void ok_or_true_1(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	assert_call_count(initialize_bool, 0);
-    call_export_fn_argless(grug_state, file_id, "on_a");
+    call_export_fn_argless(grug_state, entity, "on_a");
 	assert_call_count(initialize_bool, 1);
 
 	assert_true(game_fn_initialize_bool_b);
 }
 
-static void ok_or_true_2(void* grug_state, void* file_id) {
+static void ok_or_true_2(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	assert_call_count(initialize_bool, 0);
-    call_export_fn_argless(grug_state, file_id, "on_a");
+    call_export_fn_argless(grug_state, entity, "on_a");
 	assert_call_count(initialize_bool, 1);
 
 	assert_true(game_fn_initialize_bool_b);
 }
 
-static void ok_or_true_3(void* grug_state, void* file_id) {
+static void ok_or_true_3(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	assert_call_count(initialize_bool, 0);
-    call_export_fn_argless(grug_state, file_id, "on_a");
+    call_export_fn_argless(grug_state, entity, "on_a");
 	assert_call_count(initialize_bool, 1);
 
 	assert_true(game_fn_initialize_bool_b);
 }
 
-static void ok_pass_string_argument_to_game_fn(void* grug_state, void* file_id) {
+static void ok_pass_string_argument_to_game_fn(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	assert_call_count(say, 0);
-    call_export_fn_argless(grug_state, file_id, "on_a");
+    call_export_fn_argless(grug_state, entity, "on_a");
 	assert_call_count(say, 1);
 
 	assert_string(game_fn_say_message, "foo");
 }
 
-static void ok_pass_string_argument_to_helper_fn(void* grug_state, void* file_id) {
+static void ok_pass_string_argument_to_helper_fn(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	assert_call_count(say, 0);
-    call_export_fn_argless(grug_state, file_id, "on_a");
+    call_export_fn_argless(grug_state, entity, "on_a");
 	assert_call_count(say, 1);
 
 	assert_string(game_fn_say_message, "foo");
 }
 
-static void ok_print_csv(void* grug_state, void* file_id) {
+static void ok_print_csv(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	assert_call_count(print_csv, 0);
-    call_export_fn_argless(grug_state, file_id, "on_a");
+    call_export_fn_argless(grug_state, entity, "on_a");
 	assert_call_count(print_csv, 1);
 
 	assert_string(game_fn_print_csv_path, "ok"SLASH"print_csv/foo.csv");
 }
 
-static void ok_resource_and_entity(void* grug_state, void* file_id) {
+static void ok_resource_and_entity(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	assert_call_count(draw, 0);
 	assert_call_count(spawn, 0);
-    call_export_fn_argless(grug_state, file_id, "on_a");
+    call_export_fn_argless(grug_state, entity, "on_a");
 	assert_call_count(draw, 1);
 	assert_call_count(spawn, 1);
 
@@ -2992,105 +3006,105 @@ static void ok_resource_and_entity(void* grug_state, void* file_id) {
 	assert_string(game_fn_spawn_name, "ok:foo");
 }
 
-static void ok_resource_can_contain_dot_1(void* grug_state, void* file_id) {
+static void ok_resource_can_contain_dot_1(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	assert_call_count(draw, 0);
-    call_export_fn_argless(grug_state, file_id, "on_a");
+    call_export_fn_argless(grug_state, entity, "on_a");
 	assert_call_count(draw, 1);
 
 	assert_string(game_fn_draw_sprite_path, "ok"SLASH"resource_can_contain_dot_1/.foo");
 }
 
-static void ok_resource_can_contain_dot_2(void* grug_state, void* file_id) {
+static void ok_resource_can_contain_dot_2(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	assert_call_count(draw, 0);
-    call_export_fn_argless(grug_state, file_id, "on_a");
+    call_export_fn_argless(grug_state, entity, "on_a");
 	assert_call_count(draw, 1);
 
 	assert_string(game_fn_draw_sprite_path, "ok"SLASH"resource_can_contain_dot_2/foo.bar");
 }
 
-static void ok_resource_can_contain_dot_dot_1(void* grug_state, void* file_id) {
+static void ok_resource_can_contain_dot_dot_1(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	assert_call_count(draw, 0);
-    call_export_fn_argless(grug_state, file_id, "on_a");
+    call_export_fn_argless(grug_state, entity, "on_a");
 	assert_call_count(draw, 1);
 
 	assert_string(game_fn_draw_sprite_path, "ok"SLASH"resource_can_contain_dot_dot_1/..foo");
 }
 
-static void ok_resource_can_contain_dot_dot_2(void* grug_state, void* file_id) {
+static void ok_resource_can_contain_dot_dot_2(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	assert_call_count(draw, 0);
-    call_export_fn_argless(grug_state, file_id, "on_a");
+    call_export_fn_argless(grug_state, entity, "on_a");
 	assert_call_count(draw, 1);
 
 	assert_string(game_fn_draw_sprite_path, "ok"SLASH"resource_can_contain_dot_dot_2/foo..bar");
 }
 
-static void ok_resource_can_contain_dot_dot_dot(void* grug_state, void* file_id) {
+static void ok_resource_can_contain_dot_dot_dot(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	assert_call_count(draw, 0);
-    call_export_fn_argless(grug_state, file_id, "on_a");
+    call_export_fn_argless(grug_state, entity, "on_a");
 	assert_call_count(draw, 1);
 
 	assert_string(game_fn_draw_sprite_path, "ok"SLASH"resource_can_contain_dot_dot_dot/...foo");
 }
 
-static void ok_resource_duplicate(void* grug_state, void* file_id) {
+static void ok_resource_duplicate(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	assert_call_count(draw, 0);
-    call_export_fn_argless(grug_state, file_id, "on_a");
+    call_export_fn_argless(grug_state, entity, "on_a");
 	assert_call_count(draw, 4);
 
 	assert_string(game_fn_draw_sprite_path, "ok"SLASH"resource_duplicate/baz.txt");
 }
 
-static void ok_resource_is_a_directory(void* grug_state, void* file_id) {
+static void ok_resource_is_a_directory(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	assert_call_count(draw, 0);
-    call_export_fn_argless(grug_state, file_id, "on_a");
+    call_export_fn_argless(grug_state, entity, "on_a");
 	assert_call_count(draw, 1);
 
 	assert_string(game_fn_draw_sprite_path, "ok"SLASH"resource_is_a_directory");
 }
 
-static void ok_return(void* grug_state, void* file_id) {
+static void ok_return(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	assert_call_count(initialize, 0);
-    call_export_fn_argless(grug_state, file_id, "on_a");
+    call_export_fn_argless(grug_state, entity, "on_a");
 	assert_call_count(initialize, 1);
 
 	assert_number(game_fn_initialize_x, 42.0);
 }
 
-static void ok_return_from_on_fn(void* grug_state, void* file_id) {
+static void ok_return_from_on_fn(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	assert_call_count(nothing, 0);
-    call_export_fn_argless(grug_state, file_id, "on_a");
+    call_export_fn_argless(grug_state, entity, "on_a");
 	assert_call_count(nothing, 1);
 }
 
-static void ok_return_from_on_fn_minimal(void* grug_state, void* file_id) {
-    call_export_fn_argless(grug_state, file_id, "on_a");
+static void ok_return_from_on_fn_minimal(struct grug_state* grug_state, struct grug_entity_id* entity) {
+    call_export_fn_argless(grug_state, entity, "on_a");
 }
 
-static void ok_return_with_no_value(void* grug_state, void* file_id) {
+static void ok_return_with_no_value(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	assert_call_count(nothing, 0);
-    call_export_fn_argless(grug_state, file_id, "on_a");
+    call_export_fn_argless(grug_state, entity, "on_a");
 	assert_call_count(nothing, 1);
 }
 
-static void ok_same_variable_name_in_different_functions(void* grug_state, void* file_id) {
+static void ok_same_variable_name_in_different_functions(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	assert_call_count(initialize, 0);
-    call_export_fn_argless(grug_state, file_id, "on_a");
+    call_export_fn_argless(grug_state, entity, "on_a");
 	assert_call_count(initialize, 2);
 
 	assert_number(game_fn_initialize_x, 69.0);
 }
 
-static void ok_spawn_d(void* grug_state, void* file_id) {
+static void ok_spawn_d(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	assert_call_count(spawn_d, 0);
-    call_export_fn_argless(grug_state, file_id, "on_a");
+    call_export_fn_argless(grug_state, entity, "on_a");
 	assert_call_count(spawn_d, 1);
 
 	assert_string(game_fn_spawn_d_name, "ok:input");
 }
 
-static void ok_spill_args_to_game_fn(void* grug_state, void* file_id) {
+static void ok_spill_args_to_game_fn(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	assert_call_count(motherload, 0);
-    call_export_fn_argless(grug_state, file_id, "on_a");
+    call_export_fn_argless(grug_state, entity, "on_a");
 	assert_call_count(motherload, 1);
 
 	assert_number(game_fn_motherload_i1, 1.0);
@@ -3112,9 +3126,9 @@ static void ok_spill_args_to_game_fn(void* grug_state, void* file_id) {
 	assert_number(game_fn_motherload_f9, 9.0);
 }
 
-static void ok_spill_args_to_game_fn_subless(void* grug_state, void* file_id) {
+static void ok_spill_args_to_game_fn_subless(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	assert_call_count(motherload_subless, 0);
-    call_export_fn_argless(grug_state, file_id, "on_a");
+    call_export_fn_argless(grug_state, entity, "on_a");
 	assert_call_count(motherload_subless, 1);
 
 	assert_number(game_fn_motherload_subless_i1, 1.0);
@@ -3137,9 +3151,9 @@ static void ok_spill_args_to_game_fn_subless(void* grug_state, void* file_id) {
 	assert_number(game_fn_motherload_subless_f10, 10.0);
 }
 
-static void ok_spill_args_to_helper_fn(void* grug_state, void* file_id) {
+static void ok_spill_args_to_helper_fn(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	assert_call_count(motherload, 0);
-    call_export_fn_argless(grug_state, file_id, "on_a");
+    call_export_fn_argless(grug_state, entity, "on_a");
 	assert_call_count(motherload, 1);
 
 	assert_number(game_fn_motherload_i1, 1.0);
@@ -3161,9 +3175,9 @@ static void ok_spill_args_to_helper_fn(void* grug_state, void* file_id) {
 	assert_number(game_fn_motherload_f9, 9.0);
 }
 
-static void ok_spill_args_to_helper_fn_32_bit_f32(void* grug_state, void* file_id) {
+static void ok_spill_args_to_helper_fn_32_bit_f32(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	assert_call_count(offset_32_bit_f32, 0);
-    call_export_fn_argless(grug_state, file_id, "on_a");
+    call_export_fn_argless(grug_state, entity, "on_a");
 	assert_call_count(offset_32_bit_f32, 1);
 
 	assert_string(game_fn_offset_32_bit_f32_s1, "1");
@@ -3192,9 +3206,9 @@ static void ok_spill_args_to_helper_fn_32_bit_f32(void* grug_state, void* file_i
 	assert_number(game_fn_offset_32_bit_f32_g, 1.0);
 }
 
-static void ok_spill_args_to_helper_fn_32_bit_i32(void* grug_state, void* file_id) {
+static void ok_spill_args_to_helper_fn_32_bit_i32(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	assert_call_count(offset_32_bit_i32, 0);
-    call_export_fn_argless(grug_state, file_id, "on_a");
+    call_export_fn_argless(grug_state, entity, "on_a");
 	assert_call_count(offset_32_bit_i32, 1);
 
 	assert_number(game_fn_offset_32_bit_i32_f1, 1.0);
@@ -3235,9 +3249,9 @@ static void ok_spill_args_to_helper_fn_32_bit_i32(void* grug_state, void* file_i
 	assert_number(game_fn_offset_32_bit_i32_g, 6.0);
 }
 
-static void ok_spill_args_to_helper_fn_32_bit_string(void* grug_state, void* file_id) {
+static void ok_spill_args_to_helper_fn_32_bit_string(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	assert_call_count(offset_32_bit_string, 0);
-    call_export_fn_argless(grug_state, file_id, "on_a");
+    call_export_fn_argless(grug_state, entity, "on_a");
 	assert_call_count(offset_32_bit_string, 1);
 
 	assert_number(game_fn_offset_32_bit_string_f1, 1.0);
@@ -3278,9 +3292,9 @@ static void ok_spill_args_to_helper_fn_32_bit_string(void* grug_state, void* fil
 	assert_number(game_fn_offset_32_bit_string_g, 1.0);
 }
 
-static void ok_spill_args_to_helper_fn_subless(void* grug_state, void* file_id) {
+static void ok_spill_args_to_helper_fn_subless(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	assert_call_count(motherload_subless, 0);
-    call_export_fn_argless(grug_state, file_id, "on_a");
+    call_export_fn_argless(grug_state, entity, "on_a");
 	assert_call_count(motherload_subless, 1);
 
 	assert_number(game_fn_motherload_subless_i1, 1.0);
@@ -3303,37 +3317,37 @@ static void ok_spill_args_to_helper_fn_subless(void* grug_state, void* file_id) 
 	assert_number(game_fn_motherload_subless_f10, 10.0);
 }
 
-static void ok_stack_16_byte_alignment(void* grug_state, void* file_id) {
+static void ok_stack_16_byte_alignment(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	assert_call_count(nothing, 0);
 	assert_call_count(initialize, 0);
-    call_export_fn_argless(grug_state, file_id, "on_a");
+    call_export_fn_argless(grug_state, entity, "on_a");
 	assert_call_count(nothing, 1);
 	assert_call_count(initialize, 1);
 
 	assert_number(game_fn_initialize_x, 42.0);
 }
 
-static void ok_stack_16_byte_alignment_midway(void* grug_state, void* file_id) {
+static void ok_stack_16_byte_alignment_midway(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	assert_call_count(magic, 0);
 	assert_call_count(initialize, 0);
-    call_export_fn_argless(grug_state, file_id, "on_a");
+    call_export_fn_argless(grug_state, entity, "on_a");
 	assert_call_count(magic, 1);
 	assert_call_count(initialize, 1);
 
 	assert_number(game_fn_initialize_x, 42.0 + 42.0);
 }
 
-static void ok_string_can_be_passed_to_helper_fn(void* grug_state, void* file_id) {
+static void ok_string_can_be_passed_to_helper_fn(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	assert_call_count(say, 0);
-    call_export_fn_argless(grug_state, file_id, "on_a");
+    call_export_fn_argless(grug_state, entity, "on_a");
 	assert_call_count(say, 1);
 
 	assert_string(game_fn_say_message, "foo");
 }
 
-static void ok_string_duplicate(void* grug_state, void* file_id) {
+static void ok_string_duplicate(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	assert_call_count(talk, 0);
-    call_export_fn_argless(grug_state, file_id, "on_a");
+    call_export_fn_argless(grug_state, entity, "on_a");
 	assert_call_count(talk, 1);
 
 	assert_string(game_fn_talk_message1, "foo");
@@ -3342,197 +3356,197 @@ static void ok_string_duplicate(void* grug_state, void* file_id) {
 	assert_string(game_fn_talk_message4, "baz");
 }
 
-static void ok_string_eq_false(void* grug_state, void* file_id) {
+static void ok_string_eq_false(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	assert_call_count(initialize_bool, 0);
-    call_export_fn_argless(grug_state, file_id, "on_a");
+    call_export_fn_argless(grug_state, entity, "on_a");
 	assert_call_count(initialize_bool, 1);
 
 	assert_false(game_fn_initialize_bool_b);
 }
 
-static void ok_string_eq_true(void* grug_state, void* file_id) {
+static void ok_string_eq_true(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	assert_call_count(initialize_bool, 0);
-    call_export_fn_argless(grug_state, file_id, "on_a");
+    call_export_fn_argless(grug_state, entity, "on_a");
 	assert_call_count(initialize_bool, 1);
 
 	assert_true(game_fn_initialize_bool_b);
 }
 
-static void ok_string_eq_true_empty(void* grug_state, void* file_id) {
+static void ok_string_eq_true_empty(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	assert_call_count(initialize_bool, 0);
-    call_export_fn_argless(grug_state, file_id, "on_a");
+    call_export_fn_argless(grug_state, entity, "on_a");
 	assert_call_count(initialize_bool, 1);
 
 	assert_true(game_fn_initialize_bool_b);
 }
 
-static void ok_string_ne_false(void* grug_state, void* file_id) {
+static void ok_string_ne_false(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	assert_call_count(initialize_bool, 0);
-    call_export_fn_argless(grug_state, file_id, "on_a");
+    call_export_fn_argless(grug_state, entity, "on_a");
 	assert_call_count(initialize_bool, 1);
 
 	assert_false(game_fn_initialize_bool_b);
 }
 
-static void ok_string_ne_false_empty(void* grug_state, void* file_id) {
+static void ok_string_ne_false_empty(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	assert_call_count(initialize_bool, 0);
-    call_export_fn_argless(grug_state, file_id, "on_a");
+    call_export_fn_argless(grug_state, entity, "on_a");
 	assert_call_count(initialize_bool, 1);
 
 	assert_false(game_fn_initialize_bool_b);
 }
 
-static void ok_string_ne_true(void* grug_state, void* file_id) {
+static void ok_string_ne_true(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	assert_call_count(initialize_bool, 0);
-    call_export_fn_argless(grug_state, file_id, "on_a");
+    call_export_fn_argless(grug_state, entity, "on_a");
 	assert_call_count(initialize_bool, 1);
 
 	assert_true(game_fn_initialize_bool_b);
 }
 
-static void ok_string_returned_by_game_fn(void* grug_state, void* file_id) {
+static void ok_string_returned_by_game_fn(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	assert_call_count(get_os, 0);
 	assert_call_count(has_string, 0);
-	call_export_fn_argless(grug_state, file_id, "on_a");
+	call_export_fn_argless(grug_state, entity, "on_a");
 	assert_call_count(get_os, 1);
 	assert_call_count(has_string, 1);
 
 	assert_string(game_fn_has_string_str, "foo");
 }
 
-static void ok_string_returned_by_game_fn_assigned_to_member(void* grug_state, void* file_id) {
-	assert_call_count(get_os, 1); // Called by init_globals()
+static void ok_string_returned_by_game_fn_assigned_to_member(struct grug_state* grug_state, struct grug_entity_id* entity) {
+	assert_call_count(get_os, 1); // Called by create_entity()
 	assert_call_count(has_string, 0);
-	call_export_fn_argless(grug_state, file_id, "on_a");
-	assert_call_count(get_os, 1); // Called by init_globals()
+	call_export_fn_argless(grug_state, entity, "on_a");
+	assert_call_count(get_os, 1); // Called by create_entity()
 	assert_call_count(has_string, 1);
 
 	assert_string(game_fn_has_string_str, "foo");
 }
 
-static void ok_string_returned_by_helper_fn(void* grug_state, void* file_id) {
+static void ok_string_returned_by_helper_fn(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	assert_call_count(has_string, 0);
-	call_export_fn_argless(grug_state, file_id, "on_a");
+	call_export_fn_argless(grug_state, entity, "on_a");
 	assert_call_count(has_string, 1);
 
 	assert_string(game_fn_has_string_str, "foo");
 }
 
-static void ok_string_returned_by_helper_fn_from_game_fn(void* grug_state, void* file_id) {
+static void ok_string_returned_by_helper_fn_from_game_fn(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	assert_call_count(get_os, 0);
 	assert_call_count(has_string, 0);
-	call_export_fn_argless(grug_state, file_id, "on_a");
+	call_export_fn_argless(grug_state, entity, "on_a");
 	assert_call_count(get_os, 1);
 	assert_call_count(has_string, 1);
 
 	assert_string(game_fn_has_string_str, "foo");
 }
 
-static void ok_sub_rsp_32_bits_local_variables_i32(void* grug_state, void* file_id) {
+static void ok_sub_rsp_32_bits_local_variables_i32(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	assert_call_count(initialize, 0);
-    call_export_fn_argless(grug_state, file_id, "on_a");
+    call_export_fn_argless(grug_state, entity, "on_a");
 	assert_call_count(initialize, 30);
 
 	assert_number(game_fn_initialize_x, 30.0);
 }
 
-static void ok_sub_rsp_32_bits_local_variables_id(void* grug_state, void* file_id) {
+static void ok_sub_rsp_32_bits_local_variables_id(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	assert_call_count(set_d, 0);
-    call_export_fn_argless(grug_state, file_id, "on_a");
+    call_export_fn_argless(grug_state, entity, "on_a");
 	assert_call_count(set_d, 15);
 
 	assert_id(game_fn_set_d_target, 42);
 }
 
-static void ok_subtraction_negative_result(void* grug_state, void* file_id) {
+static void ok_subtraction_negative_result(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	assert_call_count(initialize, 0);
-    call_export_fn_argless(grug_state, file_id, "on_a");
+    call_export_fn_argless(grug_state, entity, "on_a");
 	assert_call_count(initialize, 1);
 
 	assert_number(game_fn_initialize_x, -3.0);
 }
 
-static void ok_subtraction_positive_result(void* grug_state, void* file_id) {
+static void ok_subtraction_positive_result(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	assert_call_count(initialize, 0);
-    call_export_fn_argless(grug_state, file_id, "on_a");
+    call_export_fn_argless(grug_state, entity, "on_a");
 	assert_call_count(initialize, 1);
 
 	assert_number(game_fn_initialize_x, 3.0);
 }
 
-static void ok_unprintable_character_in_comment(void* grug_state, void* file_id) {
+static void ok_unprintable_character_in_comment(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	(void)grug_state;
-	(void)file_id;
+	(void)entity;
 }
 
-static void ok_unprintable_character_in_string(void* grug_state, void* file_id) {
+static void ok_unprintable_character_in_string(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	(void)grug_state;
-	(void)file_id;
+	(void)entity;
 }
 
-static void ok_variable(void* grug_state, void* file_id) {
+static void ok_variable(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	assert_call_count(initialize, 0);
-    call_export_fn_argless(grug_state, file_id, "on_a");
+    call_export_fn_argless(grug_state, entity, "on_a");
 	assert_call_count(initialize, 1);
 
 	assert_number(game_fn_initialize_x, 42.0);
 }
 
-static void ok_variable_does_not_shadow_in_different_if_statement(void* grug_state, void* file_id) {
+static void ok_variable_does_not_shadow_in_different_if_statement(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	assert_call_count(initialize, 0);
-    call_export_fn_argless(grug_state, file_id, "on_a");
+    call_export_fn_argless(grug_state, entity, "on_a");
 	assert_call_count(initialize, 2);
 
 	assert_number(game_fn_initialize_x, 69.0);
 }
 
-static void ok_variable_reassignment(void* grug_state, void* file_id) {
+static void ok_variable_reassignment(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	assert_call_count(initialize, 0);
-    call_export_fn_argless(grug_state, file_id, "on_a");
+    call_export_fn_argless(grug_state, entity, "on_a");
 	assert_call_count(initialize, 1);
 
 	assert_number(game_fn_initialize_x, 69.0);
 }
 
-static void ok_variable_reassignment_does_not_dealloc_outer_variable(void* grug_state, void* file_id) {
+static void ok_variable_reassignment_does_not_dealloc_outer_variable(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	assert_call_count(initialize, 0);
-    call_export_fn_argless(grug_state, file_id, "on_a");
+    call_export_fn_argless(grug_state, entity, "on_a");
 	assert_call_count(initialize, 1);
 
 	assert_number(game_fn_initialize_x, 69.0);
 }
 
-static void ok_variable_string_global(void* grug_state, void* file_id) {
+static void ok_variable_string_global(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	assert_call_count(say, 0);
-    call_export_fn_argless(grug_state, file_id, "on_a");
+    call_export_fn_argless(grug_state, entity, "on_a");
 	assert_call_count(say, 1);
 
 	assert_string(game_fn_say_message, "foo");
 }
 
-static void ok_variable_string_local(void* grug_state, void* file_id) {
+static void ok_variable_string_local(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	assert_call_count(say, 0);
-    call_export_fn_argless(grug_state, file_id, "on_a");
+    call_export_fn_argless(grug_state, entity, "on_a");
 	assert_call_count(say, 1);
 
 	assert_string(game_fn_say_message, "foo");
 }
 
-static void ok_void_function_early_return(void* grug_state, void* file_id) {
+static void ok_void_function_early_return(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	assert_call_count(nothing, 0);
-    call_export_fn_argless(grug_state, file_id, "on_a");
+    call_export_fn_argless(grug_state, entity, "on_a");
 	assert_call_count(nothing, 1);
 }
 
-static void ok_while_false(void* grug_state, void* file_id) {
+static void ok_while_false(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	assert_call_count(nothing, 0);
-    call_export_fn_argless(grug_state, file_id, "on_a");
+    call_export_fn_argless(grug_state, entity, "on_a");
 	assert_call_count(nothing, 2);
 }
 
-static void ok_write_to_global_variable(void* grug_state, void* file_id) {
+static void ok_write_to_global_variable(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	assert_call_count(max, 0);
-    call_export_fn_argless(grug_state, file_id, "on_a");
+    call_export_fn_argless(grug_state, entity, "on_a");
 	assert_call_count(max, 1);
 
 	assert_number(game_fn_max_x, 43.0);
@@ -3549,8 +3563,8 @@ void grug_tests_runtime_error_handler(const char *reason, enum grug_runtime_erro
 	strcpy(runtime_error_on_fn_path, on_fn_path);
 }
 
-static void runtime_error_all(void* grug_state, void* file_id) {
-	call_export_fn_argless(grug_state, file_id, "on_a");
+static void runtime_error_all(struct grug_state* grug_state, struct grug_entity_id* entity) {
+	call_export_fn_argless(grug_state, entity, "on_a");
 
 	assert_true(had_runtime_error);
 
@@ -3560,10 +3574,10 @@ static void runtime_error_all(void* grug_state, void* file_id) {
 	assert_string(runtime_error_on_fn_path, "err_runtime"SLASH"all"SLASH"input-D.grug");
 }
 
-static void runtime_error_game_fn_error(void* grug_state, void* file_id) {
+static void runtime_error_game_fn_error(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	assert_call_count(cause_game_fn_error, 0);
 	assert_error_handler_call_count(0);
-	call_export_fn_argless(grug_state, file_id, "on_a");
+	call_export_fn_argless(grug_state, entity, "on_a");
 	assert_call_count(cause_game_fn_error, 1);
 	assert_error_handler_call_count(1);
 
@@ -3575,9 +3589,9 @@ static void runtime_error_game_fn_error(void* grug_state, void* file_id) {
 	assert_string(runtime_error_on_fn_path, "err_runtime"SLASH"game_fn_error"SLASH"input-D.grug");
 }
 
-static void runtime_error_game_fn_error_global_scope(void* grug_state, void* file_id) {
+static void runtime_error_game_fn_error_global_scope(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	(void)grug_state;
-	(void)file_id;
+	(void)entity;
 
 	assert_call_count(cause_game_fn_error, 1);
 	assert_error_handler_call_count(1);
@@ -3589,10 +3603,10 @@ static void runtime_error_game_fn_error_global_scope(void* grug_state, void* fil
 	assert_string(runtime_error_on_fn_path, "err_runtime"SLASH"game_fn_error_global_scope"SLASH"input-A.grug");
 }
 
-static void runtime_error_game_fn_error_once(void* grug_state, void* file_id) {
+static void runtime_error_game_fn_error_once(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	assert_call_count(cause_game_fn_error, 0);
 	assert_error_handler_call_count(0);
-	call_export_fn_argless(grug_state, file_id, "on_a");
+	call_export_fn_argless(grug_state, entity, "on_a");
 	assert_call_count(cause_game_fn_error, 1);
 	assert_error_handler_call_count(1);
 
@@ -3608,7 +3622,7 @@ static void runtime_error_game_fn_error_once(void* grug_state, void* file_id) {
 	assert_call_count(cause_game_fn_error, 1);
 	assert_call_count(nothing, 0);
 	assert_error_handler_call_count(1);
-	call_export_fn_argless(grug_state, file_id, "on_b");
+	call_export_fn_argless(grug_state, entity, "on_b");
 	assert_call_count(cause_game_fn_error, 1);
 	assert_call_count(nothing, 1);
 	assert_error_handler_call_count(1);
@@ -3616,12 +3630,12 @@ static void runtime_error_game_fn_error_once(void* grug_state, void* file_id) {
 	assert_false(had_runtime_error);
 }
 
-static void runtime_error_on_fn_calls_erroring_on_fn(void* grug_state, void* file_id) {
+static void runtime_error_on_fn_calls_erroring_on_fn(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	assert_call_count(call_on_b_fn, 0);
 	assert_call_count(cause_game_fn_error, 0);
 	assert_call_count(nothing, 0);
 	assert_error_handler_call_count(0);
-    call_export_fn_argless(grug_state, file_id, "on_a");
+    call_export_fn_argless(grug_state, entity, "on_a");
 	assert_call_count(call_on_b_fn, 1);
 	assert_call_count(cause_game_fn_error, 1);
 	assert_call_count(nothing, 0);
@@ -3635,12 +3649,12 @@ static void runtime_error_on_fn_calls_erroring_on_fn(void* grug_state, void* fil
 	assert_string(runtime_error_on_fn_path, "err_runtime"SLASH"on_fn_calls_erroring_on_fn"SLASH"input-E.grug");
 }
 
-static void runtime_error_on_fn_errors_after_it_calls_other_on_fn(void* grug_state, void* file_id) {
+static void runtime_error_on_fn_errors_after_it_calls_other_on_fn(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	assert_call_count(call_on_b_fn, 0);
 	assert_call_count(nothing, 0);
 	assert_call_count(cause_game_fn_error, 0);
 	assert_error_handler_call_count(0);
-	call_export_fn_argless(grug_state, file_id, "on_a");
+	call_export_fn_argless(grug_state, entity, "on_a");
 	assert_call_count(call_on_b_fn, 1);
 	assert_call_count(nothing, 1);
 	assert_call_count(cause_game_fn_error, 1);
@@ -3654,8 +3668,8 @@ static void runtime_error_on_fn_errors_after_it_calls_other_on_fn(void* grug_sta
 	assert_string(runtime_error_on_fn_path, "err_runtime"SLASH"on_fn_errors_after_it_calls_other_on_fn"SLASH"input-E.grug");
 }
 
-static void runtime_error_stack_overflow(void* grug_state, void* file_id) {
-    call_export_fn_argless(grug_state, file_id, "on_a");
+static void runtime_error_stack_overflow(struct grug_state* grug_state, struct grug_entity_id* entity) {
+    call_export_fn_argless(grug_state, entity, "on_a");
 
 	assert_true(had_runtime_error);
 
@@ -3665,8 +3679,8 @@ static void runtime_error_stack_overflow(void* grug_state, void* file_id) {
 	assert_string(runtime_error_on_fn_path, "err_runtime"SLASH"stack_overflow"SLASH"input-D.grug");
 }
 
-static void runtime_error_time_limit_exceeded(void* grug_state, void* file_id) {
-    call_export_fn_argless(grug_state, file_id, "on_a");
+static void runtime_error_time_limit_exceeded(struct grug_state* grug_state, struct grug_entity_id* entity) {
+    call_export_fn_argless(grug_state, entity, "on_a");
 
 	assert_true(had_runtime_error);
 
@@ -3676,8 +3690,8 @@ static void runtime_error_time_limit_exceeded(void* grug_state, void* file_id) {
 	assert_string(runtime_error_on_fn_path, "err_runtime"SLASH"time_limit_exceeded"SLASH"input-D.grug");
 }
 
-static void runtime_error_time_limit_exceeded_exponential_calls(void* grug_state, void* file_id) {
-    call_export_fn_argless(grug_state, file_id, "on_a");
+static void runtime_error_time_limit_exceeded_exponential_calls(struct grug_state* grug_state, struct grug_entity_id* entity) {
+    call_export_fn_argless(grug_state, entity, "on_a");
 
 	assert_true(had_runtime_error);
 
@@ -3687,8 +3701,8 @@ static void runtime_error_time_limit_exceeded_exponential_calls(void* grug_state
 	assert_string(runtime_error_on_fn_path, "err_runtime"SLASH"time_limit_exceeded_exponential_calls"SLASH"input-D.grug");
 }
 
-static void runtime_error_time_limit_exceeded_fibonacci(void* grug_state, void* file_id) {
-    call_export_fn_argless(grug_state, file_id, "on_a");
+static void runtime_error_time_limit_exceeded_fibonacci(struct grug_state* grug_state, struct grug_entity_id* entity) {
+    call_export_fn_argless(grug_state, entity, "on_a");
 
 	assert_true(had_runtime_error);
 
@@ -4148,8 +4162,10 @@ void grug_tests_run(
 	create_grug_state          = vtable.create_grug_state; assert(create_grug_state);
 	destroy_grug_state         = vtable.destroy_grug_state; assert(destroy_grug_state);
 	compile_grug_file          = vtable.compile_grug_file; assert(compile_grug_file);
+	destroy_grug_file          = vtable.destroy_grug_file; assert(destroy_grug_file);
+	create_entity              = vtable.create_entity; assert(create_entity);
+	destroy_entity             = vtable.destroy_entity; assert(destroy_entity);
 	update                     = vtable.update; assert(update);
-	init_globals               = vtable.init_globals; assert(init_globals);
 	call_export_fn             = vtable.call_export_fn; assert(call_export_fn);
 	grug_to_json               = vtable.grug_to_json; assert(grug_to_json);
 	json_to_grug               = vtable.json_to_grug; assert(json_to_grug);
@@ -4211,14 +4227,22 @@ void grug_tests_run(
 		fflush(stdout);
 		reset();
 
-		void* file_id = prologue(grug_state, fn_data->grug_path);
+		struct grug_file_id* file = prologue(grug_state, fn_data->grug_path);
 
 		diff_roundtrip(grug_state, fn_data->grug_path);
 
-		init_globals(grug_state, file_id);
-		fn_data->file_id = file_id;
-		current_file_id = file_id;
-		fn_data->run(grug_state, file_id);
+		const char *msg = impl_forgot_to_set_msg;
+		struct grug_entity_id* entity = create_entity(grug_state, file, &msg);
+		if (msg) {
+			fprintf(stderr, "Error creating entity: %s\n", msg);
+			exit(EXIT_FAILURE);
+		}
+
+		fn_data->file = file;
+		current_entity = entity;
+		fn_data->run(grug_state, entity);
+
+		destroy_entity(grug_state, entity);
 	}
 
 	for (size_t i = 0; i < ok_test_datas_size; i++) {
@@ -4228,9 +4252,18 @@ void grug_tests_run(
 		fflush(stdout);
 		reset();
 
-		init_globals(grug_state, fn_data->file_id);
-		current_file_id = fn_data->file_id;
-		fn_data->run(grug_state, fn_data->file_id);
+		const char *msg = impl_forgot_to_set_msg;
+		struct grug_entity_id* entity = create_entity(grug_state, fn_data->file, &msg);
+		if (msg) {
+			fprintf(stderr, "Error creating entity: %s\n", msg);
+			exit(EXIT_FAILURE);
+		}
+
+		current_entity = entity;
+		fn_data->run(grug_state, entity);
+
+		destroy_grug_file(grug_state, fn_data->file);
+		destroy_entity(grug_state, entity);
 	}
 
 	for (size_t i = 0; i < err_runtime_test_datas_size; i++) {
@@ -4240,14 +4273,22 @@ void grug_tests_run(
 		fflush(stdout);
 		reset();
 
-		void* file_id = prologue(grug_state, fn_data->grug_path);
+		struct grug_file_id* file = prologue(grug_state, fn_data->grug_path);
 
 		diff_roundtrip(grug_state, fn_data->grug_path);
 
-		init_globals(grug_state, file_id);
-		fn_data->file_id = file_id;
-		current_file_id = file_id;
-		fn_data->run(grug_state, file_id);
+		fn_data->file = file;
+
+		const char *msg = impl_forgot_to_set_msg;
+		struct grug_entity_id* entity = create_entity(grug_state, file, &msg);
+
+		// If the error happened inside create_entity(), don't call run()
+		if (msg) {
+			memcpy(runtime_error_reason, msg, strlen(msg) + 1);
+		} else {
+			current_entity = entity;
+			fn_data->run(grug_state, entity);	
+		}
 
 		const char *expected_error = get_expected_error(fn_data->expected_error_path);
 
@@ -4261,6 +4302,10 @@ void grug_tests_run(
 
 			exit(EXIT_FAILURE);
 		}
+
+		if (!msg) {
+			destroy_entity(grug_state, entity);
+		}
 	}
 
 	for (size_t i = 0; i < err_runtime_test_datas_size; i++) {
@@ -4270,9 +4315,16 @@ void grug_tests_run(
 		fflush(stdout);
 		reset();
 
-		init_globals(grug_state, fn_data->file_id);
-		current_file_id = fn_data->file_id;
-		fn_data->run(grug_state, fn_data->file_id);
+		const char *msg = impl_forgot_to_set_msg;
+		struct grug_entity_id* entity = create_entity(grug_state, fn_data->file, &msg);
+
+		// If the error happened inside create_entity(), don't call run()
+		if (msg) {
+			memcpy(runtime_error_reason, msg, strlen(msg) + 1);
+		} else {
+			current_entity = entity;
+			fn_data->run(grug_state, entity);	
+		}
 
 		const char *expected_error = get_expected_error(fn_data->expected_error_path);
 
@@ -4285,6 +4337,12 @@ void grug_tests_run(
 			print_string_debug(expected_error);
 
 			exit(EXIT_FAILURE);
+		}
+
+		destroy_grug_file(grug_state, fn_data->file);
+
+		if (!msg) {
+			destroy_entity(grug_state, entity);
 		}
 	}
 

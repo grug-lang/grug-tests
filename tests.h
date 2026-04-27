@@ -61,6 +61,27 @@ enum grug_runtime_error_type {
 };
 
 /**
+ * @typedef create_grug_state_t
+ * @brief Create an instance of `grug_state` that can be passed to all other functions.
+ *
+ * @param mod_api_path Path to the mod_api.json this state will be initialized with.
+ * @param mods_dir Path to the mods directory this state should use.
+ * @return Null if an error occurred. If no state is needed, return a dummy value like 42.
+ */
+typedef struct grug_state* (*create_grug_state_t) (
+	const char* mod_api_path,
+	const char* mods_dir
+);
+
+/**
+ * @typedef destroy_grug_state_t
+ * @brief Destroy a `state` that was created from a previous call to `create_grug_state`.
+ *
+ * @param grug_state The state to destroy.
+ */
+typedef void (*destroy_grug_state_t)(struct grug_state* state);
+
+/**
  * @typedef compile_grug_file_t
  * @brief Function pointer type for compiling a grug file.
  *
@@ -72,6 +93,39 @@ enum grug_runtime_error_type {
 typedef struct grug_file_id* (*compile_grug_file_t)(struct grug_state* state, const char* file_path, const char** error_out);
 
 /**
+ * @typedef destroy_grug_file_t
+ * @brief Destroy a `file` that was created from a previous call to `compile_grug_file`.
+ *
+ * @param state Current active grug state.
+ * @param file The grug file to destroy.
+ */
+typedef void (*destroy_grug_file_t)(struct grug_state* state, struct grug_file_id* file);
+
+/**
+ * @typedef create_entity_t
+ * @brief Function pointer type for initializing a grug_entity and keeping it
+ * ready for subsequent calls to call_export_fn_t.
+ *
+ * It should create an entity from the file id, initialize its globals, and
+ * store the entity in a global.
+ *
+ * @param state Current active grug state.
+ * @param file The file to create an entity and initialize globals for.
+ * @param error_out Out parameter for a compile error message. Outputs `NULL` on success.
+ * @return An opaque identifier to the created entity.
+ */
+typedef struct grug_entity_id* (*create_entity_t)(struct grug_state* state, struct grug_file_id* file, const char** error_out);
+
+/**
+ * @typedef destroy_entity_t
+ * @brief Destroy an `entity` that was created from a previous call to `create_entity`.
+ *
+ * @param state Current active grug state.
+ * @param entity The entity to destroy.
+ */
+typedef void (*destroy_entity_t)(struct grug_state* state, struct grug_entity_id* entity);
+
+/**
  * @typedef update_t
  * @brief Function pointer type for recompiling all modified grug files.
  *
@@ -81,33 +135,20 @@ typedef struct grug_file_id* (*compile_grug_file_t)(struct grug_state* state, co
 typedef void (*update_t)(struct grug_state* state, const char** error_out);
 
 /**
- * @typedef init_globals_t
- * @brief Function pointer type for initializing a grug_entity and keeping it
- * ready for subsequent calls to call_export_fn_t.
- *
- * It should create an entity from the file id, initialize its globals, and
- * store the entity in a global. Any previous entities should be deinitialized.
- *
- * @param state Current active grug state.
- * @param file_id The file_id to create an entity and run function for.
- */
-typedef void (*init_globals_t)(struct grug_state* state, struct grug_file_id* file_id);
-
-/**
  * @typedef call_export_fn_t
  * @brief Function pointer type for invoking a grug function handler.
  *
- * It should call `fn_name` on the entity created by `init_globals_t`
+ * It should call `fn_name` on the entity created by `create_entity_t`
  * passing `args` and `args_count`.
  *
  * @param state Current active grug state.
- * @param file_id The file_id of the current entity. Must be the same as the
- * last call to `init_globals_t`.
+ * @param file The file of the current entity. Must be the same as the
+ * last call to `create_entity_t`.
  * @param fn_name Name of the grug function to invoke.
  * @param args Array of `grug_value` arguments to pass to the function.
  * @param args_count number of arguments being passed to the function.
  */
-typedef void (*call_export_fn_t)(struct grug_state* state, struct grug_file_id* file_id, const char* fn_name, const union grug_value* args, size_t args_count);
+typedef void (*call_export_fn_t)(struct grug_state* state, struct grug_entity_id* entity, const char* fn_name, const union grug_value* args, size_t args_count);
 
 /**
  * @typedef grug_to_json_t
@@ -150,35 +191,16 @@ typedef bool (*json_to_grug_t)(struct grug_state* state, const char *input_json_
  */
 typedef void (*game_fn_error_t)(struct grug_state* state, const char *message);
 
-/**
- * @typedef create_grug_state_t
- * @brief Create an instance of `grug_state` that can be passed to all other functions.
- *
- * @param mod_api_path Path to the mod_api.json this state will be initialized with.
- * @param mods_dir Path to the mods directory this state should use.
- * @return Null if an error occurred. If no state is needed, return a dummy value like 42.
- */
-typedef struct grug_state* (*create_grug_state_t) (
-	const char* mod_api_path,
-	const char* mods_dir
-);
-
-/**
- * @typedef destroy_grug_state_t
- * @brief Destroy a `grug_state` that was created from a previous call to `create_grug_state`.
- *
- * @param grug_state The state to destroy.
- */
-typedef void (*destroy_grug_state_t)(struct grug_state* state);
-
 /// A vtable of pointers passed from the grug implementation to grug-tests.
 /// Contains all the functions needed to run the entire test suite.
 struct grug_state_vtable {
 	create_grug_state_t create_grug_state;
 	destroy_grug_state_t destroy_grug_state;
 	compile_grug_file_t compile_grug_file;
+	destroy_grug_file_t destroy_grug_file;
+	create_entity_t create_entity;
+	destroy_entity_t destroy_entity;
 	update_t update;
-	init_globals_t init_globals;
 	call_export_fn_t call_export_fn;
 	grug_to_json_t grug_to_json;
 	json_to_grug_t json_to_grug;

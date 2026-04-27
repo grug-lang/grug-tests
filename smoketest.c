@@ -91,27 +91,29 @@ static bool starts_with(const char *haystack, const char *needle) {
 }
 
 static bool update_called = false;
-static void update(struct grug_state* grug_state, const char** out_error) {
+static void update(struct grug_state* grug_state, const char** error_out) {
     (void)grug_state;
     update_called = true;
-	*out_error = NULL;
+	*error_out = NULL;
 }
 
-static struct grug_file_id *compile_grug_file(struct grug_state* grug_state, const char *grug_file_path, const char** out_error) {
+static struct grug_file_id *compile_grug_file(struct grug_state* grug_state, const char *grug_file_path, const char** error_out) {
 	(void)grug_state;
 
-    saved_grug_file_path = grug_file_path; // For dump_file_to_json()
+    saved_grug_file_path = grug_file_path; // Read by grug_to_json() and json_to_grug()
 
-    if (starts_with(grug_file_path, "err_spaces"SLASH)) {
-		*out_error = "Error: Too many spaces.";
+    const char *path = (const char*)grug_file_path;
+
+    if (starts_with(path, "err_spaces"SLASH)) {
+		*error_out = "Error: Too many spaces.";
 		return NULL;
-    } else if (starts_with(grug_file_path, "err"SLASH)) {
+    } else if (starts_with(path, "err"SLASH)) {
         // Turn "err/foo-D.grug" into "err/expected_error.txt"
-        const char *last_slash = strrchr(grug_file_path, *SLASH);
+        const char *last_slash = strrchr(path, *SLASH);
         assert(last_slash);
         char expected_relative_path[4096];
-        size_t dir_len = (size_t)(last_slash - grug_file_path + 1);
-        memcpy(expected_relative_path, grug_file_path, dir_len);
+        size_t dir_len = (size_t)(last_slash - path + 1);
+        memcpy(expected_relative_path, path, dir_len);
         expected_relative_path[dir_len] = '\0';
         strcat(expected_relative_path, "expected_error.txt");
 
@@ -128,62 +130,76 @@ static struct grug_file_id *compile_grug_file(struct grug_state* grug_state, con
         }
         buf[nread] = '\0';
         fclose(f);
-		*out_error = buf;
+		*error_out = buf;
 		return NULL;
     }
 
-	*out_error = NULL;
-    return (struct grug_file_id*)grug_file_path;
+	*error_out = NULL;
+    return (struct grug_file_id*)path;
 }
 
-static void init_globals(struct grug_state* grug_state, struct grug_file_id* file_id) {
-	saved_grug_file_path = (const char*)file_id;
+static void destroy_grug_file(struct grug_state* grug_state, struct grug_file_id* file) {
+	(void)grug_state;
+    (void)file;
+}
 
-    const char *grug_file_path = (const char*)file_id;
+static struct grug_entity_id* create_entity(struct grug_state* grug_state, struct grug_file_id* file, const char** error_out) {
+	saved_grug_file_path = (const char*)file;
 
-    if (starts_with(grug_file_path, "err_runtime"SLASH"game_fn_error_global_scope"SLASH)) {
+    const char *path = (const char*)file;
+
+    if (starts_with(path, "err_runtime"SLASH"game_fn_error_global_scope"SLASH)) {
         CALL_ARGLESS(grug_state, cause_game_fn_error);
-    } else if (starts_with(grug_file_path, "ok"SLASH"custom_id_transfer_between_globals"SLASH)) {
+    } else if (starts_with(path, "ok"SLASH"custom_id_transfer_between_globals"SLASH)) {
         CALL_ARGLESS(grug_state, get_opponent);
-    } else if (starts_with(grug_file_path, "ok"SLASH"custom_id_with_digits"SLASH)) {
+    } else if (starts_with(path, "ok"SLASH"custom_id_with_digits"SLASH)) {
         CALL(grug_state, box_number, grug_number(42.0));
-    } else if (starts_with(grug_file_path, "ok"SLASH"global_call_using_me"SLASH)) {
+    } else if (starts_with(path, "ok"SLASH"global_call_using_me"SLASH)) {
         CALL(grug_state, get_position, grug_id(42));
-    } else if (starts_with(grug_file_path, "ok"SLASH"global_id"SLASH)) {
+    } else if (starts_with(path, "ok"SLASH"global_id"SLASH)) {
         CALL_ARGLESS(grug_state, get_opponent);
-    } else if (starts_with(grug_file_path, "ok"SLASH"id_global_with_id_to_new_id"SLASH)) {
+    } else if (starts_with(path, "ok"SLASH"id_global_with_id_to_new_id"SLASH)) {
         CALL_ARGLESS(grug_state, retrieve);
-    } else if (starts_with(grug_file_path, "ok"SLASH"id_global_with_opponent_to_new_id"SLASH)) {
+    } else if (starts_with(path, "ok"SLASH"id_global_with_opponent_to_new_id"SLASH)) {
         CALL_ARGLESS(grug_state, get_opponent);
-    } else if (starts_with(grug_file_path, "ok"SLASH"string_returned_by_game_fn_assigned_to_member"SLASH)) {
+    } else if (starts_with(path, "ok"SLASH"string_returned_by_game_fn_assigned_to_member"SLASH)) {
         CALL_ARGLESS(grug_state, get_os);
     }
+
+    *error_out = NULL;
+	return (struct grug_entity_id*)42;
 }
 
-static void call_export_fn(struct grug_state* grug_state, struct grug_file_id* file_id, const char *on_fn_name, const union grug_value* args, size_t args_len) {
+static void destroy_entity(struct grug_state* grug_state, struct grug_entity_id* entity_id) {
+	(void)grug_state;
+    (void)entity_id;
+}
+
+static void call_export_fn(struct grug_state* grug_state, struct grug_entity_id* entity, const char *on_fn_name, const union grug_value* args, size_t args_len) {
+    (void)entity;
 	(void)args_len;
+
     saved_on_fn_name = on_fn_name;
-	saved_grug_file_path = (const char*)file_id;
 
-    const char *grug_file_path = (const char*)file_id;
+    const char *path = saved_grug_file_path;
 
-    if (starts_with(grug_file_path, "err_runtime"SLASH"all"SLASH)) {
-        p_grug_tests_runtime_error_handler("Stack overflow, so check for accidental infinite recursion", GRUG_ON_FN_STACK_OVERFLOW, on_fn_name, grug_file_path);
-    } else if (starts_with(grug_file_path, "err_runtime"SLASH"game_fn_error"SLASH)) {
+    if (starts_with(path, "err_runtime"SLASH"all"SLASH)) {
+        p_grug_tests_runtime_error_handler("Stack overflow, so check for accidental infinite recursion", GRUG_ON_FN_STACK_OVERFLOW, on_fn_name, path);
+    } else if (starts_with(path, "err_runtime"SLASH"game_fn_error"SLASH)) {
         CALL_ARGLESS(grug_state, cause_game_fn_error);
-    } else if (starts_with(grug_file_path, "err_runtime"SLASH"game_fn_error_once"SLASH)) {
+    } else if (starts_with(path, "err_runtime"SLASH"game_fn_error_once"SLASH)) {
         if (streq(on_fn_name, "on_a")) {
             CALL_ARGLESS(grug_state, cause_game_fn_error);
         } else {
             CALL_ARGLESS(grug_state, nothing);
         }
-    } else if (starts_with(grug_file_path, "err_runtime"SLASH"on_fn_calls_erroring_on_fn"SLASH)) {
+    } else if (starts_with(path, "err_runtime"SLASH"on_fn_calls_erroring_on_fn"SLASH)) {
         if (streq(on_fn_name, "on_a")) {
             CALL_ARGLESS(grug_state, call_on_b_fn);
         } else {
             CALL_ARGLESS(grug_state, cause_game_fn_error);
         }
-    } else if (starts_with(grug_file_path, "err_runtime"SLASH"on_fn_errors_after_it_calls_other_on_fn"SLASH)) {
+    } else if (starts_with(path, "err_runtime"SLASH"on_fn_errors_after_it_calls_other_on_fn"SLASH)) {
         if (streq(on_fn_name, "on_a")) {
 			const char* current_on_fn_name = on_fn_name;
             CALL_ARGLESS(grug_state, call_on_b_fn);
@@ -192,126 +208,126 @@ static void call_export_fn(struct grug_state* grug_state, struct grug_file_id* f
         } else {
             CALL_ARGLESS(grug_state, nothing);
         }
-    } else if (starts_with(grug_file_path, "err_runtime"SLASH"stack_overflow"SLASH)) {
-        p_grug_tests_runtime_error_handler("Stack overflow, so check for accidental infinite recursion", GRUG_ON_FN_STACK_OVERFLOW, on_fn_name, grug_file_path);
-    } else if (starts_with(grug_file_path, "err_runtime"SLASH"time_limit_exceeded"SLASH)) {
-        p_grug_tests_runtime_error_handler("Took longer than 100 milliseconds to run", GRUG_ON_FN_TIME_LIMIT_EXCEEDED, on_fn_name, grug_file_path);
-    } else if (starts_with(grug_file_path, "err_runtime"SLASH"time_limit_exceeded_exponential_calls"SLASH)) {
-        p_grug_tests_runtime_error_handler("Took longer than 100 milliseconds to run", GRUG_ON_FN_TIME_LIMIT_EXCEEDED, on_fn_name, grug_file_path);
-    } else if (starts_with(grug_file_path, "err_runtime"SLASH"time_limit_exceeded_fibonacci"SLASH)) {
-        p_grug_tests_runtime_error_handler("Took longer than 100 milliseconds to run", GRUG_ON_FN_TIME_LIMIT_EXCEEDED, on_fn_name, grug_file_path);
-    } else if (starts_with(grug_file_path, "ok"SLASH"addition_as_argument"SLASH)) {
+    } else if (starts_with(path, "err_runtime"SLASH"stack_overflow"SLASH)) {
+        p_grug_tests_runtime_error_handler("Stack overflow, so check for accidental infinite recursion", GRUG_ON_FN_STACK_OVERFLOW, on_fn_name, path);
+    } else if (starts_with(path, "err_runtime"SLASH"time_limit_exceeded"SLASH)) {
+        p_grug_tests_runtime_error_handler("Took longer than 100 milliseconds to run", GRUG_ON_FN_TIME_LIMIT_EXCEEDED, on_fn_name, path);
+    } else if (starts_with(path, "err_runtime"SLASH"time_limit_exceeded_exponential_calls"SLASH)) {
+        p_grug_tests_runtime_error_handler("Took longer than 100 milliseconds to run", GRUG_ON_FN_TIME_LIMIT_EXCEEDED, on_fn_name, path);
+    } else if (starts_with(path, "err_runtime"SLASH"time_limit_exceeded_fibonacci"SLASH)) {
+        p_grug_tests_runtime_error_handler("Took longer than 100 milliseconds to run", GRUG_ON_FN_TIME_LIMIT_EXCEEDED, on_fn_name, path);
+    } else if (starts_with(path, "ok"SLASH"addition_as_argument"SLASH)) {
         CALL(grug_state, initialize, grug_number(3.0));
-    } else if (starts_with(grug_file_path, "ok"SLASH"addition_as_two_arguments"SLASH)) {
+    } else if (starts_with(path, "ok"SLASH"addition_as_two_arguments"SLASH)) {
         CALL(grug_state, max, grug_number(3.0), grug_number(9.0));
-    } else if (starts_with(grug_file_path, "ok"SLASH"addition_with_multiplication"SLASH)) {
+    } else if (starts_with(path, "ok"SLASH"addition_with_multiplication"SLASH)) {
         CALL(grug_state, initialize, grug_number(14.0));
-    } else if (starts_with(grug_file_path, "ok"SLASH"addition_with_multiplication_2"SLASH)) {
+    } else if (starts_with(path, "ok"SLASH"addition_with_multiplication_2"SLASH)) {
         CALL(grug_state, initialize, grug_number(10.0));
-    } else if (starts_with(grug_file_path, "ok"SLASH"and_false_1"SLASH)) {
+    } else if (starts_with(path, "ok"SLASH"and_false_1"SLASH)) {
         CALL(grug_state, initialize_bool, grug_bool(false));
-    } else if (starts_with(grug_file_path, "ok"SLASH"and_false_2"SLASH)) {
+    } else if (starts_with(path, "ok"SLASH"and_false_2"SLASH)) {
         CALL(grug_state, initialize_bool, grug_bool(false));
-    } else if (starts_with(grug_file_path, "ok"SLASH"and_false_3"SLASH)) {
+    } else if (starts_with(path, "ok"SLASH"and_false_3"SLASH)) {
         CALL(grug_state, initialize_bool, grug_bool(false));
-    } else if (starts_with(grug_file_path, "ok"SLASH"and_short_circuit"SLASH)) {
+    } else if (starts_with(path, "ok"SLASH"and_short_circuit"SLASH)) {
         CALL(grug_state, initialize_bool, grug_bool(false));
-    } else if (starts_with(grug_file_path, "ok"SLASH"and_true"SLASH)) {
+    } else if (starts_with(path, "ok"SLASH"and_true"SLASH)) {
         CALL(grug_state, initialize_bool, grug_bool(true));
-    } else if (starts_with(grug_file_path, "ok"SLASH"blocked_alrm"SLASH)) {
+    } else if (starts_with(path, "ok"SLASH"blocked_alrm"SLASH)) {
         CALL_ARGLESS(grug_state, blocked_alrm);
-    } else if (starts_with(grug_file_path, "ok"SLASH"bool_logical_not_false"SLASH)) {
+    } else if (starts_with(path, "ok"SLASH"bool_logical_not_false"SLASH)) {
         CALL(grug_state, initialize_bool, grug_bool(true));
-    } else if (starts_with(grug_file_path, "ok"SLASH"bool_logical_not_true"SLASH)) {
+    } else if (starts_with(path, "ok"SLASH"bool_logical_not_true"SLASH)) {
         CALL(grug_state, initialize_bool, grug_bool(false));
-    } else if (starts_with(grug_file_path, "ok"SLASH"bool_returned"SLASH)) {
+    } else if (starts_with(path, "ok"SLASH"bool_returned"SLASH)) {
         CALL_ARGLESS(grug_state, get_false);
         CALL(grug_state, set_is_happy, grug_bool(false));
-    } else if (starts_with(grug_file_path, "ok"SLASH"bool_returned_global"SLASH)) {
+    } else if (starts_with(path, "ok"SLASH"bool_returned_global"SLASH)) {
         CALL_ARGLESS(grug_state, get_false);
         CALL(grug_state, set_is_happy, grug_bool(false));
-    } else if (starts_with(grug_file_path, "ok"SLASH"bool_zero_extended_if_statement"SLASH)) {
+    } else if (starts_with(path, "ok"SLASH"bool_zero_extended_if_statement"SLASH)) {
         CALL_ARGLESS(grug_state, nothing);
         CALL_ARGLESS(grug_state, get_false);
         CALL_ARGLESS(grug_state, nothing);
-    } else if (starts_with(grug_file_path, "ok"SLASH"bool_zero_extended_while_statement"SLASH)) {
+    } else if (starts_with(path, "ok"SLASH"bool_zero_extended_while_statement"SLASH)) {
         CALL_ARGLESS(grug_state, nothing);
         CALL_ARGLESS(grug_state, get_false);
         CALL_ARGLESS(grug_state, nothing);
-    } else if (starts_with(grug_file_path, "ok"SLASH"break"SLASH)) {
+    } else if (starts_with(path, "ok"SLASH"break"SLASH)) {
         CALL_ARGLESS(grug_state, nothing);
         CALL_ARGLESS(grug_state, nothing);
         CALL_ARGLESS(grug_state, nothing);
-    } else if (starts_with(grug_file_path, "ok"SLASH"calls_100"SLASH)) {
+    } else if (starts_with(path, "ok"SLASH"calls_100"SLASH)) {
         for (size_t i = 0; i < 100; i++) {
             CALL_ARGLESS(grug_state, nothing);
         }
-    } else if (starts_with(grug_file_path, "ok"SLASH"calls_1000"SLASH)) {
+    } else if (starts_with(path, "ok"SLASH"calls_1000"SLASH)) {
         for (size_t i = 0; i < 1000; i++) {
             CALL_ARGLESS(grug_state, nothing);
         }
-    } else if (starts_with(grug_file_path, "ok"SLASH"calls_in_call"SLASH)) {
+    } else if (starts_with(path, "ok"SLASH"calls_in_call"SLASH)) {
         CALL(grug_state, max, grug_number(1.0), grug_number(2.0));
         CALL(grug_state, max, grug_number(3.0), grug_number(4.0));
         CALL(grug_state, max, grug_number(2.0), grug_number(4.0));
         CALL(grug_state, initialize, grug_number(4.0));
-    } else if (starts_with(grug_file_path, "ok"SLASH"comment_above_block"SLASH)) {
+    } else if (starts_with(path, "ok"SLASH"comment_above_block"SLASH)) {
         CALL_ARGLESS(grug_state, nothing);
-    } else if (starts_with(grug_file_path, "ok"SLASH"comment_above_block_twice"SLASH)) {
+    } else if (starts_with(path, "ok"SLASH"comment_above_block_twice"SLASH)) {
         CALL_ARGLESS(grug_state, nothing);
-    } else if (starts_with(grug_file_path, "ok"SLASH"comment_above_helper_fn"SLASH)) {
+    } else if (starts_with(path, "ok"SLASH"comment_above_helper_fn"SLASH)) {
         CALL_ARGLESS(grug_state, nothing);
-    } else if (starts_with(grug_file_path, "ok"SLASH"comment_above_on_fn"SLASH)) {
+    } else if (starts_with(path, "ok"SLASH"comment_above_on_fn"SLASH)) {
         CALL_ARGLESS(grug_state, nothing);
-    } else if (starts_with(grug_file_path, "ok"SLASH"comment_between_statements"SLASH)) {
-        CALL_ARGLESS(grug_state, nothing);
-        CALL_ARGLESS(grug_state, nothing);
-    } else if (starts_with(grug_file_path, "ok"SLASH"comment_lone_block"SLASH)) {
-        CALL_ARGLESS(grug_state, nothing);
-    } else if (starts_with(grug_file_path, "ok"SLASH"comment_lone_block_at_end"SLASH)) {
-        CALL_ARGLESS(grug_state, nothing);
-    } else if (starts_with(grug_file_path, "ok"SLASH"comment_lone_global"SLASH)) {
-        CALL_ARGLESS(grug_state, nothing);
-    } else if (starts_with(grug_file_path, "ok"SLASH"continue"SLASH)) {
+    } else if (starts_with(path, "ok"SLASH"comment_between_statements"SLASH)) {
         CALL_ARGLESS(grug_state, nothing);
         CALL_ARGLESS(grug_state, nothing);
-    } else if (starts_with(grug_file_path, "ok"SLASH"custom_id_decays_to_id"SLASH)) {
+    } else if (starts_with(path, "ok"SLASH"comment_lone_block"SLASH)) {
+        CALL_ARGLESS(grug_state, nothing);
+    } else if (starts_with(path, "ok"SLASH"comment_lone_block_at_end"SLASH)) {
+        CALL_ARGLESS(grug_state, nothing);
+    } else if (starts_with(path, "ok"SLASH"comment_lone_global"SLASH)) {
+        CALL_ARGLESS(grug_state, nothing);
+    } else if (starts_with(path, "ok"SLASH"continue"SLASH)) {
+        CALL_ARGLESS(grug_state, nothing);
+        CALL_ARGLESS(grug_state, nothing);
+    } else if (starts_with(path, "ok"SLASH"custom_id_decays_to_id"SLASH)) {
         CALL(grug_state, store, grug_id(42));
-    } else if (starts_with(grug_file_path, "ok"SLASH"custom_id_transfer_between_globals"SLASH)) {
+    } else if (starts_with(path, "ok"SLASH"custom_id_transfer_between_globals"SLASH)) {
         CALL(grug_state, set_opponent, grug_id(69));
-    } else if (starts_with(grug_file_path, "ok"SLASH"division_negative_result"SLASH)) {
+    } else if (starts_with(path, "ok"SLASH"division_negative_result"SLASH)) {
         CALL(grug_state, initialize, grug_number(-2.5));
-    } else if (starts_with(grug_file_path, "ok"SLASH"division_positive_result"SLASH)) {
+    } else if (starts_with(path, "ok"SLASH"division_positive_result"SLASH)) {
         CALL(grug_state, initialize, grug_number(2.5));
-    } else if (starts_with(grug_file_path, "ok"SLASH"double_negation_with_parentheses"SLASH)) {
+    } else if (starts_with(path, "ok"SLASH"double_negation_with_parentheses"SLASH)) {
         CALL(grug_state, initialize, grug_number(2.0));
-    } else if (starts_with(grug_file_path, "ok"SLASH"double_not_with_parentheses"SLASH)) {
+    } else if (starts_with(path, "ok"SLASH"double_not_with_parentheses"SLASH)) {
         CALL(grug_state, initialize_bool, grug_bool(true));
-    } else if (starts_with(grug_file_path, "ok"SLASH"else_after_else_if_false"SLASH)) {
+    } else if (starts_with(path, "ok"SLASH"else_after_else_if_false"SLASH)) {
         CALL_ARGLESS(grug_state, nothing);
         CALL_ARGLESS(grug_state, nothing);
-    } else if (starts_with(grug_file_path, "ok"SLASH"else_after_else_if_true"SLASH)) {
-        CALL_ARGLESS(grug_state, nothing);
-        CALL_ARGLESS(grug_state, nothing);
-        CALL_ARGLESS(grug_state, nothing);
-    } else if (starts_with(grug_file_path, "ok"SLASH"else_false"SLASH)) {
-        CALL_ARGLESS(grug_state, nothing);
-        CALL_ARGLESS(grug_state, nothing);
-    } else if (starts_with(grug_file_path, "ok"SLASH"else_if_false"SLASH)) {
-        CALL_ARGLESS(grug_state, nothing);
-        CALL_ARGLESS(grug_state, nothing);
-    } else if (starts_with(grug_file_path, "ok"SLASH"else_if_true"SLASH)) {
+    } else if (starts_with(path, "ok"SLASH"else_after_else_if_true"SLASH)) {
         CALL_ARGLESS(grug_state, nothing);
         CALL_ARGLESS(grug_state, nothing);
         CALL_ARGLESS(grug_state, nothing);
-    } else if (starts_with(grug_file_path, "ok"SLASH"else_true"SLASH)) {
+    } else if (starts_with(path, "ok"SLASH"else_false"SLASH)) {
+        CALL_ARGLESS(grug_state, nothing);
+        CALL_ARGLESS(grug_state, nothing);
+    } else if (starts_with(path, "ok"SLASH"else_if_false"SLASH)) {
+        CALL_ARGLESS(grug_state, nothing);
+        CALL_ARGLESS(grug_state, nothing);
+    } else if (starts_with(path, "ok"SLASH"else_if_true"SLASH)) {
         CALL_ARGLESS(grug_state, nothing);
         CALL_ARGLESS(grug_state, nothing);
         CALL_ARGLESS(grug_state, nothing);
-    } else if (starts_with(grug_file_path, "ok"SLASH"empty_line"SLASH)) {
+    } else if (starts_with(path, "ok"SLASH"else_true"SLASH)) {
         CALL_ARGLESS(grug_state, nothing);
         CALL_ARGLESS(grug_state, nothing);
-    } else if (starts_with(grug_file_path, "ok"SLASH"entity_and_resource_as_subexpression"SLASH)) {
+        CALL_ARGLESS(grug_state, nothing);
+    } else if (starts_with(path, "ok"SLASH"empty_line"SLASH)) {
+        CALL_ARGLESS(grug_state, nothing);
+        CALL_ARGLESS(grug_state, nothing);
+    } else if (starts_with(path, "ok"SLASH"entity_and_resource_as_subexpression"SLASH)) {
         CALL(grug_state, initialize_bool,
             grug_bool(
                 CALL(grug_state, has_resource, grug_string("ok"SLASH"entity_and_resource_as_subexpression/foo.txt"))._bool
@@ -319,366 +335,366 @@ static void call_export_fn(struct grug_state* grug_state, struct grug_file_id* f
                 && CALL(grug_state, has_entity, grug_string("ok:baz"))._bool
             )
         );
-    } else if (starts_with(grug_file_path, "ok"SLASH"entity_duplicate"SLASH)) {
+    } else if (starts_with(path, "ok"SLASH"entity_duplicate"SLASH)) {
         CALL(grug_state, spawn, grug_string("ok:foo"));
         CALL(grug_state, spawn, grug_string("ok:bar"));
         CALL(grug_state, spawn, grug_string("ok:bar"));
         CALL(grug_state, spawn, grug_string("ok:baz"));
-    } else if (starts_with(grug_file_path, "ok"SLASH"entity_in_on_fn"SLASH)) {
+    } else if (starts_with(path, "ok"SLASH"entity_in_on_fn"SLASH)) {
         CALL(grug_state, spawn, grug_string("ok:foo"));
-    } else if (starts_with(grug_file_path, "ok"SLASH"entity_in_on_fn_with_mod_specified"SLASH)) {
+    } else if (starts_with(path, "ok"SLASH"entity_in_on_fn_with_mod_specified"SLASH)) {
         CALL(grug_state, spawn, grug_string("wow:foo"));
-    } else if (starts_with(grug_file_path, "ok"SLASH"eq_false"SLASH)) {
+    } else if (starts_with(path, "ok"SLASH"eq_false"SLASH)) {
         CALL(grug_state, initialize_bool, grug_bool(false));
-    } else if (starts_with(grug_file_path, "ok"SLASH"eq_true"SLASH)) {
+    } else if (starts_with(path, "ok"SLASH"eq_true"SLASH)) {
         CALL(grug_state, initialize_bool, grug_bool(true));
-    } else if (starts_with(grug_file_path, "ok"SLASH"f32_addition"SLASH)) {
+    } else if (starts_with(path, "ok"SLASH"f32_addition"SLASH)) {
         CALL(grug_state, sin, grug_number(6.0));
-    } else if (starts_with(grug_file_path, "ok"SLASH"f32_argument"SLASH)) {
+    } else if (starts_with(path, "ok"SLASH"f32_argument"SLASH)) {
         CALL(grug_state, sin, grug_number(4.0));
-    } else if (starts_with(grug_file_path, "ok"SLASH"f32_division"SLASH)) {
+    } else if (starts_with(path, "ok"SLASH"f32_division"SLASH)) {
         CALL(grug_state, sin, grug_number(0.5));
-    } else if (starts_with(grug_file_path, "ok"SLASH"f32_eq_false"SLASH)) {
+    } else if (starts_with(path, "ok"SLASH"f32_eq_false"SLASH)) {
         CALL(grug_state, initialize_bool, grug_bool(false));
-    } else if (starts_with(grug_file_path, "ok"SLASH"f32_eq_true"SLASH)) {
+    } else if (starts_with(path, "ok"SLASH"f32_eq_true"SLASH)) {
         CALL(grug_state, initialize_bool, grug_bool(true));
-    } else if (starts_with(grug_file_path, "ok"SLASH"f32_ge_false"SLASH)) {
+    } else if (starts_with(path, "ok"SLASH"f32_ge_false"SLASH)) {
         CALL(grug_state, initialize_bool, grug_bool(false));
-    } else if (starts_with(grug_file_path, "ok"SLASH"f32_ge_true_1"SLASH)) {
+    } else if (starts_with(path, "ok"SLASH"f32_ge_true_1"SLASH)) {
         CALL(grug_state, initialize_bool, grug_bool(true));
-    } else if (starts_with(grug_file_path, "ok"SLASH"f32_ge_true_2"SLASH)) {
+    } else if (starts_with(path, "ok"SLASH"f32_ge_true_2"SLASH)) {
         CALL(grug_state, initialize_bool, grug_bool(true));
-    } else if (starts_with(grug_file_path, "ok"SLASH"f32_global_variable"SLASH)) {
+    } else if (starts_with(path, "ok"SLASH"f32_global_variable"SLASH)) {
         CALL(grug_state, sin, grug_number(4.0));
-    } else if (starts_with(grug_file_path, "ok"SLASH"f32_gt_false"SLASH)) {
+    } else if (starts_with(path, "ok"SLASH"f32_gt_false"SLASH)) {
         CALL(grug_state, initialize_bool, grug_bool(false));
-    } else if (starts_with(grug_file_path, "ok"SLASH"f32_gt_true"SLASH)) {
+    } else if (starts_with(path, "ok"SLASH"f32_gt_true"SLASH)) {
         CALL(grug_state, initialize_bool, grug_bool(true));
-    } else if (starts_with(grug_file_path, "ok"SLASH"f32_le_false"SLASH)) {
+    } else if (starts_with(path, "ok"SLASH"f32_le_false"SLASH)) {
         CALL(grug_state, initialize_bool, grug_bool(false));
-    } else if (starts_with(grug_file_path, "ok"SLASH"f32_le_true_1"SLASH)) {
+    } else if (starts_with(path, "ok"SLASH"f32_le_true_1"SLASH)) {
         CALL(grug_state, initialize_bool, grug_bool(true));
-    } else if (starts_with(grug_file_path, "ok"SLASH"f32_le_true_2"SLASH)) {
+    } else if (starts_with(path, "ok"SLASH"f32_le_true_2"SLASH)) {
         CALL(grug_state, initialize_bool, grug_bool(true));
-    } else if (starts_with(grug_file_path, "ok"SLASH"f32_local_variable"SLASH)) {
+    } else if (starts_with(path, "ok"SLASH"f32_local_variable"SLASH)) {
         CALL(grug_state, sin, grug_number(4.0));
-    } else if (starts_with(grug_file_path, "ok"SLASH"f32_lt_false"SLASH)) {
+    } else if (starts_with(path, "ok"SLASH"f32_lt_false"SLASH)) {
         CALL(grug_state, initialize_bool, grug_bool(false));
-    } else if (starts_with(grug_file_path, "ok"SLASH"f32_lt_true"SLASH)) {
+    } else if (starts_with(path, "ok"SLASH"f32_lt_true"SLASH)) {
         CALL(grug_state, initialize_bool, grug_bool(true));
-    } else if (starts_with(grug_file_path, "ok"SLASH"f32_multiplication"SLASH)) {
+    } else if (starts_with(path, "ok"SLASH"f32_multiplication"SLASH)) {
         CALL(grug_state, sin, grug_number(8.0));
-    } else if (starts_with(grug_file_path, "ok"SLASH"f32_ne_false"SLASH)) {
+    } else if (starts_with(path, "ok"SLASH"f32_ne_false"SLASH)) {
         CALL(grug_state, initialize_bool, grug_bool(false));
-    } else if (starts_with(grug_file_path, "ok"SLASH"f32_negated"SLASH)) {
+    } else if (starts_with(path, "ok"SLASH"f32_negated"SLASH)) {
         CALL(grug_state, sin, grug_number(-4.0));
-    } else if (starts_with(grug_file_path, "ok"SLASH"f32_ne_true"SLASH)) {
+    } else if (starts_with(path, "ok"SLASH"f32_ne_true"SLASH)) {
         CALL(grug_state, initialize_bool, grug_bool(true));
-    } else if (starts_with(grug_file_path, "ok"SLASH"f32_passed_to_helper_fn"SLASH)) {
+    } else if (starts_with(path, "ok"SLASH"f32_passed_to_helper_fn"SLASH)) {
         CALL(grug_state, sin, grug_number(42.0));
-    } else if (starts_with(grug_file_path, "ok"SLASH"f32_passed_to_on_fn"SLASH)) {
+    } else if (starts_with(path, "ok"SLASH"f32_passed_to_on_fn"SLASH)) {
         CALL(grug_state, sin, grug_number(42.0));
-    } else if (starts_with(grug_file_path, "ok"SLASH"f32_passing_sin_to_cos"SLASH)) {
+    } else if (starts_with(path, "ok"SLASH"f32_passing_sin_to_cos"SLASH)) {
         CALL(grug_state, cos, CALL(grug_state, sin, grug_number(4.0)));
-    } else if (starts_with(grug_file_path, "ok"SLASH"f32_subtraction"SLASH)) {
+    } else if (starts_with(path, "ok"SLASH"f32_subtraction"SLASH)) {
         CALL(grug_state, sin, grug_number(-2.0));
-    } else if (starts_with(grug_file_path, "ok"SLASH"fibonacci"SLASH)) {
+    } else if (starts_with(path, "ok"SLASH"fibonacci"SLASH)) {
         CALL(grug_state, initialize, grug_number(55.0));
-    } else if (starts_with(grug_file_path, "ok"SLASH"ge_false"SLASH)) {
+    } else if (starts_with(path, "ok"SLASH"ge_false"SLASH)) {
         CALL(grug_state, initialize_bool, grug_bool(false));
-    } else if (starts_with(grug_file_path, "ok"SLASH"ge_true_1"SLASH)) {
+    } else if (starts_with(path, "ok"SLASH"ge_true_1"SLASH)) {
         CALL(grug_state, initialize_bool, grug_bool(true));
-    } else if (starts_with(grug_file_path, "ok"SLASH"ge_true_2"SLASH)) {
+    } else if (starts_with(path, "ok"SLASH"ge_true_2"SLASH)) {
         CALL(grug_state, initialize_bool, grug_bool(true));
-    } else if (starts_with(grug_file_path, "ok"SLASH"global_call_using_me"SLASH"")) {
+    } else if (starts_with(path, "ok"SLASH"global_call_using_me"SLASH"")) {
         CALL(grug_state, set_position, grug_id(1337));
-    } else if (starts_with(grug_file_path, "ok"SLASH"global_can_use_earlier_global"SLASH)) {
+    } else if (starts_with(path, "ok"SLASH"global_can_use_earlier_global"SLASH)) {
         CALL(grug_state, initialize, grug_number(5.0));
-    } else if (starts_with(grug_file_path, "ok"SLASH"global_containing_negation"SLASH)) {
+    } else if (starts_with(path, "ok"SLASH"global_containing_negation"SLASH)) {
         CALL(grug_state, initialize, grug_number(-2.0));
-    } else if (starts_with(grug_file_path, "ok"SLASH"global_id"SLASH)) {
+    } else if (starts_with(path, "ok"SLASH"global_id"SLASH)) {
         CALL(grug_state, set_opponent, grug_id(69));
-    } else if (starts_with(grug_file_path, "ok"SLASH"global_parentheses"SLASH)) {
+    } else if (starts_with(path, "ok"SLASH"global_parentheses"SLASH)) {
         CALL(grug_state, initialize, grug_number(14.0));
-    } else if (starts_with(grug_file_path, "ok"SLASH"globals"SLASH)) {
+    } else if (starts_with(path, "ok"SLASH"globals"SLASH)) {
         CALL(grug_state, initialize, grug_number(420.0));
         CALL(grug_state, initialize, grug_number(1337.0));
-    } else if (starts_with(grug_file_path, "ok"SLASH"gt_false"SLASH)) {
+    } else if (starts_with(path, "ok"SLASH"gt_false"SLASH)) {
         CALL(grug_state, initialize_bool, grug_bool(false));
-    } else if (starts_with(grug_file_path, "ok"SLASH"gt_true"SLASH)) {
+    } else if (starts_with(path, "ok"SLASH"gt_true"SLASH)) {
         CALL(grug_state, initialize_bool, grug_bool(true));
-    } else if (starts_with(grug_file_path, "ok"SLASH"helper_fn"SLASH)) {
+    } else if (starts_with(path, "ok"SLASH"helper_fn"SLASH)) {
         CALL_ARGLESS(grug_state, nothing);
-    } else if (starts_with(grug_file_path, "ok"SLASH"helper_fn_called_in_if"SLASH)) {
+    } else if (starts_with(path, "ok"SLASH"helper_fn_called_in_if"SLASH)) {
         CALL_ARGLESS(grug_state, nothing);
-    } else if (starts_with(grug_file_path, "ok"SLASH"helper_fn_called_indirectly"SLASH)) {
+    } else if (starts_with(path, "ok"SLASH"helper_fn_called_indirectly"SLASH)) {
         CALL_ARGLESS(grug_state, nothing);
-    } else if (starts_with(grug_file_path, "ok"SLASH"helper_fn_overwriting_param"SLASH)) {
+    } else if (starts_with(path, "ok"SLASH"helper_fn_overwriting_param"SLASH)) {
         CALL(grug_state, initialize, grug_number(20.0));
         CALL(grug_state, sin, grug_number(30.0));
-    } else if (starts_with(grug_file_path, "ok"SLASH"helper_fn_returning_void_has_no_return"SLASH)) {
+    } else if (starts_with(path, "ok"SLASH"helper_fn_returning_void_has_no_return"SLASH)) {
         CALL_ARGLESS(grug_state, nothing);
         CALL_ARGLESS(grug_state, nothing);
-    } else if (starts_with(grug_file_path, "ok"SLASH"helper_fn_returning_void_returns_void"SLASH)) {
+    } else if (starts_with(path, "ok"SLASH"helper_fn_returning_void_returns_void"SLASH)) {
         CALL_ARGLESS(grug_state, nothing);
         CALL_ARGLESS(grug_state, nothing);
-    } else if (starts_with(grug_file_path, "ok"SLASH"helper_fn_same_param_name_as_on_fn"SLASH)) {
+    } else if (starts_with(path, "ok"SLASH"helper_fn_same_param_name_as_on_fn"SLASH)) {
         CALL_ARGLESS(grug_state, nothing);
-    } else if (starts_with(grug_file_path, "ok"SLASH"helper_fn_same_param_name_as_other_helper_fn"SLASH)) {
+    } else if (starts_with(path, "ok"SLASH"helper_fn_same_param_name_as_other_helper_fn"SLASH)) {
         CALL_ARGLESS(grug_state, nothing);
         CALL_ARGLESS(grug_state, nothing);
-    } else if (starts_with(grug_file_path, "ok"SLASH"i32_max"SLASH)) {
+    } else if (starts_with(path, "ok"SLASH"i32_max"SLASH)) {
         CALL(grug_state, initialize, grug_number(2147483647.0));
-    } else if (starts_with(grug_file_path, "ok"SLASH"i32_min"SLASH)) {
+    } else if (starts_with(path, "ok"SLASH"i32_min"SLASH)) {
         CALL(grug_state, initialize, grug_number(-2147483648.0));
-    } else if (starts_with(grug_file_path, "ok"SLASH"i32_negated"SLASH)) {
+    } else if (starts_with(path, "ok"SLASH"i32_negated"SLASH)) {
         CALL(grug_state, initialize, grug_number(-42.0));
-    } else if (starts_with(grug_file_path, "ok"SLASH"i32_negative_is_smaller_than_positive"SLASH)) {
+    } else if (starts_with(path, "ok"SLASH"i32_negative_is_smaller_than_positive"SLASH)) {
         CALL(grug_state, initialize_bool, grug_bool(true));
-    } else if (starts_with(grug_file_path, "ok"SLASH"id_binary_expr_false"SLASH)) {
+    } else if (starts_with(path, "ok"SLASH"id_binary_expr_false"SLASH)) {
         CALL(grug_state, initialize_bool, grug_bool(false));
-    } else if (starts_with(grug_file_path, "ok"SLASH"id_binary_expr_true"SLASH)) {
+    } else if (starts_with(path, "ok"SLASH"id_binary_expr_true"SLASH)) {
         CALL(grug_state, initialize_bool, grug_bool(true));
-    } else if (starts_with(grug_file_path, "ok"SLASH"id_eq_1"SLASH)) {
+    } else if (starts_with(path, "ok"SLASH"id_eq_1"SLASH)) {
         CALL_ARGLESS(grug_state, retrieve);
         CALL(grug_state, initialize_bool, grug_bool(false));
-    } else if (starts_with(grug_file_path, "ok"SLASH"id_eq_2"SLASH)) {
+    } else if (starts_with(path, "ok"SLASH"id_eq_2"SLASH)) {
         CALL_ARGLESS(grug_state, retrieve);
         CALL(grug_state, initialize_bool, grug_bool(false));
-    } else if (starts_with(grug_file_path, "ok"SLASH"id_global_with_id_to_new_id"SLASH)) {
+    } else if (starts_with(path, "ok"SLASH"id_global_with_id_to_new_id"SLASH)) {
         CALL(grug_state, store, grug_id(123));
-    } else if (starts_with(grug_file_path, "ok"SLASH"id_global_with_opponent_to_new_id"SLASH)) {
+    } else if (starts_with(path, "ok"SLASH"id_global_with_opponent_to_new_id"SLASH)) {
         CALL(grug_state, store, grug_id(69));
-    } else if (starts_with(grug_file_path, "ok"SLASH"id_helper_fn_param"SLASH)) {
+    } else if (starts_with(path, "ok"SLASH"id_helper_fn_param"SLASH)) {
         CALL(grug_state, store, CALL_ARGLESS(grug_state, retrieve));
-    } else if (starts_with(grug_file_path, "ok"SLASH"id_local_variable_get_and_set"SLASH)) {
+    } else if (starts_with(path, "ok"SLASH"id_local_variable_get_and_set"SLASH)) {
         CALL(grug_state, set_opponent, CALL_ARGLESS(grug_state, get_opponent));
-    } else if (starts_with(grug_file_path, "ok"SLASH"id_ne_1"SLASH)) {
+    } else if (starts_with(path, "ok"SLASH"id_ne_1"SLASH)) {
         CALL_ARGLESS(grug_state, retrieve);
         CALL(grug_state, initialize_bool, grug_bool(true));
-    } else if (starts_with(grug_file_path, "ok"SLASH"id_ne_2"SLASH)) {
+    } else if (starts_with(path, "ok"SLASH"id_ne_2"SLASH)) {
         CALL_ARGLESS(grug_state, retrieve);
         CALL(grug_state, initialize_bool, grug_bool(true));
-    } else if (starts_with(grug_file_path, "ok"SLASH"id_on_fn_param"SLASH)) {
+    } else if (starts_with(path, "ok"SLASH"id_on_fn_param"SLASH)) {
         CALL(grug_state, store, args[0]);
-    } else if (starts_with(grug_file_path, "ok"SLASH"id_returned_from_helper"SLASH)) {
+    } else if (starts_with(path, "ok"SLASH"id_returned_from_helper"SLASH)) {
         CALL(grug_state, store, grug_id(42));
-    } else if (starts_with(grug_file_path, "ok"SLASH"id_with_d_to_new_id_and_id_to_old_id"SLASH)) {
+    } else if (starts_with(path, "ok"SLASH"id_with_d_to_new_id_and_id_to_old_id"SLASH)) {
         CALL(grug_state, store, CALL_ARGLESS(grug_state, retrieve));
-    } else if (starts_with(grug_file_path, "ok"SLASH"id_with_d_to_old_id"SLASH)) {
+    } else if (starts_with(path, "ok"SLASH"id_with_d_to_old_id"SLASH)) {
         CALL(grug_state, store, grug_id(42));
-    } else if (starts_with(grug_file_path, "ok"SLASH"id_with_id_to_new_id"SLASH)) {
+    } else if (starts_with(path, "ok"SLASH"id_with_id_to_new_id"SLASH)) {
         CALL(grug_state, store, CALL_ARGLESS(grug_state, retrieve));
-    } else if (starts_with(grug_file_path, "ok"SLASH"if_false"SLASH)) {
+    } else if (starts_with(path, "ok"SLASH"if_false"SLASH)) {
         CALL_ARGLESS(grug_state, nothing);
         CALL_ARGLESS(grug_state, nothing);
-    } else if (starts_with(grug_file_path, "ok"SLASH"if_true"SLASH)) {
+    } else if (starts_with(path, "ok"SLASH"if_true"SLASH)) {
         CALL_ARGLESS(grug_state, nothing);
         CALL_ARGLESS(grug_state, nothing);
         CALL_ARGLESS(grug_state, nothing);
-    } else if (starts_with(grug_file_path, "ok"SLASH"le_false"SLASH)) {
+    } else if (starts_with(path, "ok"SLASH"le_false"SLASH)) {
         CALL(grug_state, initialize_bool, grug_bool(false));
-    } else if (starts_with(grug_file_path, "ok"SLASH"le_true_1"SLASH)) {
+    } else if (starts_with(path, "ok"SLASH"le_true_1"SLASH)) {
         CALL(grug_state, initialize_bool, grug_bool(true));
-    } else if (starts_with(grug_file_path, "ok"SLASH"le_true_2"SLASH)) {
+    } else if (starts_with(path, "ok"SLASH"le_true_2"SLASH)) {
         CALL(grug_state, initialize_bool, grug_bool(true));
-    } else if (starts_with(grug_file_path, "ok"SLASH"local_id_can_be_reassigned"SLASH)) {
+    } else if (starts_with(path, "ok"SLASH"local_id_can_be_reassigned"SLASH)) {
         CALL_ARGLESS(grug_state, get_opponent);
         CALL_ARGLESS(grug_state, get_opponent);
-    } else if (starts_with(grug_file_path, "ok"SLASH"lt_false"SLASH)) {
+    } else if (starts_with(path, "ok"SLASH"lt_false"SLASH)) {
         CALL(grug_state, initialize_bool, grug_bool(false));
-    } else if (starts_with(grug_file_path, "ok"SLASH"lt_true"SLASH)) {
+    } else if (starts_with(path, "ok"SLASH"lt_true"SLASH)) {
         CALL(grug_state, initialize_bool, grug_bool(true));
-    } else if (starts_with(grug_file_path, "ok"SLASH"max_args"SLASH)) {
+    } else if (starts_with(path, "ok"SLASH"max_args"SLASH)) {
         CALL(grug_state, mega, grug_number(1.0), grug_number(21.0), grug_bool(true), grug_number(2.0), grug_number(3.0), grug_number(4.0), grug_bool(false), grug_number(1337.0), grug_number(5.0), grug_number(6.0), grug_number(7.0), grug_number(8.0), grug_id(42), grug_string("foo"));
-    } else if (starts_with(grug_file_path, "ok"SLASH"me"SLASH"")) {
+    } else if (starts_with(path, "ok"SLASH"me"SLASH"")) {
         CALL(grug_state, set_d, grug_id(42));
-    } else if (starts_with(grug_file_path, "ok"SLASH"me_assigned_to_local_variable"SLASH)) {
+    } else if (starts_with(path, "ok"SLASH"me_assigned_to_local_variable"SLASH)) {
         CALL(grug_state, set_d, grug_id(42));
-    } else if (starts_with(grug_file_path, "ok"SLASH"me_passed_to_helper_fn"SLASH)) {
+    } else if (starts_with(path, "ok"SLASH"me_passed_to_helper_fn"SLASH)) {
         CALL(grug_state, set_d, grug_id(42));
-    } else if (starts_with(grug_file_path, "ok"SLASH"multiplication_as_two_arguments"SLASH)) {
+    } else if (starts_with(path, "ok"SLASH"multiplication_as_two_arguments"SLASH)) {
         CALL(grug_state, max, grug_number(6.0), grug_number(20.0));
-    } else if (starts_with(grug_file_path, "ok"SLASH"ne_false"SLASH)) {
+    } else if (starts_with(path, "ok"SLASH"ne_false"SLASH)) {
         CALL(grug_state, initialize_bool, grug_bool(false));
-    } else if (starts_with(grug_file_path, "ok"SLASH"ne_true"SLASH)) {
+    } else if (starts_with(path, "ok"SLASH"ne_true"SLASH)) {
         CALL(grug_state, initialize_bool, grug_bool(true));
-    } else if (starts_with(grug_file_path, "ok"SLASH"negate_parenthesized_expr"SLASH)) {
+    } else if (starts_with(path, "ok"SLASH"negate_parenthesized_expr"SLASH)) {
         CALL(grug_state, initialize, grug_number(-5.0));
-    } else if (starts_with(grug_file_path, "ok"SLASH"negative_literal"SLASH)) {
+    } else if (starts_with(path, "ok"SLASH"negative_literal"SLASH)) {
         CALL(grug_state, initialize, grug_number(-42.0));
-    } else if (starts_with(grug_file_path, "ok"SLASH"nested_break"SLASH)) {
+    } else if (starts_with(path, "ok"SLASH"nested_break"SLASH)) {
         CALL_ARGLESS(grug_state, nothing);
         CALL_ARGLESS(grug_state, nothing);
         CALL_ARGLESS(grug_state, nothing);
-    } else if (starts_with(grug_file_path, "ok"SLASH"nested_continue"SLASH)) {
+    } else if (starts_with(path, "ok"SLASH"nested_continue"SLASH)) {
         CALL_ARGLESS(grug_state, nothing);
         CALL_ARGLESS(grug_state, nothing);
-    } else if (starts_with(grug_file_path, "ok"SLASH"no_empty_line_between_statements"SLASH)) {
+    } else if (starts_with(path, "ok"SLASH"no_empty_line_between_statements"SLASH)) {
         CALL_ARGLESS(grug_state, nothing);
         CALL_ARGLESS(grug_state, nothing);
-    } else if (starts_with(grug_file_path, "ok"SLASH"on_fn"SLASH)) {
+    } else if (starts_with(path, "ok"SLASH"on_fn"SLASH)) {
         CALL_ARGLESS(grug_state, nothing);
-    } else if (starts_with(grug_file_path, "ok"SLASH"on_fn_calling_game_fn_nothing"SLASH)) {
+    } else if (starts_with(path, "ok"SLASH"on_fn_calling_game_fn_nothing"SLASH)) {
         CALL_ARGLESS(grug_state, nothing);
-    } else if (starts_with(grug_file_path, "ok"SLASH"on_fn_calling_game_fn_nothing_twice"SLASH)) {
+    } else if (starts_with(path, "ok"SLASH"on_fn_calling_game_fn_nothing_twice"SLASH)) {
         CALL_ARGLESS(grug_state, nothing);
         CALL_ARGLESS(grug_state, nothing);
-    } else if (starts_with(grug_file_path, "ok"SLASH"on_fn_calling_game_fn_plt_order"SLASH)) {
+    } else if (starts_with(path, "ok"SLASH"on_fn_calling_game_fn_plt_order"SLASH)) {
         CALL_ARGLESS(grug_state, nothing);
         CALL_ARGLESS(grug_state, magic);
         CALL(grug_state, initialize, grug_number(42.0));
         CALL(grug_state, identity, grug_number(69.0));
         CALL(grug_state, max, grug_number(1337.0), grug_number(8192.0));
-    } else if (starts_with(grug_file_path, "ok"SLASH"on_fn_calling_helper_fns"SLASH)) {
+    } else if (starts_with(path, "ok"SLASH"on_fn_calling_helper_fns"SLASH)) {
         CALL_ARGLESS(grug_state, nothing);
         CALL(grug_state, initialize, grug_number(42.0));
-    } else if (starts_with(grug_file_path, "ok"SLASH"on_fn_calling_no_game_fn"SLASH)) {
-    } else if (starts_with(grug_file_path, "ok"SLASH"on_fn_calling_no_game_fn_but_with_addition"SLASH)) {
-    } else if (starts_with(grug_file_path, "ok"SLASH"on_fn_calling_no_game_fn_but_with_global"SLASH)) {
-    } else if (starts_with(grug_file_path, "ok"SLASH"on_fn_overwriting_param"SLASH)) {
+    } else if (starts_with(path, "ok"SLASH"on_fn_calling_no_game_fn"SLASH)) {
+    } else if (starts_with(path, "ok"SLASH"on_fn_calling_no_game_fn_but_with_addition"SLASH)) {
+    } else if (starts_with(path, "ok"SLASH"on_fn_calling_no_game_fn_but_with_global"SLASH)) {
+    } else if (starts_with(path, "ok"SLASH"on_fn_overwriting_param"SLASH)) {
         CALL(grug_state, initialize, grug_number(20.0));
         CALL(grug_state, sin, grug_number(30));
-    } else if (starts_with(grug_file_path, "ok"SLASH"on_fn_passing_argument_to_helper_fn"SLASH)) {
+    } else if (starts_with(path, "ok"SLASH"on_fn_passing_argument_to_helper_fn"SLASH)) {
         CALL(grug_state, initialize, grug_number(42.0));
-    } else if (starts_with(grug_file_path, "ok"SLASH"on_fn_passing_magic_to_initialize"SLASH)) {
+    } else if (starts_with(path, "ok"SLASH"on_fn_passing_magic_to_initialize"SLASH)) {
         CALL(grug_state, initialize, CALL_ARGLESS(grug_state, magic));
-    } else if (starts_with(grug_file_path, "ok"SLASH"on_fn_three"SLASH)) {
+    } else if (starts_with(path, "ok"SLASH"on_fn_three"SLASH)) {
         CALL_ARGLESS(grug_state, nothing);
-    } else if (starts_with(grug_file_path, "ok"SLASH"on_fn_three_unused_first"SLASH)) {
+    } else if (starts_with(path, "ok"SLASH"on_fn_three_unused_first"SLASH)) {
         CALL_ARGLESS(grug_state, nothing);
-    } else if (starts_with(grug_file_path, "ok"SLASH"on_fn_three_unused_second"SLASH)) {
+    } else if (starts_with(path, "ok"SLASH"on_fn_three_unused_second"SLASH)) {
         CALL_ARGLESS(grug_state, nothing);
-    } else if (starts_with(grug_file_path, "ok"SLASH"on_fn_three_unused_third"SLASH)) {
+    } else if (starts_with(path, "ok"SLASH"on_fn_three_unused_third"SLASH)) {
         CALL_ARGLESS(grug_state, nothing);
-    } else if (starts_with(grug_file_path, "ok"SLASH"or_false"SLASH)) {
+    } else if (starts_with(path, "ok"SLASH"or_false"SLASH)) {
         CALL(grug_state, initialize_bool, grug_bool(false));
-    } else if (starts_with(grug_file_path, "ok"SLASH"or_short_circuit"SLASH)) {
+    } else if (starts_with(path, "ok"SLASH"or_short_circuit"SLASH)) {
         CALL(grug_state, initialize_bool, grug_bool(true));
-    } else if (starts_with(grug_file_path, "ok"SLASH"or_true_1"SLASH)) {
+    } else if (starts_with(path, "ok"SLASH"or_true_1"SLASH)) {
         CALL(grug_state, initialize_bool, grug_bool(true));
-    } else if (starts_with(grug_file_path, "ok"SLASH"or_true_2"SLASH)) {
+    } else if (starts_with(path, "ok"SLASH"or_true_2"SLASH)) {
         CALL(grug_state, initialize_bool, grug_bool(true));
-    } else if (starts_with(grug_file_path, "ok"SLASH"or_true_3"SLASH)) {
+    } else if (starts_with(path, "ok"SLASH"or_true_3"SLASH)) {
         CALL(grug_state, initialize_bool, grug_bool(true));
-    } else if (starts_with(grug_file_path, "ok"SLASH"pass_string_argument_to_game_fn"SLASH)) {
+    } else if (starts_with(path, "ok"SLASH"pass_string_argument_to_game_fn"SLASH)) {
         CALL(grug_state, say, grug_string("foo"));
-    } else if (starts_with(grug_file_path, "ok"SLASH"pass_string_argument_to_helper_fn"SLASH)) {
+    } else if (starts_with(path, "ok"SLASH"pass_string_argument_to_helper_fn"SLASH)) {
         CALL(grug_state, say, grug_string("foo"));
-    } else if (starts_with(grug_file_path, "ok"SLASH"print_csv"SLASH)) {
+    } else if (starts_with(path, "ok"SLASH"print_csv"SLASH)) {
         CALL(grug_state, print_csv, grug_string("ok"SLASH"print_csv/foo.csv"));
-    } else if (starts_with(grug_file_path, "ok"SLASH"resource_and_entity"SLASH)) {
+    } else if (starts_with(path, "ok"SLASH"resource_and_entity"SLASH)) {
         CALL(grug_state, draw, grug_string("ok"SLASH"resource_and_entity/foo.txt"));
         CALL(grug_state, spawn, grug_string("ok:foo"));
-    } else if (starts_with(grug_file_path, "ok"SLASH"resource_can_contain_dot_1"SLASH)) {
+    } else if (starts_with(path, "ok"SLASH"resource_can_contain_dot_1"SLASH)) {
         CALL(grug_state, draw, grug_string("ok"SLASH"resource_can_contain_dot_1/.foo"));
-    } else if (starts_with(grug_file_path, "ok"SLASH"resource_can_contain_dot_2"SLASH)) {
+    } else if (starts_with(path, "ok"SLASH"resource_can_contain_dot_2"SLASH)) {
         CALL(grug_state, draw, grug_string("ok"SLASH"resource_can_contain_dot_2/foo.bar"));
-    } else if (starts_with(grug_file_path, "ok"SLASH"resource_can_contain_dot_dot_1"SLASH)) {
+    } else if (starts_with(path, "ok"SLASH"resource_can_contain_dot_dot_1"SLASH)) {
         CALL(grug_state, draw, grug_string("ok"SLASH"resource_can_contain_dot_dot_1/..foo"));
-    } else if (starts_with(grug_file_path, "ok"SLASH"resource_can_contain_dot_dot_2"SLASH)) {
+    } else if (starts_with(path, "ok"SLASH"resource_can_contain_dot_dot_2"SLASH)) {
         CALL(grug_state, draw, grug_string("ok"SLASH"resource_can_contain_dot_dot_2/foo..bar"));
-    } else if (starts_with(grug_file_path, "ok"SLASH"resource_can_contain_dot_dot_dot"SLASH)) {
+    } else if (starts_with(path, "ok"SLASH"resource_can_contain_dot_dot_dot"SLASH)) {
         CALL(grug_state, draw, grug_string("ok"SLASH"resource_can_contain_dot_dot_dot/...foo"));
-    } else if (starts_with(grug_file_path, "ok"SLASH"resource_duplicate"SLASH)) {
+    } else if (starts_with(path, "ok"SLASH"resource_duplicate"SLASH)) {
         CALL(grug_state, draw, grug_string("ok"SLASH"resource_duplicate/foo.txt"));
         CALL(grug_state, draw, grug_string("ok"SLASH"resource_duplicate/bar.txt"));
         CALL(grug_state, draw, grug_string("ok"SLASH"resource_duplicate/bar.txt"));
         CALL(grug_state, draw, grug_string("ok"SLASH"resource_duplicate/baz.txt"));
-    } else if (starts_with(grug_file_path, "ok"SLASH"resource_is_a_directory"SLASH)) {
+    } else if (starts_with(path, "ok"SLASH"resource_is_a_directory"SLASH)) {
         CALL(grug_state, draw, grug_string("ok"SLASH"resource_is_a_directory"));
-    } else if (starts_with(grug_file_path, "ok"SLASH"return"SLASH)) {
+    } else if (starts_with(path, "ok"SLASH"return"SLASH)) {
         CALL(grug_state, initialize, grug_number(42.0));
-    } else if (starts_with(grug_file_path, "ok"SLASH"return_from_on_fn"SLASH)) {
+    } else if (starts_with(path, "ok"SLASH"return_from_on_fn"SLASH)) {
         CALL_ARGLESS(grug_state, nothing);
-    } else if (starts_with(grug_file_path, "ok"SLASH"return_from_on_fn_minimal"SLASH)) {
-    } else if (starts_with(grug_file_path, "ok"SLASH"return_with_no_value"SLASH)) {
+    } else if (starts_with(path, "ok"SLASH"return_from_on_fn_minimal"SLASH)) {
+    } else if (starts_with(path, "ok"SLASH"return_with_no_value"SLASH)) {
         CALL_ARGLESS(grug_state, nothing);
-    } else if (starts_with(grug_file_path, "ok"SLASH"same_variable_name_in_different_functions"SLASH)) {
+    } else if (starts_with(path, "ok"SLASH"same_variable_name_in_different_functions"SLASH)) {
         CALL(grug_state, initialize, grug_number(42.0));
         CALL(grug_state, initialize, grug_number(69.0));
-    } else if (starts_with(grug_file_path, "ok"SLASH"spawn_d"SLASH)) {
+    } else if (starts_with(path, "ok"SLASH"spawn_d"SLASH)) {
         CALL(grug_state, spawn_d, grug_string("ok:input"));
-    } else if (starts_with(grug_file_path, "ok"SLASH"spill_args_to_game_fn"SLASH)) {
+    } else if (starts_with(path, "ok"SLASH"spill_args_to_game_fn"SLASH)) {
         CALL(grug_state, motherload, grug_number(1.0), grug_number(2.0), grug_number(3.0), grug_number(4.0), grug_number(5.0), grug_number(6.0), grug_number(7.0), grug_number(1.0), grug_number(2.0), grug_number(3.0), grug_number(4.0), grug_number(5.0), grug_number(6.0), grug_number(7.0), grug_number(8.0), grug_id(42), grug_number(9.0));
-    } else if (starts_with(grug_file_path, "ok"SLASH"spill_args_to_game_fn_subless"SLASH)) {
+    } else if (starts_with(path, "ok"SLASH"spill_args_to_game_fn_subless"SLASH)) {
         CALL(grug_state, motherload_subless, grug_number(1.0), grug_number(2.0), grug_number(3.0), grug_number(4.0), grug_number(5.0), grug_number(6.0), grug_number(7.0), grug_number(1.0), grug_number(2.0), grug_number(3.0), grug_number(4.0), grug_number(5.0), grug_number(6.0), grug_number(7.0), grug_number(8.0), grug_number(9.0), grug_id(42), grug_number(10.0));
-    } else if (starts_with(grug_file_path, "ok"SLASH"spill_args_to_helper_fn"SLASH)) {
+    } else if (starts_with(path, "ok"SLASH"spill_args_to_helper_fn"SLASH)) {
         CALL(grug_state, motherload, grug_number(1.0), grug_number(2.0), grug_number(3.0), grug_number(4.0), grug_number(5.0), grug_number(6.0), grug_number(7.0), grug_number(1.0), grug_number(2.0), grug_number(3.0), grug_number(4.0), grug_number(5.0), grug_number(6.0), grug_number(7.0), grug_number(8.0), grug_id(42), grug_number(9.0));
-    } else if (starts_with(grug_file_path, "ok"SLASH"spill_args_to_helper_fn_32_bit_f32"SLASH)) {
+    } else if (starts_with(path, "ok"SLASH"spill_args_to_helper_fn_32_bit_f32"SLASH)) {
         CALL(grug_state, offset_32_bit_f32, grug_string("1"), grug_string("2"), grug_string("3"), grug_string("4"), grug_string("5"), grug_string("6"), grug_string("7"), grug_string("8"), grug_string("9"), grug_string("10"), grug_string("11"), grug_string("12"), grug_string("13"), grug_string("14"), grug_string("15"), grug_number(1.0), grug_number(2.0), grug_number(3.0), grug_number(4.0), grug_number(5.0), grug_number(6.0), grug_number(7.0), grug_number(8.0), grug_number(1.0));
-    } else if (starts_with(grug_file_path, "ok"SLASH"spill_args_to_helper_fn_32_bit_i32"SLASH)) {
+    } else if (starts_with(path, "ok"SLASH"spill_args_to_helper_fn_32_bit_i32"SLASH)) {
         CALL(grug_state, offset_32_bit_i32, grug_number(1.0), grug_number(2.0), grug_number(3.0), grug_number(4.0), grug_number(5.0), grug_number(6.0), grug_number(7.0), grug_number(8.0), grug_number(9.0), grug_number(10.0), grug_number(11.0), grug_number(12.0), grug_number(13.0), grug_number(14.0), grug_number(15.0), grug_number(16.0), grug_number(17.0), grug_number(18.0), grug_number(19.0), grug_number(20.0), grug_number(21.0), grug_number(22.0), grug_number(23.0), grug_number(24.0), grug_number(25.0), grug_number(26.0), grug_number(27.0), grug_number(28.0), grug_number(29.0), grug_number(30.0), grug_number(1.0), grug_number(2.0), grug_number(3.0), grug_number(4.0), grug_number(5.0), grug_number(6.0));
-    } else if (starts_with(grug_file_path, "ok"SLASH"spill_args_to_helper_fn_32_bit_string"SLASH)) {
+    } else if (starts_with(path, "ok"SLASH"spill_args_to_helper_fn_32_bit_string"SLASH)) {
         CALL(grug_state, offset_32_bit_string, grug_number(1.0), grug_number(2.0), grug_number(3.0), grug_number(4.0), grug_number(5.0), grug_number(6.0), grug_number(7.0), grug_number(8.0), grug_number(9.0), grug_number(10.0), grug_number(11.0), grug_number(12.0), grug_number(13.0), grug_number(14.0), grug_number(15.0), grug_number(16.0), grug_number(17.0), grug_number(18.0), grug_number(19.0), grug_number(20.0), grug_number(21.0), grug_number(22.0), grug_number(23.0), grug_number(24.0), grug_number(25.0), grug_number(26.0), grug_number(27.0), grug_number(28.0), grug_number(29.0), grug_number(30.0), grug_string("1"), grug_string("2"), grug_string("3"), grug_string("4"), grug_string("5"), grug_number(1.0));
-    } else if (starts_with(grug_file_path, "ok"SLASH"spill_args_to_helper_fn_subless"SLASH)) {
+    } else if (starts_with(path, "ok"SLASH"spill_args_to_helper_fn_subless"SLASH)) {
         CALL(grug_state, motherload_subless, grug_number(1.0), grug_number(2.0), grug_number(3.0), grug_number(4.0), grug_number(5.0), grug_number(6.0), grug_number(7.0), grug_number(1.0), grug_number(2.0), grug_number(3.0), grug_number(4.0), grug_number(5.0), grug_number(6.0), grug_number(7.0), grug_number(8.0), grug_number(9.0), grug_id(42), grug_number(10.0));
-    } else if (starts_with(grug_file_path, "ok"SLASH"stack_16_byte_alignment"SLASH)) {
+    } else if (starts_with(path, "ok"SLASH"stack_16_byte_alignment"SLASH)) {
         CALL_ARGLESS(grug_state, nothing);
         CALL(grug_state, initialize, grug_number(42.0));
-    } else if (starts_with(grug_file_path, "ok"SLASH"stack_16_byte_alignment_midway"SLASH)) {
+    } else if (starts_with(path, "ok"SLASH"stack_16_byte_alignment_midway"SLASH)) {
         CALL(grug_state, initialize, grug_number(CALL_ARGLESS(grug_state, magic)._number + 42.0));
-    } else if (starts_with(grug_file_path, "ok"SLASH"string_can_be_passed_to_helper_fn"SLASH)) {
+    } else if (starts_with(path, "ok"SLASH"string_can_be_passed_to_helper_fn"SLASH)) {
         CALL(grug_state, say, grug_string("foo"));
-    } else if (starts_with(grug_file_path, "ok"SLASH"string_duplicate"SLASH)) {
+    } else if (starts_with(path, "ok"SLASH"string_duplicate"SLASH)) {
         CALL(grug_state, talk, grug_string("foo"), grug_string("bar"), grug_string("bar"), grug_string("baz"));
-    } else if (starts_with(grug_file_path, "ok"SLASH"string_eq_false"SLASH)) {
+    } else if (starts_with(path, "ok"SLASH"string_eq_false"SLASH)) {
         CALL(grug_state, initialize_bool, grug_bool(false));
-    } else if (starts_with(grug_file_path, "ok"SLASH"string_eq_true"SLASH)) {
+    } else if (starts_with(path, "ok"SLASH"string_eq_true"SLASH)) {
         CALL(grug_state, initialize_bool, grug_bool(true));
-    } else if (starts_with(grug_file_path, "ok"SLASH"string_eq_true_empty"SLASH)) {
+    } else if (starts_with(path, "ok"SLASH"string_eq_true_empty"SLASH)) {
         CALL(grug_state, initialize_bool, grug_bool(true));
-    } else if (starts_with(grug_file_path, "ok"SLASH"string_ne_false"SLASH)) {
+    } else if (starts_with(path, "ok"SLASH"string_ne_false"SLASH)) {
         CALL(grug_state, initialize_bool, grug_bool(false));
-    } else if (starts_with(grug_file_path, "ok"SLASH"string_ne_false_empty"SLASH)) {
+    } else if (starts_with(path, "ok"SLASH"string_ne_false_empty"SLASH)) {
         CALL(grug_state, initialize_bool, grug_bool(false));
-    } else if (starts_with(grug_file_path, "ok"SLASH"string_ne_true"SLASH)) {
+    } else if (starts_with(path, "ok"SLASH"string_ne_true"SLASH)) {
         CALL(grug_state, initialize_bool, grug_bool(true));
-    } else if (starts_with(grug_file_path, "ok"SLASH"string_returned_by_game_fn"SLASH)) {
+    } else if (starts_with(path, "ok"SLASH"string_returned_by_game_fn"SLASH)) {
         CALL(grug_state, has_string, CALL_ARGLESS(grug_state, get_os));
-    } else if (starts_with(grug_file_path, "ok"SLASH"string_returned_by_game_fn_assigned_to_member"SLASH)) {
+    } else if (starts_with(path, "ok"SLASH"string_returned_by_game_fn_assigned_to_member"SLASH)) {
         CALL(grug_state, has_string, grug_string("foo"));
-    } else if (starts_with(grug_file_path, "ok"SLASH"string_returned_by_helper_fn"SLASH)) {
+    } else if (starts_with(path, "ok"SLASH"string_returned_by_helper_fn"SLASH)) {
         CALL(grug_state, has_string, grug_string("foo"));
-    } else if (starts_with(grug_file_path, "ok"SLASH"string_returned_by_helper_fn_from_game_fn"SLASH)) {
+    } else if (starts_with(path, "ok"SLASH"string_returned_by_helper_fn_from_game_fn"SLASH)) {
         CALL(grug_state, has_string, CALL_ARGLESS(grug_state, get_os));
-    } else if (starts_with(grug_file_path, "ok"SLASH"sub_rsp_32_bits_local_variables_i32"SLASH)) {
+    } else if (starts_with(path, "ok"SLASH"sub_rsp_32_bits_local_variables_i32"SLASH)) {
         for (int32_t n = 1; n <= 30; n++) {
             CALL(grug_state, initialize, grug_number(30.0));
         }
-    } else if (starts_with(grug_file_path, "ok"SLASH"sub_rsp_32_bits_local_variables_id"SLASH)) {
+    } else if (starts_with(path, "ok"SLASH"sub_rsp_32_bits_local_variables_id"SLASH)) {
         for (size_t i = 0; i < 15; i++) {
             CALL(grug_state, set_d, grug_id(42));
         }
-    } else if (starts_with(grug_file_path, "ok"SLASH"subtraction_negative_result"SLASH)) {
+    } else if (starts_with(path, "ok"SLASH"subtraction_negative_result"SLASH)) {
         CALL(grug_state, initialize, grug_number(-3.0));
-    } else if (starts_with(grug_file_path, "ok"SLASH"subtraction_positive_result"SLASH)) {
+    } else if (starts_with(path, "ok"SLASH"subtraction_positive_result"SLASH)) {
         CALL(grug_state, initialize, grug_number(3.0));
-    } else if (starts_with(grug_file_path, "ok"SLASH"variable"SLASH)) {
+    } else if (starts_with(path, "ok"SLASH"variable"SLASH)) {
         CALL(grug_state, initialize, grug_number(42.0));
-    } else if (starts_with(grug_file_path, "ok"SLASH"variable_does_not_shadow_in_different_if_statement"SLASH)) {
+    } else if (starts_with(path, "ok"SLASH"variable_does_not_shadow_in_different_if_statement"SLASH)) {
         CALL(grug_state, initialize, grug_number(42.0));
         CALL(grug_state, initialize, grug_number(69.0));
-    } else if (starts_with(grug_file_path, "ok"SLASH"variable_reassignment"SLASH)) {
+    } else if (starts_with(path, "ok"SLASH"variable_reassignment"SLASH)) {
         CALL(grug_state, initialize, grug_number(69.0));
-    } else if (starts_with(grug_file_path, "ok"SLASH"variable_reassignment_does_not_dealloc_outer_variable"SLASH)) {
+    } else if (starts_with(path, "ok"SLASH"variable_reassignment_does_not_dealloc_outer_variable"SLASH)) {
         CALL(grug_state, initialize, grug_number(69.0));
-    } else if (starts_with(grug_file_path, "ok"SLASH"variable_string_global"SLASH)) {
+    } else if (starts_with(path, "ok"SLASH"variable_string_global"SLASH)) {
         CALL(grug_state, say, grug_string("foo"));
-    } else if (starts_with(grug_file_path, "ok"SLASH"variable_string_local"SLASH)) {
+    } else if (starts_with(path, "ok"SLASH"variable_string_local"SLASH)) {
         CALL(grug_state, say, grug_string("foo"));
-    } else if (starts_with(grug_file_path, "ok"SLASH"void_function_early_return"SLASH)) {
+    } else if (starts_with(path, "ok"SLASH"void_function_early_return"SLASH)) {
         CALL_ARGLESS(grug_state, nothing);
-    } else if (starts_with(grug_file_path, "ok"SLASH"while_false"SLASH)) {
+    } else if (starts_with(path, "ok"SLASH"while_false"SLASH)) {
         CALL_ARGLESS(grug_state, nothing);
         CALL_ARGLESS(grug_state, nothing);
-    } else if (starts_with(grug_file_path, "ok"SLASH"write_to_global_variable"SLASH)) {
+    } else if (starts_with(path, "ok"SLASH"write_to_global_variable"SLASH)) {
         CALL(grug_state, max, grug_number(43.0), grug_number(69.0));
-    } else if (starts_with(grug_file_path, "hot_reloading/code_reloading-D.grug")) {
+    } else if (starts_with(path, "hot_reloading/code_reloading-D.grug")) {
         CALL(grug_state, initialize, grug_number(update_called ? 2.0 : 1.0));
         update_called = false;
     } else {
-        fprintf(stderr, "Error: add an elif for path '%s'\n", grug_file_path);
+        fprintf(stderr, "Error: add an elif for path '%s'\n", path);
         assert(false);
     }
 }
@@ -920,8 +936,10 @@ int main(int argc, const char *argv[]) {
 			.create_grug_state = create_grug_state,
 			.destroy_grug_state = destroy_grug_state,
 			.compile_grug_file = compile_grug_file,
+			.destroy_grug_file = destroy_grug_file,
+			.create_entity = create_entity,
+			.destroy_entity = destroy_entity,
             .update = update,
-			.init_globals = init_globals,
 			.call_export_fn = call_export_fn,
 			.grug_to_json = grug_to_json,
 			.json_to_grug = json_to_grug,

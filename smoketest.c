@@ -90,6 +90,13 @@ static bool starts_with(const char *haystack, const char *needle) {
     return strncmp(haystack, needle, strlen(needle)) == 0;
 }
 
+static bool update_called = false;
+static void update(struct grug_state* grug_state, const char** out_error) {
+    (void)grug_state;
+    update_called = true;
+	*out_error = NULL;
+}
+
 static struct grug_file_id *compile_grug_file(struct grug_state* grug_state, const char *grug_file_path, const char** out_error) {
 	(void)grug_state;
 
@@ -125,7 +132,6 @@ static struct grug_file_id *compile_grug_file(struct grug_state* grug_state, con
 		return NULL;
     }
 
-    // No error.
 	*out_error = NULL;
     return (struct grug_file_id*)grug_file_path;
 }
@@ -668,7 +674,11 @@ static void call_export_fn(struct grug_state* grug_state, struct grug_file_id* f
         CALL_ARGLESS(grug_state, nothing);
     } else if (starts_with(grug_file_path, "ok"SLASH"write_to_global_variable"SLASH)) {
         CALL(grug_state, max, grug_number(43.0), grug_number(69.0));
+    } else if (starts_with(grug_file_path, "hot_reloading"SLASH"code_reloading-D.grug")) {
+        CALL(grug_state, initialize, grug_number(update_called ? 2.0 : 1.0));
+        update_called = false;
     } else {
+        fprintf(stderr, "Error: add an elif for path '%s'\n", grug_file_path);
         assert(false);
     }
 }
@@ -910,6 +920,7 @@ int main(int argc, const char *argv[]) {
 			.create_grug_state = create_grug_state,
 			.destroy_grug_state = destroy_grug_state,
 			.compile_grug_file = compile_grug_file,
+            .update = update,
 			.init_globals = init_globals,
 			.call_export_fn = call_export_fn,
 			.grug_to_json = grug_to_json,

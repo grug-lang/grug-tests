@@ -1,6 +1,4 @@
-corpus
-test_corpus
-results
+.grug-tmp
 *.gcda
 *.gcno
 *.gcov
@@ -8,13 +6,11 @@ a.out
 ast.json
 coverage.css
 coverage.functions.html
-coverage.fuzz.c.*.html
 coverage.grug.c.*.html
 coverage.html
 coverage.tests.c.*.html
 crash-*
 experiments.o
-fuzz.dll
 grug.o
 output.map
 pvs.json

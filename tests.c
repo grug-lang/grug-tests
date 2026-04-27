@@ -4,6 +4,7 @@
 
 #include <assert.h>
 #include <ctype.h>
+#include <dirent.h>
 #include <errno.h>
 #include <fcntl.h>
 #include <inttypes.h>
@@ -80,9 +81,12 @@ static const char *get_type_name[] = {
 
 #if defined(_WIN32)
 #include <windows.h>
+#define MKDIR(path, mode) _mkdir(path)
 #define SLASH "\\"
 #elif defined(__linux__)
 #include <sys/stat.h>
+#include <unistd.h>
+#define MKDIR(path, mode) mkdir(path, mode)
 #define SLASH "/"
 #endif
 
@@ -142,6 +146,7 @@ static struct grug_file_id* current_file_id;
 static create_grug_state_t       create_grug_state;
 static destroy_grug_state_t      destroy_grug_state;
 static compile_grug_file_t       compile_grug_file;
+static update_t                  update;
 static init_globals_t            init_globals;
 static call_export_fn_t          call_export_fn;
 static grug_to_json_t            grug_to_json;
@@ -992,39 +997,12 @@ static void print_string_debug(const char* str) {
 } while (0)
 #endif
 
-// Fill `buf` with `path` prefixed by `tests_dir_path`. 
-static const char *prefix_buf(const char *path, char *buf) {
-	char *p = buf;
-
-	// buf = tests_dir_path
-	size_t tests_dir_path_len = strlen(tests_dir_path);
-	memcpy(p, tests_dir_path, tests_dir_path_len);
-	p += tests_dir_path_len;
-
-	// buf = tests_dir_path + "/"
-	*p = '/';
-	p++;
-
-	// buf = tests_dir_path + "/" + path
-	size_t path_len = strlen(path);
-	memcpy(p, path, path_len);
-	p += path_len;
-
-	// Null terminate
-	*p = '\0';
-
-	return buf;
-}
-
-// Returns a temporary static string that has `path` prefixed with `tests_dir_path`. 
-static const char *prefix(const char *path) {
-	static char buf[4096];
-	return prefix_buf(path, buf);
-}
-
 static size_t read_file(const char *path, uint8_t *bytes) {
-	FILE *f = fopen(prefix(path), "r");
-	check_null(f, "fopen", prefix(path));
+	char rel_path[4096];
+	snprintf(rel_path, sizeof(rel_path), "%s/%s", tests_dir_path, path);
+
+	FILE *f = fopen(rel_path, "r");
+	check_null(f, "fopen", rel_path);
 
 	check(fseek(f, 0, SEEK_END), "fseek", NULL);
 
@@ -1504,6 +1482,185 @@ static void reset(void) {
 	game_fn_print_csv_call_count = 0;
 	game_fn_retrieve_call_count = 0;
 	game_fn_box_number_call_count = 0;
+}
+
+static void remove_dir_recursive(const char* path) {
+#ifdef _WIN32
+    char search_path[MAX_PATH];
+    WIN32_FIND_DATAA find_data;
+    snprintf(search_path, MAX_PATH, "%s\\*", path);
+
+    HANDLE hFind = FindFirstFileA(search_path, &find_data);
+    if (hFind == INVALID_HANDLE_VALUE) {
+        DWORD err = GetLastError();
+        if (err == ERROR_FILE_NOT_FOUND || err == ERROR_PATH_NOT_FOUND) {
+            return; // directory does not exist -> silently ignore
+        }
+
+        fprintf(stderr,
+            "Error: Failed to open directory %s (errno: %lu)\n",
+            path, err);
+        exit(EXIT_FAILURE);
+    }
+
+    do {
+        if (strcmp(find_data.cFileName, ".") == 0 ||
+            strcmp(find_data.cFileName, "..") == 0)
+            continue;
+
+        char full_path[MAX_PATH];
+        snprintf(full_path, MAX_PATH, "%s\\%s", path, find_data.cFileName);
+
+        if (find_data.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) {
+            remove_dir_recursive(full_path);
+        } else {
+            if (!DeleteFileA(full_path)) {
+                fprintf(stderr,
+                    "Error: Failed to delete file %s (errno: %lu)\n",
+                    full_path, GetLastError());
+                exit(EXIT_FAILURE);
+            }
+        }
+    } while (FindNextFileA(hFind, &find_data));
+
+    FindClose(hFind);
+
+    if (!RemoveDirectoryA(path)) {
+        fprintf(stderr,
+            "Error: Failed to remove directory %s (errno: %lu)\n",
+            path, GetLastError());
+        exit(EXIT_FAILURE);
+    }
+
+#else
+    DIR *d = opendir(path);
+    if (!d) {
+        if (errno == ENOENT) {
+            return; // directory does not exist -> silently ignore
+        }
+
+        fprintf(stderr,
+            "Error: Failed to open directory %s (errno: %d)\n",
+            path, errno);
+        exit(EXIT_FAILURE);
+    }
+
+    struct dirent *p;
+    while ((p = readdir(d))) {
+        if (!strcmp(p->d_name, ".") || !strcmp(p->d_name, ".."))
+            continue;
+
+        char full_path[4096];
+        snprintf(full_path, sizeof(full_path), "%s/%s", path, p->d_name);
+
+        struct stat statbuf;
+        if (lstat(full_path, &statbuf) != 0)
+            continue;
+
+        if (S_ISDIR(statbuf.st_mode)) {
+            remove_dir_recursive(full_path);
+        } else {
+            if (unlink(full_path) != 0) {
+                fprintf(stderr,
+                    "Error: Failed to delete file %s (errno: %d)\n",
+                    full_path, errno);
+                exit(EXIT_FAILURE);
+            }
+        }
+    }
+
+    closedir(d);
+
+    if (rmdir(path) != 0) {
+        fprintf(stderr,
+            "Error: Failed to remove directory %s (errno: %d)\n",
+            path, errno);
+        exit(EXIT_FAILURE);
+    }
+#endif
+}
+
+static const char local_temp_dir_name[] = ".grug-tmp";
+
+static void create_local_temp_dir(void) {
+    // Wipe old data from previous runs to ensure a clean slate
+    remove_dir_recursive(local_temp_dir_name);
+
+    // Create the fresh directory
+    if (MKDIR(local_temp_dir_name, 0755) != 0) {
+        fprintf(stderr, "Error: Failed to create local temp directory %s (errno: %d)\n", local_temp_dir_name, errno);
+        exit(EXIT_FAILURE);
+    }
+}
+
+static void test_code_reloading(void) {
+	printf("Running code reloading test...\n");
+	fflush(stdout);
+
+	create_local_temp_dir();
+
+	static const char hot_dir[] = ".grug-tmp/hot_reloading";
+
+    if (MKDIR(hot_dir, 0755) != 0) {
+        fprintf(stderr, "Error: Failed to create local temp directory %s (errno: %d)\n", hot_dir, errno);
+        exit(EXIT_FAILURE);
+    }
+
+	void* grug_state = create_grug_state(
+		mod_api_path,
+		local_temp_dir_name
+	);
+	if (!grug_state) {
+		fprintf(stderr, "Error: Failed to create grug state\n");
+		exit(EXIT_FAILURE);
+	}
+
+	const char *grug_rel = "hot_reloading/code_reloading-D.grug";
+
+	char grug_abs[4096];
+	snprintf(grug_abs, sizeof(grug_abs), "%s/%s", local_temp_dir_name, grug_rel);
+
+	const char *msg = NULL;
+
+	// 1. Overwrite hot_reloading/code_reloading-D.grug with initialize(1)
+	FILE *f1 = fopen(grug_abs, "w");
+	check_null(f1, "fopen", grug_abs);
+	fputs("foo: number = 1\n\non_a() {\n    initialize(foo)\n}\n", f1);
+	fclose(f1);
+
+	// 2. Call compile_grug_file(state, "hot_reloading/code_reloading-D.grug", &msg)
+	void *file_id = compile_grug_file(grug_state, grug_rel, &msg);
+	if (msg) {
+		fprintf(stderr, "Error compiling code_reloading-D.grug: %s\n", msg);
+		exit(EXIT_FAILURE);
+	}
+
+	// 3. Call on_a(), and run assert_number(game_fn_initialize_x, 1.0)
+	reset();
+	init_globals(grug_state, file_id);
+	current_file_id = file_id;
+	call_export_fn_argless(grug_state, file_id, "on_a");
+	assert_number(game_fn_initialize_x, 1.0);
+
+	// 4. Overwrite hot_reloading/code_reloading-D.grug with initialize(2)
+	FILE *f2 = fopen(grug_abs, "w");
+	check_null(f2, "fopen", grug_abs);
+	fputs("foo: number = 2\n\non_a() {\n    initialize(foo)\n}\n", f2);
+	fclose(f2);
+
+	// 5. Call update(state, &msg)
+	update(grug_state, &msg);
+	if (msg) {
+		fprintf(stderr, "Error in update(): %s\n", msg);
+		exit(EXIT_FAILURE);
+	}
+
+	// 6. Call on_a(), and run assert_number(game_fn_initialize_x, 2.0)
+	reset();
+	call_export_fn_argless(grug_state, file_id, "on_a");
+	assert_number(game_fn_initialize_x, 2.0);
+
+	destroy_grug_state(grug_state);
 }
 
 static void* prologue(void* grug_state, const char *grug_path) {
@@ -3969,14 +4126,15 @@ void grug_tests_run(
 	mod_api_path               = mod_api_path_;
 	whitelisted_test           = whitelisted_test_;
 
-	create_grug_state          = vtable.create_grug_state,
-	destroy_grug_state         = vtable.destroy_grug_state,
-	compile_grug_file          = vtable.compile_grug_file;
-	init_globals               = vtable.init_globals;
-	call_export_fn             = vtable.call_export_fn;
-	grug_to_json               = vtable.grug_to_json;
-	json_to_grug               = vtable.json_to_grug;
-	game_fn_error              = vtable.game_fn_error;
+	create_grug_state          = vtable.create_grug_state; assert(create_grug_state);
+	destroy_grug_state         = vtable.destroy_grug_state; assert(destroy_grug_state);
+	compile_grug_file          = vtable.compile_grug_file; assert(compile_grug_file);
+	update                     = vtable.update; assert(update);
+	init_globals               = vtable.init_globals; assert(init_globals);
+	call_export_fn             = vtable.call_export_fn; assert(call_export_fn);
+	grug_to_json               = vtable.grug_to_json; assert(grug_to_json);
+	json_to_grug               = vtable.json_to_grug; assert(json_to_grug);
+	game_fn_error              = vtable.game_fn_error; assert(game_fn_error);
 
 	if (setvbuf(stdout, NULL, _IOLBF, 64) != 0) {
 		fprintf(stderr, "Error: Could not buffer stdout\n");
@@ -4111,6 +4269,8 @@ void grug_tests_run(
 		}
 	}
 
+	test_code_reloading();
+
 #ifdef SHUFFLES
 	}
 #endif
@@ -4118,4 +4278,5 @@ void grug_tests_run(
 	printf("\nAll tests passed! 🎉\n");
 	fflush(stdout);
 	destroy_grug_state(grug_state);
+	remove_dir_recursive(local_temp_dir_name);
 }

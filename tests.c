@@ -1648,8 +1648,6 @@ static void test_code_reloading(void) {
 	char grug_abs[4096];
 	snprintf(grug_abs, sizeof(grug_abs), "%s/%s", local_temp_dir_name, grug_rel);
 
-	const char *msg = impl_forgot_to_set_msg;
-
 	// Overwrite hot_reloading/code_reloading-D.grug with initialize(1)
 	FILE *f1 = fopen(grug_abs, "w");
 	check_null(f1, "fopen", grug_abs);
@@ -1657,6 +1655,7 @@ static void test_code_reloading(void) {
 	fclose(f1);
 
 	// Create file
+	const char *msg = impl_forgot_to_set_msg;
 	struct grug_file_id *file = compile_grug_file(grug_state, grug_rel, &msg);
 	if (msg) {
 		fprintf(stderr, "Error compiling code_reloading-D.grug: %s\n", msg);
@@ -1664,6 +1663,7 @@ static void test_code_reloading(void) {
 	}
 
 	// Create entity
+	msg = impl_forgot_to_set_msg;
 	struct grug_entity_id* entity = create_entity(grug_state, file, &msg);
 	if (msg) {
 		fprintf(stderr, "Error creating entity: %s\n", msg);
@@ -1681,6 +1681,7 @@ static void test_code_reloading(void) {
 	fclose(f2);
 
 	// Call update()
+	msg = impl_forgot_to_set_msg;
 	update(grug_state, &msg);
 	if (msg) {
 		fprintf(stderr, "Error in update(): %s\n", msg);

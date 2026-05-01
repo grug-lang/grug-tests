@@ -4263,8 +4263,8 @@ void grug_tests_run(
 		current_entity = entity;
 		fn_data->run(grug_state, entity);
 
-		destroy_grug_file(grug_state, fn_data->file);
 		destroy_entity(grug_state, entity);
+		destroy_grug_file(grug_state, fn_data->file);
 	}
 
 	for (size_t i = 0; i < err_runtime_test_datas_size; i++) {
@@ -4340,11 +4340,11 @@ void grug_tests_run(
 			exit(EXIT_FAILURE);
 		}
 
-		destroy_grug_file(grug_state, fn_data->file);
-
 		if (!msg) {
 			destroy_entity(grug_state, entity);
 		}
+
+		destroy_grug_file(grug_state, fn_data->file);
 	}
 
 	test_code_reloading();

@@ -2022,11 +2022,6 @@ static void ok_else_true(struct grug_state* grug_state, struct grug_entity_id* e
 	assert_call_count(nothing, 3);
 }
 
-static void ok_empty_file(struct grug_state* grug_state, struct grug_entity_id* entity) {
-	(void)grug_state;
-	(void)entity;
-}
-
 static void ok_empty_line(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	assert_call_count(nothing, 0);
     call_export_fn_argless(grug_state, entity, "on_a");
@@ -3733,6 +3728,7 @@ static void add_error_tests(void) {
 	ADD_TEST_ERROR(comment_lone_global_at_end, "A");
 	ADD_TEST_ERROR(double_negation, "D");
 	ADD_TEST_ERROR(double_not, "D");
+	ADD_TEST_ERROR(empty_file, "D");
 	ADD_TEST_ERROR(empty_helper_fn, "D");
 	ADD_TEST_ERROR(empty_line_after_group, "D");
 	ADD_TEST_ERROR(empty_line_at_start_of_file, "D");
@@ -3961,7 +3957,6 @@ static void add_ok_tests(void) {
 	ADD_TEST_OK(else_if_false, "D");
 	ADD_TEST_OK(else_if_true, "D");
 	ADD_TEST_OK(else_true, "D");
-	ADD_TEST_OK(empty_file, "A");
 	ADD_TEST_OK(empty_line, "D");
 	ADD_TEST_OK(entity_and_resource_as_subexpression, "D");
 	ADD_TEST_OK(entity_duplicate, "D");

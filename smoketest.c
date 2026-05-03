@@ -697,6 +697,9 @@ static void call_export_fn(struct grug_state* grug_state, struct grug_entity_id*
     } else if (starts_with(path, "code_reloading/input-D.grug")) {
         CALL(grug_state, initialize, grug_number(update_called ? 2.0 : 1.0));
         update_called = false;
+    } else if (starts_with(path, "reloading_empty_file/input-D.grug")) {
+        CALL(grug_state, initialize, grug_number(1.0));
+        update_called = false;
     } else {
         fprintf(stderr, "Error: add an elif for path '%s'\n", path);
         exit(EXIT_FAILURE);

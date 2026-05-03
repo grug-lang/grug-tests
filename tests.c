@@ -3728,7 +3728,7 @@ static void add_error_tests(void) {
 	ADD_TEST_ERROR(comment_lone_global_at_end, "A");
 	ADD_TEST_ERROR(double_negation, "D");
 	ADD_TEST_ERROR(double_not, "D");
-	ADD_TEST_ERROR(empty_file, "D");
+	ADD_TEST_ERROR(empty_file, "A");
 	ADD_TEST_ERROR(empty_helper_fn, "D");
 	ADD_TEST_ERROR(empty_line_after_group, "D");
 	ADD_TEST_ERROR(empty_line_at_start_of_file, "D");

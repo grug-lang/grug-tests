@@ -1685,6 +1685,10 @@ static void test_code_reloading_empty_file(void) {
 		exit(EXIT_FAILURE);
 	}
 
+	// Call on_a(), and run assert_number(game_fn_initialize_x, 1.0)
+	call_export_fn_argless(grug_state, entity, "on_a");
+	assert_number(game_fn_initialize_x, 1.0);
+
 	destroy_entity(grug_state, entity);
 	destroy_grug_file(grug_state, file);
 	destroy_grug_state(grug_state);

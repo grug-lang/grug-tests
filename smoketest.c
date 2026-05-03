@@ -93,6 +93,10 @@ static bool starts_with(const char *haystack, const char *needle) {
 static bool update_called = false;
 static void update(struct grug_state* grug_state, const char** error_out) {
     (void)grug_state;
+    if (streq(saved_grug_file_path, "reloading_empty_file/input-D.grug")) {
+	    *error_out = "File is empty";
+        return;
+    }
     update_called = true;
 	*error_out = NULL;
 }
@@ -690,12 +694,12 @@ static void call_export_fn(struct grug_state* grug_state, struct grug_entity_id*
         CALL_ARGLESS(grug_state, nothing);
     } else if (starts_with(path, "ok"SLASH"write_to_global_variable"SLASH)) {
         CALL(grug_state, max, grug_number(43.0), grug_number(69.0));
-    } else if (starts_with(path, "hot_reloading/code_reloading-D.grug")) {
+    } else if (starts_with(path, "code_reloading/input-D.grug")) {
         CALL(grug_state, initialize, grug_number(update_called ? 2.0 : 1.0));
         update_called = false;
     } else {
         fprintf(stderr, "Error: add an elif for path '%s'\n", path);
-        assert(false);
+        exit(EXIT_FAILURE);
     }
 }
 

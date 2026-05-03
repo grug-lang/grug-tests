@@ -1603,17 +1603,93 @@ static void remove_dir_recursive(const char* path) {
 #endif
 }
 
-static const char local_temp_dir_name[] = ".grug-tmp";
-
-static void create_local_temp_dir(void) {
+static void create_local_temp_dir(const char *local_temp_dir) {
     // Wipe old data from previous runs to ensure a clean slate
-    remove_dir_recursive(local_temp_dir_name);
+    remove_dir_recursive(local_temp_dir);
 
     // Create the fresh directory
-    if (MKDIR(local_temp_dir_name, 0755) != 0) {
-        fprintf(stderr, "Error: Failed to create local temp directory %s (errno: %d)\n", local_temp_dir_name, errno);
+    if (MKDIR(local_temp_dir, 0755) != 0) {
+        fprintf(stderr, "Error: Failed to create local temp directory %s (errno: %d)\n", local_temp_dir, errno);
         exit(EXIT_FAILURE);
     }
+}
+
+static void test_code_reloading_empty_file(void) {
+	if (!is_whitelisted_test("code_reloading_empty_file")) {
+		return;
+	}
+
+	printf("Running code reloading empty file test...\n");
+	fflush(stdout);
+	reset();
+
+	static const char local_temp_dir[] = ".grug_tmp_reloading_empty_file";
+
+	create_local_temp_dir(local_temp_dir);
+
+	static const char mod_dir[] = ".grug_tmp_reloading_empty_file/reloading_empty_file";
+
+    if (MKDIR(mod_dir, 0755) != 0) {
+        fprintf(stderr, "Error: Failed to create local temp directory %s (errno: %d)\n", mod_dir, errno);
+        exit(EXIT_FAILURE);
+    }
+
+	void* grug_state = create_grug_state(
+		mod_api_path,
+		local_temp_dir
+	);
+	if (!grug_state) {
+		fprintf(stderr, "Error: Failed to create grug state\n");
+		exit(EXIT_FAILURE);
+	}
+
+	const char *grug_rel = "reloading_empty_file/input-D.grug";
+
+	char grug_abs[4096];
+	snprintf(grug_abs, sizeof(grug_abs), "%s/%s", local_temp_dir, grug_rel);
+
+	// Overwrite reloading_empty_file/input-D.grug with initialize(1)
+	FILE *f1 = fopen(grug_abs, "w");
+	check_null(f1, "fopen", grug_abs);
+	fputs("foo: number = 1\n\non_a() {\n    initialize(foo)\n}\n", f1);
+	fclose(f1);
+
+	// Create file
+	const char *msg = impl_forgot_to_set_msg;
+	struct grug_file_id *file = compile_grug_file(grug_state, grug_rel, &msg);
+	if (msg) {
+		fprintf(stderr, "Error compiling input-D.grug: %s\n", msg);
+		exit(EXIT_FAILURE);
+	}
+
+	// Create entity
+	msg = impl_forgot_to_set_msg;
+	struct grug_entity_id* entity = create_entity(grug_state, file, &msg);
+	if (msg) {
+		fprintf(stderr, "Error creating entity: %s\n", msg);
+		exit(EXIT_FAILURE);
+	}
+
+	// Overwrite reloading_empty_file/input-D.grug with an empty file
+	FILE *f2 = fopen(grug_abs, "w");
+	check_null(f2, "fopen", grug_abs);
+	fclose(f2);
+
+	// Call update()
+	msg = impl_forgot_to_set_msg;
+	update(grug_state, &msg);
+
+	assert(msg);
+	if (!streq(msg, "File is empty")) {
+		fprintf(stderr, "Expected error message \"File is empty\", but got \"%s\"\n", msg);
+		exit(EXIT_FAILURE);
+	}
+
+	destroy_entity(grug_state, entity);
+	destroy_grug_file(grug_state, file);
+	destroy_grug_state(grug_state);
+
+	remove_dir_recursive(local_temp_dir);
 }
 
 static void test_code_reloading(void) {
@@ -1625,30 +1701,32 @@ static void test_code_reloading(void) {
 	fflush(stdout);
 	reset();
 
-	create_local_temp_dir();
+	static const char local_temp_dir[] = ".grug_tmp_code_reloading";
 
-	static const char hot_dir[] = ".grug-tmp/hot_reloading";
+	create_local_temp_dir(local_temp_dir);
 
-    if (MKDIR(hot_dir, 0755) != 0) {
-        fprintf(stderr, "Error: Failed to create local temp directory %s (errno: %d)\n", hot_dir, errno);
+	static const char mod_dir[] = ".grug_tmp_code_reloading/code_reloading";
+
+    if (MKDIR(mod_dir, 0755) != 0) {
+        fprintf(stderr, "Error: Failed to create local temp directory %s (errno: %d)\n", mod_dir, errno);
         exit(EXIT_FAILURE);
     }
 
 	void* grug_state = create_grug_state(
 		mod_api_path,
-		local_temp_dir_name
+		local_temp_dir
 	);
 	if (!grug_state) {
 		fprintf(stderr, "Error: Failed to create grug state\n");
 		exit(EXIT_FAILURE);
 	}
 
-	const char *grug_rel = "hot_reloading/code_reloading-D.grug";
+	const char *grug_rel = "code_reloading/input-D.grug";
 
 	char grug_abs[4096];
-	snprintf(grug_abs, sizeof(grug_abs), "%s/%s", local_temp_dir_name, grug_rel);
+	snprintf(grug_abs, sizeof(grug_abs), "%s/%s", local_temp_dir, grug_rel);
 
-	// Overwrite hot_reloading/code_reloading-D.grug with initialize(1)
+	// Overwrite code_reloading/input-D.grug with initialize(1)
 	FILE *f1 = fopen(grug_abs, "w");
 	check_null(f1, "fopen", grug_abs);
 	fputs("foo: number = 1\n\non_a() {\n    initialize(foo)\n}\n", f1);
@@ -1674,7 +1752,7 @@ static void test_code_reloading(void) {
 	call_export_fn_argless(grug_state, entity, "on_a");
 	assert_number(game_fn_initialize_x, 1.0);
 
-	// Overwrite hot_reloading/code_reloading-D.grug with initialize(2)
+	// Overwrite code_reloading/input-D.grug with initialize(2)
 	FILE *f2 = fopen(grug_abs, "w");
 	check_null(f2, "fopen", grug_abs);
 	fputs("foo: number = 2\n\non_a() {\n    initialize(foo)\n}\n", f2);
@@ -1695,6 +1773,8 @@ static void test_code_reloading(void) {
 	destroy_entity(grug_state, entity);
 	destroy_grug_file(grug_state, file);
 	destroy_grug_state(grug_state);
+
+	remove_dir_recursive(local_temp_dir);
 }
 
 static struct grug_file_id* prologue(void* grug_state, const char *grug_path) {
@@ -4343,6 +4423,7 @@ void grug_tests_run(
 	}
 
 	test_code_reloading();
+	test_code_reloading_empty_file();
 
 #ifdef SHUFFLES
 	}
@@ -4351,5 +4432,4 @@ void grug_tests_run(
 	printf("\nAll tests passed! 🎉\n");
 	fflush(stdout);
 	destroy_grug_state(grug_state);
-	remove_dir_recursive(local_temp_dir_name);
 }

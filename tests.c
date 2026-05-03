@@ -1637,7 +1637,7 @@ static void test_code_reloading_empty_file(void) {
 
 	static const char mod_dir[] = ".grug_tmp_reloading_empty_file/reloading_empty_file";
 
-    if (MKDIR(mod_dir, 0755) != 0) {
+    if (MKDIR(mod_dir) != 0) {
         fprintf(stderr, "Error: Failed to create local temp directory %s (errno: %d)\n", mod_dir, errno);
         exit(EXIT_FAILURE);
     }

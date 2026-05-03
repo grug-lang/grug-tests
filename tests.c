@@ -82,12 +82,12 @@ static const char *get_type_name[] = {
 #if defined(_WIN32)
 #include <direct.h>
 #include <windows.h>
-#define MKDIR(path, mode) _mkdir(path)
+#define MKDIR(path) _mkdir(path)
 #define SLASH "\\"
 #elif defined(__linux__)
 #include <sys/stat.h>
 #include <unistd.h>
-#define MKDIR(path, mode) mkdir(path, mode)
+#define MKDIR(path) mkdir(path, 0755)
 #define SLASH "/"
 #endif
 
@@ -1608,7 +1608,7 @@ static void create_local_temp_dir(const char *local_temp_dir) {
     remove_dir_recursive(local_temp_dir);
 
     // Create the fresh directory
-    if (MKDIR(local_temp_dir, 0755) != 0) {
+    if (MKDIR(local_temp_dir) != 0) {
         fprintf(stderr, "Error: Failed to create local temp directory %s (errno: %d)\n", local_temp_dir, errno);
         exit(EXIT_FAILURE);
     }
@@ -1629,7 +1629,7 @@ static void test_code_reloading_empty_file(void) {
 
 	static const char mod_dir[] = ".grug_tmp_reloading_empty_file/reloading_empty_file";
 
-    if (MKDIR(mod_dir, 0755) != 0) {
+    if (MKDIR(mod_dir) != 0) {
         fprintf(stderr, "Error: Failed to create local temp directory %s (errno: %d)\n", mod_dir, errno);
         exit(EXIT_FAILURE);
     }
@@ -1707,7 +1707,7 @@ static void test_code_reloading(void) {
 
 	static const char mod_dir[] = ".grug_tmp_code_reloading/code_reloading";
 
-    if (MKDIR(mod_dir, 0755) != 0) {
+    if (MKDIR(mod_dir) != 0) {
         fprintf(stderr, "Error: Failed to create local temp directory %s (errno: %d)\n", mod_dir, errno);
         exit(EXIT_FAILURE);
     }

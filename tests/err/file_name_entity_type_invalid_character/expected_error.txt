@@ -1,2 +1,2 @@
-Error: 'Foo#Bar' seems like a custom ID type, but it contains '#', which isn't uppercase/lowercase/a digit
-  err/file_name_entity_type_invalid_character/input-Foo#Bar.grug
+Error: 'Foo#Bar' seems like a custom ID type, but it contains '#', which isn't uppercase, lowercase, or a digit:
+$  err/file_name_entity_type_invalid_character/input-Foo#Bar.grug

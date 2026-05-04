@@ -1,3 +1,3 @@
   in on_a (err/mixing_custom_ids_game_fn_return_type/input-D.grug:2:14)
-Error: Can't assign Opponent to 'foo', which has type A
+Error: Can't assign Opponent to 'foo', which has type A:
 2 $ foo: A = get_opponent()

@@ -1,3 +1,3 @@
   in on_a (err/entity_string_must_be_prefixed/input-D.grug:2:11)
-Error: The host function 'spawn' expects an entity string, so put an 'e' in front of string "foo"
+Error: The host function 'spawn' expects an entity string, so put an 'e' in front of string "foo":
 2 $ spawn("foo")

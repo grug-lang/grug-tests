@@ -1,3 +1,3 @@
   in helper_foo (err/helper_fn_no_return_value_expected/input-D.grug:6:12)
-Error: Function 'helper_foo' wasn't supposed to return any value
+Error: Function 'helper_foo' wasn't supposed to return any value:
 6 $ return 42

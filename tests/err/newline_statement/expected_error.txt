@@ -1,3 +1,3 @@
-  in on_a (err/newline_statement/input-D.grug:2:1)
-Error: Expected line break, but got indentation (4 spaces)
+  in on_a (err/newline_statement/input-D.grug:2:5)
+Error: Unexpected empty line:
 2 $ 

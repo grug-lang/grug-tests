@@ -1,3 +1,3 @@
   in on_a (err/parameter_shadows_global_variable/input-F.grug:3:6)
-Error: The local variable 'x' shadows an earlier global variable
+Error: The local variable 'x' shadows an earlier global variable:
 3 $ on_a(x: number) {

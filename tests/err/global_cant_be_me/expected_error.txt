@@ -1,3 +1,3 @@
   in member scope (err/global_cant_be_me/input-A.grug:1:10)
-Error: Global variables can't be assigned 'me'
+Error: Global variables can't be assigned 'me':
 1 $ foo: A = me

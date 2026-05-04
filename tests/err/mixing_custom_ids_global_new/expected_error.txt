@@ -1,3 +1,3 @@
   in member scope (err/mixing_custom_ids_global_new/input-A.grug:2:10)
-Error: Can't assign Opponent to 'bar', which has type A
+Error: Can't assign Opponent to 'bar', which has type A:
 2 $ bar: A = foo

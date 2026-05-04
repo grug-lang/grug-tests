@@ -1,3 +1,3 @@
   in member scope (err/global_variable_contains_double_negation/input-A.grug:1:15)
-Error: Found '-' directly next to another '-', which can be simplified by just removing both of them
+Error: Found '-' directly next to another '-', which can be simplified by just removing both of them:
 1 $ foo: number = --2

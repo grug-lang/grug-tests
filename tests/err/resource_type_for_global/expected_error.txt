@@ -1,3 +1,3 @@
   in member scope (err/resource_type_for_global/input-A.grug:1:6)
-Error: The global variable 'foo' can't have 'resource' as its type
+Error: The global variable 'foo' can't have 'resource' as its type:
 1 $ foo: resource = "foo.png"

@@ -1,3 +1,3 @@
   in on_b (err/helper_fn_defined_between_on_fns/input-E.grug:9:1)
-Error: on_b() must be defined before all helper_ functions
+Error: on_b() must be defined before all helper_ functions:
 9 $ on_b() {

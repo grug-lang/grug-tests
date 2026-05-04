@@ -1,3 +1,3 @@
   in helper_foo (err/resource_cant_be_passed_to_helper_fn/input-D.grug:5:15)
-Error: The argument 'r' can't have 'resource' as its type
+Error: The argument 'r' can't have 'resource' as its type:
 5 $ helper_foo(r: resource) {

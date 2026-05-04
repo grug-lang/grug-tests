@@ -1,3 +1,3 @@
   in on_a (err/entity_mod_name_cant_be_current_mod/input-D.grug:2:11)
-Error: Entity string ('err:foo') cannot refer to its own mod
+Error: Entity string ('err:foo') cannot refer to its own mod:
 2 $ spawn(e"err:foo")

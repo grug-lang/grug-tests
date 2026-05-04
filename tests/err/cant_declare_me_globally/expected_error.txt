@@ -1,3 +1,3 @@
-  in member scope (err/cant_declare_me_globally/input-a.grug:1:1)
-Error: variable cannot be named 'me'
+  in member scope (err/cant_declare_me_globally/input-A.grug:1:1)
+Error: variable cannot be named 'me':
 1 $ me: number = 0

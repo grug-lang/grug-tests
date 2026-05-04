@@ -1,3 +1,3 @@
-  in member scope (err/number_period_twice_2/input-A.grug:1:15)
-Error: Encountered two '.' periods in a number on line 1
+  in (err/number_period_twice_2/input-A.grug:1:15)
+Error: Encountered two '.' periods in a number on line 1:
 1 $ initialize(1.2.3)

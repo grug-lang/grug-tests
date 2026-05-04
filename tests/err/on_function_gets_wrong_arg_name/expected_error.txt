@@ -1,3 +1,3 @@
   in on_a (err/on_function_gets_wrong_arg_name/input-F.grug:1:6)
-Error: Function 'on_a' its 'foo' parameter was supposed to be named 'x'
+Error: Function 'on_a' its 'foo' parameter was supposed to be named 'x':
 1 $ on_a(foo: number) {

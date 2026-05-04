@@ -1,3 +1,3 @@
   in on_a (err/local_variable_already_exists/input-D.grug:3:5)
-Error: The local variable 'foo' shadows an earlier local variable
+Error: The local variable 'foo' shadows an earlier local variable:
 3 $ foo: number = 69

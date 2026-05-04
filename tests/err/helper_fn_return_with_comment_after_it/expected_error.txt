@@ -1,3 +1,3 @@
-  in helper_foo (err/helper_fn_return_with_comment_after_it/input-D.grug:7:5)
-Error: Function 'helper_foo' is supposed to return number as its last line
-7 $ # foo
+  in helper_foo (err/helper_fn_return_with_comment_after_it/input-D.grug:5:1)
+Error: Function 'helper_foo' is supposed to return number as its last line:
+5 $ helper_foo() number {

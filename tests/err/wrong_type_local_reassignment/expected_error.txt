@@ -1,3 +1,3 @@
   in on_a (err/wrong_type_local_reassignment/input-D.grug:3:9)
-Error: Can't assign bool to 'a', which has type number
+Error: Can't assign bool to 'a', which has type number:
 3 $ a = true

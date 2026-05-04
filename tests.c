@@ -80,7 +80,7 @@ static const char *get_type_name[] = {
 
 #if defined(_WIN32) || defined(_WIN64)
 #include <windows.h>
-#define SLASH "\\"
+#define SLASH "/"
 #elif defined(__linux__)
 #include <sys/stat.h>
 #define SLASH "/"
@@ -224,6 +224,15 @@ static char runtime_error_on_fn_path[256];
 
 static bool streq(const char *a, const char *b) {
 	return strcmp(a, b) == 0;
+}
+
+static bool streq_normalized(const char *a, const char *b) {
+	while (1) {
+		if (*a == '\0' && *b == '\0') {return true;}
+		if (*a == '\0' || *b == '\0') {return false;}
+		if (*a == *b || ((*a == '\\' || *a == '/') && (*b == '\\' || *b == '/'))) {a++; b++; continue;}
+		return false;
+	}
 }
 
 static void call_export_fn_argless(void* grug_state, void* file_id, const char *on_fn_name) {
@@ -1068,6 +1077,13 @@ static const char *get_expected_error(const char *expected_error_path) {
 		expected_error[len] = '\0';
 	}
 
+	// Replace all instances of "/" in errors with SLASH
+	for (size_t i = 0; i < len; i++) {
+		if (expected_error[i] == '/') {
+			expected_error[i] = *SLASH;
+		}
+	}
+
 	return expected_error;
 }
 
@@ -1271,7 +1287,7 @@ static void test_error(
 		exit(EXIT_FAILURE);
 	}
 
-	if (!streq(msg, expected_error)) {
+	if (!streq_normalized(msg, expected_error)) {
 		fprintf(stderr, "\nError: The output differs from the expected output.\n");
 		fprintf(stderr, "Output:\n");
 		print_string_debug(msg);
@@ -4071,7 +4087,7 @@ void grug_tests_run(
 
 		const char *expected_error = get_expected_error(fn_data->expected_error_path);
 
-		if (!streq(runtime_error_reason, expected_error)) {
+		if (!streq_normalized(runtime_error_reason, expected_error)) {
 			fprintf(stderr, "\nError: The error message differs from the expected error message.\n");
 			fprintf(stderr, "Output:\n");
 			print_string_debug(runtime_error_reason);
@@ -4096,7 +4112,7 @@ void grug_tests_run(
 
 		const char *expected_error = get_expected_error(fn_data->expected_error_path);
 
-		if (!streq(runtime_error_reason, expected_error)) {
+		if (!streq_normalized(runtime_error_reason, expected_error)) {
 			fprintf(stderr, "\nError: The error message differs from the expected error message.\n");
 			fprintf(stderr, "Output:\n");
 			print_string_debug(runtime_error_reason);

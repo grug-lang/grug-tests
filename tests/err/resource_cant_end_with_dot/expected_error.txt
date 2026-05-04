@@ -1,3 +1,3 @@
   in on_a (err/resource_cant_end_with_dot/input-D.grug:2:10)
-Error: resource name "resource_can_contain_dot_2/foo." cannot end with .
+Error: resource name "resource_can_contain_dot_2/foo." cannot end with .:
 2 $ draw(r"resource_can_contain_dot_2/foo.")

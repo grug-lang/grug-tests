@@ -1,3 +1,3 @@
   in on_a (err/game_function_call_less_args_expected/input-D.grug:2:20)
-Error: Function call 'initialize' got an unexpected extra argument with type number
+Error: Function call 'initialize' got an unexpected extra argument with type number:
 2 $ initialize(42, 69)

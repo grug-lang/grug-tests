@@ -1,3 +1,3 @@
-  in on_a (err/variable_shadows_global_variable/input-D.grug:2:5)
-Error: The local variable 'x' shadows an earlier local variable
+  in on_a (err/variable_shadows_argument/input-F.grug:2:5)
+Error: The local variable 'x' shadows an earlier local variable:
 2 $ x: number = 42

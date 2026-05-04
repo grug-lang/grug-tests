@@ -1,3 +1,3 @@
   in on_a (err/i32_logical_not/input-D.grug:2:16)
-Error: Found 'not' before number, but it can only be put before a bool
+Error: Found 'not' before number, but it can only be put before a bool:
 2 $ initialize(not 0)

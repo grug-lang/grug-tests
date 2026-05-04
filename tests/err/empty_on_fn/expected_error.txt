@@ -1,3 +1,3 @@
-  in on_a (err/empty_on_fn/input-D.grug:5:1)
-Error: on_a() can't be empty
-5 $ }
+  in on_a (err/empty_on_fn/input-D.grug:1:1)
+Error: on_a() can't be empty:
+1 $ on_a() {

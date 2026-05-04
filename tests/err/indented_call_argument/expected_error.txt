@@ -1,3 +1,3 @@
   in on_a (err/indented_call_argument/input-D.grug:2:16)
-Error: Expected a primary expression token, but got line break ('\n')
+Error: Expected a primary expression token but got line break ('\n'):
 2 $ initialize(

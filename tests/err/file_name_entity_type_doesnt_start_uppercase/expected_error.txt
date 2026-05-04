@@ -1,2 +1,2 @@
-Error: 'a' seems like a custom ID type, but it doesn't start in Uppercase
-  err/file_name_entity_type_doesnt_start_uppercase/input-a.grug
+Error: 'a' seems like a custom ID type, but it doesn't start in Uppercase:
+$  err/file_name_entity_type_doesnt_start_uppercase/input-a.grug

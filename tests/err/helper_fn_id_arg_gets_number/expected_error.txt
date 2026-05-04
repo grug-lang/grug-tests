@@ -1,3 +1,3 @@
   in on_a (err/helper_fn_id_arg_gets_number/input-D.grug:2:16)
-Error: Function call 'helper_foo' expected the type id for argument 'x', but got number
+Error: Function call 'helper_foo' expected the type id for argument 'x', but got number:
 2 $ helper_foo(25)

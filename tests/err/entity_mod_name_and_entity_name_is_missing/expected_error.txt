@@ -1,3 +1,3 @@
   in on_a (err/entity_mod_name_and_entity_name_is_missing/input-D.grug:2:11)
-Error: Entity ':' is missing a mod name
+Error: Entity ':' is missing a mod name:
 2 $ spawn(e":")

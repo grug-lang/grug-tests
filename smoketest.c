@@ -164,19 +164,19 @@ static void call_export_fn(struct grug_state* grug_state, struct grug_file_id* f
     } else if (starts_with(grug_file_path, "err_runtime/game_fn_error/")) {
         CALL_ARGLESS(grug_state, cause_game_fn_error);
     } else if (starts_with(grug_file_path, "err_runtime/game_fn_error_once/")) {
-        if (streq(on_fn_name, "on_a")) {
+        if (streq(on_fn_name, "a")) {
             CALL_ARGLESS(grug_state, cause_game_fn_error);
         } else {
             CALL_ARGLESS(grug_state, nothing);
         }
     } else if (starts_with(grug_file_path, "err_runtime/on_fn_calls_erroring_on_fn/")) {
-        if (streq(on_fn_name, "on_a")) {
+        if (streq(on_fn_name, "a")) {
             CALL_ARGLESS(grug_state, call_on_b_fn);
         } else {
             CALL_ARGLESS(grug_state, cause_game_fn_error);
         }
     } else if (starts_with(grug_file_path, "err_runtime/on_fn_errors_after_it_calls_other_on_fn/")) {
-        if (streq(on_fn_name, "on_a")) {
+        if (streq(on_fn_name, "a")) {
 			const char* current_on_fn_name = on_fn_name;
             CALL_ARGLESS(grug_state, call_on_b_fn);
 			saved_on_fn_name = current_on_fn_name;

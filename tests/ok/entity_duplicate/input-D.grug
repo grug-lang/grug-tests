@@ -1,4 +1,4 @@
-on_a() {
+export a() {
     spawn(e"foo")
     spawn(e"bar")
     spawn(e"bar")

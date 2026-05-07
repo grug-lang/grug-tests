@@ -1,7 +1,7 @@
-on_a() {
-    helper_shout("foo")
+export a() {
+    _shout("foo")
 }
 
-helper_shout(message: string) {
+local _shout(message: string) {
     say(message)
 }

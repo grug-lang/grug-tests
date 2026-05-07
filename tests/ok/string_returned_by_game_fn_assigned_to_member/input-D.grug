@@ -1,5 +1,5 @@
 os: string = get_os()
 
-on_a() {
+export a() {
     has_string(os)
 }

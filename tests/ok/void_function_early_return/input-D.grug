@@ -1,8 +1,8 @@
-on_a() {
-    helper_foo()
+export a() {
+    _foo()
 }
 
-helper_foo() {
+local _foo() {
     nothing()
     return
     nothing()

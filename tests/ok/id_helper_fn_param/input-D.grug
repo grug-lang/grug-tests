@@ -1,7 +1,7 @@
-on_a() {
-    helper_foo(retrieve())
+export a() {
+    _foo(retrieve())
 }
 
-helper_foo(id: id) {
+local _foo(id: id) {
     store(id)
 }

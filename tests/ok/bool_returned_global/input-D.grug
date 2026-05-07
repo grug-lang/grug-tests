@@ -1,6 +1,6 @@
 getting_down: bool = false
 
-on_a() {
+export a() {
     getting_down = get_false()
     set_is_happy(getting_down)
 }

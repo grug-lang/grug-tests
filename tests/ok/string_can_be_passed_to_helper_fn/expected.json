@@ -1,6 +1,6 @@
 [
     {
-        "name": "on_a",
+        "name": "a",
         "statements": [
             {
                 "arguments": [
@@ -9,7 +9,7 @@
                         "type": "STRING_EXPR"
                     }
                 ],
-                "name": "helper_foo",
+                "name": "_foo",
                 "type": "CALL_STATEMENT"
             }
         ],
@@ -25,7 +25,7 @@
                 "type": "string"
             }
         ],
-        "name": "helper_foo",
+        "name": "_foo",
         "statements": [
             {
                 "arguments": [

@@ -1,4 +1,4 @@
-on_a() {
+export a() {
     foo = 1.0
 
     foo: number = 2.0

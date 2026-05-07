@@ -1,6 +1,6 @@
 [
     {
-        "name": "on_a",
+        "name": "a",
         "statements": [
             {
                 "arguments": [
@@ -11,7 +11,7 @@
                                 "value": "50"
                             }
                         ],
-                        "name": "helper_fib",
+                        "name": "_fib",
                         "type": "CALL_EXPR"
                     }
                 ],
@@ -31,7 +31,7 @@
                 "type": "number"
             }
         ],
-        "name": "helper_fib",
+        "name": "_fib",
         "return_type": "number",
         "statements": [
             {
@@ -91,7 +91,7 @@
                                 "type": "BINARY_EXPR"
                             }
                         ],
-                        "name": "helper_fib",
+                        "name": "_fib",
                         "type": "CALL_EXPR"
                     },
                     "operator": "PLUS_TOKEN",
@@ -110,7 +110,7 @@
                                 "type": "BINARY_EXPR"
                             }
                         ],
-                        "name": "helper_fib",
+                        "name": "_fib",
                         "type": "CALL_EXPR"
                     },
                     "type": "BINARY_EXPR"

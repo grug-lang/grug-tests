@@ -1,3 +1,3 @@
-on_a() {
-    on_a()
+export a() {
+    a()
 }

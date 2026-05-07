@@ -1,9 +1,9 @@
-on_a() {
+export a() {
     if true {
-        helper_foo()
+        _foo()
     }
 }
 
-helper_foo() {
+local _foo() {
     nothing()
 }

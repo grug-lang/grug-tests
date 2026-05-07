@@ -1,7 +1,7 @@
-on_a() {
-    has_string(helper_foo())
+export a() {
+    has_string(_foo())
 }
 
-helper_foo() string {
+local _foo() string {
     return get_os()
 }

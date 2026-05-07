@@ -6,7 +6,7 @@
                 "type": "number"
             }
         ],
-        "name": "on_a",
+        "name": "a",
         "statements": [
             {
                 "arguments": [
@@ -15,7 +15,7 @@
                         "value": "42"
                     }
                 ],
-                "name": "helper_foo",
+                "name": "_foo",
                 "type": "CALL_STATEMENT"
             },
             {
@@ -25,7 +25,7 @@
                         "value": "69"
                     }
                 ],
-                "name": "helper_bar",
+                "name": "_bar",
                 "type": "CALL_STATEMENT"
             }
         ],
@@ -41,7 +41,7 @@
                 "type": "number"
             }
         ],
-        "name": "helper_foo",
+        "name": "_foo",
         "statements": [
             {
                 "name": "nothing",
@@ -60,7 +60,7 @@
                 "type": "number"
             }
         ],
-        "name": "helper_bar",
+        "name": "_bar",
         "statements": [
             {
                 "name": "nothing",

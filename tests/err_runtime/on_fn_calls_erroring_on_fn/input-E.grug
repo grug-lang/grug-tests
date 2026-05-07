@@ -1,8 +1,8 @@
-on_a() {
+export a() {
     call_on_b_fn()
     nothing()
 }
 
-on_b() {
+export b() {
     cause_game_fn_error()
 }

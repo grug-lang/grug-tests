@@ -18,7 +18,7 @@
         "type": "GLOBAL_EMPTY_LINE"
     },
     {
-        "name": "on_a",
+        "name": "a",
         "statements": [
             {
                 "arguments": [

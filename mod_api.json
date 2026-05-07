@@ -5,31 +5,31 @@
 		},
 		"D": {
 			"description": "foo",
-			"on_functions": [
+			"export_functions": [
 				{
-					"name": "on_a",
+					"name": "a",
 					"description": "foo"
 				}
 			]
 		},
 		"E": {
 			"description": "foo",
-			"on_functions": [
+			"export_functions": [
 				{
-					"name": "on_a",
+					"name": "a",
 					"description": "foo"
 				},
 				{
-					"name": "on_b",
+					"name": "b",
 					"description": "foo"
 				}
 			]
 		},
 		"F": {
 			"description": "foo",
-			"on_functions": [
+			"export_functions": [
 				{
-					"name": "on_a",
+					"name": "a",
 					"description": "foo",
 					"arguments": [
 						{
@@ -42,9 +42,9 @@
 		},
 		"G": {
 			"description": "foo",
-			"on_functions": [
+			"export_functions": [
 				{
-					"name": "on_a",
+					"name": "a",
 					"description": "foo",
 					"arguments": [
 						{
@@ -61,26 +61,26 @@
 		},
 		"J": {
 			"description": "foo",
-			"on_functions": [
+			"export_functions": [
 				{
-					"name": "on_a",
+					"name": "a",
 					"description": "foo"
 				},
 				{
-					"name": "on_b",
+					"name": "b",
 					"description": "foo"
 				},
 				{
-					"name": "on_c",
+					"name": "c",
 					"description": "foo"
 				}
 			]
 		},
 		"R": {
 			"description": "foo",
-			"on_functions": [
+			"export_functions": [
 				{
-					"name": "on_a",
+					"name": "a",
 					"description": "foo",
 					"arguments": [
 						{
@@ -93,9 +93,9 @@
 		},
 		"S": {
 			"description": "foo",
-			"on_functions": [
+			"export_functions": [
 				{
-					"name": "on_a",
+					"name": "a",
 					"description": "foo",
 					"arguments": [
 						{
@@ -112,9 +112,9 @@
 		},
 		"T": {
 			"description": "foo",
-			"on_functions": [
+			"export_functions": [
 				{
-					"name": "on_a",
+					"name": "a",
 					"description": "foo",
 					"arguments": [
 						{
@@ -127,9 +127,9 @@
 		},
 		"U": {
 			"description": "foo",
-			"on_functions": [
+			"export_functions": [
 				{
-					"name": "on_a",
+					"name": "a",
 					"description": "foo",
 					"arguments": [
 						{
@@ -141,7 +141,7 @@
 			]
 		}
 	},
-	"game_functions": {
+	"host_functions": {
 		"blocked_alrm": {
 			"description": "foo"
 		},

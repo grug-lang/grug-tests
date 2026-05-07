@@ -1,5 +1,5 @@
 foo: string
 
-on_a() {
+export a() {
     initialize(foo)
 }

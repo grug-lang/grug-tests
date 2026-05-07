@@ -1,5 +1,5 @@
 a: number = false
 
-on_a() {
+export a() {
     nothing()
 }

@@ -1,4 +1,4 @@
-on_a() {
+export a() {
     initialize(foo)
 
     foo: number = 42

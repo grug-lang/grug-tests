@@ -1,4 +1,4 @@
-on_a() {
+export a() {
     opponent: Opponent = get_opponent()
     set_opponent(opponent)
 }

@@ -1,5 +1,5 @@
-on_a() {
-    helper_foo()
+export a() {
+    _foo()
 
     while true {
     }
@@ -7,6 +7,6 @@ on_a() {
     foo: number = 1 + 1
 }
 
-helper_foo() {
-    helper_foo()
+local _foo() {
+    _foo()
 }

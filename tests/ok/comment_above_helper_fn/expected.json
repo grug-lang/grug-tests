@@ -1,9 +1,9 @@
 [
     {
-        "name": "on_a",
+        "name": "a",
         "statements": [
             {
-                "name": "helper_foo",
+                "name": "_foo",
                 "type": "CALL_STATEMENT"
             }
         ],
@@ -21,7 +21,7 @@
         "type": "GLOBAL_COMMENT"
     },
     {
-        "name": "helper_foo",
+        "name": "_foo",
         "statements": [
             {
                 "name": "nothing",

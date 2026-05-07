@@ -1,12 +1,12 @@
-on_a(x: number) {
-    helper_foo(42)
-    helper_bar(69)
+export a(x: number) {
+    _foo(42)
+    _bar(69)
 }
 
-helper_foo(x: number) {
+local _foo(x: number) {
     nothing()
 }
 
-helper_bar(x: number) {
+local _bar(x: number) {
     nothing()
 }

@@ -1,5 +1,5 @@
-foo: number = helper_bar()
+foo: number = _bar()
 
-helper_bar() number {
+local _bar() number {
     return 42
 }

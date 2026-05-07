@@ -1,4 +1,4 @@
-on_a() {
+export a() {
     helper_foo(42, 69)
 }
 

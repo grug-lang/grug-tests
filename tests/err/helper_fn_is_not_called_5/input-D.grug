@@ -1,11 +1,11 @@
-helper_foo() {
-    helper_bar()
+local _foo() {
+    _bar()
 }
 
-helper_baz() {
-    helper_foo()
+local _baz() {
+    _foo()
 }
 
-helper_bar() {
-    helper_foo()
+local _bar() {
+    _foo()
 }

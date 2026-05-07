@@ -1,4 +1,4 @@
-on_a() {
+export a() {
     x: number = sin(4.0)
     cos(x)
 }

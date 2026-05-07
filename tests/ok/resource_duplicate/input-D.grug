@@ -1,4 +1,4 @@
-on_a() {
+export a() {
     draw(r"resource_duplicate/foo.txt")
     draw(r"resource_duplicate/bar.txt")
     draw(r"resource_duplicate/bar.txt")

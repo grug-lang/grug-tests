@@ -1,6 +1,6 @@
-on_a() {
+export a() {
     nothing()
 }
-helper_a() {
+local _a() {
     nothing()
 }

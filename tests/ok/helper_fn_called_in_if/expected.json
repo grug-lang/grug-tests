@@ -1,6 +1,6 @@
 [
     {
-        "name": "on_a",
+        "name": "a",
         "statements": [
             {
                 "condition": {
@@ -8,7 +8,7 @@
                 },
                 "if_statements": [
                     {
-                        "name": "helper_foo",
+                        "name": "_foo",
                         "type": "CALL_STATEMENT"
                     }
                 ],
@@ -21,7 +21,7 @@
         "type": "GLOBAL_EMPTY_LINE"
     },
     {
-        "name": "helper_foo",
+        "name": "_foo",
         "statements": [
             {
                 "name": "nothing",

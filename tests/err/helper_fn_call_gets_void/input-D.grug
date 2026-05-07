@@ -1,11 +1,11 @@
-on_a() {
-    helper_foo(helper_bar())
+export a() {
+    _foo(_bar())
 }
 
-helper_foo(x: number) {
+local _foo(x: number) {
     initialize(x)
 }
 
-helper_bar() {
+local _bar() {
     return 42
 }

@@ -1,9 +1,9 @@
-on_a() {
-    helper_foo()
+export a() {
+    _foo()
 }
 
 # foo
 # bar
-helper_foo() {
+local _foo() {
     nothing()
 }

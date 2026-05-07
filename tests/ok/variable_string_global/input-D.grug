@@ -1,6 +1,6 @@
 message: string = "temp"
 
-on_a() {
+export a() {
     message = "foo"
     say(message)
 }

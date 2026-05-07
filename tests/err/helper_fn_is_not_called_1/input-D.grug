@@ -1,2 +1,2 @@
-helper_foo() {
+local _foo() {
 }

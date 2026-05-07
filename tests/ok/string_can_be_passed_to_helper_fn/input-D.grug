@@ -1,7 +1,7 @@
-on_a() {
-    helper_foo("foo")
+export a() {
+    _foo("foo")
 }
 
-helper_foo(s: string) {
+local _foo(s: string) {
     say(s)
 }

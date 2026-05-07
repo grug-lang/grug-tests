@@ -1,7 +1,7 @@
-helper_foo() {
-    helper_bar()
+local _foo() {
+    _bar()
 }
 
-helper_bar() {
-    helper_foo()
+local _bar() {
+    _foo()
 }

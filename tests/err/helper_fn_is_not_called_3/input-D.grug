@@ -1,6 +1,6 @@
-helper_foo() {
+local _foo() {
 }
 
-helper_bar() {
-    helper_foo()
+local _bar() {
+    _foo()
 }

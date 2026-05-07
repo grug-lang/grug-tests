@@ -1,7 +1,7 @@
 a: number = 420
 b: number = 1337
 
-on_a() {
+export a() {
     initialize(a)
     initialize(b)
 }

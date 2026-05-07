@@ -1,8 +1,8 @@
-on_a() {
-    helper_foo(42, 69)
+export a() {
+    _foo(42, 69)
 }
 
-helper_foo(
+local _foo(
     x: number,
     y: number
 ) {

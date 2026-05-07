@@ -1,12 +1,12 @@
-on_a() {
-    helper_foo()
-    helper_bar()
+export a() {
+    _foo()
+    _bar()
 }
 
-helper_foo() {
+local _foo() {
     nothing()
 }
 
-helper_bar() {
+local _bar() {
     initialize(42)
 }

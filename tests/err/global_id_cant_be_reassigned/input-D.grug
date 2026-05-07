@@ -1,5 +1,5 @@
 foo: Opponent = get_opponent()
 
-on_a() {
+export a() {
     foo = get_opponent()
 }

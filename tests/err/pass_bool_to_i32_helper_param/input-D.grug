@@ -1,7 +1,7 @@
-on_a() {
-    helper_foo(true)
+export a() {
+    _foo(true)
 }
 
-helper_foo(x: number) {
+local _foo(x: number) {
     nothing()
 }

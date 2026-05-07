@@ -1,4 +1,4 @@
-on_a(x: number) {
+export a(x: number) {
     x: number = 42
     initialize(x)
 }

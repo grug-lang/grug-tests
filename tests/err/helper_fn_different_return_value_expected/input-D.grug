@@ -1,7 +1,7 @@
-on_a() {
-    helper_fib()
+export a() {
+    _fib()
 }
 
-helper_fib() string {
+local _fib() string {
     return 42
 }

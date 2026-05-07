@@ -1,4 +1,4 @@
-on_a() {
+export a() {
     if true {
         a: number = 42
         initialize(a)

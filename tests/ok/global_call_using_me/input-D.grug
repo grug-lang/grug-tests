@@ -1,5 +1,5 @@
 pos: Position = get_position(me)
 
-on_a() {
+export a() {
     set_position(pos)
 }

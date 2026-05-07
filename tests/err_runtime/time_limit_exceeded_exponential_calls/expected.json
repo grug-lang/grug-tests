@@ -1,13 +1,13 @@
 [
     {
-        "name": "on_a",
+        "name": "a",
         "statements": [
             {
-                "name": "helper_a",
+                "name": "_a",
                 "type": "CALL_STATEMENT"
             },
             {
-                "name": "helper_a",
+                "name": "_a",
                 "type": "CALL_STATEMENT"
             }
         ],
@@ -17,14 +17,14 @@
         "type": "GLOBAL_EMPTY_LINE"
     },
     {
-        "name": "helper_a",
+        "name": "_a",
         "statements": [
             {
-                "name": "helper_b",
+                "name": "_b",
                 "type": "CALL_STATEMENT"
             },
             {
-                "name": "helper_b",
+                "name": "_b",
                 "type": "CALL_STATEMENT"
             }
         ],
@@ -34,14 +34,14 @@
         "type": "GLOBAL_EMPTY_LINE"
     },
     {
-        "name": "helper_b",
+        "name": "_b",
         "statements": [
             {
-                "name": "helper_c",
+                "name": "_c",
                 "type": "CALL_STATEMENT"
             },
             {
-                "name": "helper_c",
+                "name": "_c",
                 "type": "CALL_STATEMENT"
             }
         ],
@@ -51,14 +51,14 @@
         "type": "GLOBAL_EMPTY_LINE"
     },
     {
-        "name": "helper_c",
+        "name": "_c",
         "statements": [
             {
-                "name": "helper_d",
+                "name": "_d",
                 "type": "CALL_STATEMENT"
             },
             {
-                "name": "helper_d",
+                "name": "_d",
                 "type": "CALL_STATEMENT"
             }
         ],
@@ -68,14 +68,14 @@
         "type": "GLOBAL_EMPTY_LINE"
     },
     {
-        "name": "helper_d",
+        "name": "_d",
         "statements": [
             {
-                "name": "helper_e",
+                "name": "_e",
                 "type": "CALL_STATEMENT"
             },
             {
-                "name": "helper_e",
+                "name": "_e",
                 "type": "CALL_STATEMENT"
             }
         ],
@@ -85,14 +85,14 @@
         "type": "GLOBAL_EMPTY_LINE"
     },
     {
-        "name": "helper_e",
+        "name": "_e",
         "statements": [
             {
-                "name": "helper_f",
+                "name": "_f",
                 "type": "CALL_STATEMENT"
             },
             {
-                "name": "helper_f",
+                "name": "_f",
                 "type": "CALL_STATEMENT"
             }
         ],
@@ -102,14 +102,14 @@
         "type": "GLOBAL_EMPTY_LINE"
     },
     {
-        "name": "helper_f",
+        "name": "_f",
         "statements": [
             {
-                "name": "helper_g",
+                "name": "_g",
                 "type": "CALL_STATEMENT"
             },
             {
-                "name": "helper_g",
+                "name": "_g",
                 "type": "CALL_STATEMENT"
             }
         ],
@@ -119,14 +119,14 @@
         "type": "GLOBAL_EMPTY_LINE"
     },
     {
-        "name": "helper_g",
+        "name": "_g",
         "statements": [
             {
-                "name": "helper_h",
+                "name": "_h",
                 "type": "CALL_STATEMENT"
             },
             {
-                "name": "helper_h",
+                "name": "_h",
                 "type": "CALL_STATEMENT"
             }
         ],
@@ -136,14 +136,14 @@
         "type": "GLOBAL_EMPTY_LINE"
     },
     {
-        "name": "helper_h",
+        "name": "_h",
         "statements": [
             {
-                "name": "helper_i",
+                "name": "_i",
                 "type": "CALL_STATEMENT"
             },
             {
-                "name": "helper_i",
+                "name": "_i",
                 "type": "CALL_STATEMENT"
             }
         ],
@@ -153,14 +153,14 @@
         "type": "GLOBAL_EMPTY_LINE"
     },
     {
-        "name": "helper_i",
+        "name": "_i",
         "statements": [
             {
-                "name": "helper_j",
+                "name": "_j",
                 "type": "CALL_STATEMENT"
             },
             {
-                "name": "helper_j",
+                "name": "_j",
                 "type": "CALL_STATEMENT"
             }
         ],
@@ -170,14 +170,14 @@
         "type": "GLOBAL_EMPTY_LINE"
     },
     {
-        "name": "helper_j",
+        "name": "_j",
         "statements": [
             {
-                "name": "helper_k",
+                "name": "_k",
                 "type": "CALL_STATEMENT"
             },
             {
-                "name": "helper_k",
+                "name": "_k",
                 "type": "CALL_STATEMENT"
             }
         ],
@@ -187,14 +187,14 @@
         "type": "GLOBAL_EMPTY_LINE"
     },
     {
-        "name": "helper_k",
+        "name": "_k",
         "statements": [
             {
-                "name": "helper_l",
+                "name": "_l",
                 "type": "CALL_STATEMENT"
             },
             {
-                "name": "helper_l",
+                "name": "_l",
                 "type": "CALL_STATEMENT"
             }
         ],
@@ -204,14 +204,14 @@
         "type": "GLOBAL_EMPTY_LINE"
     },
     {
-        "name": "helper_l",
+        "name": "_l",
         "statements": [
             {
-                "name": "helper_m",
+                "name": "_m",
                 "type": "CALL_STATEMENT"
             },
             {
-                "name": "helper_m",
+                "name": "_m",
                 "type": "CALL_STATEMENT"
             }
         ],
@@ -221,14 +221,14 @@
         "type": "GLOBAL_EMPTY_LINE"
     },
     {
-        "name": "helper_m",
+        "name": "_m",
         "statements": [
             {
-                "name": "helper_n",
+                "name": "_n",
                 "type": "CALL_STATEMENT"
             },
             {
-                "name": "helper_n",
+                "name": "_n",
                 "type": "CALL_STATEMENT"
             }
         ],
@@ -238,14 +238,14 @@
         "type": "GLOBAL_EMPTY_LINE"
     },
     {
-        "name": "helper_n",
+        "name": "_n",
         "statements": [
             {
-                "name": "helper_o",
+                "name": "_o",
                 "type": "CALL_STATEMENT"
             },
             {
-                "name": "helper_o",
+                "name": "_o",
                 "type": "CALL_STATEMENT"
             }
         ],
@@ -255,14 +255,14 @@
         "type": "GLOBAL_EMPTY_LINE"
     },
     {
-        "name": "helper_o",
+        "name": "_o",
         "statements": [
             {
-                "name": "helper_p",
+                "name": "_p",
                 "type": "CALL_STATEMENT"
             },
             {
-                "name": "helper_p",
+                "name": "_p",
                 "type": "CALL_STATEMENT"
             }
         ],
@@ -272,14 +272,14 @@
         "type": "GLOBAL_EMPTY_LINE"
     },
     {
-        "name": "helper_p",
+        "name": "_p",
         "statements": [
             {
-                "name": "helper_q",
+                "name": "_q",
                 "type": "CALL_STATEMENT"
             },
             {
-                "name": "helper_q",
+                "name": "_q",
                 "type": "CALL_STATEMENT"
             }
         ],
@@ -289,14 +289,14 @@
         "type": "GLOBAL_EMPTY_LINE"
     },
     {
-        "name": "helper_q",
+        "name": "_q",
         "statements": [
             {
-                "name": "helper_r",
+                "name": "_r",
                 "type": "CALL_STATEMENT"
             },
             {
-                "name": "helper_r",
+                "name": "_r",
                 "type": "CALL_STATEMENT"
             }
         ],
@@ -306,14 +306,14 @@
         "type": "GLOBAL_EMPTY_LINE"
     },
     {
-        "name": "helper_r",
+        "name": "_r",
         "statements": [
             {
-                "name": "helper_s",
+                "name": "_s",
                 "type": "CALL_STATEMENT"
             },
             {
-                "name": "helper_s",
+                "name": "_s",
                 "type": "CALL_STATEMENT"
             }
         ],
@@ -323,14 +323,14 @@
         "type": "GLOBAL_EMPTY_LINE"
     },
     {
-        "name": "helper_s",
+        "name": "_s",
         "statements": [
             {
-                "name": "helper_t",
+                "name": "_t",
                 "type": "CALL_STATEMENT"
             },
             {
-                "name": "helper_t",
+                "name": "_t",
                 "type": "CALL_STATEMENT"
             }
         ],
@@ -340,14 +340,14 @@
         "type": "GLOBAL_EMPTY_LINE"
     },
     {
-        "name": "helper_t",
+        "name": "_t",
         "statements": [
             {
-                "name": "helper_u",
+                "name": "_u",
                 "type": "CALL_STATEMENT"
             },
             {
-                "name": "helper_u",
+                "name": "_u",
                 "type": "CALL_STATEMENT"
             }
         ],
@@ -357,14 +357,14 @@
         "type": "GLOBAL_EMPTY_LINE"
     },
     {
-        "name": "helper_u",
+        "name": "_u",
         "statements": [
             {
-                "name": "helper_v",
+                "name": "_v",
                 "type": "CALL_STATEMENT"
             },
             {
-                "name": "helper_v",
+                "name": "_v",
                 "type": "CALL_STATEMENT"
             }
         ],
@@ -374,14 +374,14 @@
         "type": "GLOBAL_EMPTY_LINE"
     },
     {
-        "name": "helper_v",
+        "name": "_v",
         "statements": [
             {
-                "name": "helper_w",
+                "name": "_w",
                 "type": "CALL_STATEMENT"
             },
             {
-                "name": "helper_w",
+                "name": "_w",
                 "type": "CALL_STATEMENT"
             }
         ],
@@ -391,14 +391,14 @@
         "type": "GLOBAL_EMPTY_LINE"
     },
     {
-        "name": "helper_w",
+        "name": "_w",
         "statements": [
             {
-                "name": "helper_x",
+                "name": "_x",
                 "type": "CALL_STATEMENT"
             },
             {
-                "name": "helper_x",
+                "name": "_x",
                 "type": "CALL_STATEMENT"
             }
         ],
@@ -408,14 +408,14 @@
         "type": "GLOBAL_EMPTY_LINE"
     },
     {
-        "name": "helper_x",
+        "name": "_x",
         "statements": [
             {
-                "name": "helper_y",
+                "name": "_y",
                 "type": "CALL_STATEMENT"
             },
             {
-                "name": "helper_y",
+                "name": "_y",
                 "type": "CALL_STATEMENT"
             }
         ],
@@ -425,14 +425,14 @@
         "type": "GLOBAL_EMPTY_LINE"
     },
     {
-        "name": "helper_y",
+        "name": "_y",
         "statements": [
             {
-                "name": "helper_z",
+                "name": "_z",
                 "type": "CALL_STATEMENT"
             },
             {
-                "name": "helper_z",
+                "name": "_z",
                 "type": "CALL_STATEMENT"
             }
         ],
@@ -442,7 +442,7 @@
         "type": "GLOBAL_EMPTY_LINE"
     },
     {
-        "name": "helper_z",
+        "name": "_z",
         "statements": [
             {
                 "name": "nothing",

@@ -1,6 +1,6 @@
 a: number = 0.0
 a: number = 1.0
 
-on_a() {
+export a() {
     nothing()
 }

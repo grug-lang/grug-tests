@@ -1,11 +1,11 @@
-on_a() {
+export a() {
     nothing()
 }
 
-on_b() {
+export b() {
     nothing()
 }
 
-on_c() {
+export c() {
     nothing()
 }

@@ -12,7 +12,7 @@
         "type": "GLOBAL_EMPTY_LINE"
     },
     {
-        "name": "on_a",
+        "name": "a",
         "statements": [
             {
                 "arguments": [
@@ -109,7 +109,7 @@
                         "value": "8.0"
                     }
                 ],
-                "name": "helper_foo",
+                "name": "_foo",
                 "type": "CALL_STATEMENT"
             }
         ],
@@ -213,7 +213,7 @@
                 "type": "number"
             }
         ],
-        "name": "helper_foo",
+        "name": "_foo",
         "statements": [
             {
                 "arguments": [

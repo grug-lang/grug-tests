@@ -1,10 +1,10 @@
-on_a() {
-    initialize(helper_fib(10))
+export a() {
+    initialize(_fib(10))
 }
 
-helper_fib(n: number) number {
+local _fib(n: number) number {
     if n == 0 or n == 1 {
         return n
     }
-    return helper_fib(n - 1) + helper_fib(n - 2)
+    return _fib(n - 1) + _fib(n - 2)
 }

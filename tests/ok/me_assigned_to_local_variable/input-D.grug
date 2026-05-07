@@ -1,4 +1,4 @@
-on_a() {
+export a() {
     foo: D = me
     set_d(foo)
 }

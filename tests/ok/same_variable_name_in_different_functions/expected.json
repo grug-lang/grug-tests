@@ -1,6 +1,6 @@
 [
     {
-        "name": "on_a",
+        "name": "a",
         "statements": [
             {
                 "assignment": {
@@ -25,7 +25,7 @@
                 "type": "EMPTY_LINE_STATEMENT"
             },
             {
-                "name": "helper_bar",
+                "name": "_bar",
                 "type": "CALL_STATEMENT"
             }
         ],
@@ -35,7 +35,7 @@
         "type": "GLOBAL_EMPTY_LINE"
     },
     {
-        "name": "on_b",
+        "name": "b",
         "statements": [
             {
                 "assignment": {
@@ -63,7 +63,7 @@
         "type": "GLOBAL_EMPTY_LINE"
     },
     {
-        "name": "helper_bar",
+        "name": "_bar",
         "statements": [
             {
                 "assignment": {

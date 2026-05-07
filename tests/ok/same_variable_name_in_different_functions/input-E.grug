@@ -1,16 +1,16 @@
-on_a() {
+export a() {
     foo: number = 42
     initialize(foo)
 
-    helper_bar()
+    _bar()
 }
 
-on_b() {
+export b() {
     foo: number = 1337
     initialize(foo)
 }
 
-helper_bar() {
+local _bar() {
     foo: number = 69
     initialize(foo)
 }

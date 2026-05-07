@@ -1,5 +1,5 @@
-foo: number = on_a()
+foo: number = a()
 
-on_a() {
+export a() {
     nothing()
 }

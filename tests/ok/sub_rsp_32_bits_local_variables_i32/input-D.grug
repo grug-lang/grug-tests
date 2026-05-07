@@ -1,4 +1,4 @@
-on_a() {
+export a() {
     v1: number = 1
     initialize(v1)
     v2: number = 2

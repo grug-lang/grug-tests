@@ -1,7 +1,7 @@
 foo: number = 42
 bar: number = 69
 
-on_a() {
+export a() {
     foo = foo + 1
 
     max(foo, bar)

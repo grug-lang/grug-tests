@@ -1,4 +1,4 @@
-on_a() {
+export a() {
     nothing()
 }
 

@@ -1,6 +1,6 @@
 [
     {
-        "name": "on_a",
+        "name": "a",
         "statements": [
             {
                 "name": "nothing",
@@ -13,7 +13,7 @@
         "type": "GLOBAL_EMPTY_LINE"
     },
     {
-        "name": "on_b",
+        "name": "b",
         "statements": [
             {
                 "name": "nothing",

@@ -1,11 +1,11 @@
 [
     {
-        "name": "on_a",
+        "name": "a",
         "statements": [
             {
                 "arguments": [
                     {
-                        "name": "helper_foo",
+                        "name": "_foo",
                         "type": "CALL_EXPR"
                     }
                 ],
@@ -19,7 +19,7 @@
         "type": "GLOBAL_EMPTY_LINE"
     },
     {
-        "name": "helper_foo",
+        "name": "_foo",
         "return_type": "string",
         "statements": [
             {

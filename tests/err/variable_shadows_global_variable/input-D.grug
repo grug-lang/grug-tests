@@ -1,6 +1,6 @@
 x: number = 42
 
-on_a() {
+export a() {
     if true {
         x: number = 69
         initialize(x)

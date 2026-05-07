@@ -1,6 +1,6 @@
-helper_foo() {
+local _foo() {
 }
 
-on_a() {
-    helper_foo()
+export a() {
+    _foo()
 }

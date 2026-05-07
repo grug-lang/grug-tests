@@ -1,133 +1,133 @@
-on_a() {
-    helper_a()
-    helper_a()
+export a() {
+    _a()
+    _a()
 }
 
-helper_a() {
-    helper_b()
-    helper_b()
+local _a() {
+    _b()
+    _b()
 }
 
-helper_b() {
-    helper_c()
-    helper_c()
+local _b() {
+    _c()
+    _c()
 }
 
-helper_c() {
-    helper_d()
-    helper_d()
+local _c() {
+    _d()
+    _d()
 }
 
-helper_d() {
-    helper_e()
-    helper_e()
+local _d() {
+    _e()
+    _e()
 }
 
-helper_e() {
-    helper_f()
-    helper_f()
+local _e() {
+    _f()
+    _f()
 }
 
-helper_f() {
-    helper_g()
-    helper_g()
+local _f() {
+    _g()
+    _g()
 }
 
-helper_g() {
-    helper_h()
-    helper_h()
+local _g() {
+    _h()
+    _h()
 }
 
-helper_h() {
-    helper_i()
-    helper_i()
+local _h() {
+    _i()
+    _i()
 }
 
-helper_i() {
-    helper_j()
-    helper_j()
+local _i() {
+    _j()
+    _j()
 }
 
-helper_j() {
-    helper_k()
-    helper_k()
+local _j() {
+    _k()
+    _k()
 }
 
-helper_k() {
-    helper_l()
-    helper_l()
+local _k() {
+    _l()
+    _l()
 }
 
-helper_l() {
-    helper_m()
-    helper_m()
+local _l() {
+    _m()
+    _m()
 }
 
-helper_m() {
-    helper_n()
-    helper_n()
+local _m() {
+    _n()
+    _n()
 }
 
-helper_n() {
-    helper_o()
-    helper_o()
+local _n() {
+    _o()
+    _o()
 }
 
-helper_o() {
-    helper_p()
-    helper_p()
+local _o() {
+    _p()
+    _p()
 }
 
-helper_p() {
-    helper_q()
-    helper_q()
+local _p() {
+    _q()
+    _q()
 }
 
-helper_q() {
-    helper_r()
-    helper_r()
+local _q() {
+    _r()
+    _r()
 }
 
-helper_r() {
-    helper_s()
-    helper_s()
+local _r() {
+    _s()
+    _s()
 }
 
-helper_s() {
-    helper_t()
-    helper_t()
+local _s() {
+    _t()
+    _t()
 }
 
-helper_t() {
-    helper_u()
-    helper_u()
+local _t() {
+    _u()
+    _u()
 }
 
-helper_u() {
-    helper_v()
-    helper_v()
+local _u() {
+    _v()
+    _v()
 }
 
-helper_v() {
-    helper_w()
-    helper_w()
+local _v() {
+    _w()
+    _w()
 }
 
-helper_w() {
-    helper_x()
-    helper_x()
+local _w() {
+    _x()
+    _x()
 }
 
-helper_x() {
-    helper_y()
-    helper_y()
+local _x() {
+    _y()
+    _y()
 }
 
-helper_y() {
-    helper_z()
-    helper_z()
+local _y() {
+    _z()
+    _z()
 }
 
-helper_z() {
+local _z() {
     nothing()
 }

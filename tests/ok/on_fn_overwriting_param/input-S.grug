@@ -1,4 +1,4 @@
-on_a(i: number, f: number) {
+export a(i: number, f: number) {
     i = 20
     initialize(i)
 

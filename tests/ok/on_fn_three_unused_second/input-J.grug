@@ -1,7 +1,7 @@
-on_a() {
+export a() {
     nothing()
 }
 
-on_c() {
+export c() {
     nothing()
 }

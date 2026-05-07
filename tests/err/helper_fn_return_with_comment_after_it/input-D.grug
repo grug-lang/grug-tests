@@ -1,8 +1,8 @@
-on_a() {
-    initialize(helper_foo())
+export a() {
+    initialize(_foo())
 }
 
-helper_foo() number {
+local _foo() number {
     return 42
     # foo
 }

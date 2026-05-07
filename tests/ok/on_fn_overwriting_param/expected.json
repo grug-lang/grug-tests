@@ -10,7 +10,7 @@
                 "type": "number"
             }
         ],
-        "name": "on_a",
+        "name": "a",
         "statements": [
             {
                 "assignment": {

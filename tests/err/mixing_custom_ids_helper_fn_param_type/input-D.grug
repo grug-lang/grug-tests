@@ -1,7 +1,7 @@
-on_a() {
-    helper_foo(me)
+export a() {
+    _foo(me)
 }
 
-helper_foo(foo: Opponent) {
+local _foo(foo: Opponent) {
     set_opponent(foo)
 }

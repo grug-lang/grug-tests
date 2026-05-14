@@ -913,8 +913,9 @@ static void load_tests_library(void) {
 	#pragma GCC diagnostic pop
 }
 
-static struct grug_state* create_grug_state(const char* mod_api_path, const char* mods_dir) {
+static struct grug_state* create_grug_state(const char* mod_api_path, const char* mods_dir, bool safe_mode) {
 	(void)mods_dir;
+    (void)safe_mode;
     if (starts_with(mod_api_path, "tests"SLASH"err_mod_api"SLASH)) {
         return NULL;
     }

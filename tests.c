@@ -1218,7 +1218,7 @@ static void run_err_mod_api_test(const char *name) {
 		exit(EXIT_FAILURE);
 	}
 
-	void* grug_state = create_grug_state(path, tests_dir_path);
+	void* grug_state = create_grug_state(path, tests_dir_path, true);
 	if (grug_state) {
 		fprintf(stderr, "Error: Expected create_grug_state(\"%s\", \"%s\") to return NULL\n", path, tests_dir_path);
 		exit(EXIT_FAILURE);
@@ -1263,6 +1263,19 @@ static void test_error(
 		print_string_debug(expected_error);
 
 		exit(EXIT_FAILURE);
+	}
+}
+
+static void run_err_tests(struct grug_state *grug_state) {
+	for (size_t i = 0; i < err_test_datas_size; i++) {
+		struct error_test_data fn_data = error_test_datas[i];
+
+		test_error(
+			grug_state,
+			fn_data.test_name_str,
+			fn_data.grug_path,
+			fn_data.expected_error_path
+		);
 	}
 }
 
@@ -1636,7 +1649,8 @@ static void test_code_reloading_empty_file(void) {
 
 	void* grug_state = create_grug_state(
 		mod_api_path,
-		local_temp_dir
+		local_temp_dir,
+		true
 	);
 	if (!grug_state) {
 		fprintf(stderr, "Error: Failed to create grug state\n");
@@ -1718,7 +1732,8 @@ static void test_code_reloading(void) {
 
 	void* grug_state = create_grug_state(
 		mod_api_path,
-		local_temp_dir
+		local_temp_dir,
+		true
 	);
 	if (!grug_state) {
 		fprintf(stderr, "Error: Failed to create grug state\n");
@@ -1781,6 +1796,29 @@ static void test_code_reloading(void) {
 	remove_dir_recursive(local_temp_dir);
 }
 
+static void rerun_ok_tests(struct grug_state *grug_state) {
+	for (size_t i = 0; i < ok_test_datas_size; i++) {
+		struct ok_test_data* fn_data = &ok_test_datas[i];
+
+		printf("Rerunning tests/ok/%s...\n", fn_data->test_name_str);
+		fflush(stdout);
+		reset();
+
+		const char *msg = impl_forgot_to_set_msg;
+		struct grug_entity_id* entity = create_entity(grug_state, fn_data->file, &msg);
+		if (msg) {
+			fprintf(stderr, "Error creating entity: %s\n", msg);
+			exit(EXIT_FAILURE);
+		}
+
+		current_entity = entity;
+		fn_data->run(grug_state, entity);
+
+		destroy_entity(grug_state, entity);
+		destroy_grug_file(grug_state, fn_data->file);
+	}
+}
+
 static struct grug_file_id* prologue(void* grug_state, const char *grug_path) {
 	const char *msg = impl_forgot_to_set_msg;
 	struct grug_file_id *file = compile_grug_file(grug_state, grug_path, &msg);
@@ -1793,6 +1831,117 @@ static struct grug_file_id* prologue(void* grug_state, const char *grug_path) {
 		exit(EXIT_FAILURE);
 	}
 	return file;
+}
+
+static void rerun_err_runtime_tests(struct grug_state *grug_state) {
+	for (size_t i = 0; i < err_runtime_test_datas_size; i++) {
+		struct runtime_error_test_data* fn_data = &runtime_error_test_datas[i];
+
+		printf("Rerunning tests/err_runtime/%s...\n", fn_data->test_name_str);
+		fflush(stdout);
+		reset();
+
+		const char *msg = impl_forgot_to_set_msg;
+		struct grug_entity_id* entity = create_entity(grug_state, fn_data->file, &msg);
+
+		// If the error happened inside create_entity(), don't call run()
+		if (msg) {
+			memcpy(runtime_error_reason, msg, strlen(msg) + 1);
+		} else {
+			current_entity = entity;
+			fn_data->run(grug_state, entity);	
+		}
+
+		const char *expected_error = get_expected_error(fn_data->expected_error_path);
+
+		if (!streq(runtime_error_reason, expected_error)) {
+			fprintf(stderr, "\nError: The error message differs from the expected error message.\n");
+			fprintf(stderr, "Output:\n");
+			print_string_debug(runtime_error_reason);
+
+			fprintf(stderr, "Expected:\n");
+			print_string_debug(expected_error);
+
+			exit(EXIT_FAILURE);
+		}
+
+		if (!msg) {
+			destroy_entity(grug_state, entity);
+		}
+
+		destroy_grug_file(grug_state, fn_data->file);
+	}
+}
+
+static void run_err_runtime_tests(struct grug_state *grug_state) {
+	for (size_t i = 0; i < err_runtime_test_datas_size; i++) {
+		struct runtime_error_test_data* fn_data = &runtime_error_test_datas[i];
+
+		printf("Running tests/err_runtime/%s...\n", fn_data->test_name_str);
+		fflush(stdout);
+		reset();
+
+		struct grug_file_id* file = prologue(grug_state, fn_data->grug_path);
+
+		diff_roundtrip(grug_state, fn_data->grug_path);
+
+		fn_data->file = file;
+
+		const char *msg = impl_forgot_to_set_msg;
+		struct grug_entity_id* entity = create_entity(grug_state, file, &msg);
+
+		// If the error happened inside create_entity(), don't call run()
+		if (msg) {
+			memcpy(runtime_error_reason, msg, strlen(msg) + 1);
+		} else {
+			current_entity = entity;
+			fn_data->run(grug_state, entity);	
+		}
+
+		const char *expected_error = get_expected_error(fn_data->expected_error_path);
+
+		if (!streq(runtime_error_reason, expected_error)) {
+			fprintf(stderr, "\nError: The error message differs from the expected error message.\n");
+			fprintf(stderr, "Output:\n");
+			print_string_debug(runtime_error_reason);
+
+			fprintf(stderr, "Expected:\n");
+			print_string_debug(expected_error);
+
+			exit(EXIT_FAILURE);
+		}
+
+		if (!msg) {
+			destroy_entity(grug_state, entity);
+		}
+	}
+}
+
+static void run_ok_tests(struct grug_state *grug_state) {
+	for (size_t i = 0; i < ok_test_datas_size; i++) {
+		struct ok_test_data* fn_data = &ok_test_datas[i];
+
+		printf("Running tests/ok/%s...\n", fn_data->test_name_str);
+		fflush(stdout);
+		reset();
+
+		struct grug_file_id* file = prologue(grug_state, fn_data->grug_path);
+
+		diff_roundtrip(grug_state, fn_data->grug_path);
+
+		const char *msg = impl_forgot_to_set_msg;
+		struct grug_entity_id* entity = create_entity(grug_state, file, &msg);
+		if (msg) {
+			fprintf(stderr, "Error creating entity: %s\n", msg);
+			exit(EXIT_FAILURE);
+		}
+
+		fn_data->file = file;
+		current_entity = entity;
+		fn_data->run(grug_state, entity);
+
+		destroy_entity(grug_state, entity);
+	}
 }
 
 static void ok_addition_as_argument(struct grug_state* grug_state, struct grug_entity_id* entity) {
@@ -4256,13 +4405,23 @@ void grug_tests_run(
 		exit(EXIT_FAILURE);
 	};
 
-	// We only have a single grug_state for now
 	void* grug_state = create_grug_state(
 		mod_api_path,
-		tests_dir_path
+		tests_dir_path,
+		true
 	);
 	if (!grug_state) {
 		fprintf(stderr, "Error: Failed to create grug state\n");
+		exit(EXIT_FAILURE);
+	}
+
+	void* unsafe_grug_state = create_grug_state(
+		mod_api_path,
+		tests_dir_path,
+		false
+	);
+	if (!unsafe_grug_state) {
+		fprintf(stderr, "Error: Failed to create unsafe grug state\n");
 		exit(EXIT_FAILURE);
 	}
 
@@ -4287,147 +4446,24 @@ void grug_tests_run(
 #endif
 
 	run_err_mod_api_tests();
+
     run_err_spaces_tests(grug_state);
+	run_err_tests(grug_state);
 
-	for (size_t i = 0; i < err_test_datas_size; i++) {
-		struct error_test_data fn_data = error_test_datas[i];
+	run_ok_tests(grug_state);
+	rerun_ok_tests(grug_state);
 
-		test_error(
-			grug_state,
-			fn_data.test_name_str,
-			fn_data.grug_path,
-			fn_data.expected_error_path
-		);
-	}
-
-	for (size_t i = 0; i < ok_test_datas_size; i++) {
-		struct ok_test_data* fn_data = &ok_test_datas[i];
-
-		printf("Running tests/ok/%s...\n", fn_data->test_name_str);
-		fflush(stdout);
-		reset();
-
-		struct grug_file_id* file = prologue(grug_state, fn_data->grug_path);
-
-		diff_roundtrip(grug_state, fn_data->grug_path);
-
-		const char *msg = impl_forgot_to_set_msg;
-		struct grug_entity_id* entity = create_entity(grug_state, file, &msg);
-		if (msg) {
-			fprintf(stderr, "Error creating entity: %s\n", msg);
-			exit(EXIT_FAILURE);
-		}
-
-		fn_data->file = file;
-		current_entity = entity;
-		fn_data->run(grug_state, entity);
-
-		destroy_entity(grug_state, entity);
-	}
-
-	for (size_t i = 0; i < ok_test_datas_size; i++) {
-		struct ok_test_data* fn_data = &ok_test_datas[i];
-
-		printf("Rerunning tests/ok/%s...\n", fn_data->test_name_str);
-		fflush(stdout);
-		reset();
-
-		const char *msg = impl_forgot_to_set_msg;
-		struct grug_entity_id* entity = create_entity(grug_state, fn_data->file, &msg);
-		if (msg) {
-			fprintf(stderr, "Error creating entity: %s\n", msg);
-			exit(EXIT_FAILURE);
-		}
-
-		current_entity = entity;
-		fn_data->run(grug_state, entity);
-
-		destroy_entity(grug_state, entity);
-		destroy_grug_file(grug_state, fn_data->file);
-	}
-
-	for (size_t i = 0; i < err_runtime_test_datas_size; i++) {
-		struct runtime_error_test_data* fn_data = &runtime_error_test_datas[i];
-
-		printf("Running tests/err_runtime/%s...\n", fn_data->test_name_str);
-		fflush(stdout);
-		reset();
-
-		struct grug_file_id* file = prologue(grug_state, fn_data->grug_path);
-
-		diff_roundtrip(grug_state, fn_data->grug_path);
-
-		fn_data->file = file;
-
-		const char *msg = impl_forgot_to_set_msg;
-		struct grug_entity_id* entity = create_entity(grug_state, file, &msg);
-
-		// If the error happened inside create_entity(), don't call run()
-		if (msg) {
-			memcpy(runtime_error_reason, msg, strlen(msg) + 1);
-		} else {
-			current_entity = entity;
-			fn_data->run(grug_state, entity);	
-		}
-
-		const char *expected_error = get_expected_error(fn_data->expected_error_path);
-
-		if (!streq(runtime_error_reason, expected_error)) {
-			fprintf(stderr, "\nError: The error message differs from the expected error message.\n");
-			fprintf(stderr, "Output:\n");
-			print_string_debug(runtime_error_reason);
-
-			fprintf(stderr, "Expected:\n");
-			print_string_debug(expected_error);
-
-			exit(EXIT_FAILURE);
-		}
-
-		if (!msg) {
-			destroy_entity(grug_state, entity);
-		}
-	}
-
-	for (size_t i = 0; i < err_runtime_test_datas_size; i++) {
-		struct runtime_error_test_data* fn_data = &runtime_error_test_datas[i];
-
-		printf("Rerunning tests/err_runtime/%s...\n", fn_data->test_name_str);
-		fflush(stdout);
-		reset();
-
-		const char *msg = impl_forgot_to_set_msg;
-		struct grug_entity_id* entity = create_entity(grug_state, fn_data->file, &msg);
-
-		// If the error happened inside create_entity(), don't call run()
-		if (msg) {
-			memcpy(runtime_error_reason, msg, strlen(msg) + 1);
-		} else {
-			current_entity = entity;
-			fn_data->run(grug_state, entity);	
-		}
-
-		const char *expected_error = get_expected_error(fn_data->expected_error_path);
-
-		if (!streq(runtime_error_reason, expected_error)) {
-			fprintf(stderr, "\nError: The error message differs from the expected error message.\n");
-			fprintf(stderr, "Output:\n");
-			print_string_debug(runtime_error_reason);
-
-			fprintf(stderr, "Expected:\n");
-			print_string_debug(expected_error);
-
-			exit(EXIT_FAILURE);
-		}
-
-		if (!msg) {
-			destroy_entity(grug_state, entity);
-		}
-
-		destroy_grug_file(grug_state, fn_data->file);
-	}
+	run_err_runtime_tests(grug_state);
+	rerun_err_runtime_tests(grug_state);
 
 	test_code_reloading();
 	test_code_reloading_empty_file();
+
+    run_err_spaces_tests(unsafe_grug_state);
+	run_err_tests(unsafe_grug_state);
+
+	run_ok_tests(unsafe_grug_state);
+	rerun_ok_tests(unsafe_grug_state);
 
 #ifdef SHUFFLES
 	}
@@ -4435,5 +4471,7 @@ void grug_tests_run(
 
 	printf("\nAll tests passed! 🎉\n");
 	fflush(stdout);
+
+	destroy_grug_state(unsafe_grug_state);
 	destroy_grug_state(grug_state);
 }

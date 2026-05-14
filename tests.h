@@ -66,11 +66,13 @@ enum grug_runtime_error_type {
  *
  * @param mod_api_path Path to the mod_api.json this state will be initialized with.
  * @param mods_dir Path to the mods directory this state should use.
+ * @param safe_mode Whether the mods are run in safe mode, where runtime errors must be thrown.
  * @return Null if an error occurred. If no state is needed, return a dummy value like 42.
  */
 typedef struct grug_state* (*create_grug_state_t) (
 	const char* mod_api_path,
-	const char* mods_dir
+	const char* mods_dir,
+	bool safe_mode
 );
 
 /**

@@ -15,11 +15,11 @@ statement: vardecl
 empty_line: EMPTY_LINE
 %declare EMPTY_LINE
 
+on_fn: EXPORT " " ON_NAME "(" [params] ")" block
+helper_fn: LOCAL " " HELPER_NAME "(" [params] ")" [" " type] block
+
 vardecl: NAME ": " type " = " expr
 reassign: NAME " = " expr
-
-on_fn: ON_NAME "(" [params] ")" block
-helper_fn: HELPER_NAME "(" [params] ")" [" " type] block
 
 params: param (", " param)*
 param: NAME ": " type
@@ -85,12 +85,15 @@ continue_stmt: "continue"
 if_stmt: IF expr block (" else" (" " if_stmt | block))?
 return_stmt: "return" [" " expr]
 
+EXPORT.3: "export"
+LOCAL.3: "local"
+
 NOT.2: "not "
 IF.2: "if "
 WHILE.2: "while "
 
-ON_NAME.2: /on_[a-z0-9_]+/
-HELPER_NAME.2: /helper_[a-z0-9_]+/
+ON_NAME.2: /[a-z0-9_]+/
+HELPER_NAME.2: /_[a-z0-9_]+/
 NAME: /[a-z_][a-z0-9_]*/
 
 ID: /[a-zA-Z_][a-zA-Z0-9_]*/

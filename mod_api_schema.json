@@ -15,7 +15,7 @@
                     "description": {
                         "type": "string"
                     },
-                    "on_functions": {
+                    "export_functions": {
                         "type": "array",
                         "items": {
                             "type": "object",
@@ -40,7 +40,7 @@
                 }
             }
         },
-        "game_functions": {
+        "host_functions": {
             "type": "object",
             "additionalProperties": {
                 "type": "object",

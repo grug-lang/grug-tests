@@ -56,22 +56,22 @@ class GrugTransformer(Transformer[Tree[Any], Any]):
     def on_fn(self, items: List[Any]) -> Dict[str, Any]:
         func: Dict[str, Any] = {
             "type": "GLOBAL_ON_FN",
-            "name": str(items[0]),
+            "name": str(items[1]),
             "statements": items[-1],
         }
-        if items[1]:
-            func["arguments"] = items[1]
+        if items[2]:
+            func["arguments"] = items[2]
         return func
 
     def helper_fn(self, items: List[Any]) -> Dict[str, Any]:
         func: Dict[str, Any] = {
             "type": "GLOBAL_HELPER_FN",
-            "name": str(items[0]),
+            "name": str(items[1]),
         }
-        if items[1]:
-            func["arguments"] = items[1]
         if items[2]:
-            func["return_type"] = items[2]
+            func["arguments"] = items[2]
+        if items[3]:
+            func["return_type"] = items[3]
         func["statements"] = items[-1]
         return func
 

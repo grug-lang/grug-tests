@@ -1461,8 +1461,6 @@ static void diff_roundtrip(
 		exit(EXIT_FAILURE);
 	}
 
-	fprintf(stderr, "json_buf: '%s'\n", json_buf); // TODO: REMOVE!
-
 	assert_jsons_are_equal(json_buf, get_expected_json_path(grug_path));
 
 	static char applied_buf[MiB];

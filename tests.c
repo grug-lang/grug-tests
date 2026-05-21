@@ -1380,6 +1380,12 @@ static void assert_jsons_are_equal(const char *actual_json, const char *expected
 	size_t expected_json_len = read_file(expected_json_path, expected_json);
 	expected_json[expected_json_len] = '\0';
 
+	size_t actual_json_len = strlen(actual_json);
+	if (actual_json_len != expected_json_len) {
+		fprintf(stderr, "\nError: Expected JSON string to be %zu characters, but it was %zu characters\n", expected_json_len, actual_json_len);
+		exit(EXIT_FAILURE);
+	}
+
 	cJSON *exp = cJSON_Parse((const char *)expected_json);
 	if (!exp) {
 		fprintf(stderr, "\nError: Failed to parse %s\n", expected_json_path);

@@ -1377,26 +1377,36 @@ static void compare_nodes(cJSON *exp, cJSON *act, const char *path) {
 
 static void assert_jsons_are_equal(const char *actual_json, const char *expected_json_path) {
 	static uint8_t expected_json[MiB];
+
 	size_t expected_json_len = read_file(expected_json_path, expected_json);
 	expected_json[expected_json_len] = '\0';
 
-	size_t actual_json_len = strlen(actual_json);
-	if (actual_json_len != expected_json_len) {
-		fprintf(stderr, "\nError: Expected JSON string to be %zu characters, but it was %zu characters\n", expected_json_len, actual_json_len);
-		exit(EXIT_FAILURE);
-	}
+	const char *exp_end = NULL;
+	cJSON *exp = cJSON_ParseWithOpts(
+		(const char *)expected_json,
+		&exp_end,
+		1 // require_null_terminated
+	);
 
-	cJSON *exp = cJSON_Parse((const char *)expected_json);
 	if (!exp) {
 		fprintf(stderr, "\nError: Failed to parse %s\n", expected_json_path);
 		exit(EXIT_FAILURE);
 	}
 
-	cJSON *act = cJSON_Parse(actual_json);
+	const char *act_end = NULL;
+	cJSON *act = cJSON_ParseWithOpts(
+		actual_json,
+		&act_end,
+		1 // require_null_terminated
+	);
+
 	if (!act) {
 		cJSON_Delete(exp);
 
-		fprintf(stderr, "Error: Implementation generated malformed JSON:\n%s", actual_json);
+		fprintf(stderr,
+				"Error: Implementation generated malformed JSON near:\n%s\n",
+				act_end ? act_end : actual_json);
+
 		exit(EXIT_FAILURE);
 	}
 
@@ -1450,6 +1460,8 @@ static void diff_roundtrip(
 		fprintf(stderr, "Error: Failed to dump file AST\n");
 		exit(EXIT_FAILURE);
 	}
+
+	fprintf(stderr, "json_buf: '%s'\n", json_buf); // TODO: REMOVE!
 
 	assert_jsons_are_equal(json_buf, get_expected_json_path(grug_path));
 

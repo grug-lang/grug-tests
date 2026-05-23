@@ -52,6 +52,7 @@ static game_fn p_game_fn_set_is_happy;
 static game_fn p_game_fn_mega_f32;
 static game_fn p_game_fn_mega_i32;
 static game_fn p_game_fn_draw;
+static game_fn p_game_fn_assert_state_is_not_null;
 static game_fn p_game_fn_blocked_alrm;
 static game_fn p_game_fn_spawn;
 static game_fn p_game_fn_spawn_d;
@@ -638,6 +639,8 @@ static void call_export_fn(struct grug_state* grug_state, struct grug_entity_id*
         CALL(grug_state, initialize, grug_number(42.0));
     } else if (starts_with(path, "ok/stack_16_byte_alignment_midway/")) {
         CALL(grug_state, initialize, grug_number(CALL_ARGLESS(grug_state, magic)._number + 42.0));
+    } else if (starts_with(path, "ok/state_is_not_null/")) {
+        CALL_ARGLESS(grug_state, assert_state_is_not_null);
     } else if (starts_with(path, "ok/string_can_be_passed_to_helper_fn/")) {
         CALL(grug_state, say, grug_string("foo"));
     } else if (starts_with(path, "ok/string_duplicate/")) {
@@ -843,7 +846,10 @@ static void* load_sym(void *h, const char *name) {
 	#pragma GCC diagnostic push
 	#pragma GCC diagnostic ignored "-Wpedantic"
     void* p = load_symbol(h, name);
-    assert(p && "Failed to load required symbol from library");
+    if (!p) {
+        fprintf(stderr, "Failed to load '%s'\n", name);
+        exit(EXIT_FAILURE);
+    }
     return p;
 	#pragma GCC diagnostic pop
 }
@@ -871,45 +877,46 @@ static void load_tests_library(void) {
     p_grug_tests_run                   = (void (*)(const char*, const char*, struct grug_state_vtable, const char*))load_sym(h, "grug_tests_run");
     p_grug_tests_runtime_error_handler = (void (*)(const char*, enum grug_runtime_error_type, const char*, const char*))load_sym(h, "grug_tests_runtime_error_handler");
 
-    p_game_fn_nothing              = (game_fn)load_sym(h, "game_fn_nothing");
-    p_game_fn_magic                = (game_fn)load_sym(h, "game_fn_magic");
-    p_game_fn_initialize           = (game_fn)load_sym(h, "game_fn_initialize");
-    p_game_fn_initialize_bool      = (game_fn)load_sym(h, "game_fn_initialize_bool");
-    p_game_fn_identity             = (game_fn)load_sym(h, "game_fn_identity");
-    p_game_fn_max                  = (game_fn)load_sym(h, "game_fn_max");
-    p_game_fn_say                  = (game_fn)load_sym(h, "game_fn_say");
-    p_game_fn_sin                  = (game_fn)load_sym(h, "game_fn_sin");
-    p_game_fn_cos                  = (game_fn)load_sym(h, "game_fn_cos");
-    p_game_fn_mega                 = (game_fn)load_sym(h, "game_fn_mega");
-    p_game_fn_get_false            = (game_fn)load_sym(h, "game_fn_get_false");
-    p_game_fn_set_is_happy         = (game_fn)load_sym(h, "game_fn_set_is_happy");
-    p_game_fn_mega_f32             = (game_fn)load_sym(h, "game_fn_mega_f32");
-    p_game_fn_mega_i32             = (game_fn)load_sym(h, "game_fn_mega_i32");
-    p_game_fn_draw                 = (game_fn)load_sym(h, "game_fn_draw");
-    p_game_fn_blocked_alrm         = (game_fn)load_sym(h, "game_fn_blocked_alrm");
-    p_game_fn_spawn                = (game_fn)load_sym(h, "game_fn_spawn");
-    p_game_fn_spawn_d              = (game_fn)load_sym(h, "game_fn_spawn_d");
-    p_game_fn_has_resource         = (game_fn)load_sym(h, "game_fn_has_resource");
-    p_game_fn_has_entity           = (game_fn)load_sym(h, "game_fn_has_entity");
-    p_game_fn_has_string           = (game_fn)load_sym(h, "game_fn_has_string");
-    p_game_fn_get_opponent         = (game_fn)load_sym(h, "game_fn_get_opponent");
-    p_game_fn_get_os               = (game_fn)load_sym(h, "game_fn_get_os");
-    p_game_fn_set_d                = (game_fn)load_sym(h, "game_fn_set_d");
-    p_game_fn_set_opponent         = (game_fn)load_sym(h, "game_fn_set_opponent");
-    p_game_fn_motherload           = (game_fn)load_sym(h, "game_fn_motherload");
-    p_game_fn_motherload_subless   = (game_fn)load_sym(h, "game_fn_motherload_subless");
-    p_game_fn_offset_32_bit_f32    = (game_fn)load_sym(h, "game_fn_offset_32_bit_f32");
-    p_game_fn_offset_32_bit_i32    = (game_fn)load_sym(h, "game_fn_offset_32_bit_i32");
-    p_game_fn_offset_32_bit_string = (game_fn)load_sym(h, "game_fn_offset_32_bit_string");
-    p_game_fn_talk                 = (game_fn)load_sym(h, "game_fn_talk");
-    p_game_fn_get_position         = (game_fn)load_sym(h, "game_fn_get_position");
-    p_game_fn_set_position         = (game_fn)load_sym(h, "game_fn_set_position");
-    p_game_fn_cause_game_fn_error  = (game_fn)load_sym(h, "game_fn_cause_game_fn_error");
-    p_game_fn_call_on_b_fn         = (game_fn)load_sym(h, "game_fn_call_on_b_fn");
-    p_game_fn_store                = (game_fn)load_sym(h, "game_fn_store");
-    p_game_fn_print_csv            = (game_fn)load_sym(h, "game_fn_print_csv");
-    p_game_fn_retrieve             = (game_fn)load_sym(h, "game_fn_retrieve");
-    p_game_fn_box_number           = (game_fn)load_sym(h, "game_fn_box_number");
+    p_game_fn_nothing                  = (game_fn)load_sym(h, "game_fn_nothing");
+    p_game_fn_magic                    = (game_fn)load_sym(h, "game_fn_magic");
+    p_game_fn_initialize               = (game_fn)load_sym(h, "game_fn_initialize");
+    p_game_fn_initialize_bool          = (game_fn)load_sym(h, "game_fn_initialize_bool");
+    p_game_fn_identity                 = (game_fn)load_sym(h, "game_fn_identity");
+    p_game_fn_max                      = (game_fn)load_sym(h, "game_fn_max");
+    p_game_fn_say                      = (game_fn)load_sym(h, "game_fn_say");
+    p_game_fn_sin                      = (game_fn)load_sym(h, "game_fn_sin");
+    p_game_fn_cos                      = (game_fn)load_sym(h, "game_fn_cos");
+    p_game_fn_mega                     = (game_fn)load_sym(h, "game_fn_mega");
+    p_game_fn_get_false                = (game_fn)load_sym(h, "game_fn_get_false");
+    p_game_fn_set_is_happy             = (game_fn)load_sym(h, "game_fn_set_is_happy");
+    p_game_fn_mega_f32                 = (game_fn)load_sym(h, "game_fn_mega_f32");
+    p_game_fn_mega_i32                 = (game_fn)load_sym(h, "game_fn_mega_i32");
+    p_game_fn_draw                     = (game_fn)load_sym(h, "game_fn_draw");
+    p_game_fn_assert_state_is_not_null = (game_fn)load_sym(h, "game_fn_assert_state_is_not_null");
+    p_game_fn_blocked_alrm             = (game_fn)load_sym(h, "game_fn_blocked_alrm");
+    p_game_fn_spawn                    = (game_fn)load_sym(h, "game_fn_spawn");
+    p_game_fn_spawn_d                  = (game_fn)load_sym(h, "game_fn_spawn_d");
+    p_game_fn_has_resource             = (game_fn)load_sym(h, "game_fn_has_resource");
+    p_game_fn_has_entity               = (game_fn)load_sym(h, "game_fn_has_entity");
+    p_game_fn_has_string               = (game_fn)load_sym(h, "game_fn_has_string");
+    p_game_fn_get_opponent             = (game_fn)load_sym(h, "game_fn_get_opponent");
+    p_game_fn_get_os                   = (game_fn)load_sym(h, "game_fn_get_os");
+    p_game_fn_set_d                    = (game_fn)load_sym(h, "game_fn_set_d");
+    p_game_fn_set_opponent             = (game_fn)load_sym(h, "game_fn_set_opponent");
+    p_game_fn_motherload               = (game_fn)load_sym(h, "game_fn_motherload");
+    p_game_fn_motherload_subless       = (game_fn)load_sym(h, "game_fn_motherload_subless");
+    p_game_fn_offset_32_bit_f32        = (game_fn)load_sym(h, "game_fn_offset_32_bit_f32");
+    p_game_fn_offset_32_bit_i32        = (game_fn)load_sym(h, "game_fn_offset_32_bit_i32");
+    p_game_fn_offset_32_bit_string     = (game_fn)load_sym(h, "game_fn_offset_32_bit_string");
+    p_game_fn_talk                     = (game_fn)load_sym(h, "game_fn_talk");
+    p_game_fn_get_position             = (game_fn)load_sym(h, "game_fn_get_position");
+    p_game_fn_set_position             = (game_fn)load_sym(h, "game_fn_set_position");
+    p_game_fn_cause_game_fn_error      = (game_fn)load_sym(h, "game_fn_cause_game_fn_error");
+    p_game_fn_call_on_b_fn             = (game_fn)load_sym(h, "game_fn_call_on_b_fn");
+    p_game_fn_store                    = (game_fn)load_sym(h, "game_fn_store");
+    p_game_fn_print_csv                = (game_fn)load_sym(h, "game_fn_print_csv");
+    p_game_fn_retrieve                 = (game_fn)load_sym(h, "game_fn_retrieve");
+    p_game_fn_box_number               = (game_fn)load_sym(h, "game_fn_box_number");
 	#pragma GCC diagnostic pop
 }
 

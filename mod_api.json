@@ -142,6 +142,9 @@
 		}
 	},
 	"host_functions": {
+		"assert_state_is_not_null": {
+			"description": "foo"
+		},
 		"blocked_alrm": {
 			"description": "foo"
 		},

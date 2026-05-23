@@ -197,6 +197,7 @@ static size_t game_fn_set_is_happy_call_count;
 static size_t game_fn_mega_f32_call_count;
 static size_t game_fn_mega_i32_call_count;
 static size_t game_fn_draw_call_count;
+static size_t game_fn_assert_state_is_not_null_call_count;
 static size_t game_fn_blocked_alrm_call_count;
 static size_t game_fn_spawn_call_count;
 static size_t game_fn_spawn_d_call_count;
@@ -434,6 +435,13 @@ union grug_value game_fn_draw(struct grug_state* grug_state, const union grug_va
 	ASSERT_16_BYTE_STACK_ALIGNED();
 	game_fn_draw_call_count++;
 	strcpy(game_fn_draw_sprite_path, args[0]._string);
+	return (union grug_value) {0};
+}
+union grug_value game_fn_assert_state_is_not_null(struct grug_state* grug_state, const union grug_value args[]) {
+	(void)args;
+	ASSERT_16_BYTE_STACK_ALIGNED();
+	game_fn_assert_state_is_not_null_call_count++;
+	assert(grug_state);
 	return (union grug_value) {0};
 }
 union grug_value game_fn_blocked_alrm(struct grug_state* grug_state, const union grug_value args[]) {
@@ -1287,33 +1295,48 @@ static void run_err_tests(struct grug_state *grug_state) {
 	}
 }
 
+static const char *g_actual_json_for_mismatch = NULL;
+static const char *g_expected_json_for_mismatch = NULL;
+
+#define JSON_MISMATCH_EXIT() do { \
+	if (g_actual_json_for_mismatch && g_expected_json_for_mismatch) { \
+		print_json_mismatch(g_actual_json_for_mismatch, g_expected_json_for_mismatch); \
+	} \
+	exit(EXIT_FAILURE); \
+} while (0)
+
+static void print_json_mismatch(const char *actual_json, const char *expected_json) {
+	fprintf(stderr, "\nCurrent JSON:\n%s\n", actual_json);
+	fprintf(stderr, "\nExpected JSON:\n%s\n", expected_json);
+}
+
 static void compare_nodes(cJSON *exp, cJSON *act, const char *path) {
 	if (!exp && !act) {
 		return;
 	}
 	if (!exp || !act) {
 		fprintf(stderr, "Mismatch at '%s': One side is missing.\n", path);
-		exit(EXIT_FAILURE);
+		JSON_MISMATCH_EXIT();
 	}
 
 	if (cJSON_IsBool(exp) && cJSON_IsBool(act)) {
 		if (cJSON_IsTrue(exp) != cJSON_IsTrue(act)) {
 			fprintf(stderr, "Mismatch at '%s': Expected %s, got %s.\n",
 					path, cJSON_IsTrue(exp) ? "true" : "false", cJSON_IsTrue(act) ? "true" : "false");
-			exit(EXIT_FAILURE);
+			JSON_MISMATCH_EXIT();
 		}
 		return;
 	}
 
 	if (exp->type != act->type) {
 		fprintf(stderr, "Mismatch at '%s': Value types differ.\n", path);
-		exit(EXIT_FAILURE);
+		JSON_MISMATCH_EXIT();
 	}
 
 	if (cJSON_IsNumber(exp)) {
 		if (fabs(exp->valuedouble - act->valuedouble) > 1e-6) {
 			fprintf(stderr, "Mismatch at '%s': Expected %f, got %f.\n", path, exp->valuedouble, act->valuedouble);
-			exit(EXIT_FAILURE);
+			JSON_MISMATCH_EXIT();
 		}
 		return;
 	}
@@ -1321,7 +1344,7 @@ static void compare_nodes(cJSON *exp, cJSON *act, const char *path) {
 	if (cJSON_IsString(exp)) {
 		if (strcmp(exp->valuestring, act->valuestring) != 0) {
 			fprintf(stderr, "Mismatch at '%s': Expected '%s', got '%s'.\n", path, exp->valuestring, act->valuestring);
-			exit(EXIT_FAILURE);
+			JSON_MISMATCH_EXIT();
 		}
 		return;
 	}
@@ -1331,7 +1354,7 @@ static void compare_nodes(cJSON *exp, cJSON *act, const char *path) {
 		int size_act = cJSON_GetArraySize(act);
 		if (size_exp != size_act) {
 			fprintf(stderr, "Mismatch at '%s': Array size expected %d, got %d.\n", path, size_exp, size_act);
-			exit(EXIT_FAILURE);
+			JSON_MISMATCH_EXIT();
 		}
 		for (int i = 0; i < size_exp; i++) {
 			char new_path[512];
@@ -1346,7 +1369,7 @@ static void compare_nodes(cJSON *exp, cJSON *act, const char *path) {
 		int size_act = cJSON_GetArraySize(act);
 		if (size_exp != size_act) {
 			fprintf(stderr, "Mismatch at '%s': Object key count expected %d, got %d.\n", path, size_exp, size_act);
-			exit(EXIT_FAILURE);
+			JSON_MISMATCH_EXIT();
 		}
 
 		cJSON *child_exp = exp->child;
@@ -1357,7 +1380,7 @@ static void compare_nodes(cJSON *exp, cJSON *act, const char *path) {
 
 			if (!child_act) {
 				fprintf(stderr, "Mismatch at '%s': Key '%s' missing in actual output.\n", path, child_exp->string);
-				exit(EXIT_FAILURE);
+				JSON_MISMATCH_EXIT();
 			}
 
 			compare_nodes(child_exp, child_act, new_path);
@@ -1372,7 +1395,7 @@ static void compare_nodes(cJSON *exp, cJSON *act, const char *path) {
 	}
 
 	fprintf(stderr, "Mismatch at '%s': Unhandled JSON type.\n", path);
-	exit(EXIT_FAILURE);
+	JSON_MISMATCH_EXIT();
 }
 
 static void assert_jsons_are_equal(const char *actual_json, const char *expected_json_path) {
@@ -1380,6 +1403,9 @@ static void assert_jsons_are_equal(const char *actual_json, const char *expected
 
 	size_t expected_json_len = read_file(expected_json_path, expected_json);
 	expected_json[expected_json_len] = '\0';
+
+	g_actual_json_for_mismatch = actual_json;
+	g_expected_json_for_mismatch = (const char *)expected_json;
 
 	const char *exp_end = NULL;
 	cJSON *exp = cJSON_ParseWithOpts(
@@ -1500,6 +1526,7 @@ static void reset(void) {
 	game_fn_mega_f32_call_count = 0;
 	game_fn_mega_i32_call_count = 0;
 	game_fn_draw_call_count = 0;
+	game_fn_assert_state_is_not_null_call_count = 0;
 	game_fn_blocked_alrm_call_count = 0;
 	game_fn_spawn_call_count = 0;
 	game_fn_spawn_d_call_count = 0;
@@ -3598,6 +3625,12 @@ static void ok_stack_16_byte_alignment_midway(struct grug_state* grug_state, str
 	assert_number(game_fn_initialize_x, 42.0 + 42.0);
 }
 
+static void ok_state_is_not_null(struct grug_state* grug_state, struct grug_entity_id* entity) {
+	assert_call_count(assert_state_is_not_null, 0);
+    call_export_fn_argless(grug_state, entity, "on_a");
+	assert_call_count(assert_state_is_not_null, 1);
+}
+
 static void ok_string_can_be_passed_to_helper_fn(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	assert_call_count(say, 0);
     call_export_fn_argless(grug_state, entity, "a");
@@ -4372,6 +4405,7 @@ static void add_ok_tests(void) {
 	ADD_TEST_OK(spill_args_to_helper_fn_subless, "D");
 	ADD_TEST_OK(stack_16_byte_alignment, "D");
 	ADD_TEST_OK(stack_16_byte_alignment_midway, "D");
+	ADD_TEST_OK(state_is_not_null, "D");
 	ADD_TEST_OK(string_can_be_passed_to_helper_fn, "D");
 	ADD_TEST_OK(string_duplicate, "D");
 	ADD_TEST_OK(string_eq_false, "D");

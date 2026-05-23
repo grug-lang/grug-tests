@@ -213,11 +213,11 @@ static void call_export_fn(struct grug_state* grug_state, struct grug_entity_id*
     } else if (starts_with(path, "err_runtime/stack_overflow/")) {
         p_grug_tests_runtime_error_handler("Stack overflow, so check for accidental infinite recursion", GRUG_ON_FN_STACK_OVERFLOW, on_fn_name, path);
     } else if (starts_with(path, "err_runtime/time_limit_exceeded/")) {
-        p_grug_tests_runtime_error_handler("Took longer than 100 milliseconds to run", GRUG_ON_FN_TIME_LIMIT_EXCEEDED, on_fn_name, path);
+        p_grug_tests_runtime_error_handler("Took longer than 1000 milliseconds to run", GRUG_ON_FN_TIME_LIMIT_EXCEEDED, on_fn_name, path);
     } else if (starts_with(path, "err_runtime/time_limit_exceeded_exponential_calls/")) {
-        p_grug_tests_runtime_error_handler("Took longer than 100 milliseconds to run", GRUG_ON_FN_TIME_LIMIT_EXCEEDED, on_fn_name, path);
+        p_grug_tests_runtime_error_handler("Took longer than 1000 milliseconds to run", GRUG_ON_FN_TIME_LIMIT_EXCEEDED, on_fn_name, path);
     } else if (starts_with(path, "err_runtime/time_limit_exceeded_fibonacci/")) {
-        p_grug_tests_runtime_error_handler("Took longer than 100 milliseconds to run", GRUG_ON_FN_TIME_LIMIT_EXCEEDED, on_fn_name, path);
+        p_grug_tests_runtime_error_handler("Took longer than 1000 milliseconds to run", GRUG_ON_FN_TIME_LIMIT_EXCEEDED, on_fn_name, path);
     } else if (starts_with(path, "ok/addition_as_argument/")) {
         CALL(grug_state, initialize, grug_number(3.0));
     } else if (starts_with(path, "ok/addition_as_two_arguments/")) {

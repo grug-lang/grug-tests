@@ -1,0 +1,2 @@
+Error: 'input-Dgrug' is missing a period in its name
+$  err/file_name_missing_period/input-Dgrug

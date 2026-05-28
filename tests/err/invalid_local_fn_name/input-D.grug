@@ -1,0 +1,8 @@
+export a() {
+    nothing()
+    nothing_local()
+}
+
+local nothing_local() {
+    nothing()
+}

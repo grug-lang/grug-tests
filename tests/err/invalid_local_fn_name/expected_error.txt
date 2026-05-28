@@ -1,0 +1,3 @@
+  in nothing_local (err/invalid_local_fn_name/input-D.grug:6:7)
+Error: Local function name must begin with '_'
+6 $ local nothing_local() {

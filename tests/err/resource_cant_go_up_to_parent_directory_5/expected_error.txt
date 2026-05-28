@@ -1,0 +1,3 @@
+  in a (err/resource_cant_go_up_to_parent_directory_5/input-D.grug:2:10)
+Error: Remove the '..' from the resource "..a"
+2 $ draw(r"..a")

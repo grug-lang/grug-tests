@@ -570,6 +570,8 @@ static void call_export_fn(struct grug_state* grug_state, struct grug_file_id* f
         CALL(grug_state, draw, grug_string("ok/resource_can_contain_dot_dot_1/..foo"));
     } else if (starts_with(grug_file_path, "ok/resource_can_contain_dot_dot_2/")) {
         CALL(grug_state, draw, grug_string("ok/resource_can_contain_dot_dot_2/foo..bar"));
+    } else if (starts_with(grug_file_path, "ok/resource_can_contain_dot_dot_3/")) {
+        CALL(grug_state, draw, grug_string("ok/..a"));
     } else if (starts_with(grug_file_path, "ok/resource_can_contain_dot_dot_dot/")) {
         CALL(grug_state, draw, grug_string("ok/resource_can_contain_dot_dot_dot/...foo"));
     } else if (starts_with(grug_file_path, "ok/resource_duplicate/")) {

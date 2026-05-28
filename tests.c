@@ -1,5 +1,3 @@
-// TODO: add tests 
-// 		- mod_api test for export_functions != List
 #include "tests.h"
 
 #include "cJSON.h"

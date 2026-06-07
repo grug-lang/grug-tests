@@ -1,0 +1,8 @@
+on_a() {
+    nothing()
+    if false {
+    } else {
+        nothing()
+    }
+    nothing()
+}

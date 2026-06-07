@@ -1,0 +1,57 @@
+[
+    {
+        "kind": "on_function",
+        "name": "on_a",
+        "parameters": [],
+        "body_statements": [
+            {
+                "kind": "call",
+                "expr": {
+                    "type": "call",
+                    "function_name": "nothing",
+                    "arguments": []
+                }
+            },
+            {
+                "kind": "while",
+                "cond": {
+                    "type": "boolean",
+                    "value": "true"
+                },
+                "statements": [
+                    {
+                        "kind": "while",
+                        "cond": {
+                            "type": "boolean",
+                            "value": "true"
+                        },
+                        "statements": [
+                            {
+                                "kind": "break"
+                            }
+                        ]
+                    },
+                    {
+                        "kind": "call",
+                        "expr": {
+                            "type": "call",
+                            "function_name": "nothing",
+                            "arguments": []
+                        }
+                    },
+                    {
+                        "kind": "break"
+                    }
+                ]
+            },
+            {
+                "kind": "call",
+                "expr": {
+                    "type": "call",
+                    "function_name": "nothing",
+                    "arguments": []
+                }
+            }
+        ]
+    }
+]

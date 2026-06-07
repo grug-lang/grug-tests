@@ -1,0 +1,47 @@
+[
+    {
+        "kind": "on_function",
+        "name": "on_a",
+        "parameters": [],
+        "body_statements": [
+            {
+                "kind": "variable",
+                "name": "foo",
+                "type": "number",
+                "assignment_expr": {
+                    "type": "number",
+                    "value": 42,
+                    "string": "42"
+                }
+            },
+            {
+                "kind": "empty_line"
+            },
+            {
+                "name": "foo",
+                "kind": "variable",
+                "assignment_expr": {
+                    "type": "number",
+                    "value": 69,
+                    "string": "69"
+                }
+            },
+            {
+                "kind": "empty_line"
+            },
+            {
+                "kind": "call",
+                "expr": {
+                    "type": "call",
+                    "function_name": "initialize",
+                    "arguments": [
+                        {
+                            "type": "identifier",
+                            "value": "foo"
+                        }
+                    ]
+                }
+            }
+        ]
+    }
+]

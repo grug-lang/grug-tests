@@ -1,0 +1,35 @@
+[
+    {
+        "kind": "on_function",
+        "name": "on_a",
+        "parameters": [],
+        "body_statements": [
+            {
+                "kind": "call",
+                "expr": {
+                    "type": "call",
+                    "function_name": "cause_game_fn_error",
+                    "arguments": []
+                }
+            }
+        ]
+    },
+    {
+        "kind": "empty_line"
+    },
+    {
+        "kind": "on_function",
+        "name": "on_b",
+        "parameters": [],
+        "body_statements": [
+            {
+                "kind": "call",
+                "expr": {
+                    "type": "call",
+                    "function_name": "nothing",
+                    "arguments": []
+                }
+            }
+        ]
+    }
+]

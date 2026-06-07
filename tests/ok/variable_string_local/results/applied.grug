@@ -1,0 +1,5 @@
+on_a() {
+    message: string = "foo"
+
+    say(message)
+}

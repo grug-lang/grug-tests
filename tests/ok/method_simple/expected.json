@@ -1,0 +1,31 @@
+[
+    {
+        "type": "GLOBAL_ON_FN",
+        "name": "a",
+        "statements": [
+            {
+                "type": "VARIABLE_STATEMENT",
+                "name": "x",
+                "assignment": {
+                    "type": "CALL_EXPR",
+                    "name": "vec_number_new"
+                },
+                "variable_type": "VecNumber"
+            },
+            {
+                "type": "CALL_STATEMENT",
+                "name": "push",
+                "receiver": {
+                    "type": "IDENTIFIER_EXPR",
+                    "str": "x"
+                },
+                "arguments": [
+                    {
+                        "type": "NUMBER_EXPR",
+                        "value": "25"
+                    }
+                ]
+            }
+        ]
+    }
+]

@@ -1,0 +1,4 @@
+on_a() {
+    foo: id = retrieve()
+    store(foo)
+}

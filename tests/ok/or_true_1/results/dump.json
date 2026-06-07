@@ -1,0 +1,30 @@
+[
+    {
+        "kind": "on_function",
+        "name": "on_a",
+        "parameters": [],
+        "body_statements": [
+            {
+                "kind": "call",
+                "expr": {
+                    "type": "call",
+                    "function_name": "initialize_bool",
+                    "arguments": [
+                        {
+                            "type": "binary",
+                            "operator": "or",
+                            "left": {
+                                "type": "boolean",
+                                "value": "true"
+                            },
+                            "right": {
+                                "type": "boolean",
+                                "value": "false"
+                            }
+                        }
+                    ]
+                }
+            }
+        ]
+    }
+]

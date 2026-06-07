@@ -1,0 +1,23 @@
+[
+    {
+        "kind": "on_function",
+        "name": "on_a",
+        "parameters": [],
+        "body_statements": [
+            {
+                "kind": "call",
+                "expr": {
+                    "type": "call",
+                    "function_name": "initialize",
+                    "arguments": [
+                        {
+                            "type": "number",
+                            "value": 2147483647,
+                            "string": "2147483647"
+                        }
+                    ]
+                }
+            }
+        ]
+    }
+]

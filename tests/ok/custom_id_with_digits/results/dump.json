@@ -1,0 +1,18 @@
+[
+    {
+        "kind": "global_variable",
+        "name": "foo",
+        "type": "BoxedNumber",
+        "assignment_expr": {
+            "type": "call",
+            "function_name": "box_number",
+            "arguments": [
+                {
+                    "type": "number",
+                    "value": 42,
+                    "string": "42"
+                }
+            ]
+        }
+    }
+]

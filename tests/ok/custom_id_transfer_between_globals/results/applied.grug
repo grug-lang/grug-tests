@@ -1,0 +1,6 @@
+foo: Opponent = get_opponent()
+bar: Opponent = foo
+
+on_a() {
+    set_opponent(bar)
+}

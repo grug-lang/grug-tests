@@ -1,0 +1,27 @@
+[
+    {
+        "kind": "on_function",
+        "name": "on_a",
+        "parameters": [
+            {
+                "name": "id",
+                "type": "id"
+            }
+        ],
+        "body_statements": [
+            {
+                "kind": "call",
+                "expr": {
+                    "type": "call",
+                    "function_name": "store",
+                    "arguments": [
+                        {
+                            "type": "identifier",
+                            "value": "id"
+                        }
+                    ]
+                }
+            }
+        ]
+    }
+]

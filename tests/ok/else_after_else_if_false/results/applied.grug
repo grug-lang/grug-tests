@@ -1,0 +1,12 @@
+on_a() {
+    nothing()
+
+    # foo
+    if false {
+        nothing()
+    } else if true {
+    } else {
+        nothing()
+    }
+    nothing()
+}

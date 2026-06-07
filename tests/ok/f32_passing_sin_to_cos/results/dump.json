@@ -1,0 +1,38 @@
+[
+    {
+        "kind": "on_function",
+        "name": "on_a",
+        "parameters": [],
+        "body_statements": [
+            {
+                "kind": "variable",
+                "name": "x",
+                "type": "number",
+                "assignment_expr": {
+                    "type": "call",
+                    "function_name": "sin",
+                    "arguments": [
+                        {
+                            "type": "number",
+                            "value": 4,
+                            "string": "4.0"
+                        }
+                    ]
+                }
+            },
+            {
+                "kind": "call",
+                "expr": {
+                    "type": "call",
+                    "function_name": "cos",
+                    "arguments": [
+                        {
+                            "type": "identifier",
+                            "value": "x"
+                        }
+                    ]
+                }
+            }
+        ]
+    }
+]

@@ -1,0 +1,7 @@
+on_a() {
+    cause_game_fn_error()
+}
+
+on_b() {
+    nothing()
+}

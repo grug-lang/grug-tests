@@ -1,0 +1,510 @@
+[
+    {
+        "kind": "global_variable",
+        "name": "g",
+        "type": "number",
+        "assignment_expr": {
+            "type": "number",
+            "value": 6,
+            "string": "6"
+        }
+    },
+    {
+        "kind": "empty_line"
+    },
+    {
+        "kind": "on_function",
+        "name": "on_a",
+        "parameters": [],
+        "body_statements": [
+            {
+                "kind": "call",
+                "expr": {
+                    "type": "call",
+                    "function_name": "helper_foo",
+                    "arguments": [
+                        {
+                            "type": "number",
+                            "value": 1,
+                            "string": "1.0"
+                        },
+                        {
+                            "type": "number",
+                            "value": 2,
+                            "string": "2.0"
+                        },
+                        {
+                            "type": "number",
+                            "value": 3,
+                            "string": "3.0"
+                        },
+                        {
+                            "type": "number",
+                            "value": 4,
+                            "string": "4.0"
+                        },
+                        {
+                            "type": "number",
+                            "value": 5,
+                            "string": "5.0"
+                        },
+                        {
+                            "type": "number",
+                            "value": 6,
+                            "string": "6.0"
+                        },
+                        {
+                            "type": "number",
+                            "value": 7,
+                            "string": "7.0"
+                        },
+                        {
+                            "type": "number",
+                            "value": 8,
+                            "string": "8.0"
+                        },
+                        {
+                            "type": "number",
+                            "value": 9,
+                            "string": "9.0"
+                        },
+                        {
+                            "type": "number",
+                            "value": 10,
+                            "string": "10.0"
+                        },
+                        {
+                            "type": "number",
+                            "value": 11,
+                            "string": "11.0"
+                        },
+                        {
+                            "type": "number",
+                            "value": 12,
+                            "string": "12.0"
+                        },
+                        {
+                            "type": "number",
+                            "value": 13,
+                            "string": "13.0"
+                        },
+                        {
+                            "type": "number",
+                            "value": 14,
+                            "string": "14.0"
+                        },
+                        {
+                            "type": "number",
+                            "value": 15,
+                            "string": "15.0"
+                        },
+                        {
+                            "type": "number",
+                            "value": 16,
+                            "string": "16.0"
+                        },
+                        {
+                            "type": "number",
+                            "value": 17,
+                            "string": "17.0"
+                        },
+                        {
+                            "type": "number",
+                            "value": 18,
+                            "string": "18.0"
+                        },
+                        {
+                            "type": "number",
+                            "value": 19,
+                            "string": "19.0"
+                        },
+                        {
+                            "type": "number",
+                            "value": 20,
+                            "string": "20.0"
+                        },
+                        {
+                            "type": "number",
+                            "value": 21,
+                            "string": "21.0"
+                        },
+                        {
+                            "type": "number",
+                            "value": 22,
+                            "string": "22.0"
+                        },
+                        {
+                            "type": "number",
+                            "value": 23,
+                            "string": "23.0"
+                        },
+                        {
+                            "type": "number",
+                            "value": 24,
+                            "string": "24.0"
+                        },
+                        {
+                            "type": "number",
+                            "value": 25,
+                            "string": "25.0"
+                        },
+                        {
+                            "type": "number",
+                            "value": 26,
+                            "string": "26.0"
+                        },
+                        {
+                            "type": "number",
+                            "value": 27,
+                            "string": "27.0"
+                        },
+                        {
+                            "type": "number",
+                            "value": 28,
+                            "string": "28.0"
+                        },
+                        {
+                            "type": "number",
+                            "value": 29,
+                            "string": "29.0"
+                        },
+                        {
+                            "type": "number",
+                            "value": 30,
+                            "string": "30.0"
+                        },
+                        {
+                            "type": "number",
+                            "value": 1,
+                            "string": "1"
+                        },
+                        {
+                            "type": "number",
+                            "value": 2,
+                            "string": "2"
+                        },
+                        {
+                            "type": "number",
+                            "value": 3,
+                            "string": "3"
+                        },
+                        {
+                            "type": "number",
+                            "value": 4,
+                            "string": "4"
+                        },
+                        {
+                            "type": "number",
+                            "value": 5,
+                            "string": "5"
+                        }
+                    ]
+                }
+            }
+        ]
+    },
+    {
+        "kind": "empty_line"
+    },
+    {
+        "kind": "helper_function",
+        "name": "helper_foo",
+        "parameters": [
+            {
+                "name": "f1",
+                "type": "number"
+            },
+            {
+                "name": "f2",
+                "type": "number"
+            },
+            {
+                "name": "f3",
+                "type": "number"
+            },
+            {
+                "name": "f4",
+                "type": "number"
+            },
+            {
+                "name": "f5",
+                "type": "number"
+            },
+            {
+                "name": "f6",
+                "type": "number"
+            },
+            {
+                "name": "f7",
+                "type": "number"
+            },
+            {
+                "name": "f8",
+                "type": "number"
+            },
+            {
+                "name": "f9",
+                "type": "number"
+            },
+            {
+                "name": "f10",
+                "type": "number"
+            },
+            {
+                "name": "f11",
+                "type": "number"
+            },
+            {
+                "name": "f12",
+                "type": "number"
+            },
+            {
+                "name": "f13",
+                "type": "number"
+            },
+            {
+                "name": "f14",
+                "type": "number"
+            },
+            {
+                "name": "f15",
+                "type": "number"
+            },
+            {
+                "name": "f16",
+                "type": "number"
+            },
+            {
+                "name": "f17",
+                "type": "number"
+            },
+            {
+                "name": "f18",
+                "type": "number"
+            },
+            {
+                "name": "f19",
+                "type": "number"
+            },
+            {
+                "name": "f20",
+                "type": "number"
+            },
+            {
+                "name": "f21",
+                "type": "number"
+            },
+            {
+                "name": "f22",
+                "type": "number"
+            },
+            {
+                "name": "f23",
+                "type": "number"
+            },
+            {
+                "name": "f24",
+                "type": "number"
+            },
+            {
+                "name": "f25",
+                "type": "number"
+            },
+            {
+                "name": "f26",
+                "type": "number"
+            },
+            {
+                "name": "f27",
+                "type": "number"
+            },
+            {
+                "name": "f28",
+                "type": "number"
+            },
+            {
+                "name": "f29",
+                "type": "number"
+            },
+            {
+                "name": "f30",
+                "type": "number"
+            },
+            {
+                "name": "i1",
+                "type": "number"
+            },
+            {
+                "name": "i2",
+                "type": "number"
+            },
+            {
+                "name": "i3",
+                "type": "number"
+            },
+            {
+                "name": "i4",
+                "type": "number"
+            },
+            {
+                "name": "i5",
+                "type": "number"
+            }
+        ],
+        "body_statements": [
+            {
+                "kind": "call",
+                "expr": {
+                    "type": "call",
+                    "function_name": "offset_32_bit_i32",
+                    "arguments": [
+                        {
+                            "type": "identifier",
+                            "value": "f1"
+                        },
+                        {
+                            "type": "identifier",
+                            "value": "f2"
+                        },
+                        {
+                            "type": "identifier",
+                            "value": "f3"
+                        },
+                        {
+                            "type": "identifier",
+                            "value": "f4"
+                        },
+                        {
+                            "type": "identifier",
+                            "value": "f5"
+                        },
+                        {
+                            "type": "identifier",
+                            "value": "f6"
+                        },
+                        {
+                            "type": "identifier",
+                            "value": "f7"
+                        },
+                        {
+                            "type": "identifier",
+                            "value": "f8"
+                        },
+                        {
+                            "type": "identifier",
+                            "value": "f9"
+                        },
+                        {
+                            "type": "identifier",
+                            "value": "f10"
+                        },
+                        {
+                            "type": "identifier",
+                            "value": "f11"
+                        },
+                        {
+                            "type": "identifier",
+                            "value": "f12"
+                        },
+                        {
+                            "type": "identifier",
+                            "value": "f13"
+                        },
+                        {
+                            "type": "identifier",
+                            "value": "f14"
+                        },
+                        {
+                            "type": "identifier",
+                            "value": "f15"
+                        },
+                        {
+                            "type": "identifier",
+                            "value": "f16"
+                        },
+                        {
+                            "type": "identifier",
+                            "value": "f17"
+                        },
+                        {
+                            "type": "identifier",
+                            "value": "f18"
+                        },
+                        {
+                            "type": "identifier",
+                            "value": "f19"
+                        },
+                        {
+                            "type": "identifier",
+                            "value": "f20"
+                        },
+                        {
+                            "type": "identifier",
+                            "value": "f21"
+                        },
+                        {
+                            "type": "identifier",
+                            "value": "f22"
+                        },
+                        {
+                            "type": "identifier",
+                            "value": "f23"
+                        },
+                        {
+                            "type": "identifier",
+                            "value": "f24"
+                        },
+                        {
+                            "type": "identifier",
+                            "value": "f25"
+                        },
+                        {
+                            "type": "identifier",
+                            "value": "f26"
+                        },
+                        {
+                            "type": "identifier",
+                            "value": "f27"
+                        },
+                        {
+                            "type": "identifier",
+                            "value": "f28"
+                        },
+                        {
+                            "type": "identifier",
+                            "value": "f29"
+                        },
+                        {
+                            "type": "identifier",
+                            "value": "f30"
+                        },
+                        {
+                            "type": "identifier",
+                            "value": "i1"
+                        },
+                        {
+                            "type": "identifier",
+                            "value": "i2"
+                        },
+                        {
+                            "type": "identifier",
+                            "value": "i3"
+                        },
+                        {
+                            "type": "identifier",
+                            "value": "i4"
+                        },
+                        {
+                            "type": "identifier",
+                            "value": "i5"
+                        },
+                        {
+                            "type": "identifier",
+                            "value": "g"
+                        }
+                    ]
+                }
+            }
+        ]
+    }
+]

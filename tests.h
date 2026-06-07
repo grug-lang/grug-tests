@@ -5,6 +5,8 @@
 #include <stdbool.h> // Provides bool
 #include <stddef.h> // Provides size_t
 #include <stdint.h> // Provides uint32_t
+#include <stdlib.h> // for ealloc
+#include <assert.h>  
 
 #ifndef GRUG_TYPE_NUMBER
     #define GRUG_TYPE_NUMBER double
@@ -289,3 +291,22 @@ union grug_value game_fn_store                   (struct grug_state* grug_state,
 union grug_value game_fn_print_csv               (struct grug_state* grug_state, const union grug_value args[]);
 union grug_value game_fn_retrieve                (struct grug_state* grug_state, const union grug_value args[]);
 union grug_value game_fn_box_number              (struct grug_state* grug_state, const union grug_value args[]);
+union grug_value game_fn_vec_number_new          (struct grug_state* grug_state, const union grug_value args[]);
+union grug_value game_fn_vec_number_push         (struct grug_state* grug_state, const union grug_value args[]);
+// VecNumber struct for grug
+struct VecNumber {
+	double* items;
+	size_t len;
+	size_t cap;
+};
+
+void vec_number_push(struct VecNumber* self, double item) {
+	if (self->len == self->cap) {
+		size_t new_cap = (self->cap == 0)? 8 : self->cap * 2;
+		void* ptr = realloc(self->items, sizeof(double) * new_cap);
+		assert(ptr);
+		self->items = ptr;
+		self->cap = new_cap;
+	}
+	self->items[self->len++] = item;
+}

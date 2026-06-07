@@ -1,0 +1,36 @@
+[
+    {
+        "kind": "on_function",
+        "name": "on_a",
+        "parameters": [],
+        "body_statements": [
+            {
+                "kind": "call",
+                "expr": {
+                    "type": "call",
+                    "function_name": "initialize",
+                    "arguments": [
+                        {
+                            "type": "binary",
+                            "operator": "/",
+                            "left": {
+                                "type": "unary",
+                                "operator": "-",
+                                "expr": {
+                                    "type": "number",
+                                    "value": 5,
+                                    "string": "5"
+                                }
+                            },
+                            "right": {
+                                "type": "number",
+                                "value": 2,
+                                "string": "2"
+                            }
+                        }
+                    ]
+                }
+            }
+        ]
+    }
+]

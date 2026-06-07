@@ -1,0 +1,47 @@
+[
+    {
+        "kind": "comment",
+        "value": "foo"
+    },
+    {
+        "kind": "global_variable",
+        "name": "uses",
+        "type": "number",
+        "assignment_expr": {
+            "type": "number",
+            "value": 420,
+            "string": "420"
+        }
+    },
+    {
+        "kind": "empty_line"
+    },
+    {
+        "kind": "comment",
+        "value": "bar"
+    },
+    {
+        "kind": "comment",
+        "value": "baz"
+    },
+    {
+        "kind": "global_variable",
+        "name": "armor",
+        "type": "number",
+        "assignment_expr": {
+            "type": "number",
+            "value": 1337,
+            "string": "1337"
+        }
+    },
+    {
+        "kind": "global_variable",
+        "name": "health",
+        "type": "number",
+        "assignment_expr": {
+            "type": "number",
+            "value": 100,
+            "string": "100"
+        }
+    }
+]

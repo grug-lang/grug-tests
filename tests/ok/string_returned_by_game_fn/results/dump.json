@@ -1,0 +1,23 @@
+[
+    {
+        "kind": "on_function",
+        "name": "on_a",
+        "parameters": [],
+        "body_statements": [
+            {
+                "kind": "call",
+                "expr": {
+                    "type": "call",
+                    "function_name": "has_string",
+                    "arguments": [
+                        {
+                            "type": "call",
+                            "function_name": "get_os",
+                            "arguments": []
+                        }
+                    ]
+                }
+            }
+        ]
+    }
+]

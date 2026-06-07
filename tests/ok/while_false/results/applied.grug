@@ -1,0 +1,7 @@
+on_a() {
+    nothing()
+    while false {
+        nothing()
+    }
+    nothing()
+}

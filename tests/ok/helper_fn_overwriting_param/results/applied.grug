@@ -1,0 +1,11 @@
+on_a() {
+    helper_foo(2, 3.0)
+}
+
+helper_foo(i: number, f: number) {
+    i = 20
+    initialize(i)
+
+    f = 30.0
+    sin(f)
+}

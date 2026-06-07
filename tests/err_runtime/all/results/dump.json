@@ -1,0 +1,68 @@
+[
+    {
+        "kind": "on_function",
+        "name": "on_a",
+        "parameters": [],
+        "body_statements": [
+            {
+                "kind": "call",
+                "expr": {
+                    "type": "call",
+                    "function_name": "helper_foo",
+                    "arguments": []
+                }
+            },
+            {
+                "kind": "empty_line"
+            },
+            {
+                "kind": "while",
+                "cond": {
+                    "type": "boolean",
+                    "value": "true"
+                },
+                "statements": []
+            },
+            {
+                "kind": "empty_line"
+            },
+            {
+                "kind": "variable",
+                "name": "foo",
+                "type": "number",
+                "assignment_expr": {
+                    "type": "binary",
+                    "operator": "+",
+                    "left": {
+                        "type": "number",
+                        "value": 1,
+                        "string": "1"
+                    },
+                    "right": {
+                        "type": "number",
+                        "value": 1,
+                        "string": "1"
+                    }
+                }
+            }
+        ]
+    },
+    {
+        "kind": "empty_line"
+    },
+    {
+        "kind": "helper_function",
+        "name": "helper_foo",
+        "parameters": [],
+        "body_statements": [
+            {
+                "kind": "call",
+                "expr": {
+                    "type": "call",
+                    "function_name": "helper_foo",
+                    "arguments": []
+                }
+            }
+        ]
+    }
+]

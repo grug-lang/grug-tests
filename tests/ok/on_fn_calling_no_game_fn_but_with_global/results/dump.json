@@ -1,0 +1,30 @@
+[
+    {
+        "kind": "global_variable",
+        "name": "foo",
+        "type": "number",
+        "assignment_expr": {
+            "type": "number",
+            "value": 42,
+            "string": "42"
+        }
+    },
+    {
+        "kind": "empty_line"
+    },
+    {
+        "kind": "on_function",
+        "name": "on_a",
+        "parameters": [],
+        "body_statements": [
+            {
+                "kind": "if",
+                "cond": {
+                    "type": "boolean",
+                    "value": "true"
+                },
+                "if_block": []
+            }
+        ]
+    }
+]

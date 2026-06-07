@@ -1,0 +1,22 @@
+[
+    {
+        "kind": "on_function",
+        "name": "on_a",
+        "parameters": [],
+        "body_statements": [
+            {
+                "kind": "call",
+                "expr": {
+                    "type": "call",
+                    "function_name": "set_d",
+                    "arguments": [
+                        {
+                            "type": "identifier",
+                            "value": "me"
+                        }
+                    ]
+                }
+            }
+        ]
+    }
+]

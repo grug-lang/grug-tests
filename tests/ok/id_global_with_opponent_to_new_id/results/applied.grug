@@ -1,0 +1,5 @@
+foo: id = get_opponent()
+
+on_a() {
+    store(foo)
+}

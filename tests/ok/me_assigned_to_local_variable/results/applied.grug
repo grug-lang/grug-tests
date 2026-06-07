@@ -1,0 +1,4 @@
+on_a() {
+    foo: D = me
+    set_d(foo)
+}

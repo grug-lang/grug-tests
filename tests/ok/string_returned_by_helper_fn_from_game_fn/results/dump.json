@@ -1,0 +1,42 @@
+[
+    {
+        "kind": "on_function",
+        "name": "on_a",
+        "parameters": [],
+        "body_statements": [
+            {
+                "kind": "call",
+                "expr": {
+                    "type": "call",
+                    "function_name": "has_string",
+                    "arguments": [
+                        {
+                            "type": "call",
+                            "function_name": "helper_foo",
+                            "arguments": []
+                        }
+                    ]
+                }
+            }
+        ]
+    },
+    {
+        "kind": "empty_line"
+    },
+    {
+        "kind": "helper_function",
+        "name": "helper_foo",
+        "parameters": [],
+        "body_statements": [
+            {
+                "kind": "return",
+                "expr": {
+                    "type": "call",
+                    "function_name": "get_os",
+                    "arguments": []
+                }
+            }
+        ],
+        "return_type": "string"
+    }
+]

@@ -1,0 +1,275 @@
+[
+    {
+        "kind": "global_variable",
+        "name": "g",
+        "type": "number",
+        "assignment_expr": {
+            "type": "number",
+            "value": 7,
+            "string": "7"
+        }
+    },
+    {
+        "kind": "empty_line"
+    },
+    {
+        "kind": "on_function",
+        "name": "on_a",
+        "parameters": [],
+        "body_statements": [
+            {
+                "kind": "call",
+                "expr": {
+                    "type": "call",
+                    "function_name": "helper_foo",
+                    "arguments": [
+                        {
+                            "type": "number",
+                            "value": 1,
+                            "string": "1"
+                        },
+                        {
+                            "type": "number",
+                            "value": 2,
+                            "string": "2"
+                        },
+                        {
+                            "type": "number",
+                            "value": 3,
+                            "string": "3"
+                        },
+                        {
+                            "type": "number",
+                            "value": 4,
+                            "string": "4"
+                        },
+                        {
+                            "type": "number",
+                            "value": 5,
+                            "string": "5"
+                        },
+                        {
+                            "type": "number",
+                            "value": 6,
+                            "string": "6"
+                        },
+                        {
+                            "type": "number",
+                            "value": 1,
+                            "string": "1.0"
+                        },
+                        {
+                            "type": "number",
+                            "value": 2,
+                            "string": "2.0"
+                        },
+                        {
+                            "type": "number",
+                            "value": 3,
+                            "string": "3.0"
+                        },
+                        {
+                            "type": "number",
+                            "value": 4,
+                            "string": "4.0"
+                        },
+                        {
+                            "type": "number",
+                            "value": 5,
+                            "string": "5.0"
+                        },
+                        {
+                            "type": "number",
+                            "value": 6,
+                            "string": "6.0"
+                        },
+                        {
+                            "type": "number",
+                            "value": 7,
+                            "string": "7.0"
+                        },
+                        {
+                            "type": "number",
+                            "value": 8,
+                            "string": "8.0"
+                        },
+                        {
+                            "type": "number",
+                            "value": 9,
+                            "string": "9.0"
+                        },
+                        {
+                            "type": "identifier",
+                            "value": "me"
+                        },
+                        {
+                            "type": "number",
+                            "value": 10,
+                            "string": "10.0"
+                        }
+                    ]
+                }
+            }
+        ]
+    },
+    {
+        "kind": "empty_line"
+    },
+    {
+        "kind": "helper_function",
+        "name": "helper_foo",
+        "parameters": [
+            {
+                "name": "i1",
+                "type": "number"
+            },
+            {
+                "name": "i2",
+                "type": "number"
+            },
+            {
+                "name": "i3",
+                "type": "number"
+            },
+            {
+                "name": "i4",
+                "type": "number"
+            },
+            {
+                "name": "i5",
+                "type": "number"
+            },
+            {
+                "name": "i6",
+                "type": "number"
+            },
+            {
+                "name": "f1",
+                "type": "number"
+            },
+            {
+                "name": "f2",
+                "type": "number"
+            },
+            {
+                "name": "f3",
+                "type": "number"
+            },
+            {
+                "name": "f4",
+                "type": "number"
+            },
+            {
+                "name": "f5",
+                "type": "number"
+            },
+            {
+                "name": "f6",
+                "type": "number"
+            },
+            {
+                "name": "f7",
+                "type": "number"
+            },
+            {
+                "name": "f8",
+                "type": "number"
+            },
+            {
+                "name": "f9",
+                "type": "number"
+            },
+            {
+                "name": "id",
+                "type": "D"
+            },
+            {
+                "name": "f10",
+                "type": "number"
+            }
+        ],
+        "body_statements": [
+            {
+                "kind": "call",
+                "expr": {
+                    "type": "call",
+                    "function_name": "motherload_subless",
+                    "arguments": [
+                        {
+                            "type": "identifier",
+                            "value": "i1"
+                        },
+                        {
+                            "type": "identifier",
+                            "value": "i2"
+                        },
+                        {
+                            "type": "identifier",
+                            "value": "i3"
+                        },
+                        {
+                            "type": "identifier",
+                            "value": "i4"
+                        },
+                        {
+                            "type": "identifier",
+                            "value": "i5"
+                        },
+                        {
+                            "type": "identifier",
+                            "value": "i6"
+                        },
+                        {
+                            "type": "identifier",
+                            "value": "g"
+                        },
+                        {
+                            "type": "identifier",
+                            "value": "f1"
+                        },
+                        {
+                            "type": "identifier",
+                            "value": "f2"
+                        },
+                        {
+                            "type": "identifier",
+                            "value": "f3"
+                        },
+                        {
+                            "type": "identifier",
+                            "value": "f4"
+                        },
+                        {
+                            "type": "identifier",
+                            "value": "f5"
+                        },
+                        {
+                            "type": "identifier",
+                            "value": "f6"
+                        },
+                        {
+                            "type": "identifier",
+                            "value": "f7"
+                        },
+                        {
+                            "type": "identifier",
+                            "value": "f8"
+                        },
+                        {
+                            "type": "identifier",
+                            "value": "f9"
+                        },
+                        {
+                            "type": "identifier",
+                            "value": "id"
+                        },
+                        {
+                            "type": "identifier",
+                            "value": "f10"
+                        }
+                    ]
+                }
+            }
+        ]
+    }
+]

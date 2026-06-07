@@ -1,0 +1,17 @@
+[
+    {
+        "kind": "on_function",
+        "name": "on_a",
+        "parameters": [],
+        "body_statements": [
+            {
+                "kind": "call",
+                "expr": {
+                    "type": "call",
+                    "function_name": "blocked_alrm",
+                    "arguments": []
+                }
+            }
+        ]
+    }
+]

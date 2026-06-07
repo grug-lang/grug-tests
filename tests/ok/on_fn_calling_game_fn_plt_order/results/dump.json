@@ -1,0 +1,72 @@
+[
+    {
+        "kind": "on_function",
+        "name": "on_a",
+        "parameters": [],
+        "body_statements": [
+            {
+                "kind": "call",
+                "expr": {
+                    "type": "call",
+                    "function_name": "nothing",
+                    "arguments": []
+                }
+            },
+            {
+                "kind": "call",
+                "expr": {
+                    "type": "call",
+                    "function_name": "magic",
+                    "arguments": []
+                }
+            },
+            {
+                "kind": "call",
+                "expr": {
+                    "type": "call",
+                    "function_name": "initialize",
+                    "arguments": [
+                        {
+                            "type": "number",
+                            "value": 42,
+                            "string": "42"
+                        }
+                    ]
+                }
+            },
+            {
+                "kind": "call",
+                "expr": {
+                    "type": "call",
+                    "function_name": "identity",
+                    "arguments": [
+                        {
+                            "type": "number",
+                            "value": 69,
+                            "string": "69"
+                        }
+                    ]
+                }
+            },
+            {
+                "kind": "call",
+                "expr": {
+                    "type": "call",
+                    "function_name": "max",
+                    "arguments": [
+                        {
+                            "type": "number",
+                            "value": 1337,
+                            "string": "1337"
+                        },
+                        {
+                            "type": "number",
+                            "value": 8192,
+                            "string": "8192"
+                        }
+                    ]
+                }
+            }
+        ]
+    }
+]

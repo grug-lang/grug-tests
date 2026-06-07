@@ -1,0 +1,11 @@
+on_a() {
+    if true {
+        a: number = 42
+        initialize(a)
+    }
+
+    if true {
+        a: number = 69
+        initialize(a)
+    }
+}

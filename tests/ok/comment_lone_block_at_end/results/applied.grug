@@ -1,0 +1,5 @@
+on_a() {
+    nothing()
+
+    # foo
+}

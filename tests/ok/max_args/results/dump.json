@@ -1,0 +1,84 @@
+[
+    {
+        "kind": "on_function",
+        "name": "on_a",
+        "parameters": [],
+        "body_statements": [
+            {
+                "kind": "call",
+                "expr": {
+                    "type": "call",
+                    "function_name": "mega",
+                    "arguments": [
+                        {
+                            "type": "number",
+                            "value": 1,
+                            "string": "1.0"
+                        },
+                        {
+                            "type": "number",
+                            "value": 21,
+                            "string": "21"
+                        },
+                        {
+                            "type": "boolean",
+                            "value": "true"
+                        },
+                        {
+                            "type": "number",
+                            "value": 2,
+                            "string": "2.0"
+                        },
+                        {
+                            "type": "number",
+                            "value": 3,
+                            "string": "3.0"
+                        },
+                        {
+                            "type": "number",
+                            "value": 4,
+                            "string": "4.0"
+                        },
+                        {
+                            "type": "boolean",
+                            "value": "false"
+                        },
+                        {
+                            "type": "number",
+                            "value": 1337,
+                            "string": "1337"
+                        },
+                        {
+                            "type": "number",
+                            "value": 5,
+                            "string": "5.0"
+                        },
+                        {
+                            "type": "number",
+                            "value": 6,
+                            "string": "6.0"
+                        },
+                        {
+                            "type": "number",
+                            "value": 7,
+                            "string": "7.0"
+                        },
+                        {
+                            "type": "number",
+                            "value": 8,
+                            "string": "8.0"
+                        },
+                        {
+                            "type": "identifier",
+                            "value": "me"
+                        },
+                        {
+                            "type": "string",
+                            "value": "foo"
+                        }
+                    ]
+                }
+            }
+        ]
+    }
+]

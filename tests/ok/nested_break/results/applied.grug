@@ -1,0 +1,11 @@
+on_a() {
+    nothing()
+    while true {
+        while true {
+            break
+        }
+        nothing()
+        break
+    }
+    nothing()
+}

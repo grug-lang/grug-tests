@@ -1,0 +1,7 @@
+on_a() {
+    nothing()
+    magic()
+    initialize(42)
+    identity(69)
+    max(1337, 8192)
+}

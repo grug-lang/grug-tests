@@ -1,0 +1,61 @@
+[
+    {
+        "kind": "on_function",
+        "name": "on_a",
+        "parameters": [],
+        "body_statements": [
+            {
+                "kind": "call",
+                "expr": {
+                    "type": "call",
+                    "function_name": "draw",
+                    "arguments": [
+                        {
+                            "type": "resource",
+                            "value": "resource_duplicate/foo.txt"
+                        }
+                    ]
+                }
+            },
+            {
+                "kind": "call",
+                "expr": {
+                    "type": "call",
+                    "function_name": "draw",
+                    "arguments": [
+                        {
+                            "type": "resource",
+                            "value": "resource_duplicate/bar.txt"
+                        }
+                    ]
+                }
+            },
+            {
+                "kind": "call",
+                "expr": {
+                    "type": "call",
+                    "function_name": "draw",
+                    "arguments": [
+                        {
+                            "type": "resource",
+                            "value": "resource_duplicate/bar.txt"
+                        }
+                    ]
+                }
+            },
+            {
+                "kind": "call",
+                "expr": {
+                    "type": "call",
+                    "function_name": "draw",
+                    "arguments": [
+                        {
+                            "type": "resource",
+                            "value": "resource_duplicate/baz.txt"
+                        }
+                    ]
+                }
+            }
+        ]
+    }
+]

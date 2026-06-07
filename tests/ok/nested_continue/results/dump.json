@@ -1,0 +1,109 @@
+[
+    {
+        "kind": "on_function",
+        "name": "on_a",
+        "parameters": [],
+        "body_statements": [
+            {
+                "kind": "variable",
+                "name": "i",
+                "type": "number",
+                "assignment_expr": {
+                    "type": "number",
+                    "value": 0,
+                    "string": "0"
+                }
+            },
+            {
+                "kind": "empty_line"
+            },
+            {
+                "kind": "while",
+                "cond": {
+                    "type": "boolean",
+                    "value": "true"
+                },
+                "statements": [
+                    {
+                        "kind": "call",
+                        "expr": {
+                            "type": "call",
+                            "function_name": "nothing",
+                            "arguments": []
+                        }
+                    },
+                    {
+                        "kind": "while",
+                        "cond": {
+                            "type": "binary",
+                            "operator": "!=",
+                            "left": {
+                                "type": "identifier",
+                                "value": "i"
+                            },
+                            "right": {
+                                "type": "number",
+                                "value": 2,
+                                "string": "2"
+                            }
+                        },
+                        "statements": [
+                            {
+                                "name": "i",
+                                "kind": "variable",
+                                "assignment_expr": {
+                                    "type": "binary",
+                                    "operator": "+",
+                                    "left": {
+                                        "type": "identifier",
+                                        "value": "i"
+                                    },
+                                    "right": {
+                                        "type": "number",
+                                        "value": 1,
+                                        "string": "1"
+                                    }
+                                }
+                            },
+                            {
+                                "kind": "if",
+                                "cond": {
+                                    "type": "parenthesized",
+                                    "expr": {
+                                        "type": "binary",
+                                        "operator": "==",
+                                        "left": {
+                                            "type": "identifier",
+                                            "value": "i"
+                                        },
+                                        "right": {
+                                            "type": "number",
+                                            "value": 1,
+                                            "string": "1"
+                                        }
+                                    }
+                                },
+                                "if_block": [
+                                    {
+                                        "kind": "continue"
+                                    }
+                                ]
+                            },
+                            {
+                                "kind": "call",
+                                "expr": {
+                                    "type": "call",
+                                    "function_name": "nothing",
+                                    "arguments": []
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        "kind": "break"
+                    }
+                ]
+            }
+        ]
+    }
+]

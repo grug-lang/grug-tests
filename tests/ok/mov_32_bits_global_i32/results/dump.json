@@ -1,0 +1,312 @@
+[
+    {
+        "kind": "global_variable",
+        "name": "v1",
+        "type": "number",
+        "assignment_expr": {
+            "type": "number",
+            "value": 0,
+            "string": "0"
+        }
+    },
+    {
+        "kind": "global_variable",
+        "name": "v2",
+        "type": "number",
+        "assignment_expr": {
+            "type": "number",
+            "value": 0,
+            "string": "0"
+        }
+    },
+    {
+        "kind": "global_variable",
+        "name": "v3",
+        "type": "number",
+        "assignment_expr": {
+            "type": "number",
+            "value": 0,
+            "string": "0"
+        }
+    },
+    {
+        "kind": "global_variable",
+        "name": "v4",
+        "type": "number",
+        "assignment_expr": {
+            "type": "number",
+            "value": 0,
+            "string": "0"
+        }
+    },
+    {
+        "kind": "global_variable",
+        "name": "v5",
+        "type": "number",
+        "assignment_expr": {
+            "type": "number",
+            "value": 0,
+            "string": "0"
+        }
+    },
+    {
+        "kind": "global_variable",
+        "name": "v6",
+        "type": "number",
+        "assignment_expr": {
+            "type": "number",
+            "value": 0,
+            "string": "0"
+        }
+    },
+    {
+        "kind": "global_variable",
+        "name": "v7",
+        "type": "number",
+        "assignment_expr": {
+            "type": "number",
+            "value": 0,
+            "string": "0"
+        }
+    },
+    {
+        "kind": "global_variable",
+        "name": "v8",
+        "type": "number",
+        "assignment_expr": {
+            "type": "number",
+            "value": 0,
+            "string": "0"
+        }
+    },
+    {
+        "kind": "global_variable",
+        "name": "v9",
+        "type": "number",
+        "assignment_expr": {
+            "type": "number",
+            "value": 0,
+            "string": "0"
+        }
+    },
+    {
+        "kind": "global_variable",
+        "name": "v10",
+        "type": "number",
+        "assignment_expr": {
+            "type": "number",
+            "value": 0,
+            "string": "0"
+        }
+    },
+    {
+        "kind": "global_variable",
+        "name": "v11",
+        "type": "number",
+        "assignment_expr": {
+            "type": "number",
+            "value": 0,
+            "string": "0"
+        }
+    },
+    {
+        "kind": "global_variable",
+        "name": "v12",
+        "type": "number",
+        "assignment_expr": {
+            "type": "number",
+            "value": 0,
+            "string": "0"
+        }
+    },
+    {
+        "kind": "global_variable",
+        "name": "v13",
+        "type": "number",
+        "assignment_expr": {
+            "type": "number",
+            "value": 0,
+            "string": "0"
+        }
+    },
+    {
+        "kind": "global_variable",
+        "name": "v14",
+        "type": "number",
+        "assignment_expr": {
+            "type": "number",
+            "value": 0,
+            "string": "0"
+        }
+    },
+    {
+        "kind": "global_variable",
+        "name": "v15",
+        "type": "number",
+        "assignment_expr": {
+            "type": "number",
+            "value": 0,
+            "string": "0"
+        }
+    },
+    {
+        "kind": "global_variable",
+        "name": "v16",
+        "type": "number",
+        "assignment_expr": {
+            "type": "number",
+            "value": 0,
+            "string": "0"
+        }
+    },
+    {
+        "kind": "global_variable",
+        "name": "v17",
+        "type": "number",
+        "assignment_expr": {
+            "type": "number",
+            "value": 0,
+            "string": "0"
+        }
+    },
+    {
+        "kind": "global_variable",
+        "name": "v18",
+        "type": "number",
+        "assignment_expr": {
+            "type": "number",
+            "value": 0,
+            "string": "0"
+        }
+    },
+    {
+        "kind": "global_variable",
+        "name": "v19",
+        "type": "number",
+        "assignment_expr": {
+            "type": "number",
+            "value": 0,
+            "string": "0"
+        }
+    },
+    {
+        "kind": "global_variable",
+        "name": "v20",
+        "type": "number",
+        "assignment_expr": {
+            "type": "number",
+            "value": 0,
+            "string": "0"
+        }
+    },
+    {
+        "kind": "global_variable",
+        "name": "v21",
+        "type": "number",
+        "assignment_expr": {
+            "type": "number",
+            "value": 0,
+            "string": "0"
+        }
+    },
+    {
+        "kind": "global_variable",
+        "name": "v22",
+        "type": "number",
+        "assignment_expr": {
+            "type": "number",
+            "value": 0,
+            "string": "0"
+        }
+    },
+    {
+        "kind": "global_variable",
+        "name": "v23",
+        "type": "number",
+        "assignment_expr": {
+            "type": "number",
+            "value": 0,
+            "string": "0"
+        }
+    },
+    {
+        "kind": "global_variable",
+        "name": "v24",
+        "type": "number",
+        "assignment_expr": {
+            "type": "number",
+            "value": 0,
+            "string": "0"
+        }
+    },
+    {
+        "kind": "global_variable",
+        "name": "v25",
+        "type": "number",
+        "assignment_expr": {
+            "type": "number",
+            "value": 0,
+            "string": "0"
+        }
+    },
+    {
+        "kind": "global_variable",
+        "name": "v26",
+        "type": "number",
+        "assignment_expr": {
+            "type": "number",
+            "value": 0,
+            "string": "0"
+        }
+    },
+    {
+        "kind": "global_variable",
+        "name": "v27",
+        "type": "number",
+        "assignment_expr": {
+            "type": "number",
+            "value": 0,
+            "string": "0"
+        }
+    },
+    {
+        "kind": "global_variable",
+        "name": "v28",
+        "type": "number",
+        "assignment_expr": {
+            "type": "number",
+            "value": 0,
+            "string": "0"
+        }
+    },
+    {
+        "kind": "global_variable",
+        "name": "v29",
+        "type": "number",
+        "assignment_expr": {
+            "type": "number",
+            "value": 0,
+            "string": "0"
+        }
+    },
+    {
+        "kind": "global_variable",
+        "name": "v30",
+        "type": "number",
+        "assignment_expr": {
+            "type": "number",
+            "value": 0,
+            "string": "0"
+        }
+    },
+    {
+        "kind": "global_variable",
+        "name": "v31",
+        "type": "number",
+        "assignment_expr": {
+            "type": "number",
+            "value": 0,
+            "string": "0"
+        }
+    }
+]

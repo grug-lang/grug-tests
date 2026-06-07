@@ -1,0 +1,44 @@
+[
+    {
+        "kind": "on_function",
+        "name": "on_a",
+        "parameters": [],
+        "body_statements": [
+            {
+                "kind": "call",
+                "expr": {
+                    "type": "call",
+                    "function_name": "nothing",
+                    "arguments": []
+                }
+            },
+            {
+                "kind": "if",
+                "cond": {
+                    "type": "boolean",
+                    "value": "false"
+                },
+                "if_block": [],
+                "is_chained": false,
+                "else_block": [
+                    {
+                        "kind": "call",
+                        "expr": {
+                            "type": "call",
+                            "function_name": "nothing",
+                            "arguments": []
+                        }
+                    }
+                ]
+            },
+            {
+                "kind": "call",
+                "expr": {
+                    "type": "call",
+                    "function_name": "nothing",
+                    "arguments": []
+                }
+            }
+        ]
+    }
+]

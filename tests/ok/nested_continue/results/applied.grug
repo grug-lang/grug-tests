@@ -1,0 +1,15 @@
+on_a() {
+    i: number = 0
+
+    while true {
+        nothing()
+        while i != 2 {
+            i = i + 1
+            if (i == 1) {
+                continue
+            }
+            nothing()
+        }
+        break
+    }
+}

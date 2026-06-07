@@ -1,0 +1,43 @@
+[
+    {
+        "kind": "on_function",
+        "name": "on_a",
+        "parameters": [],
+        "body_statements": [
+            {
+                "kind": "call",
+                "expr": {
+                    "type": "call",
+                    "function_name": "helper_foo",
+                    "arguments": []
+                }
+            },
+            {
+                "kind": "call",
+                "expr": {
+                    "type": "call",
+                    "function_name": "nothing",
+                    "arguments": []
+                }
+            }
+        ]
+    },
+    {
+        "kind": "empty_line"
+    },
+    {
+        "kind": "helper_function",
+        "name": "helper_foo",
+        "parameters": [],
+        "body_statements": [
+            {
+                "kind": "call",
+                "expr": {
+                    "type": "call",
+                    "function_name": "nothing",
+                    "arguments": []
+                }
+            }
+        ]
+    }
+]

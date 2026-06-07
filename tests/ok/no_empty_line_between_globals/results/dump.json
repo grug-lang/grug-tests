@@ -1,0 +1,22 @@
+[
+    {
+        "kind": "global_variable",
+        "name": "a",
+        "type": "number",
+        "assignment_expr": {
+            "type": "number",
+            "value": 420,
+            "string": "420"
+        }
+    },
+    {
+        "kind": "global_variable",
+        "name": "b",
+        "type": "number",
+        "assignment_expr": {
+            "type": "number",
+            "value": 1337,
+            "string": "1337"
+        }
+    }
+]

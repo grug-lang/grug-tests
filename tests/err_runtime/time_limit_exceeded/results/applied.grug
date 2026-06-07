@@ -1,0 +1,4 @@
+on_a() {
+    while true {
+    }
+}

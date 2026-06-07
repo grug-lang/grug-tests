@@ -1,0 +1,43 @@
+[
+    {
+        "kind": "on_function",
+        "name": "on_a",
+        "parameters": [],
+        "body_statements": [
+            {
+                "kind": "call",
+                "expr": {
+                    "type": "call",
+                    "function_name": "nothing",
+                    "arguments": []
+                }
+            },
+            {
+                "kind": "if",
+                "cond": {
+                    "type": "call",
+                    "function_name": "get_false",
+                    "arguments": []
+                },
+                "if_block": [
+                    {
+                        "kind": "call",
+                        "expr": {
+                            "type": "call",
+                            "function_name": "nothing",
+                            "arguments": []
+                        }
+                    }
+                ]
+            },
+            {
+                "kind": "call",
+                "expr": {
+                    "type": "call",
+                    "function_name": "nothing",
+                    "arguments": []
+                }
+            }
+        ]
+    }
+]

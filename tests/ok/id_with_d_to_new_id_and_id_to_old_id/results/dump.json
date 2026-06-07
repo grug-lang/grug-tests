@@ -1,0 +1,40 @@
+[
+    {
+        "kind": "on_function",
+        "name": "on_a",
+        "parameters": [],
+        "body_statements": [
+            {
+                "kind": "variable",
+                "name": "foo",
+                "type": "id",
+                "assignment_expr": {
+                    "type": "identifier",
+                    "value": "me"
+                }
+            },
+            {
+                "name": "foo",
+                "kind": "variable",
+                "assignment_expr": {
+                    "type": "call",
+                    "function_name": "retrieve",
+                    "arguments": []
+                }
+            },
+            {
+                "kind": "call",
+                "expr": {
+                    "type": "call",
+                    "function_name": "store",
+                    "arguments": [
+                        {
+                            "type": "identifier",
+                            "value": "foo"
+                        }
+                    ]
+                }
+            }
+        ]
+    }
+]

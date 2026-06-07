@@ -1,0 +1,11 @@
+[
+    {
+        "kind": "global_variable",
+        "name": "foo",
+        "type": "string",
+        "assignment_expr": {
+            "type": "string",
+            "value": "a\u0007b"
+        }
+    }
+]

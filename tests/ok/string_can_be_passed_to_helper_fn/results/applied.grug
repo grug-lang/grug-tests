@@ -1,0 +1,7 @@
+on_a() {
+    helper_foo("foo")
+}
+
+helper_foo(s: string) {
+    say(s)
+}

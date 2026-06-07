@@ -1,0 +1,350 @@
+[
+    {
+        "kind": "on_function",
+        "name": "on_a",
+        "parameters": [],
+        "body_statements": [
+            {
+                "kind": "variable",
+                "name": "v1",
+                "type": "D",
+                "assignment_expr": {
+                    "type": "identifier",
+                    "value": "me"
+                }
+            },
+            {
+                "kind": "call",
+                "expr": {
+                    "type": "call",
+                    "function_name": "set_d",
+                    "arguments": [
+                        {
+                            "type": "identifier",
+                            "value": "v1"
+                        }
+                    ]
+                }
+            },
+            {
+                "kind": "variable",
+                "name": "v2",
+                "type": "D",
+                "assignment_expr": {
+                    "type": "identifier",
+                    "value": "me"
+                }
+            },
+            {
+                "kind": "call",
+                "expr": {
+                    "type": "call",
+                    "function_name": "set_d",
+                    "arguments": [
+                        {
+                            "type": "identifier",
+                            "value": "v2"
+                        }
+                    ]
+                }
+            },
+            {
+                "kind": "variable",
+                "name": "v3",
+                "type": "D",
+                "assignment_expr": {
+                    "type": "identifier",
+                    "value": "me"
+                }
+            },
+            {
+                "kind": "call",
+                "expr": {
+                    "type": "call",
+                    "function_name": "set_d",
+                    "arguments": [
+                        {
+                            "type": "identifier",
+                            "value": "v3"
+                        }
+                    ]
+                }
+            },
+            {
+                "kind": "variable",
+                "name": "v4",
+                "type": "D",
+                "assignment_expr": {
+                    "type": "identifier",
+                    "value": "me"
+                }
+            },
+            {
+                "kind": "call",
+                "expr": {
+                    "type": "call",
+                    "function_name": "set_d",
+                    "arguments": [
+                        {
+                            "type": "identifier",
+                            "value": "v4"
+                        }
+                    ]
+                }
+            },
+            {
+                "kind": "variable",
+                "name": "v5",
+                "type": "D",
+                "assignment_expr": {
+                    "type": "identifier",
+                    "value": "me"
+                }
+            },
+            {
+                "kind": "call",
+                "expr": {
+                    "type": "call",
+                    "function_name": "set_d",
+                    "arguments": [
+                        {
+                            "type": "identifier",
+                            "value": "v5"
+                        }
+                    ]
+                }
+            },
+            {
+                "kind": "variable",
+                "name": "v6",
+                "type": "D",
+                "assignment_expr": {
+                    "type": "identifier",
+                    "value": "me"
+                }
+            },
+            {
+                "kind": "call",
+                "expr": {
+                    "type": "call",
+                    "function_name": "set_d",
+                    "arguments": [
+                        {
+                            "type": "identifier",
+                            "value": "v6"
+                        }
+                    ]
+                }
+            },
+            {
+                "kind": "variable",
+                "name": "v7",
+                "type": "D",
+                "assignment_expr": {
+                    "type": "identifier",
+                    "value": "me"
+                }
+            },
+            {
+                "kind": "call",
+                "expr": {
+                    "type": "call",
+                    "function_name": "set_d",
+                    "arguments": [
+                        {
+                            "type": "identifier",
+                            "value": "v7"
+                        }
+                    ]
+                }
+            },
+            {
+                "kind": "variable",
+                "name": "v8",
+                "type": "D",
+                "assignment_expr": {
+                    "type": "identifier",
+                    "value": "me"
+                }
+            },
+            {
+                "kind": "call",
+                "expr": {
+                    "type": "call",
+                    "function_name": "set_d",
+                    "arguments": [
+                        {
+                            "type": "identifier",
+                            "value": "v8"
+                        }
+                    ]
+                }
+            },
+            {
+                "kind": "variable",
+                "name": "v9",
+                "type": "D",
+                "assignment_expr": {
+                    "type": "identifier",
+                    "value": "me"
+                }
+            },
+            {
+                "kind": "call",
+                "expr": {
+                    "type": "call",
+                    "function_name": "set_d",
+                    "arguments": [
+                        {
+                            "type": "identifier",
+                            "value": "v9"
+                        }
+                    ]
+                }
+            },
+            {
+                "kind": "variable",
+                "name": "v10",
+                "type": "D",
+                "assignment_expr": {
+                    "type": "identifier",
+                    "value": "me"
+                }
+            },
+            {
+                "kind": "call",
+                "expr": {
+                    "type": "call",
+                    "function_name": "set_d",
+                    "arguments": [
+                        {
+                            "type": "identifier",
+                            "value": "v10"
+                        }
+                    ]
+                }
+            },
+            {
+                "kind": "variable",
+                "name": "v11",
+                "type": "D",
+                "assignment_expr": {
+                    "type": "identifier",
+                    "value": "me"
+                }
+            },
+            {
+                "kind": "call",
+                "expr": {
+                    "type": "call",
+                    "function_name": "set_d",
+                    "arguments": [
+                        {
+                            "type": "identifier",
+                            "value": "v11"
+                        }
+                    ]
+                }
+            },
+            {
+                "kind": "variable",
+                "name": "v12",
+                "type": "D",
+                "assignment_expr": {
+                    "type": "identifier",
+                    "value": "me"
+                }
+            },
+            {
+                "kind": "call",
+                "expr": {
+                    "type": "call",
+                    "function_name": "set_d",
+                    "arguments": [
+                        {
+                            "type": "identifier",
+                            "value": "v12"
+                        }
+                    ]
+                }
+            },
+            {
+                "kind": "variable",
+                "name": "v13",
+                "type": "D",
+                "assignment_expr": {
+                    "type": "identifier",
+                    "value": "me"
+                }
+            },
+            {
+                "kind": "call",
+                "expr": {
+                    "type": "call",
+                    "function_name": "set_d",
+                    "arguments": [
+                        {
+                            "type": "identifier",
+                            "value": "v13"
+                        }
+                    ]
+                }
+            },
+            {
+                "kind": "variable",
+                "name": "v14",
+                "type": "D",
+                "assignment_expr": {
+                    "type": "identifier",
+                    "value": "me"
+                }
+            },
+            {
+                "kind": "call",
+                "expr": {
+                    "type": "call",
+                    "function_name": "set_d",
+                    "arguments": [
+                        {
+                            "type": "identifier",
+                            "value": "v14"
+                        }
+                    ]
+                }
+            },
+            {
+                "kind": "empty_line"
+            },
+            {
+                "kind": "comment",
+                "value": "This causes SUB_RSP_32_BITS to be used in the function prologue,"
+            },
+            {
+                "kind": "comment",
+                "value": "instead of SUB_RSP_8_BITS, since there are now over 256 variable bytes"
+            },
+            {
+                "kind": "variable",
+                "name": "v15",
+                "type": "D",
+                "assignment_expr": {
+                    "type": "identifier",
+                    "value": "me"
+                }
+            },
+            {
+                "kind": "call",
+                "expr": {
+                    "type": "call",
+                    "function_name": "set_d",
+                    "arguments": [
+                        {
+                            "type": "identifier",
+                            "value": "v15"
+                        }
+                    ]
+                }
+            }
+        ]
+    }
+]

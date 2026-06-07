@@ -1,0 +1,7 @@
+on_a() {
+    store(helper_foo())
+}
+
+helper_foo() id {
+    return me
+}

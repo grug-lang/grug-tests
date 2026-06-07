@@ -1,0 +1,5 @@
+pos: Position = get_position(me)
+
+on_a() {
+    set_position(pos)
+}

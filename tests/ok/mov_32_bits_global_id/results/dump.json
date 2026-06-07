@@ -1,0 +1,162 @@
+[
+    {
+        "kind": "global_variable",
+        "name": "v1",
+        "type": "Opponent",
+        "assignment_expr": {
+            "type": "call",
+            "function_name": "get_opponent",
+            "arguments": []
+        }
+    },
+    {
+        "kind": "global_variable",
+        "name": "v2",
+        "type": "Opponent",
+        "assignment_expr": {
+            "type": "call",
+            "function_name": "get_opponent",
+            "arguments": []
+        }
+    },
+    {
+        "kind": "global_variable",
+        "name": "v3",
+        "type": "Opponent",
+        "assignment_expr": {
+            "type": "call",
+            "function_name": "get_opponent",
+            "arguments": []
+        }
+    },
+    {
+        "kind": "global_variable",
+        "name": "v4",
+        "type": "Opponent",
+        "assignment_expr": {
+            "type": "call",
+            "function_name": "get_opponent",
+            "arguments": []
+        }
+    },
+    {
+        "kind": "global_variable",
+        "name": "v5",
+        "type": "Opponent",
+        "assignment_expr": {
+            "type": "call",
+            "function_name": "get_opponent",
+            "arguments": []
+        }
+    },
+    {
+        "kind": "global_variable",
+        "name": "v6",
+        "type": "Opponent",
+        "assignment_expr": {
+            "type": "call",
+            "function_name": "get_opponent",
+            "arguments": []
+        }
+    },
+    {
+        "kind": "global_variable",
+        "name": "v7",
+        "type": "Opponent",
+        "assignment_expr": {
+            "type": "call",
+            "function_name": "get_opponent",
+            "arguments": []
+        }
+    },
+    {
+        "kind": "global_variable",
+        "name": "v8",
+        "type": "Opponent",
+        "assignment_expr": {
+            "type": "call",
+            "function_name": "get_opponent",
+            "arguments": []
+        }
+    },
+    {
+        "kind": "global_variable",
+        "name": "v9",
+        "type": "Opponent",
+        "assignment_expr": {
+            "type": "call",
+            "function_name": "get_opponent",
+            "arguments": []
+        }
+    },
+    {
+        "kind": "global_variable",
+        "name": "v10",
+        "type": "Opponent",
+        "assignment_expr": {
+            "type": "call",
+            "function_name": "get_opponent",
+            "arguments": []
+        }
+    },
+    {
+        "kind": "global_variable",
+        "name": "v11",
+        "type": "Opponent",
+        "assignment_expr": {
+            "type": "call",
+            "function_name": "get_opponent",
+            "arguments": []
+        }
+    },
+    {
+        "kind": "global_variable",
+        "name": "v12",
+        "type": "Opponent",
+        "assignment_expr": {
+            "type": "call",
+            "function_name": "get_opponent",
+            "arguments": []
+        }
+    },
+    {
+        "kind": "global_variable",
+        "name": "v13",
+        "type": "Opponent",
+        "assignment_expr": {
+            "type": "call",
+            "function_name": "get_opponent",
+            "arguments": []
+        }
+    },
+    {
+        "kind": "global_variable",
+        "name": "v14",
+        "type": "Opponent",
+        "assignment_expr": {
+            "type": "call",
+            "function_name": "get_opponent",
+            "arguments": []
+        }
+    },
+    {
+        "kind": "global_variable",
+        "name": "v15",
+        "type": "Opponent",
+        "assignment_expr": {
+            "type": "call",
+            "function_name": "get_opponent",
+            "arguments": []
+        }
+    },
+    {
+        "kind": "global_variable",
+        "name": "v16",
+        "type": "Opponent",
+        "assignment_expr": {
+            "type": "call",
+            "function_name": "get_opponent",
+            "arguments": []
+        }
+    }
+]

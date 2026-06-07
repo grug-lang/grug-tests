@@ -141,6 +141,34 @@
 			]
 		}
 	},
+	"classes": {
+		"VecNumber": {
+			"description": "A growable list of numbers",
+			"methods": [
+				{
+					"name": "push",
+					"description": "Pushes a number to the end of the list",
+					"arguments": [
+						{
+							"name": "value",
+							"type": "number"
+						}
+					]
+				},
+				{
+					"name": "print",
+					"description": "Prints the values of the list to the console",
+					"arguments": [ ]
+				},
+				{
+					"name": "pop",
+					"description": "Removes the last element from the list and returns it",
+					"arguments": [ ],
+					"return_type": "number"
+				}
+			]
+		}
+	},
 	"host_functions": {
 		"assert_state_is_not_null": {
 			"description": "foo"
@@ -1090,6 +1118,11 @@
 					"type": "string"
 				}
 			]
+		},
+		"vec_number_new": {
+			"description": "Creates a new VecNumber",
+			"arguments": [ ],
+			"return_type": "VecNumber"
 		}
 	}
 }

@@ -1,0 +1,33 @@
+[
+    {
+        "kind": "on_function",
+        "name": "on_a",
+        "parameters": [],
+        "body_statements": [
+            {
+                "kind": "call",
+                "expr": {
+                    "type": "call",
+                    "function_name": "initialize_bool",
+                    "arguments": [
+                        {
+                            "type": "unary",
+                            "operator": "not ",
+                            "expr": {
+                                "type": "parenthesized",
+                                "expr": {
+                                    "type": "unary",
+                                    "operator": "not ",
+                                    "expr": {
+                                        "type": "boolean",
+                                        "value": "true"
+                                    }
+                                }
+                            }
+                        }
+                    ]
+                }
+            }
+        ]
+    }
+]

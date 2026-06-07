@@ -1,0 +1,58 @@
+[
+    {
+        "kind": "global_variable",
+        "name": "a",
+        "type": "number",
+        "assignment_expr": {
+            "type": "number",
+            "value": 420,
+            "string": "420"
+        }
+    },
+    {
+        "kind": "global_variable",
+        "name": "b",
+        "type": "number",
+        "assignment_expr": {
+            "type": "number",
+            "value": 1337,
+            "string": "1337"
+        }
+    },
+    {
+        "kind": "empty_line"
+    },
+    {
+        "kind": "on_function",
+        "name": "on_a",
+        "parameters": [],
+        "body_statements": [
+            {
+                "kind": "call",
+                "expr": {
+                    "type": "call",
+                    "function_name": "initialize",
+                    "arguments": [
+                        {
+                            "type": "identifier",
+                            "value": "a"
+                        }
+                    ]
+                }
+            },
+            {
+                "kind": "call",
+                "expr": {
+                    "type": "call",
+                    "function_name": "initialize",
+                    "arguments": [
+                        {
+                            "type": "identifier",
+                            "value": "b"
+                        }
+                    ]
+                }
+            }
+        ]
+    }
+]

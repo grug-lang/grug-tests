@@ -1,0 +1,28 @@
+[
+    {
+        "kind": "on_function",
+        "name": "on_a",
+        "parameters": [],
+        "body_statements": [
+            {
+                "kind": "variable",
+                "name": "foo",
+                "type": "Opponent",
+                "assignment_expr": {
+                    "type": "call",
+                    "function_name": "get_opponent",
+                    "arguments": []
+                }
+            },
+            {
+                "name": "foo",
+                "kind": "variable",
+                "assignment_expr": {
+                    "type": "call",
+                    "function_name": "get_opponent",
+                    "arguments": []
+                }
+            }
+        ]
+    }
+]

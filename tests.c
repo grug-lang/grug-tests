@@ -221,6 +221,8 @@ static size_t game_fn_store_call_count;
 static size_t game_fn_print_csv_call_count;
 static size_t game_fn_retrieve_call_count;
 static size_t game_fn_box_number_call_count;
+static size_t game_fn_vec_number_new_call_count;
+static size_t game_fn_vec_number_push_call_count;
 
 static bool had_runtime_error = false;
 static size_t error_handler_call_count = 0;
@@ -946,6 +948,30 @@ union grug_value game_fn_box_number(struct grug_state* grug_state, const union g
 	return grug_id((uint64_t)args[0]._number);
 }
 
+union grug_value game_fn_vec_number_new(struct grug_state* grug_state, const union grug_value args[]) {
+	(void)grug_state;
+	(void)args;
+	ASSERT_16_BYTE_STACK_ALIGNED();
+	game_fn_vec_number_new_call_count++;
+	// This list is leaked.
+	// Actual implementations should do reference counting
+	struct VecNumber* ptr = malloc(sizeof(struct VecNumber));
+	assert(ptr); 
+	*ptr = (struct VecNumber) {0};
+
+	return grug_id((GRUG_TYPE_ID)ptr);
+}
+
+union grug_value game_fn_vec_number_push(struct grug_state* grug_state, const union grug_value args[]) {
+	(void)grug_state;
+	ASSERT_16_BYTE_STACK_ALIGNED();
+	game_fn_vec_number_push_call_count++;
+	struct VecNumber* ptr = (struct VecNumber*)args[0]._id;
+	vec_number_push(ptr, args[1]._number);
+
+	return (union grug_value) {0};
+}
+
 static void check(int status, const char *fn_name, const char *msg) {
 	if (status < 0) {
 		perror(fn_name);
@@ -1587,6 +1613,8 @@ static void reset(void) {
 	game_fn_print_csv_call_count = 0;
 	game_fn_retrieve_call_count = 0;
 	game_fn_box_number_call_count = 0;
+	game_fn_vec_number_new_call_count = 0;
+	game_fn_vec_number_push_call_count = 0;
 }
 
 static void remove_dir_recursive(const char* path) {
@@ -3063,6 +3091,14 @@ static void ok_mov_32_bits_global_i32(struct grug_state* grug_state, struct grug
 	(void)entity;
 }
 
+static void ok_method_simple(struct grug_state* grug_state, struct grug_entity_id* file_id) {
+	assert_call_count(vec_number_new, 0);
+	assert_call_count(vec_number_push, 0);
+    call_export_fn_argless(grug_state, file_id, "a");
+	assert_call_count(vec_number_new, 1);
+	assert_call_count(vec_number_push, 1);
+}
+
 static void ok_mov_32_bits_global_id(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	(void)grug_state;
 	(void)entity;
@@ -4383,6 +4419,7 @@ static void add_ok_tests(void) {
 	ADD_TEST_OK(me, "D");
 	ADD_TEST_OK(me_assigned_to_local_variable, "D");
 	ADD_TEST_OK(me_passed_to_helper_fn, "D");
+	ADD_TEST_OK(method_simple, "D");
 	ADD_TEST_OK(mov_32_bits_global_i32, "A");
 	ADD_TEST_OK(mov_32_bits_global_id, "A");
 	ADD_TEST_OK(multiplication_as_two_arguments, "D");

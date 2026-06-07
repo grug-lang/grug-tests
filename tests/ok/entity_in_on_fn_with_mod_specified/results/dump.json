@@ -1,0 +1,22 @@
+[
+    {
+        "kind": "on_function",
+        "name": "on_a",
+        "parameters": [],
+        "body_statements": [
+            {
+                "kind": "call",
+                "expr": {
+                    "type": "call",
+                    "function_name": "spawn",
+                    "arguments": [
+                        {
+                            "type": "entity",
+                            "value": "wow:foo"
+                        }
+                    ]
+                }
+            }
+        ]
+    }
+]

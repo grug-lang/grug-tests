@@ -1,0 +1,35 @@
+on_a() {
+    v1: D = me
+    set_d(v1)
+    v2: D = me
+    set_d(v2)
+    v3: D = me
+    set_d(v3)
+    v4: D = me
+    set_d(v4)
+    v5: D = me
+    set_d(v5)
+    v6: D = me
+    set_d(v6)
+    v7: D = me
+    set_d(v7)
+    v8: D = me
+    set_d(v8)
+    v9: D = me
+    set_d(v9)
+    v10: D = me
+    set_d(v10)
+    v11: D = me
+    set_d(v11)
+    v12: D = me
+    set_d(v12)
+    v13: D = me
+    set_d(v13)
+    v14: D = me
+    set_d(v14)
+
+    # This causes SUB_RSP_32_BITS to be used in the function prologue,
+    # instead of SUB_RSP_8_BITS, since there are now over 256 variable bytes
+    v15: D = me
+    set_d(v15)
+}

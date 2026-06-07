@@ -1,0 +1,4 @@
+on_a() {
+    x: number = 4.0
+    sin(x)
+}

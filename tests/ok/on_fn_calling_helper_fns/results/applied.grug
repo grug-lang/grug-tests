@@ -1,0 +1,12 @@
+on_a() {
+    helper_foo()
+    helper_bar()
+}
+
+helper_foo() {
+    nothing()
+}
+
+helper_bar() {
+    initialize(42)
+}

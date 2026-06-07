@@ -1,0 +1,26 @@
+[
+    {
+        "kind": "global_variable",
+        "name": "g1",
+        "type": "number",
+        "assignment_expr": {
+            "type": "unary",
+            "operator": "-",
+            "expr": {
+                "type": "number",
+                "value": 1,
+                "string": "1"
+            }
+        }
+    },
+    {
+        "kind": "global_variable",
+        "name": "g",
+        "type": "number",
+        "assignment_expr": {
+            "type": "number",
+            "value": 0,
+            "string": "0"
+        }
+    }
+]

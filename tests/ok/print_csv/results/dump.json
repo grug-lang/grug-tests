@@ -1,0 +1,22 @@
+[
+    {
+        "kind": "on_function",
+        "name": "on_a",
+        "parameters": [],
+        "body_statements": [
+            {
+                "kind": "call",
+                "expr": {
+                    "type": "call",
+                    "function_name": "print_csv",
+                    "arguments": [
+                        {
+                            "type": "resource",
+                            "value": "print_csv/foo.csv"
+                        }
+                    ]
+                }
+            }
+        ]
+    }
+]

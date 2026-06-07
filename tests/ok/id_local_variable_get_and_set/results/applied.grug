@@ -1,0 +1,4 @@
+on_a() {
+    opponent: Opponent = get_opponent()
+    set_opponent(opponent)
+}

@@ -1,0 +1,27 @@
+[
+    {
+        "kind": "on_function",
+        "name": "on_a",
+        "parameters": [
+            {
+                "name": "f",
+                "type": "number"
+            }
+        ],
+        "body_statements": [
+            {
+                "kind": "call",
+                "expr": {
+                    "type": "call",
+                    "function_name": "sin",
+                    "arguments": [
+                        {
+                            "type": "identifier",
+                            "value": "f"
+                        }
+                    ]
+                }
+            }
+        ]
+    }
+]

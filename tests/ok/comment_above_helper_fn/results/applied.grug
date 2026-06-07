@@ -1,0 +1,9 @@
+on_a() {
+    helper_foo()
+}
+
+# foo
+# bar
+helper_foo() {
+    nothing()
+}

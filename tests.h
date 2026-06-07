@@ -299,14 +299,3 @@ struct VecNumber {
 	size_t len;
 	size_t cap;
 };
-
-void vec_number_push(struct VecNumber* self, double item) {
-	if (self->len == self->cap) {
-		size_t new_cap = (self->cap == 0)? 8 : self->cap * 2;
-		void* ptr = realloc(self->items, sizeof(double) * new_cap);
-		assert(ptr);
-		self->items = ptr;
-		self->cap = new_cap;
-	}
-	self->items[self->len++] = item;
-}

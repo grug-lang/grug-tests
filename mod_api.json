@@ -31,7 +31,7 @@
 				{
 					"name": "a",
 					"description": "foo",
-					"arguments": [
+					"parameters": [
 						{
 							"name": "x",
 							"type": "number"
@@ -46,7 +46,7 @@
 				{
 					"name": "a",
 					"description": "foo",
-					"arguments": [
+					"parameters": [
 						{
 							"name": "x",
 							"type": "number"
@@ -82,7 +82,7 @@
 				{
 					"name": "a",
 					"description": "foo",
-					"arguments": [
+					"parameters": [
 						{
 							"name": "f",
 							"type": "number"
@@ -97,7 +97,7 @@
 				{
 					"name": "a",
 					"description": "foo",
-					"arguments": [
+					"parameters": [
 						{
 							"name": "i",
 							"type": "number"
@@ -116,7 +116,7 @@
 				{
 					"name": "a",
 					"description": "foo",
-					"arguments": [
+					"parameters": [
 						{
 							"name": "timer",
 							"type": "Timer"
@@ -131,7 +131,7 @@
 				{
 					"name": "a",
 					"description": "foo",
-					"arguments": [
+					"parameters": [
 						{
 							"name": "id",
 							"type": "id"
@@ -148,7 +148,7 @@
 				{
 					"name": "push",
 					"description": "Pushes a number to the end of the list",
-					"arguments": [
+					"parameters": [
 						{
 							"name": "value",
 							"type": "number"
@@ -158,12 +158,12 @@
 				{
 					"name": "print",
 					"description": "Prints the values of the list to the console",
-					"arguments": [ ]
+					"parameters": [ ]
 				},
 				{
 					"name": "pop",
 					"description": "Removes the last element from the list and returns it",
-					"arguments": [ ],
+					"parameters": [ ],
 					"return_type": "number"
 				}
 			]
@@ -179,7 +179,7 @@
 		"box_number": {
 			"description": "foo",
 			"return_type": "BoxedNumber",
-			"arguments": [
+			"parameters": [
 				{
 					"name": "n",
 					"type": "number"
@@ -196,7 +196,7 @@
 		"cos": {
 			"description": "foo",
 			"return_type": "number",
-			"arguments": [
+			"parameters": [
 				{
 					"name": "x",
 					"type": "number"
@@ -205,7 +205,7 @@
 		},
 		"draw": {
 			"description": "foo",
-			"arguments": [
+			"parameters": [
 				{
 					"name": "sprite_path",
 					"type": "resource",
@@ -228,7 +228,7 @@
 		"get_position": {
 			"description": "foo",
 			"return_type": "Position",
-			"arguments": [
+			"parameters": [
 				{
 					"name": "id",
 					"type": "D"
@@ -238,7 +238,7 @@
 		"has_entity": {
 			"description": "foo",
 			"return_type": "bool",
-			"arguments": [
+			"parameters": [
 				{
 					"name": "name",
 					"type": "entity",
@@ -249,7 +249,7 @@
 		"has_resource": {
 			"description": "foo",
 			"return_type": "bool",
-			"arguments": [
+			"parameters": [
 				{
 					"name": "path",
 					"type": "resource",
@@ -260,7 +260,7 @@
 		"has_string": {
 			"description": "foo",
 			"return_type": "bool",
-			"arguments": [
+			"parameters": [
 				{
 					"name": "str",
 					"type": "string"
@@ -270,7 +270,7 @@
 		"identity": {
 			"description": "foo",
 			"return_type": "number",
-			"arguments": [
+			"parameters": [
 				{
 					"name": "x",
 					"type": "number"
@@ -279,7 +279,7 @@
 		},
 		"initialize": {
 			"description": "foo",
-			"arguments": [
+			"parameters": [
 				{
 					"name": "x",
 					"type": "number"
@@ -288,7 +288,7 @@
 		},
 		"initialize_bool": {
 			"description": "foo",
-			"arguments": [
+			"parameters": [
 				{
 					"name": "b",
 					"type": "bool"
@@ -302,7 +302,7 @@
 		"max": {
 			"description": "foo",
 			"return_type": "number",
-			"arguments": [
+			"parameters": [
 				{
 					"name": "x",
 					"type": "number"
@@ -315,7 +315,7 @@
 		},
 		"mega": {
 			"description": "foo",
-			"arguments": [
+			"parameters": [
 				{
 					"name": "f1",
 					"type": "number"
@@ -376,7 +376,7 @@
 		},
 		"mega_f32": {
 			"description": "foo",
-			"arguments": [
+			"parameters": [
 				{
 					"name": "f1",
 					"type": "number"
@@ -417,7 +417,7 @@
 		},
 		"mega_i32": {
 			"description": "foo",
-			"arguments": [
+			"parameters": [
 				{
 					"name": "i1",
 					"type": "number"
@@ -450,7 +450,7 @@
 		},
 		"motherload": {
 			"description": "foo",
-			"arguments": [
+			"parameters": [
 				{
 					"name": "i1",
 					"type": "number"
@@ -523,7 +523,7 @@
 		},
 		"motherload_subless": {
 			"description": "foo",
-			"arguments": [
+			"parameters": [
 				{
 					"name": "i1",
 					"type": "number"
@@ -603,7 +603,7 @@
 		},
 		"offset_32_bit_f32": {
 			"description": "foo",
-			"arguments": [
+			"parameters": [
 				{
 					"name": "s1",
 					"type": "string"
@@ -704,7 +704,7 @@
 		},
 		"offset_32_bit_i32": {
 			"description": "foo",
-			"arguments": [
+			"parameters": [
 				{
 					"name": "f1",
 					"type": "number"
@@ -853,7 +853,7 @@
 		},
 		"offset_32_bit_string": {
 			"description": "foo",
-			"arguments": [
+			"parameters": [
 				{
 					"name": "f1",
 					"type": "number"
@@ -1002,7 +1002,7 @@
 		},
 		"print_csv": {
 			"description": "foo",
-			"arguments": [
+			"parameters": [
 				{
 					"name": "csv_path",
 					"type": "resource",
@@ -1016,7 +1016,7 @@
 		},
 		"say": {
 			"description": "foo",
-			"arguments": [
+			"parameters": [
 				{
 					"name": "message",
 					"type": "string"
@@ -1025,7 +1025,7 @@
 		},
 		"set_d": {
 			"description": "foo",
-			"arguments": [
+			"parameters": [
 				{
 					"name": "target",
 					"type": "D"
@@ -1034,7 +1034,7 @@
 		},
 		"set_is_happy": {
 			"description": "foo",
-			"arguments": [
+			"parameters": [
 				{
 					"name": "is_happy",
 					"type": "bool"
@@ -1043,7 +1043,7 @@
 		},
 		"set_opponent": {
 			"description": "foo",
-			"arguments": [
+			"parameters": [
 				{
 					"name": "target",
 					"type": "Opponent"
@@ -1052,7 +1052,7 @@
 		},
 		"set_position": {
 			"description": "foo",
-			"arguments": [
+			"parameters": [
 				{
 					"name": "pos",
 					"type": "Position"
@@ -1062,7 +1062,7 @@
 		"sin": {
 			"description": "foo",
 			"return_type": "number",
-			"arguments": [
+			"parameters": [
 				{
 					"name": "x",
 					"type": "number"
@@ -1071,7 +1071,7 @@
 		},
 		"spawn": {
 			"description": "foo",
-			"arguments": [
+			"parameters": [
 				{
 					"name": "name",
 					"type": "entity",
@@ -1081,7 +1081,7 @@
 		},
 		"spawn_d": {
 			"description": "foo",
-			"arguments": [
+			"parameters": [
 				{
 					"name": "name",
 					"type": "entity",
@@ -1091,7 +1091,7 @@
 		},
 		"store": {
 			"description": "foo",
-			"arguments": [
+			"parameters": [
 				{
 					"name": "id",
 					"type": "id"
@@ -1100,7 +1100,7 @@
 		},
 		"talk": {
 			"description": "foo",
-			"arguments": [
+			"parameters": [
 				{
 					"name": "message1",
 					"type": "string"
@@ -1121,7 +1121,7 @@
 		},
 		"vec_number_new": {
 			"description": "Creates a new VecNumber",
-			"arguments": [ ],
+			"parameters": [ ],
 			"return_type": "VecNumber"
 		}
 	}

@@ -967,7 +967,15 @@ union grug_value game_fn_vec_number_push(struct grug_state* grug_state, const un
 	ASSERT_16_BYTE_STACK_ALIGNED();
 	game_fn_vec_number_push_call_count++;
 	struct VecNumber* ptr = (struct VecNumber*)args[0]._id;
-	vec_number_push(ptr, args[1]._number);
+
+	if (ptr->len == ptr->cap) {
+		size_t new_cap = (ptr->cap == 0)? 8 : ptr->cap * 2;
+		void* new_ptr = realloc(ptr->items, sizeof(double) * new_cap);
+		assert(new_ptr);
+		ptr->items = new_ptr;
+		ptr->cap = new_cap;
+	}
+	ptr->items[ptr->len++] = args[1]._number;
 
 	return (union grug_value) {0};
 }

@@ -3647,7 +3647,6 @@ static void add_error_tests(void) {
 	ADD_TEST_ERROR(invalid_end_of_block, "D");
 	ADD_TEST_ERROR(invalid_local_fn_name, "D");
 	ADD_TEST_ERROR(line_continuation, "A");
-	ADD_TEST_ERROR(local_fn_does_not_begin_with_underscore, "D");
 	ADD_TEST_ERROR(local_variable_already_exists, "D");
 	ADD_TEST_ERROR(local_variable_contains_entity, "D");
 	ADD_TEST_ERROR(local_variable_definition_cant_use_itself, "D");

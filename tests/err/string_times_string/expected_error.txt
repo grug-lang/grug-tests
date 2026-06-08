@@ -1,0 +1,3 @@
+  in a (err/string_times_string/input-D.grug:2:29)
+Error: You can't use the '*' operator on strings
+2 $ foo: string = "Hello, " * "Nothing"

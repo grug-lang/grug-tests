@@ -1,0 +1,6 @@
+export a() {
+    foo: 33 = 0
+
+    if foo = 42 {
+    }
+}

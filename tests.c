@@ -1,3 +1,4 @@
+// TODO: rename helper_fn to local_fn everywhere
 #include "tests.h"
 
 #include "cJSON.h"
@@ -3635,6 +3636,7 @@ static void add_error_tests(void) {
 	ADD_TEST_ERROR(id_store_in_non_id_global, "A");
 	ADD_TEST_ERROR(id_store_in_non_id_local, "D");
 	ADD_TEST_ERROR(id_store_in_non_id_local_2, "D");
+	ADD_TEST_ERROR(if_condition_not_bool, "D");
 	ADD_TEST_ERROR(indentation_going_down_by_2, "D");
 	ADD_TEST_ERROR(indented_call_argument, "D");
 	ADD_TEST_ERROR(indented_call_arguments, "D");
@@ -3645,6 +3647,7 @@ static void add_error_tests(void) {
 	ADD_TEST_ERROR(invalid_end_of_block, "D");
 	ADD_TEST_ERROR(invalid_local_fn_name, "D");
 	ADD_TEST_ERROR(line_continuation, "A");
+	ADD_TEST_ERROR(local_fn_does_not_begin_with_underscore, "D");
 	ADD_TEST_ERROR(local_variable_already_exists, "D");
 	ADD_TEST_ERROR(local_variable_contains_entity, "D");
 	ADD_TEST_ERROR(local_variable_definition_cant_use_itself, "D");
@@ -3710,13 +3713,16 @@ static void add_error_tests(void) {
 	ADD_TEST_ERROR(resource_cant_refer_to_current_directory_2, "D");
 	ADD_TEST_ERROR(resource_cant_refer_to_current_directory_3, "D");
 	ADD_TEST_ERROR(resource_cant_refer_to_current_directory_4, "D");
+	ADD_TEST_ERROR(resource_does_not_exist, "D");
 	ADD_TEST_ERROR(resource_string_must_be_prefixed, "D");
 	ADD_TEST_ERROR(resource_type_for_global, "A");
 	ADD_TEST_ERROR(resource_type_for_helper_fn_return_type, "D");
 	ADD_TEST_ERROR(resource_type_for_local, "D");
 	ADD_TEST_ERROR(spaces_per_indent, "D");
 	ADD_TEST_ERROR(string_pointer_arithmetic, "D");
+	ADD_TEST_ERROR(string_times_string, "D");
 	ADD_TEST_ERROR(trailing_space_in_comment, "D");
+	ADD_TEST_ERROR(type_not_word, "D");
 	ADD_TEST_ERROR(unary_plus_does_not_exist, "D");
 	ADD_TEST_ERROR(unclosed_double_quote, "A");
 	ADD_TEST_ERROR(unknown_variable, "D");
@@ -3732,6 +3738,7 @@ static void add_error_tests(void) {
 	ADD_TEST_ERROR(variable_shadows_local_variable, "D");
 	ADD_TEST_ERROR(variable_statement_missing_assignment, "D");
 	ADD_TEST_ERROR(variable_used_before_definition, "D");
+	ADD_TEST_ERROR(while_condition_not_bool, "D");
 	ADD_TEST_ERROR(wrong_indentation, "D");
 	ADD_TEST_ERROR(wrong_type_global_assignment, "D");
 	ADD_TEST_ERROR(wrong_type_global_reassignment, "D");

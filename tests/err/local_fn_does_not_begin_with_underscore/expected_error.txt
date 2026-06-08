@@ -1,3 +1,0 @@
-  in member scope (err/local_fn_does_not_begin_with_underscore/input-D.grug:5:7)
-Error: Local function name must begin with `_`
-5 $ local help_local() {

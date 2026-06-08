@@ -1,7 +1,0 @@
-export a() {
-    help_local()
-}
-
-local help_local() {
-    nothing
-}

@@ -1,5 +1,5 @@
 export a() {
-    foo: number = 0
+    foo: 33 = 0
 
     if foo = 42 {
     }

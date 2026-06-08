@@ -1,0 +1,5 @@
+export a() {
+    foo: number = 25
+    if foo {
+    }
+}

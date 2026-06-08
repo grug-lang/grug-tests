@@ -3703,12 +3703,14 @@ static void add_error_tests(void) {
 	ADD_TEST_ERROR(resource_cant_refer_to_current_directory_2, "D");
 	ADD_TEST_ERROR(resource_cant_refer_to_current_directory_3, "D");
 	ADD_TEST_ERROR(resource_cant_refer_to_current_directory_4, "D");
+	ADD_TEST_ERROR(resource_does_not_exist, "D");
 	ADD_TEST_ERROR(resource_string_must_be_prefixed, "D");
 	ADD_TEST_ERROR(resource_type_for_global, "A");
 	ADD_TEST_ERROR(resource_type_for_helper_fn_return_type, "D");
 	ADD_TEST_ERROR(resource_type_for_local, "D");
 	ADD_TEST_ERROR(spaces_per_indent, "D");
 	ADD_TEST_ERROR(string_pointer_arithmetic, "D");
+	ADD_TEST_ERROR(string_times_string, "D");
 	ADD_TEST_ERROR(trailing_space_in_comment, "D");
 	ADD_TEST_ERROR(type_not_word, "D");
 	ADD_TEST_ERROR(unary_plus_does_not_exist, "D");
@@ -3726,6 +3728,7 @@ static void add_error_tests(void) {
 	ADD_TEST_ERROR(variable_shadows_local_variable, "D");
 	ADD_TEST_ERROR(variable_statement_missing_assignment, "D");
 	ADD_TEST_ERROR(variable_used_before_definition, "D");
+	ADD_TEST_ERROR(while_condition_not_bool, "D");
 	ADD_TEST_ERROR(wrong_indentation, "D");
 	ADD_TEST_ERROR(wrong_type_global_assignment, "D");
 	ADD_TEST_ERROR(wrong_type_global_reassignment, "D");

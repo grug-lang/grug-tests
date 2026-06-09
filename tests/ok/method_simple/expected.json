@@ -70,6 +70,24 @@
             },
             {
                 "type": "CALL_STATEMENT",
+                "name": "insert",
+                "receiver": {
+                    "type": "IDENTIFIER_EXPR",
+                    "str": "x"
+                },
+                "arguments": [
+                    {
+                        "type": "NUMBER_EXPR",
+                        "value": "1"
+                    },
+                    {
+                        "type": "NUMBER_EXPR",
+                        "value": "3"
+                    }
+                ]
+            },
+            {
+                "type": "CALL_STATEMENT",
                 "name": "pop",
                 "receiver": {
                     "type": "IDENTIFIER_EXPR",

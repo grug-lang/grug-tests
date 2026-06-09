@@ -1,4 +1,10 @@
 export a() {
     x: VecNumber = vec_number_new()
+    x.push(30)
+    x.push(10)
+    x.push(15)
     x.push(25)
+    x.pop()
+    x.pop()
+    x.pop()
 }

@@ -79,6 +79,7 @@ static game_fn p_game_fn_retrieve;
 static game_fn p_game_fn_box_number;
 static game_fn p_game_fn_vec_number_new;
 static game_fn p_game_fn_vec_number_push;
+static game_fn p_game_fn_vec_number_pop;
 
 static const char *saved_grug_file_path;
 static const char *saved_on_fn_name;
@@ -520,8 +521,15 @@ static void call_export_fn(struct grug_state* grug_state, struct grug_entity_id*
         CALL(grug_state, set_d, grug_id(42));
     } else if (starts_with(path, "ok/method_simple/")) {
         GRUG_TYPE_ID vec = CALL_ARGLESS(grug_state, vec_number_new)._id;
+        CALL(grug_state, vec_number_push, grug_id(vec), grug_number(30));
+        CALL(grug_state, vec_number_push, grug_id(vec), grug_number(10));
+        CALL(grug_state, vec_number_push, grug_id(vec), grug_number(15));
         CALL(grug_state, vec_number_push, grug_id(vec), grug_number(25));
-    } else if (starts_with(path, "ok/multiplication_as_two_arguments/")) {
+
+        CALL(grug_state, vec_number_pop, grug_id(vec));
+        CALL(grug_state, vec_number_pop, grug_id(vec));
+        CALL(grug_state, vec_number_pop, grug_id(vec));
+    } else if (starts_with(grug_file_path, "ok/multiplication_as_two_arguments/")) {
         CALL(grug_state, max, grug_number(6.0), grug_number(20.0));
     } else if (starts_with(path, "ok/ne_false/")) {
         CALL(grug_state, initialize_bool, grug_bool(false));
@@ -965,7 +973,11 @@ static void load_tests_library(void) {
     p_game_fn_box_number           = (game_fn)load_sym(h, "game_fn_box_number");
     p_game_fn_vec_number_new       = (game_fn)load_sym(h, "game_fn_vec_number_new");
     p_game_fn_vec_number_push      = (game_fn)load_sym(h, "game_fn_vec_number_push");
+<<<<<<< HEAD
 >>>>>>> cdb5d1dc (improved simple_method test and fixed smoketests)
+=======
+    p_game_fn_vec_number_pop       = (game_fn)load_sym(h, "game_fn_vec_number_pop");
+>>>>>>> 1a795adf (made method_simple test more complicated)
 	#pragma GCC diagnostic pop
 }
 

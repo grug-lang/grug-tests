@@ -37,6 +37,13 @@
 	} \
 } while (0)
 
+#define assert_size_t(d, expected_number) do { \
+	if (d != expected_number) { \
+		fprintf(stderr, "%s:%d: Assertion %zu (%s) == %zu failed.\n", __FILE__, __LINE__, d, #d, expected_number); \
+		exit(EXIT_FAILURE); \
+	} \
+} while (0)
+
 #define assert_true(b) do { \
 	if (!b) { \
 		fprintf(stderr, "%s:%d: Assertion %s == true failed.\n", __FILE__, __LINE__, #b); \
@@ -223,6 +230,7 @@ static size_t game_fn_retrieve_call_count;
 static size_t game_fn_box_number_call_count;
 static size_t game_fn_vec_number_new_call_count;
 static size_t game_fn_vec_number_push_call_count;
+static size_t game_fn_vec_number_pop_call_count;
 
 static bool had_runtime_error = false;
 static size_t error_handler_call_count = 0;
@@ -948,6 +956,7 @@ union grug_value game_fn_box_number(struct grug_state* grug_state, const union g
 	return grug_id((uint64_t)args[0]._number);
 }
 
+struct VecNumber* vec_number_last_new;
 union grug_value game_fn_vec_number_new(struct grug_state* grug_state, const union grug_value args[]) {
 	(void)grug_state;
 	(void)args;
@@ -956,6 +965,7 @@ union grug_value game_fn_vec_number_new(struct grug_state* grug_state, const uni
 	// This list is leaked.
 	// Actual implementations should do reference counting
 	struct VecNumber* ptr = malloc(sizeof(struct VecNumber));
+	vec_number_last_new = ptr;
 	assert(ptr); 
 	*ptr = (struct VecNumber) {0};
 
@@ -980,6 +990,20 @@ union grug_value game_fn_vec_number_push(struct grug_state* grug_state, const un
 	vec_number_last_pushed = args[1]._number;
 
 	return (union grug_value) {0};
+}
+
+static GRUG_TYPE_NUMBER vec_number_last_popped;
+union grug_value game_fn_vec_number_pop(struct grug_state* grug_state, const union grug_value args[]) {
+	(void)grug_state;
+	ASSERT_16_BYTE_STACK_ALIGNED();
+	game_fn_vec_number_pop_call_count++;
+	struct VecNumber* ptr = (struct VecNumber*)args[0]._id;
+
+	assert(ptr->len > 0);
+	double item = ptr->items[ptr->len-- - 1];
+	vec_number_last_popped = item;
+
+	return (union grug_value) {._number = item};
 }
 
 static void check(int status, const char *fn_name, const char *msg) {
@@ -1625,6 +1649,7 @@ static void reset(void) {
 	game_fn_box_number_call_count = 0;
 	game_fn_vec_number_new_call_count = 0;
 	game_fn_vec_number_push_call_count = 0;
+	game_fn_vec_number_pop_call_count = 0;
 }
 
 static void remove_dir_recursive(const char* path) {
@@ -3104,10 +3129,15 @@ static void ok_mov_32_bits_global_i32(struct grug_state* grug_state, struct grug
 static void ok_method_simple(struct grug_state* grug_state, struct grug_entity_id* file_id) {
 	assert_call_count(vec_number_new, 0);
 	assert_call_count(vec_number_push, 0);
+	assert_call_count(vec_number_pop, 0);
     call_export_fn_argless(grug_state, file_id, "a");
 	assert_call_count(vec_number_new, 1);
-	assert_call_count(vec_number_push, 1);
+	assert_call_count(vec_number_push, 4);
+	assert_call_count(vec_number_pop, 3);
 	assert_number(vec_number_last_pushed, 25.0);
+	assert_number(vec_number_last_popped, 10.0);
+	assert_number(*vec_number_last_new->items, 30.0);
+	assert_size_t(vec_number_last_new->len, (size_t)1);
 }
 
 static void ok_mov_32_bits_global_id(struct grug_state* grug_state, struct grug_entity_id* entity) {

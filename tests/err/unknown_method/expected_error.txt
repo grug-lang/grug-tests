@@ -1,0 +1,3 @@
+  in a (err/unknown_method/input-D.grug:3:5)
+Error: Cannot find method 'hello_world' on type 'VecNumber'
+3 $ x.hello_world()

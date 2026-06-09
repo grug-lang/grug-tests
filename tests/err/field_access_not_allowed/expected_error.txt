@@ -1,0 +1,3 @@
+  in a (err/field_access_not_allowed/input-D.grug:3:10)
+Error: Method call expected '('
+3 $ x.pop

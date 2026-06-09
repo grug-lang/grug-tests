@@ -4198,6 +4198,7 @@ static void add_error_tests(void) {
 	ADD_TEST_ERROR(f32_too_close_to_zero_positive_1, "D");
 	ADD_TEST_ERROR(f32_too_close_to_zero_positive_2, "D");
 	ADD_TEST_ERROR(f32_too_small, "D");
+	ADD_TEST_ERROR(field_access_not_allowed, "D");
 	ADD_TEST_ERROR(file_name_entity_type_doesnt_start_uppercase, "a");
 	ADD_TEST_ERROR(file_name_entity_type_invalid_character, "Foo#Bar");
 	ADD_TEST_ERROR(file_name_missing_entity_type, "");
@@ -4267,6 +4268,9 @@ static void add_error_tests(void) {
 	ADD_TEST_ERROR(me_cant_be_written_to, "D");
 	ADD_TEST_ERROR(me_plus_1, "D");
 	ADD_TEST_ERROR(me_plus_me, "D");
+	ADD_TEST_ERROR(method_on_id, "D");
+	ADD_TEST_ERROR(method_on_number, "D");
+	ADD_TEST_ERROR(method_on_type_without_methods, "D");
 	ADD_TEST_ERROR(missing_empty_line_between_global_and_on_fn, "D");
 	ADD_TEST_ERROR(missing_empty_line_between_on_fn_and_helper_fn, "D");
 	ADD_TEST_ERROR(mixing_custom_ids_binary_expr, "D");
@@ -4337,6 +4341,7 @@ static void add_error_tests(void) {
 	ADD_TEST_ERROR(type_not_word, "D");
 	ADD_TEST_ERROR(unary_plus_does_not_exist, "D");
 	ADD_TEST_ERROR(unclosed_double_quote, "A");
+	ADD_TEST_ERROR(unknown_method, "D");
 	ADD_TEST_ERROR(unknown_variable, "D");
 	ADD_TEST_ERROR(unrecognized_character, "A");
 	ADD_TEST_ERROR(unused_expr_result, "D");

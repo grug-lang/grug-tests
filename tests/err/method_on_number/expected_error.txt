@@ -1,0 +1,3 @@
+  in a (err/method_on_number/input-D.grug:3:5)
+Error: Cannot call method on 'number' type
+3 $ x.hello_world()

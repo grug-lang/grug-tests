@@ -231,6 +231,7 @@ static size_t game_fn_box_number_call_count;
 static size_t game_fn_vec_number_new_call_count;
 static size_t game_fn_vec_number_push_call_count;
 static size_t game_fn_vec_number_pop_call_count;
+static size_t game_fn_vec_number_insert_call_count;
 
 static bool had_runtime_error = false;
 static size_t error_handler_call_count = 0;
@@ -1006,6 +1007,31 @@ union grug_value game_fn_vec_number_pop(struct grug_state* grug_state, const uni
 	return (union grug_value) {._number = item};
 }
 
+static GRUG_TYPE_NUMBER vec_number_last_inserted;
+union grug_value game_fn_vec_number_insert(struct grug_state* grug_state, const union grug_value args[]) {
+	(void)grug_state;
+	ASSERT_16_BYTE_STACK_ALIGNED();
+	game_fn_vec_number_insert_call_count++;
+	struct VecNumber* ptr = (struct VecNumber*)args[0]._id;
+	size_t index = (size_t)args[1]._number;
+	assert((index <= ptr->len) && "index out of bounds for insert");
+
+	if (ptr->len == ptr->cap) {
+		size_t new_cap = (ptr->cap == 0)? 8 : ptr->cap * 2;
+		void* new_ptr = realloc(ptr->items, sizeof(double) * new_cap);
+		assert(new_ptr);
+		ptr->items = new_ptr;
+		ptr->cap = new_cap;
+	}
+
+	memmove(ptr->items + index + 1, ptr->items + index, sizeof(double) * (ptr->len - index));
+	ptr->items[index] = args[2]._number;
+	ptr->len++;
+	vec_number_last_inserted = args[2]._number;
+
+	return (union grug_value) {0};
+}
+
 static void check(int status, const char *fn_name, const char *msg) {
 	if (status < 0) {
 		perror(fn_name);
@@ -1650,6 +1676,7 @@ static void reset(void) {
 	game_fn_vec_number_new_call_count = 0;
 	game_fn_vec_number_push_call_count = 0;
 	game_fn_vec_number_pop_call_count = 0;
+	game_fn_vec_number_insert_call_count = 0;
 }
 
 static void remove_dir_recursive(const char* path) {
@@ -3130,14 +3157,18 @@ static void ok_method_simple(struct grug_state* grug_state, struct grug_entity_i
 	assert_call_count(vec_number_new, 0);
 	assert_call_count(vec_number_push, 0);
 	assert_call_count(vec_number_pop, 0);
+	assert_call_count(vec_number_insert, 0);
     call_export_fn_argless(grug_state, file_id, "a");
 	assert_call_count(vec_number_new, 1);
 	assert_call_count(vec_number_push, 4);
 	assert_call_count(vec_number_pop, 3);
+	assert_call_count(vec_number_insert, 1);
 	assert_number(vec_number_last_pushed, 25.0);
+	assert_number(vec_number_last_inserted, 3.0);
 	assert_number(vec_number_last_popped, 10.0);
-	assert_number(*vec_number_last_new->items, 30.0);
-	assert_size_t(vec_number_last_new->len, (size_t)1);
+	assert_size_t(vec_number_last_new->len, (size_t)2);
+	assert_number(vec_number_last_new->items[0], 30.0);
+	assert_number(vec_number_last_new->items[1], 3.0);
 }
 
 static void ok_mov_32_bits_global_id(struct grug_state* grug_state, struct grug_entity_id* entity) {

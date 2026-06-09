@@ -4,6 +4,7 @@ export a() {
     x.push(10)
     x.push(15)
     x.push(25)
+    x.insert(1, 3)
     x.pop()
     x.pop()
     x.pop()

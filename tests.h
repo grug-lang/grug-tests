@@ -293,6 +293,9 @@ union grug_value game_fn_retrieve                (struct grug_state* grug_state,
 union grug_value game_fn_box_number              (struct grug_state* grug_state, const union grug_value args[]);
 union grug_value game_fn_vec_number_new          (struct grug_state* grug_state, const union grug_value args[]);
 union grug_value game_fn_vec_number_push         (struct grug_state* grug_state, const union grug_value args[]);
+union grug_value game_fn_vec_number_pop          (struct grug_state* grug_state, const union grug_value args[]);
+union grug_value game_fn_vec_number_insert       (struct grug_state* grug_state, const union grug_value args[]);
+
 // VecNumber struct for grug
 struct VecNumber {
 	double* items;

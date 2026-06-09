@@ -1,0 +1,3 @@
+  in a (err/method_on_type_without_methods/input-D.grug:3:5)
+Error: Type 'BoxedNumber' does not have any methods
+3 $ x.hello_world()

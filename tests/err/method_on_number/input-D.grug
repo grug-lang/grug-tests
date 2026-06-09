@@ -1,0 +1,4 @@
+export a() {
+    x: number = 25
+    x.hello_world()
+}

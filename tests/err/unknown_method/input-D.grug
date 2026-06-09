@@ -1,0 +1,4 @@
+export a() {
+    x: VecNumber = vec_number_new()
+    x.hello_world()
+}

@@ -1,0 +1,4 @@
+export a() {
+    x: BoxedNumber = box_number(25)
+    x.hello_world()
+}

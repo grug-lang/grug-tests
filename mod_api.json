@@ -156,11 +156,6 @@
 					]
 				},
 				{
-					"name": "print",
-					"description": "Prints the values of the list to the console",
-					"parameters": [ ]
-				},
-				{
 					"name": "pop",
 					"description": "Removes the last element from the list and returns it",
 					"parameters": [ ],

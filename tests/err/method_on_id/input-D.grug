@@ -1,0 +1,4 @@
+export a() {
+    x: id = box_number(25)
+    x.hello_world()
+}

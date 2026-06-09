@@ -22,9 +22,75 @@
                 "arguments": [
                     {
                         "type": "NUMBER_EXPR",
+                        "value": "30"
+                    }
+                ]
+            },
+            {
+                "type": "CALL_STATEMENT",
+                "name": "push",
+                "receiver": {
+                    "type": "IDENTIFIER_EXPR",
+                    "str": "x"
+                },
+                "arguments": [
+                    {
+                        "type": "NUMBER_EXPR",
+                        "value": "10"
+                    }
+                ]
+            },
+            {
+                "type": "CALL_STATEMENT",
+                "name": "push",
+                "receiver": {
+                    "type": "IDENTIFIER_EXPR",
+                    "str": "x"
+                },
+                "arguments": [
+                    {
+                        "type": "NUMBER_EXPR",
+                        "value": "15"
+                    }
+                ]
+            },
+            {
+                "type": "CALL_STATEMENT",
+                "name": "push",
+                "receiver": {
+                    "type": "IDENTIFIER_EXPR",
+                    "str": "x"
+                },
+                "arguments": [
+                    {
+                        "type": "NUMBER_EXPR",
                         "value": "25"
                     }
                 ]
+            },
+            {
+                "type": "CALL_STATEMENT",
+                "name": "pop",
+                "receiver": {
+                    "type": "IDENTIFIER_EXPR",
+                    "str": "x"
+                }
+            },
+            {
+                "type": "CALL_STATEMENT",
+                "name": "pop",
+                "receiver": {
+                    "type": "IDENTIFIER_EXPR",
+                    "str": "x"
+                }
+            },
+            {
+                "type": "CALL_STATEMENT",
+                "name": "pop",
+                "receiver": {
+                    "type": "IDENTIFIER_EXPR",
+                    "str": "x"
+                }
             }
         ]
     }

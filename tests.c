@@ -962,6 +962,7 @@ union grug_value game_fn_vec_number_new(struct grug_state* grug_state, const uni
 	return grug_id((GRUG_TYPE_ID)ptr);
 }
 
+static GRUG_TYPE_NUMBER vec_number_last_pushed;
 union grug_value game_fn_vec_number_push(struct grug_state* grug_state, const union grug_value args[]) {
 	(void)grug_state;
 	ASSERT_16_BYTE_STACK_ALIGNED();
@@ -976,6 +977,7 @@ union grug_value game_fn_vec_number_push(struct grug_state* grug_state, const un
 		ptr->cap = new_cap;
 	}
 	ptr->items[ptr->len++] = args[1]._number;
+	vec_number_last_pushed = args[1]._number;
 
 	return (union grug_value) {0};
 }
@@ -3105,6 +3107,7 @@ static void ok_method_simple(struct grug_state* grug_state, struct grug_entity_i
     call_export_fn_argless(grug_state, file_id, "a");
 	assert_call_count(vec_number_new, 1);
 	assert_call_count(vec_number_push, 1);
+	assert_number(vec_number_last_pushed, 25.0);
 }
 
 static void ok_mov_32_bits_global_id(struct grug_state* grug_state, struct grug_entity_id* entity) {

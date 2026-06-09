@@ -77,6 +77,8 @@ static game_fn p_game_fn_store;
 static game_fn p_game_fn_print_csv;
 static game_fn p_game_fn_retrieve;
 static game_fn p_game_fn_box_number;
+static game_fn p_game_fn_vec_number_new;
+static game_fn p_game_fn_vec_number_push;
 
 static const char *saved_grug_file_path;
 static const char *saved_on_fn_name;
@@ -516,6 +518,9 @@ static void call_export_fn(struct grug_state* grug_state, struct grug_entity_id*
         CALL(grug_state, set_d, grug_id(42));
     } else if (starts_with(path, "ok/me_passed_to_helper_fn/")) {
         CALL(grug_state, set_d, grug_id(42));
+    } else if (starts_with(path, "ok/method_simple/")) {
+        GRUG_TYPE_ID vec = CALL_ARGLESS(grug_state, vec_number_new)._id;
+        CALL(grug_state, vec_number_push, grug_id(vec), grug_number(25));
     } else if (starts_with(path, "ok/multiplication_as_two_arguments/")) {
         CALL(grug_state, max, grug_number(6.0), grug_number(20.0));
     } else if (starts_with(path, "ok/ne_false/")) {
@@ -877,6 +882,7 @@ static void load_tests_library(void) {
     p_grug_tests_run                   = (void (*)(const char*, const char*, struct grug_state_vtable, const char*))load_sym(h, "grug_tests_run");
     p_grug_tests_runtime_error_handler = (void (*)(const char*, enum grug_runtime_error_type, const char*, const char*))load_sym(h, "grug_tests_runtime_error_handler");
 
+<<<<<<< HEAD
     p_game_fn_nothing                  = (game_fn)load_sym(h, "game_fn_nothing");
     p_game_fn_magic                    = (game_fn)load_sym(h, "game_fn_magic");
     p_game_fn_initialize               = (game_fn)load_sym(h, "game_fn_initialize");
@@ -917,6 +923,49 @@ static void load_tests_library(void) {
     p_game_fn_print_csv                = (game_fn)load_sym(h, "game_fn_print_csv");
     p_game_fn_retrieve                 = (game_fn)load_sym(h, "game_fn_retrieve");
     p_game_fn_box_number               = (game_fn)load_sym(h, "game_fn_box_number");
+=======
+    p_game_fn_nothing              = (game_fn)load_sym(h, "game_fn_nothing");
+    p_game_fn_magic                = (game_fn)load_sym(h, "game_fn_magic");
+    p_game_fn_initialize           = (game_fn)load_sym(h, "game_fn_initialize");
+    p_game_fn_initialize_bool      = (game_fn)load_sym(h, "game_fn_initialize_bool");
+    p_game_fn_identity             = (game_fn)load_sym(h, "game_fn_identity");
+    p_game_fn_max                  = (game_fn)load_sym(h, "game_fn_max");
+    p_game_fn_say                  = (game_fn)load_sym(h, "game_fn_say");
+    p_game_fn_sin                  = (game_fn)load_sym(h, "game_fn_sin");
+    p_game_fn_cos                  = (game_fn)load_sym(h, "game_fn_cos");
+    p_game_fn_mega                 = (game_fn)load_sym(h, "game_fn_mega");
+    p_game_fn_get_false            = (game_fn)load_sym(h, "game_fn_get_false");
+    p_game_fn_set_is_happy         = (game_fn)load_sym(h, "game_fn_set_is_happy");
+    p_game_fn_mega_f32             = (game_fn)load_sym(h, "game_fn_mega_f32");
+    p_game_fn_mega_i32             = (game_fn)load_sym(h, "game_fn_mega_i32");
+    p_game_fn_draw                 = (game_fn)load_sym(h, "game_fn_draw");
+    p_game_fn_blocked_alrm         = (game_fn)load_sym(h, "game_fn_blocked_alrm");
+    p_game_fn_spawn                = (game_fn)load_sym(h, "game_fn_spawn");
+    p_game_fn_spawn_d              = (game_fn)load_sym(h, "game_fn_spawn_d");
+    p_game_fn_has_resource         = (game_fn)load_sym(h, "game_fn_has_resource");
+    p_game_fn_has_entity           = (game_fn)load_sym(h, "game_fn_has_entity");
+    p_game_fn_has_string           = (game_fn)load_sym(h, "game_fn_has_string");
+    p_game_fn_get_opponent         = (game_fn)load_sym(h, "game_fn_get_opponent");
+    p_game_fn_get_os               = (game_fn)load_sym(h, "game_fn_get_os");
+    p_game_fn_set_d                = (game_fn)load_sym(h, "game_fn_set_d");
+    p_game_fn_set_opponent         = (game_fn)load_sym(h, "game_fn_set_opponent");
+    p_game_fn_motherload           = (game_fn)load_sym(h, "game_fn_motherload");
+    p_game_fn_motherload_subless   = (game_fn)load_sym(h, "game_fn_motherload_subless");
+    p_game_fn_offset_32_bit_f32    = (game_fn)load_sym(h, "game_fn_offset_32_bit_f32");
+    p_game_fn_offset_32_bit_i32    = (game_fn)load_sym(h, "game_fn_offset_32_bit_i32");
+    p_game_fn_offset_32_bit_string = (game_fn)load_sym(h, "game_fn_offset_32_bit_string");
+    p_game_fn_talk                 = (game_fn)load_sym(h, "game_fn_talk");
+    p_game_fn_get_position         = (game_fn)load_sym(h, "game_fn_get_position");
+    p_game_fn_set_position         = (game_fn)load_sym(h, "game_fn_set_position");
+    p_game_fn_cause_game_fn_error  = (game_fn)load_sym(h, "game_fn_cause_game_fn_error");
+    p_game_fn_call_on_b_fn         = (game_fn)load_sym(h, "game_fn_call_on_b_fn");
+    p_game_fn_store                = (game_fn)load_sym(h, "game_fn_store");
+    p_game_fn_print_csv            = (game_fn)load_sym(h, "game_fn_print_csv");
+    p_game_fn_retrieve             = (game_fn)load_sym(h, "game_fn_retrieve");
+    p_game_fn_box_number           = (game_fn)load_sym(h, "game_fn_box_number");
+    p_game_fn_vec_number_new       = (game_fn)load_sym(h, "game_fn_vec_number_new");
+    p_game_fn_vec_number_push      = (game_fn)load_sym(h, "game_fn_vec_number_push");
+>>>>>>> cdb5d1dc (improved simple_method test and fixed smoketests)
 	#pragma GCC diagnostic pop
 }
 

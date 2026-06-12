@@ -1716,7 +1716,7 @@ static void test_code_reloading_empty_file(void) {
 	// Overwrite reloading_empty_file/input-D.grug with initialize(1)
 	FILE *f1 = fopen(grug_abs, "w");
 	check_null(f1, "fopen", grug_abs);
-	fputs("foo: number = 1\n\non_a() {\n    initialize(foo)\n}\n", f1);
+	fputs("foo: number = 1\n\nexport a() {\n    initialize(foo)\n}\n", f1);
 	fclose(f1);
 
 	// Create file
@@ -1751,7 +1751,7 @@ static void test_code_reloading_empty_file(void) {
 	}
 
 	// Call on_a(), and run assert_number(game_fn_initialize_x, 1.0)
-	call_export_fn_argless(grug_state, entity, "on_a");
+	call_export_fn_argless(grug_state, entity, "a");
 	assert_number(game_fn_initialize_x, 1.0);
 
 	destroy_entity(grug_state, entity);
@@ -1799,7 +1799,7 @@ static void test_code_reloading(void) {
 	// Overwrite code_reloading/input-D.grug with initialize(1)
 	FILE *f1 = fopen(grug_abs, "w");
 	check_null(f1, "fopen", grug_abs);
-	fputs("foo: number = 1\n\non_a() {\n    initialize(foo)\n}\n", f1);
+	fputs("foo: number = 1\n\nexport a() {\n    initialize(foo)\n}\n", f1);
 	fclose(f1);
 
 	// Create file
@@ -1825,7 +1825,7 @@ static void test_code_reloading(void) {
 	// Overwrite code_reloading/input-D.grug with initialize(2)
 	FILE *f2 = fopen(grug_abs, "w");
 	check_null(f2, "fopen", grug_abs);
-	fputs("foo: number = 2\n\non_a() {\n    initialize(foo)\n}\n", f2);
+	fputs("foo: number = 2\n\nexport a() {\n    initialize(foo)\n}\n", f2);
 	fclose(f2);
 
 	// Call update()
@@ -3318,7 +3318,7 @@ static void ok_resource_can_contain_dot_dot_2(struct grug_state* grug_state, str
 	assert_string(game_fn_draw_sprite_path, "ok/resource_can_contain_dot_dot_2/foo..bar");
 }
 
-static void ok_resource_can_contain_dot_dot_3(void* grug_state, void* file_id) {
+static void ok_resource_can_contain_dot_dot_3(struct grug_state* grug_state, struct grug_entity_id* file_id) {
 	assert_call_count(draw, 0);
     call_export_fn_argless(grug_state, file_id, "a");
 	assert_call_count(draw, 1);
@@ -3627,7 +3627,7 @@ static void ok_stack_16_byte_alignment_midway(struct grug_state* grug_state, str
 
 static void ok_state_is_not_null(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	assert_call_count(assert_state_is_not_null, 0);
-    call_export_fn_argless(grug_state, entity, "on_a");
+    call_export_fn_argless(grug_state, entity, "a");
 	assert_call_count(assert_state_is_not_null, 1);
 }
 

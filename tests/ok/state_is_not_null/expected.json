@@ -1,10 +1,10 @@
 [
     {
-        "name": "on_a",
+        "name": "a",
         "type": "GLOBAL_ON_FN",
         "statements": [
             {
-                "name": "helper_foo",
+                "name": "_foo",
                 "type": "CALL_STATEMENT"
             }
         ]
@@ -13,7 +13,7 @@
         "type": "GLOBAL_EMPTY_LINE"
     },
     {
-        "name": "helper_foo",
+        "name": "_foo",
         "type": "GLOBAL_HELPER_FN",
         "statements": [
             {

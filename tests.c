@@ -1,4 +1,3 @@
-// TODO: rename helper_fn to local_fn everywhere
 #include "tests.h"
 
 #include "cJSON.h"
@@ -81,12 +80,12 @@ static const char *get_type_name[] = {
 } while (0)
 
 #if defined(_WIN32)
-#include <direct.h> // TODO: Check if this can be removed
+#include <direct.h>
 #include <windows.h>
 #define MKDIR(path) _mkdir(path)
 #elif defined(__linux__)
 #include <sys/stat.h>
-#include <unistd.h> // TODO: Check if this can be removed
+#include <unistd.h>
 #define MKDIR(path) mkdir(path, 0755)
 #endif
 

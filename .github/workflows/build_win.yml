@@ -28,7 +28,7 @@ jobs:
             $BUILD_DIR = "build-$($BUILD_TYPE.ToLower())"
 
             if ("${{ matrix.compiler }}" -eq "msvc") {
-              $CMAKE_FLAGS = @("-G", "Visual Studio 17 2022")
+              $CMAKE_FLAGS = @("-G", "Visual Studio 18 2026")
             } else {
               $CMAKE_FLAGS = @("-G", "Ninja", "-DCMAKE_BUILD_TYPE=$BUILD_TYPE" , "-DCMAKE_C_COMPILER=${{ matrix.compiler }}")
             }

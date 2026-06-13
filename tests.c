@@ -472,10 +472,10 @@ union grug_value game_fn_draw(struct grug_state* grug_state, const union grug_va
 	return (union grug_value) {0};
 }
 union grug_value game_fn_assert_state_is_not_null(struct grug_state* grug_state, const union grug_value args[]) {
+	(void)grug_state;
 	(void)args;
 	ASSERT_16_BYTE_STACK_ALIGNED();
 	game_fn_assert_state_is_not_null_call_count++;
-	assert(grug_state);
 	return (union grug_value) {0};
 }
 union grug_value game_fn_blocked_alrm(struct grug_state* grug_state, const union grug_value args[]) {

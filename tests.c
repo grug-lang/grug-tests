@@ -4,7 +4,6 @@
 
 #include <assert.h>
 #include <ctype.h>
-#include <dirent.h>
 #include <errno.h>
 #include <fcntl.h>
 #include <inttypes.h>
@@ -84,6 +83,7 @@ static const char *get_type_name[] = {
 #include <windows.h>
 #define MKDIR(path) _mkdir(path)
 #elif defined(__linux__)
+#include <dirent.h>
 #include <sys/stat.h>
 #include <unistd.h>
 #define MKDIR(path) mkdir(path, 0755)

@@ -1,25 +1,25 @@
 [
     {
         "name": "a",
-        "type": "GLOBAL_ON_FN",
         "statements": [
             {
                 "name": "_foo",
                 "type": "CALL_STATEMENT"
             }
-        ]
+        ],
+        "type": "GLOBAL_ON_FN"
     },
     {
         "type": "GLOBAL_EMPTY_LINE"
     },
     {
         "name": "_foo",
-        "type": "GLOBAL_HELPER_FN",
         "statements": [
             {
                 "name": "assert_state_is_not_null",
                 "type": "CALL_STATEMENT"
             }
-        ]
+        ],
+        "type": "GLOBAL_HELPER_FN"
     }
 ]

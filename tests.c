@@ -243,6 +243,41 @@ static bool streq_normalized(const char *a, const char *b) {
 	}
 }
 
+// Like streq(), but `expected` may contain a single "<number>" placeholder,
+// which matches any run of one or more digits in `actual`.
+static bool streq_allowing_number_placeholder(const char *actual, const char *expected) {
+	static const char placeholder[] = "<number>";
+
+	const char *wildcard = strstr(expected, placeholder);
+	if (!wildcard) {
+		// If the expected error message doesn't contain "<number>", fall back.
+		return streq(actual, expected);
+	}
+
+	size_t prefix_len = (size_t)(wildcard - expected);
+
+	if (strncmp(actual, expected, prefix_len) != 0) {
+		// The text before "<number>" did not match.
+		return false;
+	}
+
+	const char *actual_number = actual + prefix_len;
+
+	if (!isdigit((unsigned char)*actual_number)) {
+		// The actual error message did not contain a digit.
+		return false;
+	}
+
+	// Skip "<number>" its actual digits.
+	while (isdigit((unsigned char)*actual_number)) {
+		actual_number++;
+	}
+
+	const char *expected_suffix = wildcard + (sizeof(placeholder) - 1);
+
+	return streq(actual_number, expected_suffix);
+}
+
 static void call_export_fn_argless(void* grug_state, struct grug_entity_id* entity, const char *on_fn_name) {
 	call_export_fn(grug_state, entity, on_fn_name, NULL, 0);
 }
@@ -1905,7 +1940,7 @@ static void rerun_err_runtime_tests(struct grug_state *grug_state) {
 
 		const char *expected_error = get_expected_error(fn_data->expected_error_path);
 
-		if (!streq(runtime_error_reason, expected_error)) {
+		if (!streq_allowing_number_placeholder(runtime_error_reason, expected_error)) {
 			fprintf(stderr, "\nError: The error message differs from the expected error message.\n");
 			fprintf(stderr, "Output:\n");
 			print_string_debug(runtime_error_reason);
@@ -1951,7 +1986,7 @@ static void run_err_runtime_tests(struct grug_state *grug_state) {
 
 		const char *expected_error = get_expected_error(fn_data->expected_error_path);
 
-		if (!streq(runtime_error_reason, expected_error)) {
+		if (!streq_allowing_number_placeholder(runtime_error_reason, expected_error)) {
 			fprintf(stderr, "\nError: The error message differs from the expected error message.\n");
 			fprintf(stderr, "Output:\n");
 			print_string_debug(runtime_error_reason);

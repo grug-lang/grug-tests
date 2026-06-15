@@ -531,7 +531,7 @@ static void call_export_fn(struct grug_state* grug_state, struct grug_entity_id*
         CALL(grug_state, vec_number_pop, grug_id(vec));
         CALL(grug_state, vec_number_pop, grug_id(vec));
         CALL(grug_state, vec_number_pop, grug_id(vec));
-    } else if (starts_with(grug_file_path, "ok/multiplication_as_two_arguments/")) {
+    } else if (starts_with(path, "ok/multiplication_as_two_arguments/")) {
         CALL(grug_state, max, grug_number(6.0), grug_number(20.0));
     } else if (starts_with(path, "ok/ne_false/")) {
         CALL(grug_state, initialize_bool, grug_bool(false));

@@ -1,1 +1,2 @@
-File is empty
+Error: File is empty
+$  err/empty_file/input-A.grug

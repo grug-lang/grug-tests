@@ -1871,8 +1871,18 @@ static void test_code_reloading_empty_file(void) {
 	update(grug_state, &msg);
 
 	assert(msg);
-	if (!streq(msg, "File is empty")) {
-		fprintf(stderr, "Expected error message \"File is empty\", but got \"%s\"\n", msg);
+	char* expected_error_message = 
+		"Error: File is empty\n"
+		"$  reloading_empty_file/input-D.grug";
+
+	if (!streq_normalized(msg, expected_error_message)) {
+		fprintf(stderr, "\nError: The error message differs from the expected error message.\n");
+		fprintf(stderr, "Output:\n");
+		print_string_debug(msg);
+
+		fprintf(stderr, "Expected:\n");
+		print_string_debug(expected_error_message);
+
 		exit(EXIT_FAILURE);
 	}
 
@@ -2022,9 +2032,7 @@ static void rerun_err_runtime_tests(struct grug_state *grug_state) {
 		struct grug_entity_id* entity = create_entity(grug_state, fn_data->file, &msg);
 
 		// If the error happened inside create_entity(), don't call run()
-		if (msg) {
-			memcpy(runtime_error_reason, msg, strlen(msg) + 1);
-		} else {
+		if (!msg) {
 			current_entity = entity;
 			fn_data->run(grug_state, entity);	
 		}
@@ -2068,9 +2076,7 @@ static void run_err_runtime_tests(struct grug_state *grug_state) {
 		struct grug_entity_id* entity = create_entity(grug_state, file, &msg);
 
 		// If the error happened inside create_entity(), don't call run()
-		if (msg) {
-			memcpy(runtime_error_reason, msg, strlen(msg) + 1);
-		} else {
+		if (!msg) {
 			current_entity = entity;
 			fn_data->run(grug_state, entity);	
 		}

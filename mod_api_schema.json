@@ -31,11 +31,51 @@
                                 "description": {
                                     "type": "string"
                                 },
-                                "arguments": {
-                                    "$ref": "#/definitions/argumentsArray"
+                                "parameters": {
+                                    "$ref": "#/definitions/parametersArray"
                                 }
                             }
                         }
+                    }
+                }
+            }
+        },
+        "classes": {
+            "type": "object",
+            "additionalProperties": {
+                "type": "object",
+                "required": [
+                    "description"
+                ],
+                "additionalProperties": false,
+                "properties": {
+                    "description": {
+                        "type": "string"
+                    },
+                    "methods": {
+                        "type": "array",
+						"items": {
+							"type": "object",
+							"required": [
+								"name",
+								"description"
+							],
+							"additionalProperties": false,
+							"properties": {
+								"name": {
+									"type": "string"
+								},
+								"description": {
+									"type": "string"
+								},
+								"parameters": {
+									"$ref": "#/definitions/parametersArray"
+								},
+								"return_type": {
+									"type": "string"
+								}
+							}
+						}
                     }
                 }
             }
@@ -55,15 +95,15 @@
                     "return_type": {
                         "type": "string"
                     },
-                    "arguments": {
-                        "$ref": "#/definitions/argumentsArray"
+                    "parameters": {
+                        "$ref": "#/definitions/parametersArray"
                     }
                 }
             }
         }
     },
     "definitions": {
-        "argumentsArray": {
+        "parametersArray": {
             "type": "array",
             "items": {
                 "type": "object",

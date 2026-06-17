@@ -97,7 +97,7 @@ static bool update_called = false;
 static void update(struct grug_state* grug_state, const char** error_out) {
     (void)grug_state;
     if (streq(saved_grug_file_path, "reloading_empty_file/input-D.grug")) {
-	    *error_out = "File is empty";
+	    *error_out = "Error: File is empty\n$  reloading_empty_file/input-D.grug";
         return;
     }
     update_called = true;

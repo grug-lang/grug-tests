@@ -1,80 +1,73 @@
 [
     {
-        "type": "GLOBAL_ON_FN",
         "name": "a",
         "statements": [
             {
-                "type": "VARIABLE_STATEMENT",
-                "name": "x",
                 "assignment": {
-                    "type": "CALL_EXPR",
-                    "name": "vec_number_new"
+                    "name": "vec_number_new",
+                    "type": "CALL_EXPR"
                 },
+                "name": "x",
+                "type": "VARIABLE_STATEMENT",
                 "variable_type": "VecNumber"
             },
             {
-                "type": "CALL_STATEMENT",
-                "name": "push",
-                "receiver": {
-                    "type": "IDENTIFIER_EXPR",
-                    "str": "x"
-                },
                 "arguments": [
                     {
                         "type": "NUMBER_EXPR",
                         "value": "30"
                     }
-                ]
-            },
-            {
-                "type": "CALL_STATEMENT",
+                ],
                 "name": "push",
                 "receiver": {
-                    "type": "IDENTIFIER_EXPR",
-                    "str": "x"
+                    "str": "x",
+                    "type": "IDENTIFIER_EXPR"
                 },
+                "type": "CALL_STATEMENT"
+            },
+            {
                 "arguments": [
                     {
                         "type": "NUMBER_EXPR",
                         "value": "10"
                     }
-                ]
-            },
-            {
-                "type": "CALL_STATEMENT",
+                ],
                 "name": "push",
                 "receiver": {
-                    "type": "IDENTIFIER_EXPR",
-                    "str": "x"
+                    "str": "x",
+                    "type": "IDENTIFIER_EXPR"
                 },
+                "type": "CALL_STATEMENT"
+            },
+            {
                 "arguments": [
                     {
                         "type": "NUMBER_EXPR",
                         "value": "15"
                     }
-                ]
-            },
-            {
-                "type": "CALL_STATEMENT",
+                ],
                 "name": "push",
                 "receiver": {
-                    "type": "IDENTIFIER_EXPR",
-                    "str": "x"
+                    "str": "x",
+                    "type": "IDENTIFIER_EXPR"
                 },
+                "type": "CALL_STATEMENT"
+            },
+            {
                 "arguments": [
                     {
                         "type": "NUMBER_EXPR",
                         "value": "25"
                     }
-                ]
+                ],
+                "name": "push",
+                "receiver": {
+                    "str": "x",
+                    "type": "IDENTIFIER_EXPR"
+                },
+                "type": "CALL_STATEMENT"
             },
             {
-                "type": "CALL_STATEMENT",
-                "name": "insert",
-                "receiver": {
-                    "type": "IDENTIFIER_EXPR",
-                    "str": "x"
-                },
                 "arguments": [
                     {
                         "type": "NUMBER_EXPR",
@@ -84,32 +77,39 @@
                         "type": "NUMBER_EXPR",
                         "value": "3"
                     }
-                ]
+                ],
+                "name": "insert",
+                "receiver": {
+                    "str": "x",
+                    "type": "IDENTIFIER_EXPR"
+                },
+                "type": "CALL_STATEMENT"
             },
             {
-                "type": "CALL_STATEMENT",
                 "name": "pop",
                 "receiver": {
-                    "type": "IDENTIFIER_EXPR",
-                    "str": "x"
-                }
+                    "str": "x",
+                    "type": "IDENTIFIER_EXPR"
+                },
+                "type": "CALL_STATEMENT"
             },
             {
-                "type": "CALL_STATEMENT",
                 "name": "pop",
                 "receiver": {
-                    "type": "IDENTIFIER_EXPR",
-                    "str": "x"
-                }
+                    "str": "x",
+                    "type": "IDENTIFIER_EXPR"
+                },
+                "type": "CALL_STATEMENT"
             },
             {
-                "type": "CALL_STATEMENT",
                 "name": "pop",
                 "receiver": {
-                    "type": "IDENTIFIER_EXPR",
-                    "str": "x"
-                }
+                    "str": "x",
+                    "type": "IDENTIFIER_EXPR"
+                },
+                "type": "CALL_STATEMENT"
             }
-        ]
+        ],
+        "type": "GLOBAL_ON_FN"
     }
 ]

@@ -30,7 +30,7 @@ class TreeIndenter(Indenter):
 
 
 parser: Lark = Lark(
-    grammar, start="start", parser="lalr", postlex=TreeIndenter(), strict=True
+    grammar, start="start", parser="lalr", postlex=TreeIndenter(), strict=True, debug=True
 )
 
 
@@ -109,7 +109,12 @@ class GrugTransformer(Transformer[Tree[Any], Any]):
             "type": "CALL_EXPR",
             "name": str(items[0]),
         }
-        if len(items) > 1 and items[1] is not None:
+        if len(items) == 3:
+            result["receiver"] = items[0]
+            result["name"] = str(items[1])
+            if items[2] is not None:
+                result["arguments"] = items[2]
+        elif len(items) == 2 and items[1] is not None:
             result["arguments"] = items[1]
         return result
 

@@ -1,5 +1,0 @@
-foo: number = 2 * (3 + 4)
-
-on_a() {
-    initialize(foo)
-}

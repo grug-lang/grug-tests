@@ -1,7 +1,0 @@
-on_a() {
-    nothing()
-    while get_false() {
-        nothing()
-    }
-    nothing()
-}

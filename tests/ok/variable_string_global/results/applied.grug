@@ -1,6 +1,0 @@
-message: string = "temp"
-
-on_a() {
-    message = "foo"
-    say(message)
-}

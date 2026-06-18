@@ -1,7 +1,0 @@
-on_a() {
-    helper_foo(42.0)
-}
-
-helper_foo(f: number) {
-    sin(f)
-}

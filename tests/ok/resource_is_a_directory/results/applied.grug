@@ -1,3 +1,0 @@
-on_a() {
-    draw(r"resource_is_a_directory")
-}

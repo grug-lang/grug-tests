@@ -1,7 +1,0 @@
-on_a() {
-    helper_shout("foo")
-}
-
-helper_shout(message: string) {
-    say(message)
-}

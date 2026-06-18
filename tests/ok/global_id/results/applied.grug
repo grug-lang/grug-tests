@@ -1,5 +1,0 @@
-opponent: Opponent = get_opponent()
-
-on_a() {
-    set_opponent(opponent)
-}

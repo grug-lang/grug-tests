@@ -1,3 +1,0 @@
-on_a() {
-    initialize(max(max(1, 2), max(3, 4)))
-}

@@ -1,9 +1,0 @@
-on_a() {
-    helper_foo()
-    nothing()
-}
-
-helper_foo() {
-    nothing()
-    return
-}

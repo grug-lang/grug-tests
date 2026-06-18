@@ -1,7 +1,0 @@
-on_a(i: number, f: number) {
-    i = 20
-    initialize(i)
-
-    f = 30.0
-    sin(f)
-}

@@ -1,3 +1,0 @@
-on_a() {
-    initialize_bool(has_resource(r"entity_and_resource_as_subexpression/foo.txt") and has_string("bar") and has_entity(e"baz"))
-}

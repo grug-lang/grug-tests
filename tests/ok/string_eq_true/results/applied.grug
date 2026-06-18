@@ -1,3 +1,0 @@
-on_a() {
-    initialize_bool("foo" == "foo")
-}

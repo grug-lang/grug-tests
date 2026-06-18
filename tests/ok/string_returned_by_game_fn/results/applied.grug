@@ -1,3 +1,0 @@
-on_a() {
-    has_string(get_os())
-}

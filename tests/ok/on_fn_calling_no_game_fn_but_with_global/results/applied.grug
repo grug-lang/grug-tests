@@ -1,6 +1,0 @@
-foo: number = 42
-
-on_a() {
-    if true {
-    }
-}

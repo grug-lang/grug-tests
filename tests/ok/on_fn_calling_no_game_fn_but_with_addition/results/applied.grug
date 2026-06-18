@@ -1,3 +1,0 @@
-on_a() {
-    foo: number = 2 + 3
-}

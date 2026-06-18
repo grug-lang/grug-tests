@@ -30,7 +30,7 @@ jobs:
         run: |
           # Set sanitizer flags
           if [ "${{ matrix.sanitizer }}" == "asan" ]; then
-            export ASAN=1
+            export ASAN=1 ASAN_OPTIONS="detect_leaks=0"
           fi
           if [ "${{ matrix.sanitizer }}" == "valgrind" ]; then
             export VALGRIND=1

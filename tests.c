@@ -15,6 +15,13 @@
 
 #define MiB (1024 * 1024)
 
+#define assert_ptr(ptr) do { \
+	if (!ptr) { \
+		fprintf(stderr, "%s:%d: Assertion null pointer (%s) failed.\n", __FILE__, __LINE__, #ptr); \
+		exit(EXIT_FAILURE); \
+	} \
+} while (0)
+
 #define assert_call_count(game_fn_name, expected_count) do { \
 	size_t count = game_fn_ ## game_fn_name ## _call_count; \
 	if (count != expected_count) { \
@@ -966,8 +973,8 @@ union grug_value game_fn_vec_number_new(struct grug_state* grug_state, const uni
 	// This list is leaked.
 	// Actual implementations should do reference counting
 	struct VecNumber* ptr = malloc(sizeof(struct VecNumber));
+	assert_ptr(ptr);
 	vec_number_last_new = ptr;
-	assert(ptr); 
 	*ptr = (struct VecNumber) {0};
 
 	return grug_id((GRUG_TYPE_ID)ptr);
@@ -979,11 +986,12 @@ union grug_value game_fn_vec_number_push(struct grug_state* grug_state, const un
 	ASSERT_16_BYTE_STACK_ALIGNED();
 	game_fn_vec_number_push_call_count++;
 	struct VecNumber* ptr = (struct VecNumber*)args[0]._id;
+	assert_ptr(ptr);
 
 	if (ptr->len == ptr->cap) {
 		size_t new_cap = (ptr->cap == 0)? 8 : ptr->cap * 2;
 		void* new_ptr = realloc(ptr->items, sizeof(double) * new_cap);
-		assert(new_ptr);
+		assert_ptr(new_ptr);
 		ptr->items = new_ptr;
 		ptr->cap = new_cap;
 	}
@@ -1019,7 +1027,7 @@ union grug_value game_fn_vec_number_insert(struct grug_state* grug_state, const 
 	if (ptr->len == ptr->cap) {
 		size_t new_cap = (ptr->cap == 0)? 8 : ptr->cap * 2;
 		void* new_ptr = realloc(ptr->items, sizeof(double) * new_cap);
-		assert(new_ptr);
+		assert_ptr(new_ptr);
 		ptr->items = new_ptr;
 		ptr->cap = new_cap;
 	}

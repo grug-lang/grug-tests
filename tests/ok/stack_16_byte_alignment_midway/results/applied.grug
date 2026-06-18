@@ -1,3 +1,0 @@
-on_a() {
-    initialize(magic() + 42)
-}

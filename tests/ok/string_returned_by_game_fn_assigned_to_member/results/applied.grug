@@ -1,5 +1,0 @@
-os: string = get_os()
-
-on_a() {
-    has_string(os)
-}

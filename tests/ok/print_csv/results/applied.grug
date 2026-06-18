@@ -1,3 +1,0 @@
-on_a() {
-    print_csv(r"print_csv/foo.csv")
-}

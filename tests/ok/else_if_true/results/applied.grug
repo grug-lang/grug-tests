@@ -1,8 +1,0 @@
-on_a() {
-    nothing()
-    if false {
-    } else if true {
-        nothing()
-    }
-    nothing()
-}

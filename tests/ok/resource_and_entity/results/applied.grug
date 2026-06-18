@@ -1,4 +1,0 @@
-on_a() {
-    draw(r"resource_and_entity/foo.txt")
-    spawn(e"foo")
-}

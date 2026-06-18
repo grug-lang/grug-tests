@@ -1,3 +1,0 @@
-on_a() {
-    spawn_d(e"input")
-}

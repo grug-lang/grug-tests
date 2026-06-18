@@ -1,5 +1,0 @@
-on_a() {
-    foo: number = 42
-
-    initialize(foo)
-}

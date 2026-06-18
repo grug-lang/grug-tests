@@ -1,7 +1,0 @@
-on_a() {
-    helper_foo(retrieve())
-}
-
-helper_foo(id: id) {
-    store(id)
-}

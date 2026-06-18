@@ -1,7 +1,0 @@
-on_a() {
-    initialize(helper_foo())
-}
-
-helper_foo() number {
-    return 42
-}

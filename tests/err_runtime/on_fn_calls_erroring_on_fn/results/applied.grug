@@ -1,8 +1,0 @@
-on_a() {
-    call_on_b_fn()
-    nothing()
-}
-
-on_b() {
-    cause_game_fn_error()
-}

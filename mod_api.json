@@ -144,9 +144,8 @@
 	"classes": {
 		"VecNumber": {
 			"description": "A growable list of numbers",
-			"methods": [
-				{
-					"name": "push",
+			"methods": {
+				"push": {
 					"description": "Pushes a number to the end of the list",
 					"parameters": [
 						{
@@ -155,14 +154,12 @@
 						}
 					]
 				},
-				{
-					"name": "pop",
+				"pop": {
 					"description": "Removes the last element from the list and returns it",
 					"parameters": [ ],
 					"return_type": "number"
 				},
-				{
-					"name": "insert",
+				"insert": {
 					"description": "inserts an element at index i",
 					"parameters": [
 						{
@@ -175,7 +172,7 @@
 						}
 					]
 				}
-			]
+			}
 		}
 	},
 	"host_functions": {

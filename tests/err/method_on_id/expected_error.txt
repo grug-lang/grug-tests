@@ -1,3 +1,0 @@
-  in a (err/method_on_id/input-D.grug:3:5)
-Error: Cannot call method on 'id' type
-3 $ x.hello_world()

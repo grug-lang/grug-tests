@@ -53,11 +53,10 @@
                         "type": "string"
                     },
                     "methods": {
-                        "type": "array",
-						"items": {
+                        "type": "object",
+						"additionalProperties": {
 							"type": "object",
 							"required": [
-								"name",
 								"description"
 							],
 							"additionalProperties": false,

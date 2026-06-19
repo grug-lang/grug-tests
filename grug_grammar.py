@@ -30,7 +30,7 @@ class TreeIndenter(Indenter):
 
 
 parser: Lark = Lark(
-    grammar, start="start", parser="lalr", postlex=TreeIndenter(), strict=True, debug=True
+    grammar, start="start", parser="lalr", postlex=TreeIndenter(), strict=True
 )
 
 

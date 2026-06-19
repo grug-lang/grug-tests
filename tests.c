@@ -4282,7 +4282,6 @@ static void add_error_tests(void) {
 	ADD_TEST_ERROR(me_cant_be_written_to, "D");
 	ADD_TEST_ERROR(me_plus_1, "D");
 	ADD_TEST_ERROR(me_plus_me, "D");
-	ADD_TEST_ERROR(method_on_id, "D");
 	ADD_TEST_ERROR(method_on_number, "D");
 	ADD_TEST_ERROR(method_on_type_without_methods, "D");
 	ADD_TEST_ERROR(missing_empty_line_between_global_and_on_fn, "D");

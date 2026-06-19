@@ -28,7 +28,6 @@ block: " {" _NL [_INDENT statement+ _DEDENT] "}"
 
 call_stmt: NAME "(" [args] ")"
 		 | ident_ref "." NAME "(" [args] ")"
-		 | call_stmt "." NAME "(" [args] ")"
 
 args: expr (", " expr)*
 
@@ -67,7 +66,7 @@ TYPE_NAME: "number" | "bool" | "string" | "entity" | "resource" | ID
 
 ?call_expr: primary
          | NAME "(" [args] ")"
-		 | call_expr "." NAME "(" [args] ")"
+		 | ident_ref "." NAME "(" [args] ")"
 
 ?primary: literal
      | ident_ref

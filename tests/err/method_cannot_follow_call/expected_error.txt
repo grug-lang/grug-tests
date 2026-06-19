@@ -1,0 +1,3 @@
+  in a (err/method_cannot_follow_call/input-D.grug:2:5)
+Error: Cannot call method on the result of a function call
+2 $ vec_number_new().push(25)

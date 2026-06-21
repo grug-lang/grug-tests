@@ -156,7 +156,6 @@
 				},
 				"pop": {
 					"description": "Removes the last value from the list and returns it.",
-					"parameters": [],
 					"return_type": "number"
 				},
 				"insert": {
@@ -1142,7 +1141,6 @@
 		},
 		"vec_number_new": {
 			"description": "Creates a new VecNumber",
-			"parameters": [ ],
 			"return_type": "VecNumber"
 		}
 	}

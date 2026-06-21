@@ -1,0 +1,8 @@
+export a() {
+    _foo()
+}
+
+local _foo() {
+    u: Utils = utils()
+    u.assert_state_is_not_null()
+}

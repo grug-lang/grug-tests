@@ -1,0 +1,4 @@
+export a() {
+    u: Utils = utils()
+    u.cause_game_fn_error()
+}

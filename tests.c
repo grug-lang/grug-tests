@@ -210,7 +210,9 @@ static size_t game_fn_set_is_happy_call_count;
 static size_t game_fn_mega_f32_call_count;
 static size_t game_fn_mega_i32_call_count;
 static size_t game_fn_draw_call_count;
+static size_t game_fn_utils_call_count;
 static size_t game_fn_assert_state_is_not_null_call_count;
+static size_t game_fn_Utils_assert_state_is_not_null_call_count;
 static size_t game_fn_blocked_alrm_call_count;
 static size_t game_fn_spawn_call_count;
 static size_t game_fn_spawn_d_call_count;
@@ -230,6 +232,7 @@ static size_t game_fn_talk_call_count;
 static size_t game_fn_get_position_call_count;
 static size_t game_fn_set_position_call_count;
 static size_t game_fn_cause_game_fn_error_call_count;
+static size_t game_fn_Utils_cause_game_fn_error_call_count;
 static size_t game_fn_call_on_b_fn_call_count;
 static size_t game_fn_store_call_count;
 static size_t game_fn_print_csv_call_count;
@@ -489,10 +492,27 @@ union grug_value game_fn_draw(struct grug_state* grug_state, const union grug_va
 	strcpy(game_fn_draw_sprite_path, args[0]._string);
 	return (union grug_value) {0};
 }
+union grug_value game_fn_utils(struct grug_state* grug_state, const union grug_value args[]) {
+	(void)grug_state;
+	(void)args;
+	ASSERT_16_BYTE_STACK_ALIGNED();
+	game_fn_utils_call_count++;
+	return (union grug_value) {0};
+}
 union grug_value game_fn_assert_state_is_not_null(struct grug_state* grug_state, const union grug_value args[]) {
 	(void)args;
 	ASSERT_16_BYTE_STACK_ALIGNED();
 	game_fn_assert_state_is_not_null_call_count++;
+	if (grug_state == NULL) {
+		fprintf(stderr, "Error: state was NULL\n");
+		exit(EXIT_FAILURE);
+	}
+	return (union grug_value) {0};
+}
+union grug_value game_fn_Utils_assert_state_is_not_null(struct grug_state* grug_state, const union grug_value args[]) {
+	(void)args;
+	ASSERT_16_BYTE_STACK_ALIGNED();
+	game_fn_Utils_assert_state_is_not_null_call_count++;
 	if (grug_state == NULL) {
 		fprintf(stderr, "Error: state was NULL\n");
 		exit(EXIT_FAILURE);
@@ -925,6 +945,14 @@ union grug_value game_fn_cause_game_fn_error(struct grug_state* grug_state, cons
 
 	game_fn_error(grug_state, "cause_game_fn_error(): Example game function error");
 	return grug_bool(true);
+}
+union grug_value game_fn_Utils_cause_game_fn_error(struct grug_state* grug_state, const union grug_value args[]) {
+	(void)args;
+	ASSERT_16_BYTE_STACK_ALIGNED();
+	game_fn_Utils_cause_game_fn_error_call_count++;
+
+	game_fn_error(grug_state, "Utils_cause_game_fn_error(): Example game function error");
+	return (union grug_value) {0};
 }
 union grug_value game_fn_call_on_b_fn(struct grug_state* grug_state, const union grug_value args[]) {
 	(void)args;
@@ -1644,6 +1672,7 @@ static void reset(void) {
 	had_runtime_error = false;
 	error_handler_call_count = 0;
 	runtime_error_type = 0;
+
 	game_fn_nothing_call_count = 0;
 	game_fn_magic_call_count = 0;
 	game_fn_initialize_call_count = 0;
@@ -1659,7 +1688,9 @@ static void reset(void) {
 	game_fn_mega_f32_call_count = 0;
 	game_fn_mega_i32_call_count = 0;
 	game_fn_draw_call_count = 0;
+	game_fn_utils_call_count = 0;
 	game_fn_assert_state_is_not_null_call_count = 0;
+	game_fn_Utils_assert_state_is_not_null_call_count = 0;
 	game_fn_blocked_alrm_call_count = 0;
 	game_fn_spawn_call_count = 0;
 	game_fn_spawn_d_call_count = 0;
@@ -1679,6 +1710,7 @@ static void reset(void) {
 	game_fn_get_position_call_count = 0;
 	game_fn_set_position_call_count = 0;
 	game_fn_cause_game_fn_error_call_count = 0;
+	game_fn_Utils_cause_game_fn_error_call_count = 0;
 	game_fn_call_on_b_fn_call_count = 0;
 	game_fn_store_call_count = 0;
 	game_fn_print_csv_call_count = 0;
@@ -3796,6 +3828,14 @@ static void ok_state_is_not_null(struct grug_state* grug_state, struct grug_enti
 	assert_call_count(assert_state_is_not_null, 1);
 }
 
+static void ok_state_is_not_null_of_method(struct grug_state* grug_state, struct grug_entity_id* entity) {
+	assert_call_count(utils, 0);
+	assert_call_count(Utils_assert_state_is_not_null, 0);
+    call_export_fn_argless(grug_state, entity, "a");
+	assert_call_count(utils, 1);
+	assert_call_count(Utils_assert_state_is_not_null, 1);
+}
+
 static void ok_string_can_be_passed_to_helper_fn(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	assert_call_count(say, 0);
     call_export_fn_argless(grug_state, entity, "a");
@@ -4060,6 +4100,23 @@ static void runtime_error_game_fn_error_global_scope(struct grug_state* grug_sta
 	assert_runtime_error_type(GRUG_ON_FN_GAME_FN_ERROR);
 
 	assert_string(runtime_error_on_fn_path, "err_runtime/game_fn_error_global_scope/input-A.grug");
+}
+
+static void runtime_error_game_fn_error_in_method(struct grug_state* grug_state, struct grug_entity_id* entity) {
+	assert_call_count(utils, 0);
+	assert_call_count(Utils_cause_game_fn_error, 0);
+	assert_error_handler_call_count(0);
+	call_export_fn_argless(grug_state, entity, "a");
+	assert_call_count(utils, 1);
+	assert_call_count(Utils_cause_game_fn_error, 1);
+	assert_error_handler_call_count(1);
+
+	assert_true(had_runtime_error);
+
+	assert_runtime_error_type(GRUG_ON_FN_GAME_FN_ERROR);
+
+	assert_string(runtime_error_on_fn_name, "a");
+	assert_string(runtime_error_on_fn_path, "err_runtime/game_fn_error_in_method/input-D.grug");
 }
 
 static void runtime_error_game_fn_error_once(struct grug_state* grug_state, struct grug_entity_id* entity) {
@@ -4578,6 +4635,7 @@ static void add_ok_tests(void) {
 	ADD_TEST_OK(stack_16_byte_alignment, "D");
 	ADD_TEST_OK(stack_16_byte_alignment_midway, "D");
 	ADD_TEST_OK(state_is_not_null, "D");
+	ADD_TEST_OK(state_is_not_null_of_method, "D");
 	ADD_TEST_OK(string_can_be_passed_to_helper_fn, "D");
 	ADD_TEST_OK(string_duplicate, "D");
 	ADD_TEST_OK(string_eq_false, "D");
@@ -4611,6 +4669,7 @@ static void add_runtime_error_tests(void) {
 	ADD_TEST_RUNTIME_ERROR(all, "D");
 	ADD_TEST_RUNTIME_ERROR(game_fn_error, "D");
 	ADD_TEST_RUNTIME_ERROR(game_fn_error_global_scope, "A");
+	ADD_TEST_RUNTIME_ERROR(game_fn_error_in_method, "D");
 	ADD_TEST_RUNTIME_ERROR(game_fn_error_once, "E");
 	ADD_TEST_RUNTIME_ERROR(on_fn_calls_erroring_on_fn, "E");
 	ADD_TEST_RUNTIME_ERROR(on_fn_errors_after_it_calls_other_on_fn, "E");

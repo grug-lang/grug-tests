@@ -1,0 +1,25 @@
+[
+    {
+        "type": "GLOBAL_ON_FN",
+        "name": "a",
+        "statements": [
+            {
+                "type": "VARIABLE_STATEMENT",
+                "name": "u",
+                "variable_type": "Utils",
+                "assignment": {
+                    "type": "CALL_EXPR",
+                    "name": "utils"
+                }
+            },
+            {
+                "type": "CALL_STATEMENT",
+                "name": "cause_game_fn_error",
+                "receiver": {
+                    "type": "IDENTIFIER_EXPR",
+                    "str": "u"
+                }
+            }
+        ]
+    }
+]

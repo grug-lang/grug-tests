@@ -173,11 +173,26 @@
 					]
 				}
 			}
+		},
+		"Utils": {
+			"description": "Asserts.",
+			"methods": {
+				"assert_state_is_not_null": {
+					"description": "Asserts state is not null."
+				},
+				"cause_game_fn_error": {
+					"description": "Causes a game fn error."
+				}
+			}
 		}
 	},
 	"host_functions": {
 		"assert_state_is_not_null": {
 			"description": "foo"
+		},
+		"utils": {
+			"description": "Creates a new Utils",
+			"return_type": "Utils"
 		},
 		"blocked_alrm": {
 			"description": "foo"

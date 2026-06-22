@@ -290,6 +290,7 @@ union grug_value game_fn_set_position                  (struct grug_state* grug_
 union grug_value game_fn_cause_game_fn_error           (struct grug_state* grug_state, const union grug_value args[]);
 union grug_value game_fn_Utils_cause_game_fn_error     (struct grug_state* grug_state, const union grug_value args[]);
 union grug_value game_fn_call_on_b_fn                  (struct grug_state* grug_state, const union grug_value args[]);
+union grug_value game_fn_Utils_call_on_b_fn            (struct grug_state* grug_state, const union grug_value args[]);
 union grug_value game_fn_store                         (struct grug_state* grug_state, const union grug_value args[]);
 union grug_value game_fn_print_csv                     (struct grug_state* grug_state, const union grug_value args[]);
 union grug_value game_fn_retrieve                      (struct grug_state* grug_state, const union grug_value args[]);

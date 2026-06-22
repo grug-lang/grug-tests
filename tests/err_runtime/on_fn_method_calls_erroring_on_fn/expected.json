@@ -1,0 +1,42 @@
+[
+    {
+        "name": "a",
+        "statements": [
+            {
+                "assignment": {
+                    "name": "utils",
+                    "type": "CALL_EXPR"
+                },
+                "name": "u",
+                "type": "VARIABLE_STATEMENT",
+                "variable_type": "Utils"
+            },
+            {
+                "name": "call_on_b_fn",
+                "receiver": {
+                    "str": "u",
+                    "type": "IDENTIFIER_EXPR"
+                },
+                "type": "CALL_STATEMENT"
+            },
+            {
+                "name": "nothing",
+                "type": "CALL_STATEMENT"
+            }
+        ],
+        "type": "GLOBAL_ON_FN"
+    },
+    {
+        "type": "GLOBAL_EMPTY_LINE"
+    },
+    {
+        "name": "b",
+        "statements": [
+            {
+                "name": "cause_game_fn_error",
+                "type": "CALL_STATEMENT"
+            }
+        ],
+        "type": "GLOBAL_ON_FN"
+    }
+]

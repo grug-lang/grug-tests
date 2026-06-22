@@ -234,6 +234,7 @@ static size_t game_fn_set_position_call_count;
 static size_t game_fn_cause_game_fn_error_call_count;
 static size_t game_fn_Utils_cause_game_fn_error_call_count;
 static size_t game_fn_call_on_b_fn_call_count;
+static size_t game_fn_Utils_call_on_b_fn_call_count;
 static size_t game_fn_store_call_count;
 static size_t game_fn_print_csv_call_count;
 static size_t game_fn_retrieve_call_count;
@@ -958,6 +959,14 @@ union grug_value game_fn_call_on_b_fn(struct grug_state* grug_state, const union
 	(void)args;
 	ASSERT_16_BYTE_STACK_ALIGNED();
 	game_fn_call_on_b_fn_call_count++;
+
+	call_export_fn_argless(grug_state, current_entity, "b");
+	return (union grug_value) {0};
+}
+union grug_value game_fn_Utils_call_on_b_fn(struct grug_state* grug_state, const union grug_value args[]) {
+	(void)args;
+	ASSERT_16_BYTE_STACK_ALIGNED();
+	game_fn_Utils_call_on_b_fn_call_count++;
 
 	call_export_fn_argless(grug_state, current_entity, "b");
 	return (union grug_value) {0};
@@ -1712,6 +1721,7 @@ static void reset(void) {
 	game_fn_cause_game_fn_error_call_count = 0;
 	game_fn_Utils_cause_game_fn_error_call_count = 0;
 	game_fn_call_on_b_fn_call_count = 0;
+	game_fn_Utils_call_on_b_fn_call_count = 0;
 	game_fn_store_call_count = 0;
 	game_fn_print_csv_call_count = 0;
 	game_fn_retrieve_call_count = 0;
@@ -4184,6 +4194,27 @@ static void runtime_error_on_fn_errors_after_it_calls_other_on_fn(struct grug_st
 	assert_string(runtime_error_on_fn_path, "err_runtime/on_fn_errors_after_it_calls_other_on_fn/input-E.grug");
 }
 
+static void runtime_error_on_fn_method_calls_erroring_on_fn(struct grug_state* grug_state, struct grug_entity_id* entity) {
+	assert_call_count(utils, 0);
+	assert_call_count(Utils_call_on_b_fn, 0);
+	assert_call_count(cause_game_fn_error, 0);
+	assert_call_count(nothing, 0);
+	assert_error_handler_call_count(0);
+    call_export_fn_argless(grug_state, entity, "a");
+	assert_call_count(utils, 1);
+	assert_call_count(Utils_call_on_b_fn, 1);
+	assert_call_count(cause_game_fn_error, 1);
+	assert_call_count(nothing, 0);
+	assert_error_handler_call_count(1);
+
+	assert_true(had_runtime_error);
+
+	assert_runtime_error_type(GRUG_ON_FN_GAME_FN_ERROR);
+
+	assert_string(runtime_error_on_fn_name, "b");
+	assert_string(runtime_error_on_fn_path, "err_runtime/on_fn_method_calls_erroring_on_fn/input-E.grug");
+}
+
 static void runtime_error_stack_overflow(struct grug_state* grug_state, struct grug_entity_id* entity) {
     call_export_fn_argless(grug_state, entity, "a");
 
@@ -4673,6 +4704,7 @@ static void add_runtime_error_tests(void) {
 	ADD_TEST_RUNTIME_ERROR(game_fn_error_once, "E");
 	ADD_TEST_RUNTIME_ERROR(on_fn_calls_erroring_on_fn, "E");
 	ADD_TEST_RUNTIME_ERROR(on_fn_errors_after_it_calls_other_on_fn, "E");
+	ADD_TEST_RUNTIME_ERROR(on_fn_method_calls_erroring_on_fn, "E");
 	ADD_TEST_RUNTIME_ERROR(stack_overflow, "D");
 	ADD_TEST_RUNTIME_ERROR(time_limit_exceeded, "D");
 	ADD_TEST_RUNTIME_ERROR(time_limit_exceeded_exponential_calls, "D");

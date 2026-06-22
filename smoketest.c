@@ -76,6 +76,7 @@ static game_fn p_game_fn_set_position;
 static game_fn p_game_fn_cause_game_fn_error;
 static game_fn p_game_fn_Utils_cause_game_fn_error;
 static game_fn p_game_fn_call_on_b_fn;
+static game_fn p_game_fn_Utils_call_on_b_fn;
 static game_fn p_game_fn_store;
 static game_fn p_game_fn_print_csv;
 static game_fn p_game_fn_retrieve;
@@ -220,6 +221,13 @@ static void call_export_fn(struct grug_state* grug_state, struct grug_entity_id*
             CALL_ARGLESS(grug_state, cause_game_fn_error);
         } else {
             CALL_ARGLESS(grug_state, nothing);
+        }
+    } else if (starts_with(path, "err_runtime/on_fn_method_calls_erroring_on_fn/")) {
+        if (streq(on_fn_name, "a")) {
+            CALL_ARGLESS(grug_state, utils);
+            CALL_ARGLESS(grug_state, Utils_call_on_b_fn);
+        } else {
+            CALL_ARGLESS(grug_state, cause_game_fn_error);
         }
     } else if (starts_with(path, "err_runtime/stack_overflow/")) {
         p_grug_tests_runtime_error_handler("Stack overflow, so check for accidental infinite recursion", GRUG_ON_FN_STACK_OVERFLOW, on_fn_name, path);
@@ -939,6 +947,7 @@ static void load_tests_library(void) {
     p_game_fn_cause_game_fn_error            = (game_fn)load_sym(h, "game_fn_cause_game_fn_error");
     p_game_fn_Utils_cause_game_fn_error      = (game_fn)load_sym(h, "game_fn_Utils_cause_game_fn_error");
     p_game_fn_call_on_b_fn                   = (game_fn)load_sym(h, "game_fn_call_on_b_fn");
+    p_game_fn_Utils_call_on_b_fn             = (game_fn)load_sym(h, "game_fn_Utils_call_on_b_fn");
     p_game_fn_store                          = (game_fn)load_sym(h, "game_fn_store");
     p_game_fn_print_csv                      = (game_fn)load_sym(h, "game_fn_print_csv");
     p_game_fn_retrieve                       = (game_fn)load_sym(h, "game_fn_retrieve");

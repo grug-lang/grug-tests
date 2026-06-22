@@ -1,0 +1,9 @@
+export a() {
+    u: Utils = utils()
+    u.call_on_b_fn()
+    nothing()
+}
+
+export b() {
+    cause_game_fn_error()
+}

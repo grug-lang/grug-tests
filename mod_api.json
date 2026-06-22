@@ -181,6 +181,9 @@
 				},
 				"cause_game_fn_error": {
 					"description": "Causes a game fn error."
+				},
+				"call_on_b_fn": {
+					"description": "Calls its own on_b function."
 				}
 			}
 		}

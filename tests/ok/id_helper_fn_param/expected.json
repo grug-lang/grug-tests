@@ -19,13 +19,13 @@
         "type": "GLOBAL_EMPTY_LINE"
     },
     {
-        "arguments": [
+        "name": "_foo",
+        "parameters": [
             {
                 "name": "id",
                 "type": "id"
             }
         ],
-        "name": "_foo",
         "statements": [
             {
                 "arguments": [

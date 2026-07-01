@@ -3219,6 +3219,19 @@ static void ok_mov_32_bits_global_i32(struct grug_state* grug_state, struct grug
 	(void)entity;
 }
 
+static void ok_method_return_value(struct grug_state* grug_state, struct grug_entity_id* file_id) {
+	assert_call_count(vec_number_new, 0);
+	assert_call_count(vec_number_push, 0);
+	assert_call_count(vec_number_pop, 0);
+    call_export_fn_argless(grug_state, file_id, "a");
+	assert_call_count(vec_number_new, 1);
+	assert_call_count(vec_number_push, 1);
+	assert_call_count(vec_number_pop, 1);
+	assert_number(vec_number_last_pushed, 41.0);
+	assert_number(vec_number_last_popped, 41.0);
+	assert_size_t(vec_number_last_new->len, (size_t)0);
+}
+
 static void ok_method_simple(struct grug_state* grug_state, struct grug_entity_id* file_id) {
 	assert_call_count(vec_number_new, 0);
 	assert_call_count(vec_number_push, 0);
@@ -4609,6 +4622,7 @@ static void add_ok_tests(void) {
 	ADD_TEST_OK(me, "D");
 	ADD_TEST_OK(me_assigned_to_local_variable, "D");
 	ADD_TEST_OK(me_passed_to_helper_fn, "D");
+	ADD_TEST_OK(method_return_value, "D");
 	ADD_TEST_OK(method_simple, "D");
 	ADD_TEST_OK(mov_32_bits_global_i32, "A");
 	ADD_TEST_OK(mov_32_bits_global_id, "A");

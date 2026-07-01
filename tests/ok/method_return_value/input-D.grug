@@ -1,0 +1,5 @@
+export a() {
+    x: VecNumber = vec_number_new()
+    x.push(41)
+    y: number = x.pop() + 1
+}

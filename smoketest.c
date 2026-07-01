@@ -534,6 +534,10 @@ static void call_export_fn(struct grug_state* grug_state, struct grug_entity_id*
         CALL(grug_state, set_d, grug_id(42));
     } else if (starts_with(path, "ok/me_passed_to_helper_fn/")) {
         CALL(grug_state, set_d, grug_id(42));
+    } else if (starts_with(path, "ok/method_return_value/")) {
+        GRUG_TYPE_ID vec = CALL_ARGLESS(grug_state, vec_number_new)._id;
+        CALL(grug_state, vec_number_push, grug_id(vec), grug_number(41));
+        CALL(grug_state, vec_number_pop, grug_id(vec));
     } else if (starts_with(path, "ok/method_simple/")) {
         GRUG_TYPE_ID vec = CALL_ARGLESS(grug_state, vec_number_new)._id;
         CALL(grug_state, vec_number_push, grug_id(vec), grug_number(30));

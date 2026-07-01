@@ -1,0 +1,52 @@
+[
+    {
+        "name": "a",
+        "statements": [
+            {
+                "assignment": {
+                    "name": "vec_number_new",
+                    "type": "CALL_EXPR"
+                },
+                "name": "x",
+                "type": "VARIABLE_STATEMENT",
+                "variable_type": "VecNumber"
+            },
+            {
+                "arguments": [
+                    {
+                        "type": "NUMBER_EXPR",
+                        "value": "41"
+                    }
+                ],
+                "name": "push",
+                "receiver": {
+                    "str": "x",
+                    "type": "IDENTIFIER_EXPR"
+                },
+                "type": "CALL_STATEMENT"
+            },
+            {
+                "assignment": {
+                    "left_expr": {
+                        "name": "pop",
+                        "receiver": {
+                            "str": "x",
+                            "type": "IDENTIFIER_EXPR"
+                        },
+                        "type": "CALL_EXPR"
+                    },
+                    "operator": "PLUS_TOKEN",
+                    "right_expr": {
+                        "type": "NUMBER_EXPR",
+                        "value": "1"
+                    },
+                    "type": "BINARY_EXPR"
+                },
+                "name": "y",
+                "type": "VARIABLE_STATEMENT",
+                "variable_type": "number"
+            }
+        ],
+        "type": "GLOBAL_ON_FN"
+    }
+]

@@ -19,13 +19,13 @@
         "type": "GLOBAL_EMPTY_LINE"
     },
     {
-        "arguments": [
+        "name": "_shout",
+        "parameters": [
             {
                 "name": "message",
                 "type": "string"
             }
         ],
-        "name": "_shout",
         "statements": [
             {
                 "arguments": [

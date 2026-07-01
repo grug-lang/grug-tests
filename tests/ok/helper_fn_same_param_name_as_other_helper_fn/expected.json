@@ -1,12 +1,12 @@
 [
     {
-        "arguments": [
+        "name": "a",
+        "parameters": [
             {
                 "name": "x",
                 "type": "number"
             }
         ],
-        "name": "a",
         "statements": [
             {
                 "arguments": [
@@ -35,13 +35,13 @@
         "type": "GLOBAL_EMPTY_LINE"
     },
     {
-        "arguments": [
+        "name": "_foo",
+        "parameters": [
             {
                 "name": "x",
                 "type": "number"
             }
         ],
-        "name": "_foo",
         "statements": [
             {
                 "name": "nothing",
@@ -54,13 +54,13 @@
         "type": "GLOBAL_EMPTY_LINE"
     },
     {
-        "arguments": [
+        "name": "_bar",
+        "parameters": [
             {
                 "name": "x",
                 "type": "number"
             }
         ],
-        "name": "_bar",
         "statements": [
             {
                 "name": "nothing",

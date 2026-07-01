@@ -91,7 +91,8 @@
         "type": "GLOBAL_EMPTY_LINE"
     },
     {
-        "arguments": [
+        "name": "_foo",
+        "parameters": [
             {
                 "name": "i1",
                 "type": "number"
@@ -157,7 +158,6 @@
                 "type": "number"
             }
         ],
-        "name": "_foo",
         "statements": [
             {
                 "arguments": [

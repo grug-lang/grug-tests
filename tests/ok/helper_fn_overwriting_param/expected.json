@@ -23,7 +23,8 @@
         "type": "GLOBAL_EMPTY_LINE"
     },
     {
-        "arguments": [
+        "name": "_foo",
+        "parameters": [
             {
                 "name": "i",
                 "type": "number"
@@ -33,7 +34,6 @@
                 "type": "number"
             }
         ],
-        "name": "_foo",
         "statements": [
             {
                 "assignment": {

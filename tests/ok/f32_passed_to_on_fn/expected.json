@@ -1,12 +1,12 @@
 [
     {
-        "arguments": [
+        "name": "a",
+        "parameters": [
             {
                 "name": "f",
                 "type": "number"
             }
         ],
-        "name": "a",
         "statements": [
             {
                 "arguments": [

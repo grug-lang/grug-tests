@@ -25,13 +25,13 @@
         "type": "GLOBAL_EMPTY_LINE"
     },
     {
-        "arguments": [
+        "name": "_fib",
+        "parameters": [
             {
                 "name": "n",
                 "type": "number"
             }
         ],
-        "name": "_fib",
         "return_type": "number",
         "statements": [
             {

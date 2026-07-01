@@ -60,7 +60,7 @@ class GrugTransformer(Transformer[Tree[Any], Any]):
             "statements": items[-1],
         }
         if items[2]:
-            func["arguments"] = items[2]
+            func["parameters"] = items[2]
         return func
 
     def helper_fn(self, items: List[Any]) -> Dict[str, Any]:
@@ -69,7 +69,7 @@ class GrugTransformer(Transformer[Tree[Any], Any]):
             "name": str(items[1]),
         }
         if items[2]:
-            func["arguments"] = items[2]
+            func["parameters"] = items[2]
         if items[3]:
             func["return_type"] = items[3]
         func["statements"] = items[-1]

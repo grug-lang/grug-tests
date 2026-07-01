@@ -34,7 +34,9 @@
 					"parameters": [
 						{
 							"name": "x",
-							"type": "number"
+							"type": {
+								"name": "number"
+							}
 						}
 					]
 				}
@@ -49,11 +51,15 @@
 					"parameters": [
 						{
 							"name": "x",
-							"type": "number"
+							"type": {
+								"name": "number"
+							}
 						},
 						{
 							"name": "y",
-							"type": "number"
+							"type": {
+								"name": "number"
+							}
 						}
 					]
 				}
@@ -85,7 +91,9 @@
 					"parameters": [
 						{
 							"name": "f",
-							"type": "number"
+							"type": {
+								"name": "number"
+							}
 						}
 					]
 				}
@@ -100,11 +108,15 @@
 					"parameters": [
 						{
 							"name": "i",
-							"type": "number"
+							"type": {
+								"name": "number"
+							}
 						},
 						{
 							"name": "f",
-							"type": "number"
+							"type": {
+								"name": "number"
+							}
 						}
 					]
 				}
@@ -119,7 +131,9 @@
 					"parameters": [
 						{
 							"name": "timer",
-							"type": "Timer"
+							"type": {
+								"name": "Timer"
+							}
 						}
 					]
 				}
@@ -134,7 +148,9 @@
 					"parameters": [
 						{
 							"name": "id",
-							"type": "id"
+							"type": {
+								"name": "id"
+							}
 						}
 					]
 				}
@@ -150,25 +166,33 @@
 					"parameters": [
 						{
 							"name": "value",
-							"type": "number"
+							"type": {
+								"name": "number"
+							}
 						}
 					]
 				},
 				"pop": {
 					"description": "Removes the last element from the list and returns it",
 					"parameters": [ ],
-					"return_type": "number"
+					"return_type": {
+						"name": "number"
+					}
 				},
 				"insert": {
 					"description": "inserts an element at index i",
 					"parameters": [
 						{
 							"name": "index",
-							"type": "number"
+							"type": {
+								"name": "number"
+							}
 						},
 						{
 							"name": "value",
-							"type": "number"
+							"type": {
+								"name": "number"
+							}
 						}
 					]
 				}
@@ -184,11 +208,15 @@
 		},
 		"box_number": {
 			"description": "foo",
-			"return_type": "BoxedNumber",
+			"return_type": {
+				"name": "BoxedNumber"
+			},
 			"parameters": [
 				{
 					"name": "n",
-					"type": "number"
+					"type": {
+						"name": "number"
+					}
 				}
 			]
 		},
@@ -197,15 +225,21 @@
 		},
 		"cause_game_fn_error": {
 			"description": "foo",
-			"return_type": "bool"
+			"return_type": {
+				"name": "bool"
+			}
 		},
 		"cos": {
 			"description": "foo",
-			"return_type": "number",
+			"return_type": {
+				"name": "number"
+			},
 			"parameters": [
 				{
 					"name": "x",
-					"type": "number"
+					"type": {
+						"name": "number"
+					}
 				}
 			]
 		},
@@ -214,72 +248,100 @@
 			"parameters": [
 				{
 					"name": "sprite_path",
-					"type": "resource",
-					"resource_extension": ""
+					"type": {
+						"name": "resource",
+						"resource_extension": ""
+					}
 				}
 			]
 		},
 		"get_false": {
 			"description": "foo",
-			"return_type": "bool"
+			"return_type": {
+				"name": "bool"
+			}
 		},
 		"get_opponent": {
 			"description": "foo",
-			"return_type": "Opponent"
+			"return_type": {
+				"name": "Opponent"
+			}
 		},
 		"get_os": {
 			"description": "foo",
-			"return_type": "string"
+			"return_type": {
+				"name": "string"
+			}
 		},
 		"get_position": {
 			"description": "foo",
-			"return_type": "Position",
+			"return_type": {
+				"name": "Position"
+			},
 			"parameters": [
 				{
 					"name": "id",
-					"type": "D"
+					"type": {
+						"name": "D"
+					}
 				}
 			]
 		},
 		"has_entity": {
 			"description": "foo",
-			"return_type": "bool",
+			"return_type": {
+				"name": "bool"
+			},
 			"parameters": [
 				{
 					"name": "name",
-					"type": "entity",
-					"entity_type": ""
+					"type": {
+						"name": "entity",
+						"entity_type": ""
+					}
 				}
 			]
 		},
 		"has_resource": {
 			"description": "foo",
-			"return_type": "bool",
+			"return_type": {
+				"name": "bool"
+			},
 			"parameters": [
 				{
 					"name": "path",
-					"type": "resource",
-					"resource_extension": ""
+					"type": {
+						"name": "resource",
+						"resource_extension": ""
+					}
 				}
 			]
 		},
 		"has_string": {
 			"description": "foo",
-			"return_type": "bool",
+			"return_type": {
+				"name": "bool"
+			},
 			"parameters": [
 				{
 					"name": "str",
-					"type": "string"
+					"type": {
+						"name": "string"
+					}
 				}
 			]
 		},
 		"identity": {
 			"description": "foo",
-			"return_type": "number",
+			"return_type": {
+				"name": "number"
+			},
 			"parameters": [
 				{
 					"name": "x",
-					"type": "number"
+					"type": {
+						"name": "number"
+					}
 				}
 			]
 		},
@@ -288,7 +350,9 @@
 			"parameters": [
 				{
 					"name": "x",
-					"type": "number"
+					"type": {
+						"name": "number"
+					}
 				}
 			]
 		},
@@ -297,25 +361,35 @@
 			"parameters": [
 				{
 					"name": "b",
-					"type": "bool"
+					"type": {
+						"name": "bool"
+					}
 				}
 			]
 		},
 		"magic": {
 			"description": "foo",
-			"return_type": "number"
+			"return_type": {
+				"name": "number"
+			}
 		},
 		"max": {
 			"description": "foo",
-			"return_type": "number",
+			"return_type": {
+				"name": "number"
+			},
 			"parameters": [
 				{
 					"name": "x",
-					"type": "number"
+					"type": {
+						"name": "number"
+					}
 				},
 				{
 					"name": "y",
-					"type": "number"
+					"type": {
+						"name": "number"
+					}
 				}
 			]
 		},
@@ -324,59 +398,87 @@
 			"parameters": [
 				{
 					"name": "f1",
-					"type": "number"
+					"type": {
+						"name": "number"
+					}
 				},
 				{
 					"name": "i1",
-					"type": "number"
+					"type": {
+						"name": "number"
+					}
 				},
 				{
 					"name": "b1",
-					"type": "bool"
+					"type": {
+						"name": "bool"
+					}
 				},
 				{
 					"name": "f2",
-					"type": "number"
+					"type": {
+						"name": "number"
+					}
 				},
 				{
 					"name": "f3",
-					"type": "number"
+					"type": {
+						"name": "number"
+					}
 				},
 				{
 					"name": "f4",
-					"type": "number"
+					"type": {
+						"name": "number"
+					}
 				},
 				{
 					"name": "b2",
-					"type": "bool"
+					"type": {
+						"name": "bool"
+					}
 				},
 				{
 					"name": "i2",
-					"type": "number"
+					"type": {
+						"name": "number"
+					}
 				},
 				{
 					"name": "f5",
-					"type": "number"
+					"type": {
+						"name": "number"
+					}
 				},
 				{
 					"name": "f6",
-					"type": "number"
+					"type": {
+						"name": "number"
+					}
 				},
 				{
 					"name": "f7",
-					"type": "number"
+					"type": {
+						"name": "number"
+					}
 				},
 				{
 					"name": "f8",
-					"type": "number"
+					"type": {
+						"name": "number"
+					}
 				},
 				{
 					"name": "id",
-					"type": "D"
+					"type": {
+						"name": "D"
+					}
 				},
 				{
 					"name": "str",
-					"type": "string"
+					"type": {
+						"name": "string"
+					}
 				}
 			]
 		},
@@ -385,39 +487,57 @@
 			"parameters": [
 				{
 					"name": "f1",
-					"type": "number"
+					"type": {
+						"name": "number"
+					}
 				},
 				{
 					"name": "f2",
-					"type": "number"
+					"type": {
+						"name": "number"
+					}
 				},
 				{
 					"name": "f3",
-					"type": "number"
+					"type": {
+						"name": "number"
+					}
 				},
 				{
 					"name": "f4",
-					"type": "number"
+					"type": {
+						"name": "number"
+					}
 				},
 				{
 					"name": "f5",
-					"type": "number"
+					"type": {
+						"name": "number"
+					}
 				},
 				{
 					"name": "f6",
-					"type": "number"
+					"type": {
+						"name": "number"
+					}
 				},
 				{
 					"name": "f7",
-					"type": "number"
+					"type": {
+						"name": "number"
+					}
 				},
 				{
 					"name": "f8",
-					"type": "number"
+					"type": {
+						"name": "number"
+					}
 				},
 				{
 					"name": "f9",
-					"type": "number"
+					"type": {
+						"name": "number"
+					}
 				}
 			]
 		},
@@ -426,31 +546,45 @@
 			"parameters": [
 				{
 					"name": "i1",
-					"type": "number"
+					"type": {
+						"name": "number"
+					}
 				},
 				{
 					"name": "i2",
-					"type": "number"
+					"type": {
+						"name": "number"
+					}
 				},
 				{
 					"name": "i3",
-					"type": "number"
+					"type": {
+						"name": "number"
+					}
 				},
 				{
 					"name": "i4",
-					"type": "number"
+					"type": {
+						"name": "number"
+					}
 				},
 				{
 					"name": "i5",
-					"type": "number"
+					"type": {
+						"name": "number"
+					}
 				},
 				{
 					"name": "i6",
-					"type": "number"
+					"type": {
+						"name": "number"
+					}
 				},
 				{
 					"name": "i7",
-					"type": "number"
+					"type": {
+						"name": "number"
+					}
 				}
 			]
 		},
@@ -459,71 +593,105 @@
 			"parameters": [
 				{
 					"name": "i1",
-					"type": "number"
+					"type": {
+						"name": "number"
+					}
 				},
 				{
 					"name": "i2",
-					"type": "number"
+					"type": {
+						"name": "number"
+					}
 				},
 				{
 					"name": "i3",
-					"type": "number"
+					"type": {
+						"name": "number"
+					}
 				},
 				{
 					"name": "i4",
-					"type": "number"
+					"type": {
+						"name": "number"
+					}
 				},
 				{
 					"name": "i5",
-					"type": "number"
+					"type": {
+						"name": "number"
+					}
 				},
 				{
 					"name": "i6",
-					"type": "number"
+					"type": {
+						"name": "number"
+					}
 				},
 				{
 					"name": "i7",
-					"type": "number"
+					"type": {
+						"name": "number"
+					}
 				},
 				{
 					"name": "f1",
-					"type": "number"
+					"type": {
+						"name": "number"
+					}
 				},
 				{
 					"name": "f2",
-					"type": "number"
+					"type": {
+						"name": "number"
+					}
 				},
 				{
 					"name": "f3",
-					"type": "number"
+					"type": {
+						"name": "number"
+					}
 				},
 				{
 					"name": "f4",
-					"type": "number"
+					"type": {
+						"name": "number"
+					}
 				},
 				{
 					"name": "f5",
-					"type": "number"
+					"type": {
+						"name": "number"
+					}
 				},
 				{
 					"name": "f6",
-					"type": "number"
+					"type": {
+						"name": "number"
+					}
 				},
 				{
 					"name": "f7",
-					"type": "number"
+					"type": {
+						"name": "number"
+					}
 				},
 				{
 					"name": "f8",
-					"type": "number"
+					"type": {
+						"name": "number"
+					}
 				},
 				{
 					"name": "id",
-					"type": "D"
+					"type": {
+						"name": "D"
+					}
 				},
 				{
 					"name": "f9",
-					"type": "number"
+					"type": {
+						"name": "number"
+					}
 				}
 			]
 		},
@@ -532,75 +700,111 @@
 			"parameters": [
 				{
 					"name": "i1",
-					"type": "number"
+					"type": {
+						"name": "number"
+					}
 				},
 				{
 					"name": "i2",
-					"type": "number"
+					"type": {
+						"name": "number"
+					}
 				},
 				{
 					"name": "i3",
-					"type": "number"
+					"type": {
+						"name": "number"
+					}
 				},
 				{
 					"name": "i4",
-					"type": "number"
+					"type": {
+						"name": "number"
+					}
 				},
 				{
 					"name": "i5",
-					"type": "number"
+					"type": {
+						"name": "number"
+					}
 				},
 				{
 					"name": "i6",
-					"type": "number"
+					"type": {
+						"name": "number"
+					}
 				},
 				{
 					"name": "i7",
-					"type": "number"
+					"type": {
+						"name": "number"
+					}
 				},
 				{
 					"name": "f1",
-					"type": "number"
+					"type": {
+						"name": "number"
+					}
 				},
 				{
 					"name": "f2",
-					"type": "number"
+					"type": {
+						"name": "number"
+					}
 				},
 				{
 					"name": "f3",
-					"type": "number"
+					"type": {
+						"name": "number"
+					}
 				},
 				{
 					"name": "f4",
-					"type": "number"
+					"type": {
+						"name": "number"
+					}
 				},
 				{
 					"name": "f5",
-					"type": "number"
+					"type": {
+						"name": "number"
+					}
 				},
 				{
 					"name": "f6",
-					"type": "number"
+					"type": {
+						"name": "number"
+					}
 				},
 				{
 					"name": "f7",
-					"type": "number"
+					"type": {
+						"name": "number"
+					}
 				},
 				{
 					"name": "f8",
-					"type": "number"
+					"type": {
+						"name": "number"
+					}
 				},
 				{
 					"name": "f9",
-					"type": "number"
+					"type": {
+						"name": "number"
+					}
 				},
 				{
 					"name": "id",
-					"type": "D"
+					"type": {
+						"name": "D"
+					}
 				},
 				{
 					"name": "f10",
-					"type": "number"
+					"type": {
+						"name": "number"
+					}
 				}
 			]
 		},
@@ -612,99 +816,147 @@
 			"parameters": [
 				{
 					"name": "s1",
-					"type": "string"
+					"type": {
+						"name": "string"
+					}
 				},
 				{
 					"name": "s2",
-					"type": "string"
+					"type": {
+						"name": "string"
+					}
 				},
 				{
 					"name": "s3",
-					"type": "string"
+					"type": {
+						"name": "string"
+					}
 				},
 				{
 					"name": "s4",
-					"type": "string"
+					"type": {
+						"name": "string"
+					}
 				},
 				{
 					"name": "s5",
-					"type": "string"
+					"type": {
+						"name": "string"
+					}
 				},
 				{
 					"name": "s6",
-					"type": "string"
+					"type": {
+						"name": "string"
+					}
 				},
 				{
 					"name": "s7",
-					"type": "string"
+					"type": {
+						"name": "string"
+					}
 				},
 				{
 					"name": "s8",
-					"type": "string"
+					"type": {
+						"name": "string"
+					}
 				},
 				{
 					"name": "s9",
-					"type": "string"
+					"type": {
+						"name": "string"
+					}
 				},
 				{
 					"name": "s10",
-					"type": "string"
+					"type": {
+						"name": "string"
+					}
 				},
 				{
 					"name": "s11",
-					"type": "string"
+					"type": {
+						"name": "string"
+					}
 				},
 				{
 					"name": "s12",
-					"type": "string"
+					"type": {
+						"name": "string"
+					}
 				},
 				{
 					"name": "s13",
-					"type": "string"
+					"type": {
+						"name": "string"
+					}
 				},
 				{
 					"name": "s14",
-					"type": "string"
+					"type": {
+						"name": "string"
+					}
 				},
 				{
 					"name": "s15",
-					"type": "string"
+					"type": {
+						"name": "string"
+					}
 				},
 				{
 					"name": "f1",
-					"type": "number"
+					"type": {
+						"name": "number"
+					}
 				},
 				{
 					"name": "f2",
-					"type": "number"
+					"type": {
+						"name": "number"
+					}
 				},
 				{
 					"name": "f3",
-					"type": "number"
+					"type": {
+						"name": "number"
+					}
 				},
 				{
 					"name": "f4",
-					"type": "number"
+					"type": {
+						"name": "number"
+					}
 				},
 				{
 					"name": "f5",
-					"type": "number"
+					"type": {
+						"name": "number"
+					}
 				},
 				{
 					"name": "f6",
-					"type": "number"
+					"type": {
+						"name": "number"
+					}
 				},
 				{
 					"name": "f7",
-					"type": "number"
+					"type": {
+						"name": "number"
+					}
 				},
 				{
 					"name": "f8",
-					"type": "number"
+					"type": {
+						"name": "number"
+					}
 				},
 				{
 					"name": "g",
-					"type": "number"
+					"type": {
+						"name": "number"
+					}
 				}
 			]
 		},
@@ -713,147 +965,219 @@
 			"parameters": [
 				{
 					"name": "f1",
-					"type": "number"
+					"type": {
+						"name": "number"
+					}
 				},
 				{
 					"name": "f2",
-					"type": "number"
+					"type": {
+						"name": "number"
+					}
 				},
 				{
 					"name": "f3",
-					"type": "number"
+					"type": {
+						"name": "number"
+					}
 				},
 				{
 					"name": "f4",
-					"type": "number"
+					"type": {
+						"name": "number"
+					}
 				},
 				{
 					"name": "f5",
-					"type": "number"
+					"type": {
+						"name": "number"
+					}
 				},
 				{
 					"name": "f6",
-					"type": "number"
+					"type": {
+						"name": "number"
+					}
 				},
 				{
 					"name": "f7",
-					"type": "number"
+					"type": {
+						"name": "number"
+					}
 				},
 				{
 					"name": "f8",
-					"type": "number"
+					"type": {
+						"name": "number"
+					}
 				},
 				{
 					"name": "f9",
-					"type": "number"
+					"type": {
+						"name": "number"
+					}
 				},
 				{
 					"name": "f10",
-					"type": "number"
+					"type": {
+						"name": "number"
+					}
 				},
 				{
 					"name": "f11",
-					"type": "number"
+					"type": {
+						"name": "number"
+					}
 				},
 				{
 					"name": "f12",
-					"type": "number"
+					"type": {
+						"name": "number"
+					}
 				},
 				{
 					"name": "f13",
-					"type": "number"
+					"type": {
+						"name": "number"
+					}
 				},
 				{
 					"name": "f14",
-					"type": "number"
+					"type": {
+						"name": "number"
+					}
 				},
 				{
 					"name": "f15",
-					"type": "number"
+					"type": {
+						"name": "number"
+					}
 				},
 				{
 					"name": "f16",
-					"type": "number"
+					"type": {
+						"name": "number"
+					}
 				},
 				{
 					"name": "f17",
-					"type": "number"
+					"type": {
+						"name": "number"
+					}
 				},
 				{
 					"name": "f18",
-					"type": "number"
+					"type": {
+						"name": "number"
+					}
 				},
 				{
 					"name": "f19",
-					"type": "number"
+					"type": {
+						"name": "number"
+					}
 				},
 				{
 					"name": "f20",
-					"type": "number"
+					"type": {
+						"name": "number"
+					}
 				},
 				{
 					"name": "f21",
-					"type": "number"
+					"type": {
+						"name": "number"
+					}
 				},
 				{
 					"name": "f22",
-					"type": "number"
+					"type": {
+						"name": "number"
+					}
 				},
 				{
 					"name": "f23",
-					"type": "number"
+					"type": {
+						"name": "number"
+					}
 				},
 				{
 					"name": "f24",
-					"type": "number"
+					"type": {
+						"name": "number"
+					}
 				},
 				{
 					"name": "f25",
-					"type": "number"
+					"type": {
+						"name": "number"
+					}
 				},
 				{
 					"name": "f26",
-					"type": "number"
+					"type": {
+						"name": "number"
+					}
 				},
 				{
 					"name": "f27",
-					"type": "number"
+					"type": {
+						"name": "number"
+					}
 				},
 				{
 					"name": "f28",
-					"type": "number"
+					"type": {
+						"name": "number"
+					}
 				},
 				{
 					"name": "f29",
-					"type": "number"
+					"type": {
+						"name": "number"
+					}
 				},
 				{
 					"name": "f30",
-					"type": "number"
+					"type": {
+						"name": "number"
+					}
 				},
 				{
 					"name": "i1",
-					"type": "number"
+					"type": {
+						"name": "number"
+					}
 				},
 				{
 					"name": "i2",
-					"type": "number"
+					"type": {
+						"name": "number"
+					}
 				},
 				{
 					"name": "i3",
-					"type": "number"
+					"type": {
+						"name": "number"
+					}
 				},
 				{
 					"name": "i4",
-					"type": "number"
+					"type": {
+						"name": "number"
+					}
 				},
 				{
 					"name": "i5",
-					"type": "number"
+					"type": {
+						"name": "number"
+					}
 				},
 				{
 					"name": "g",
-					"type": "number"
+					"type": {
+						"name": "number"
+					}
 				}
 			]
 		},
@@ -862,147 +1186,219 @@
 			"parameters": [
 				{
 					"name": "f1",
-					"type": "number"
+					"type": {
+						"name": "number"
+					}
 				},
 				{
 					"name": "f2",
-					"type": "number"
+					"type": {
+						"name": "number"
+					}
 				},
 				{
 					"name": "f3",
-					"type": "number"
+					"type": {
+						"name": "number"
+					}
 				},
 				{
 					"name": "f4",
-					"type": "number"
+					"type": {
+						"name": "number"
+					}
 				},
 				{
 					"name": "f5",
-					"type": "number"
+					"type": {
+						"name": "number"
+					}
 				},
 				{
 					"name": "f6",
-					"type": "number"
+					"type": {
+						"name": "number"
+					}
 				},
 				{
 					"name": "f7",
-					"type": "number"
+					"type": {
+						"name": "number"
+					}
 				},
 				{
 					"name": "f8",
-					"type": "number"
+					"type": {
+						"name": "number"
+					}
 				},
 				{
 					"name": "f9",
-					"type": "number"
+					"type": {
+						"name": "number"
+					}
 				},
 				{
 					"name": "f10",
-					"type": "number"
+					"type": {
+						"name": "number"
+					}
 				},
 				{
 					"name": "f11",
-					"type": "number"
+					"type": {
+						"name": "number"
+					}
 				},
 				{
 					"name": "f12",
-					"type": "number"
+					"type": {
+						"name": "number"
+					}
 				},
 				{
 					"name": "f13",
-					"type": "number"
+					"type": {
+						"name": "number"
+					}
 				},
 				{
 					"name": "f14",
-					"type": "number"
+					"type": {
+						"name": "number"
+					}
 				},
 				{
 					"name": "f15",
-					"type": "number"
+					"type": {
+						"name": "number"
+					}
 				},
 				{
 					"name": "f16",
-					"type": "number"
+					"type": {
+						"name": "number"
+					}
 				},
 				{
 					"name": "f17",
-					"type": "number"
+					"type": {
+						"name": "number"
+					}
 				},
 				{
 					"name": "f18",
-					"type": "number"
+					"type": {
+						"name": "number"
+					}
 				},
 				{
 					"name": "f19",
-					"type": "number"
+					"type": {
+						"name": "number"
+					}
 				},
 				{
 					"name": "f20",
-					"type": "number"
+					"type": {
+						"name": "number"
+					}
 				},
 				{
 					"name": "f21",
-					"type": "number"
+					"type": {
+						"name": "number"
+					}
 				},
 				{
 					"name": "f22",
-					"type": "number"
+					"type": {
+						"name": "number"
+					}
 				},
 				{
 					"name": "f23",
-					"type": "number"
+					"type": {
+						"name": "number"
+					}
 				},
 				{
 					"name": "f24",
-					"type": "number"
+					"type": {
+						"name": "number"
+					}
 				},
 				{
 					"name": "f25",
-					"type": "number"
+					"type": {
+						"name": "number"
+					}
 				},
 				{
 					"name": "f26",
-					"type": "number"
+					"type": {
+						"name": "number"
+					}
 				},
 				{
 					"name": "f27",
-					"type": "number"
+					"type": {
+						"name": "number"
+					}
 				},
 				{
 					"name": "f28",
-					"type": "number"
+					"type": {
+						"name": "number"
+					}
 				},
 				{
 					"name": "f29",
-					"type": "number"
+					"type": {
+						"name": "number"
+					}
 				},
 				{
 					"name": "f30",
-					"type": "number"
+					"type": {
+						"name": "number"
+					}
 				},
 				{
 					"name": "s1",
-					"type": "string"
+					"type": {
+						"name": "string"
+					}
 				},
 				{
 					"name": "s2",
-					"type": "string"
+					"type": {
+						"name": "string"
+					}
 				},
 				{
 					"name": "s3",
-					"type": "string"
+					"type": {
+						"name": "string"
+					}
 				},
 				{
 					"name": "s4",
-					"type": "string"
+					"type": {
+						"name": "string"
+					}
 				},
 				{
 					"name": "s5",
-					"type": "string"
+					"type": {
+						"name": "string"
+					}
 				},
 				{
 					"name": "g",
-					"type": "number"
+					"type": {
+						"name": "number"
+					}
 				}
 			]
 		},
@@ -1011,21 +1407,27 @@
 			"parameters": [
 				{
 					"name": "csv_path",
-					"type": "resource",
-					"resource_extension": ".csv"
+					"type": {
+						"name": "resource",
+						"resource_extension": ".csv"
+					}
 				}
 			]
 		},
 		"retrieve": {
 			"description": "foo",
-			"return_type": "id"
+			"return_type": {
+				"name": "id"
+			}
 		},
 		"say": {
 			"description": "foo",
 			"parameters": [
 				{
 					"name": "message",
-					"type": "string"
+					"type": {
+						"name": "string"
+					}
 				}
 			]
 		},
@@ -1034,7 +1436,9 @@
 			"parameters": [
 				{
 					"name": "target",
-					"type": "D"
+					"type": {
+						"name": "D"
+					}
 				}
 			]
 		},
@@ -1043,7 +1447,9 @@
 			"parameters": [
 				{
 					"name": "is_happy",
-					"type": "bool"
+					"type": {
+						"name": "bool"
+					}
 				}
 			]
 		},
@@ -1052,7 +1458,9 @@
 			"parameters": [
 				{
 					"name": "target",
-					"type": "Opponent"
+					"type": {
+						"name": "Opponent"
+					}
 				}
 			]
 		},
@@ -1061,17 +1469,23 @@
 			"parameters": [
 				{
 					"name": "pos",
-					"type": "Position"
+					"type": {
+						"name": "Position"
+					}
 				}
 			]
 		},
 		"sin": {
 			"description": "foo",
-			"return_type": "number",
+			"return_type": {
+				"name": "number"
+			},
 			"parameters": [
 				{
 					"name": "x",
-					"type": "number"
+					"type": {
+						"name": "number"
+					}
 				}
 			]
 		},
@@ -1080,8 +1494,10 @@
 			"parameters": [
 				{
 					"name": "name",
-					"type": "entity",
-					"entity_type": ""
+					"type": {
+						"name": "entity",
+						"entity_type": ""
+					}
 				}
 			]
 		},
@@ -1090,8 +1506,10 @@
 			"parameters": [
 				{
 					"name": "name",
-					"type": "entity",
-					"entity_type": "D"
+					"type": {
+						"name": "entity",
+						"entity_type": "D"
+					}
 				}
 			]
 		},
@@ -1100,7 +1518,9 @@
 			"parameters": [
 				{
 					"name": "id",
-					"type": "id"
+					"type": {
+						"name": "id"
+					}
 				}
 			]
 		},
@@ -1109,26 +1529,36 @@
 			"parameters": [
 				{
 					"name": "message1",
-					"type": "string"
+					"type": {
+						"name": "string"
+					}
 				},
 				{
 					"name": "message2",
-					"type": "string"
+					"type": {
+						"name": "string"
+					}
 				},
 				{
 					"name": "message3",
-					"type": "string"
+					"type": {
+						"name": "string"
+					}
 				},
 				{
 					"name": "message4",
-					"type": "string"
+					"type": {
+						"name": "string"
+					}
 				}
 			]
 		},
 		"vec_number_new": {
 			"description": "Creates a new VecNumber",
 			"parameters": [ ],
-			"return_type": "VecNumber"
+			"return_type": {
+				"name": "VecNumber"
+			}
 		}
 	}
 }

@@ -239,10 +239,16 @@ static size_t game_fn_store_call_count;
 static size_t game_fn_print_csv_call_count;
 static size_t game_fn_retrieve_call_count;
 static size_t game_fn_box_number_call_count;
+
 static size_t game_fn_vec_number_new_call_count;
 static size_t game_fn_vec_number_push_call_count;
 static size_t game_fn_vec_number_pop_call_count;
 static size_t game_fn_vec_number_insert_call_count;
+
+static size_t game_fn_vec_new_call_count;
+static size_t game_fn_vec_push_call_count;
+static size_t game_fn_vec_pop_call_count;
+static size_t game_fn_vec_insert_call_count;
 
 static bool had_runtime_error = false;
 static size_t error_handler_call_count = 0;
@@ -1004,7 +1010,7 @@ union grug_value game_fn_box_number(struct grug_state* grug_state, const union g
 	return grug_id((uint64_t)args[0]._number);
 }
 
-struct VecNumber* vec_number_last_new;
+struct Vec* vec_number_last_new;
 union grug_value game_fn_vec_number_new(struct grug_state* grug_state, const union grug_value args[]) {
 	(void)grug_state;
 	(void)args;
@@ -1012,10 +1018,10 @@ union grug_value game_fn_vec_number_new(struct grug_state* grug_state, const uni
 	game_fn_vec_number_new_call_count++;
 	// This list is leaked.
 	// Actual implementations should do reference counting
-	struct VecNumber* ptr = malloc(sizeof(struct VecNumber));
+	struct Vec* ptr = malloc(sizeof(struct Vec));
 	assert_ptr(ptr);
 	vec_number_last_new = ptr;
-	*ptr = (struct VecNumber) {0};
+	*ptr = (struct Vec) {0};
 
 	return grug_id((GRUG_TYPE_ID)ptr);
 }
@@ -1025,7 +1031,7 @@ union grug_value game_fn_vec_number_push(struct grug_state* grug_state, const un
 	(void)grug_state;
 	ASSERT_16_BYTE_STACK_ALIGNED();
 	game_fn_vec_number_push_call_count++;
-	struct VecNumber* ptr = (struct VecNumber*)args[0]._id;
+	struct Vec* ptr = (struct Vec*)args[0]._id;
 	assert_ptr(ptr);
 
 	if (ptr->len == ptr->cap) {
@@ -1046,7 +1052,7 @@ union grug_value game_fn_vec_number_pop(struct grug_state* grug_state, const uni
 	(void)grug_state;
 	ASSERT_16_BYTE_STACK_ALIGNED();
 	game_fn_vec_number_pop_call_count++;
-	struct VecNumber* ptr = (struct VecNumber*)args[0]._id;
+	struct Vec* ptr = (struct Vec*)args[0]._id;
 
 	assert(ptr->len > 0);
 	double item = ptr->items[ptr->len-- - 1];
@@ -1060,7 +1066,7 @@ union grug_value game_fn_vec_number_insert(struct grug_state* grug_state, const 
 	(void)grug_state;
 	ASSERT_16_BYTE_STACK_ALIGNED();
 	game_fn_vec_number_insert_call_count++;
-	struct VecNumber* ptr = (struct VecNumber*)args[0]._id;
+	struct Vec* ptr = (struct Vec*)args[0]._id;
 	size_t index = (size_t)args[1]._number;
 	assert((index <= ptr->len) && "index out of bounds for insert");
 
@@ -1078,6 +1084,23 @@ union grug_value game_fn_vec_number_insert(struct grug_state* grug_state, const 
 	vec_number_last_inserted = args[2]._number;
 
 	return (union grug_value) {0};
+}
+
+game_fn reg_game_fn_vec_new   (struct grug_type* types) {
+	(void)(types);
+	return game_fn_vec_number_new;
+}
+game_fn reg_game_fn_vec_push  (struct grug_type* types) {
+	(void)(types);
+	return game_fn_vec_number_push;
+}
+game_fn reg_game_fn_vec_pop   (struct grug_type* types) {
+	(void)(types);
+	return game_fn_vec_number_pop;
+}
+game_fn reg_game_fn_vec_insert(struct grug_type* types) {
+	(void)(types);
+	return game_fn_vec_number_insert;
 }
 
 static void check(int status, const char *fn_name, const char *msg) {

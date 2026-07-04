@@ -1026,7 +1026,7 @@ union grug_value game_fn_vec_number_new(struct grug_state* grug_state, const uni
 	return grug_id((GRUG_TYPE_ID)ptr);
 }
 
-static GRUG_TYPE_NUMBER vec_number_last_pushed;
+static union grug_value vec_number_last_pushed;
 union grug_value game_fn_vec_number_push(struct grug_state* grug_state, const union grug_value args[]) {
 	(void)grug_state;
 	ASSERT_16_BYTE_STACK_ALIGNED();
@@ -1036,18 +1036,18 @@ union grug_value game_fn_vec_number_push(struct grug_state* grug_state, const un
 
 	if (ptr->len == ptr->cap) {
 		size_t new_cap = (ptr->cap == 0)? 8 : ptr->cap * 2;
-		void* new_ptr = realloc(ptr->items, sizeof(double) * new_cap);
+		void* new_ptr = realloc(ptr->items, sizeof(*ptr->items) * new_cap);
 		assert_ptr(new_ptr);
 		ptr->items = new_ptr;
 		ptr->cap = new_cap;
 	}
-	ptr->items[ptr->len++] = args[1]._number;
-	vec_number_last_pushed = args[1]._number;
+	ptr->items[ptr->len++] = args[1];
+	vec_number_last_pushed = args[1];
 
 	return (union grug_value) {0};
 }
 
-static GRUG_TYPE_NUMBER vec_number_last_popped;
+static union grug_value vec_number_last_popped;
 union grug_value game_fn_vec_number_pop(struct grug_state* grug_state, const union grug_value args[]) {
 	(void)grug_state;
 	ASSERT_16_BYTE_STACK_ALIGNED();
@@ -1055,13 +1055,13 @@ union grug_value game_fn_vec_number_pop(struct grug_state* grug_state, const uni
 	struct Vec* ptr = (struct Vec*)args[0]._id;
 
 	assert(ptr->len > 0);
-	double item = ptr->items[ptr->len-- - 1];
+	union grug_value item = ptr->items[ptr->len-- - 1];
 	vec_number_last_popped = item;
 
-	return (union grug_value) {._number = item};
+	return item;
 }
 
-static GRUG_TYPE_NUMBER vec_number_last_inserted;
+static union grug_value vec_number_last_inserted;
 union grug_value game_fn_vec_number_insert(struct grug_state* grug_state, const union grug_value args[]) {
 	(void)grug_state;
 	ASSERT_16_BYTE_STACK_ALIGNED();
@@ -1071,17 +1071,17 @@ union grug_value game_fn_vec_number_insert(struct grug_state* grug_state, const 
 	assert((index <= ptr->len) && "index out of bounds for insert");
 
 	if (ptr->len == ptr->cap) {
-		size_t new_cap = (ptr->cap == 0)? 8 : ptr->cap * 2;
-		void* new_ptr = realloc(ptr->items, sizeof(double) * new_cap);
+		size_t new_cap = (ptr->cap == 0) ? 8 : ptr->cap * 2;
+		void* new_ptr = realloc(ptr->items, sizeof(*ptr->items) * new_cap);
 		assert_ptr(new_ptr);
 		ptr->items = new_ptr;
 		ptr->cap = new_cap;
 	}
 
-	memmove(ptr->items + index + 1, ptr->items + index, sizeof(double) * (ptr->len - index));
-	ptr->items[index] = args[2]._number;
+	memmove(ptr->items + index + 1, ptr->items + index, sizeof(*ptr->items) * (ptr->len - index));
+	ptr->items[index] = args[2];
 	ptr->len++;
-	vec_number_last_inserted = args[2]._number;
+	vec_number_last_inserted = args[2];
 
 	return (union grug_value) {0};
 }
@@ -3181,12 +3181,12 @@ static void ok_method_simple(struct grug_state* grug_state, struct grug_entity_i
 	assert_call_count(vec_number_push, 4);
 	assert_call_count(vec_number_pop, 3);
 	assert_call_count(vec_number_insert, 1);
-	assert_number(vec_number_last_pushed, 25.0);
-	assert_number(vec_number_last_inserted, 3.0);
-	assert_number(vec_number_last_popped, 10.0);
+	assert_number(vec_number_last_pushed._number, 25.0);
+	assert_number(vec_number_last_inserted._number, 3.0);
+	assert_number(vec_number_last_popped._number, 10.0);
 	assert_size_t(vec_number_last_new->len, (size_t)2);
-	assert_number(vec_number_last_new->items[0], 30.0);
-	assert_number(vec_number_last_new->items[1], 3.0);
+	assert_number(vec_number_last_new->items[0]._number, 30.0);
+	assert_number(vec_number_last_new->items[1]._number, 3.0);
 }
 
 static void ok_mov_32_bits_global_id(struct grug_state* grug_state, struct grug_entity_id* entity) {

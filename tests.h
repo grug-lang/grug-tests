@@ -45,11 +45,35 @@ struct grug_state;
 struct grug_file_id;
 struct grug_entity_id;
 
+enum grug_type_enum {
+	GRUG_TYPE_ENUM_VOID,
+	GRUG_TYPE_ENUM_BOOL,
+	GRUG_TYPE_ENUM_NUMBER,
+	GRUG_TYPE_ENUM_STRING,
+	GRUG_TYPE_ENUM_ID,
+	GRUG_TYPE_ENUM_RESOURCE,
+	GRUG_TYPE_ENUM_ENTITY
+};
+
+struct grug_type {
+	uint32_t type;
+	union {
+		struct {
+			char* name;
+			struct grug_type* generics;
+			size_t generics_len;
+		} id;
+		char* resource_extension;
+		char* entity_type;
+	} data;
+};
+
 #define CALL(state, game_fn_name, ...) p_game_fn_##game_fn_name((state), (const union grug_value[]){ __VA_ARGS__ })
 
 #define CALL_ARGLESS(state, game_fn_name) p_game_fn_##game_fn_name((state), NULL)
 
 typedef union grug_value (*game_fn)(struct grug_state* state, const union grug_value[]);
+typedef game_fn (*generic_fn_reg)(struct grug_type* types);
 
 static inline union grug_value grug_number(GRUG_TYPE_NUMBER v) { union grug_value r; r._number = v; return r; }
 static inline union grug_value grug_bool(GRUG_TYPE_BOOL v) { union grug_value r; r._bool = v; return r; }
@@ -250,58 +274,65 @@ void grug_tests_runtime_error_handler(const char *reason,
 /**
  * @brief Game functions that the bindings must call.
  */
-typedef union grug_value (*game_fn)                    (struct grug_state* grug_state, const union grug_value args[]);
-union grug_value game_fn_nothing                       (struct grug_state* grug_state, const union grug_value args[]);
-union grug_value game_fn_magic                         (struct grug_state* grug_state, const union grug_value args[]);
-union grug_value game_fn_initialize                    (struct grug_state* grug_state, const union grug_value args[]);
-union grug_value game_fn_initialize_bool               (struct grug_state* grug_state, const union grug_value args[]);
-union grug_value game_fn_identity                      (struct grug_state* grug_state, const union grug_value args[]);
-union grug_value game_fn_max                           (struct grug_state* grug_state, const union grug_value args[]);
-union grug_value game_fn_say                           (struct grug_state* grug_state, const union grug_value args[]);
-union grug_value game_fn_sin                           (struct grug_state* grug_state, const union grug_value args[]);
-union grug_value game_fn_cos                           (struct grug_state* grug_state, const union grug_value args[]);
-union grug_value game_fn_mega                          (struct grug_state* grug_state, const union grug_value args[]);
-union grug_value game_fn_get_false                     (struct grug_state* grug_state, const union grug_value args[]);
-union grug_value game_fn_set_is_happy                  (struct grug_state* grug_state, const union grug_value args[]);
-union grug_value game_fn_mega_f32                      (struct grug_state* grug_state, const union grug_value args[]);
-union grug_value game_fn_mega_i32                      (struct grug_state* grug_state, const union grug_value args[]);
-union grug_value game_fn_draw                          (struct grug_state* grug_state, const union grug_value args[]);
-union grug_value game_fn_utils                         (struct grug_state* grug_state, const union grug_value args[]);
-union grug_value game_fn_assert_state_is_not_null      (struct grug_state* grug_state, const union grug_value args[]);
-union grug_value game_fn_Utils_assert_state_is_not_null(struct grug_state* grug_state, const union grug_value args[]);
-union grug_value game_fn_blocked_alrm                  (struct grug_state* grug_state, const union grug_value args[]);
-union grug_value game_fn_spawn                         (struct grug_state* grug_state, const union grug_value args[]);
-union grug_value game_fn_spawn_d                       (struct grug_state* grug_state, const union grug_value args[]);
-union grug_value game_fn_has_resource                  (struct grug_state* grug_state, const union grug_value args[]);
-union grug_value game_fn_has_entity                    (struct grug_state* grug_state, const union grug_value args[]);
-union grug_value game_fn_has_string                    (struct grug_state* grug_state, const union grug_value args[]);
-union grug_value game_fn_get_opponent                  (struct grug_state* grug_state, const union grug_value args[]);
-union grug_value game_fn_get_os                        (struct grug_state* grug_state, const union grug_value args[]);
-union grug_value game_fn_set_d                         (struct grug_state* grug_state, const union grug_value args[]);
-union grug_value game_fn_set_opponent                  (struct grug_state* grug_state, const union grug_value args[]);
-union grug_value game_fn_motherload                    (struct grug_state* grug_state, const union grug_value args[]);
-union grug_value game_fn_motherload_subless            (struct grug_state* grug_state, const union grug_value args[]);
-union grug_value game_fn_offset_32_bit_f32             (struct grug_state* grug_state, const union grug_value args[]);
-union grug_value game_fn_offset_32_bit_i32             (struct grug_state* grug_state, const union grug_value args[]);
-union grug_value game_fn_offset_32_bit_string          (struct grug_state* grug_state, const union grug_value args[]);
-union grug_value game_fn_talk                          (struct grug_state* grug_state, const union grug_value args[]);
-union grug_value game_fn_get_position                  (struct grug_state* grug_state, const union grug_value args[]);
-union grug_value game_fn_set_position                  (struct grug_state* grug_state, const union grug_value args[]);
-union grug_value game_fn_cause_game_fn_error           (struct grug_state* grug_state, const union grug_value args[]);
-union grug_value game_fn_Utils_cause_game_fn_error     (struct grug_state* grug_state, const union grug_value args[]);
-union grug_value game_fn_call_on_b_fn                  (struct grug_state* grug_state, const union grug_value args[]);
-union grug_value game_fn_Utils_call_on_b_fn            (struct grug_state* grug_state, const union grug_value args[]);
-union grug_value game_fn_store                         (struct grug_state* grug_state, const union grug_value args[]);
-union grug_value game_fn_print_csv                     (struct grug_state* grug_state, const union grug_value args[]);
-union grug_value game_fn_retrieve                      (struct grug_state* grug_state, const union grug_value args[]);
-union grug_value game_fn_box_number                    (struct grug_state* grug_state, const union grug_value args[]);
-union grug_value game_fn_vec_number_new                (struct grug_state* grug_state, const union grug_value args[]);
-union grug_value game_fn_vec_number_push               (struct grug_state* grug_state, const union grug_value args[]);
-union grug_value game_fn_vec_number_pop                (struct grug_state* grug_state, const union grug_value args[]);
-union grug_value game_fn_vec_number_insert             (struct grug_state* grug_state, const union grug_value args[]);
+typedef union grug_value (*game_fn)              (struct grug_state* grug_state, const union grug_value args[]);
+union grug_value game_fn_nothing                 (struct grug_state* grug_state, const union grug_value args[]);
+union grug_value game_fn_magic                   (struct grug_state* grug_state, const union grug_value args[]);
+union grug_value game_fn_initialize              (struct grug_state* grug_state, const union grug_value args[]);
+union grug_value game_fn_initialize_bool         (struct grug_state* grug_state, const union grug_value args[]);
+union grug_value game_fn_identity                (struct grug_state* grug_state, const union grug_value args[]);
+union grug_value game_fn_max                     (struct grug_state* grug_state, const union grug_value args[]);
+union grug_value game_fn_say                     (struct grug_state* grug_state, const union grug_value args[]);
+union grug_value game_fn_sin                     (struct grug_state* grug_state, const union grug_value args[]);
+union grug_value game_fn_cos                     (struct grug_state* grug_state, const union grug_value args[]);
+union grug_value game_fn_mega                    (struct grug_state* grug_state, const union grug_value args[]);
+union grug_value game_fn_get_false               (struct grug_state* grug_state, const union grug_value args[]);
+union grug_value game_fn_set_is_happy            (struct grug_state* grug_state, const union grug_value args[]);
+union grug_value game_fn_mega_f32                (struct grug_state* grug_state, const union grug_value args[]);
+union grug_value game_fn_mega_i32                (struct grug_state* grug_state, const union grug_value args[]);
+union grug_value game_fn_draw                    (struct grug_state* grug_state, const union grug_value args[]);
+union grug_value game_fn_assert_state_is_not_null(struct grug_state* grug_state, const union grug_value args[]);
+union grug_value game_fn_blocked_alrm            (struct grug_state* grug_state, const union grug_value args[]);
+union grug_value game_fn_spawn                   (struct grug_state* grug_state, const union grug_value args[]);
+union grug_value game_fn_spawn_d                 (struct grug_state* grug_state, const union grug_value args[]);
+union grug_value game_fn_has_resource            (struct grug_state* grug_state, const union grug_value args[]);
+union grug_value game_fn_has_entity              (struct grug_state* grug_state, const union grug_value args[]);
+union grug_value game_fn_has_string              (struct grug_state* grug_state, const union grug_value args[]);
+union grug_value game_fn_get_opponent            (struct grug_state* grug_state, const union grug_value args[]);
+union grug_value game_fn_get_os                  (struct grug_state* grug_state, const union grug_value args[]);
+union grug_value game_fn_set_d                   (struct grug_state* grug_state, const union grug_value args[]);
+union grug_value game_fn_set_opponent            (struct grug_state* grug_state, const union grug_value args[]);
+union grug_value game_fn_motherload              (struct grug_state* grug_state, const union grug_value args[]);
+union grug_value game_fn_motherload_subless      (struct grug_state* grug_state, const union grug_value args[]);
+union grug_value game_fn_offset_32_bit_f32       (struct grug_state* grug_state, const union grug_value args[]);
+union grug_value game_fn_offset_32_bit_i32       (struct grug_state* grug_state, const union grug_value args[]);
+union grug_value game_fn_offset_32_bit_string    (struct grug_state* grug_state, const union grug_value args[]);
+union grug_value game_fn_talk                    (struct grug_state* grug_state, const union grug_value args[]);
+union grug_value game_fn_get_position            (struct grug_state* grug_state, const union grug_value args[]);
+union grug_value game_fn_set_position            (struct grug_state* grug_state, const union grug_value args[]);
+union grug_value game_fn_cause_game_fn_error     (struct grug_state* grug_state, const union grug_value args[]);
+union grug_value game_fn_call_on_b_fn            (struct grug_state* grug_state, const union grug_value args[]);
+union grug_value game_fn_store                   (struct grug_state* grug_state, const union grug_value args[]);
+union grug_value game_fn_print_csv               (struct grug_state* grug_state, const union grug_value args[]);
+union grug_value game_fn_retrieve                (struct grug_state* grug_state, const union grug_value args[]);
+union grug_value game_fn_box_number              (struct grug_state* grug_state, const union grug_value args[]);
+/* these are the non generic verions for the normal methods tests */
+union grug_value game_fn_vec_number_new          (struct grug_state* grug_state, const union grug_value args[]);
+union grug_value game_fn_vec_number_push         (struct grug_state* grug_state, const union grug_value args[]);
+union grug_value game_fn_vec_number_pop          (struct grug_state* grug_state, const union grug_value args[]);
+union grug_value game_fn_vec_number_insert       (struct grug_state* grug_state, const union grug_value args[]);
+/* these are the generic verions for the generics tests */
 
-// VecNumber struct for grug
-struct VecNumber {
+/* Generic registration functions */
+/* These ones just return into the non generic number versions because they
+ * should have the exact same implementations but these registration functions
+ * are needed for generics to work as intended */
+game_fn reg_game_fn_vec_new                         (struct grug_type* types);
+game_fn reg_game_fn_vec_push                        (struct grug_type* types);
+game_fn reg_game_fn_vec_pop                         (struct grug_type* types);
+game_fn reg_game_fn_vec_insert                      (struct grug_type* types);
+
+// Vec struct for grug
+struct Vec {
 	double* items;
 	size_t len;
 	size_t cap;

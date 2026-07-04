@@ -1,0 +1,355 @@
+[
+    {
+        "name": "a",
+        "statements": [
+            {
+                "assignment": {
+                    "name": "vec",
+                    "type": "CALL_EXPR"
+                },
+                "name": "x",
+                "type": "VARIABLE_STATEMENT",
+                "variable_type": {
+					"name": "Vec",
+					"generics": [
+						{
+							"name": "number"
+						}
+					]
+				}
+            },
+            {
+                "arguments": [
+                    {
+                        "type": "NUMBER_EXPR",
+                        "value": "30"
+                    }
+                ],
+                "name": "push",
+                "receiver": {
+                    "str": "x",
+                    "type": "IDENTIFIER_EXPR"
+                },
+                "type": "CALL_STATEMENT"
+            },
+            {
+                "arguments": [
+                    {
+                        "type": "NUMBER_EXPR",
+                        "value": "10"
+                    }
+                ],
+                "name": "push",
+                "receiver": {
+                    "str": "x",
+                    "type": "IDENTIFIER_EXPR"
+                },
+                "type": "CALL_STATEMENT"
+            },
+            {
+                "arguments": [
+                    {
+                        "type": "NUMBER_EXPR",
+                        "value": "15"
+                    }
+                ],
+                "name": "push",
+                "receiver": {
+                    "str": "x",
+                    "type": "IDENTIFIER_EXPR"
+                },
+                "type": "CALL_STATEMENT"
+            },
+            {
+                "arguments": [
+                    {
+                        "type": "NUMBER_EXPR",
+                        "value": "25"
+                    }
+                ],
+                "name": "push",
+                "receiver": {
+                    "str": "x",
+                    "type": "IDENTIFIER_EXPR"
+                },
+                "type": "CALL_STATEMENT"
+            },
+            {
+                "arguments": [
+                    {
+                        "type": "NUMBER_EXPR",
+                        "value": "1"
+                    },
+                    {
+                        "type": "NUMBER_EXPR",
+                        "value": "3"
+                    }
+                ],
+                "name": "insert",
+                "receiver": {
+                    "str": "x",
+                    "type": "IDENTIFIER_EXPR"
+                },
+                "type": "CALL_STATEMENT"
+            },
+            {
+                "name": "pop",
+                "receiver": {
+                    "str": "x",
+                    "type": "IDENTIFIER_EXPR"
+                },
+                "type": "CALL_STATEMENT"
+            },
+            {
+                "name": "pop",
+                "receiver": {
+                    "str": "x",
+                    "type": "IDENTIFIER_EXPR"
+                },
+                "type": "CALL_STATEMENT"
+            },
+            {
+                "name": "pop",
+                "receiver": {
+                    "str": "x",
+                    "type": "IDENTIFIER_EXPR"
+                },
+                "type": "CALL_STATEMENT"
+            }
+        ],
+        "type": "GLOBAL_ON_FN"
+    },
+	{
+		"type": "GLOBAL_EMPTY_LINE"
+	},
+    {
+        "name": "b",
+        "statements": [
+            {
+                "assignment": {
+                    "name": "vec",
+                    "type": "CALL_EXPR"
+                },
+                "name": "x",
+                "type": "VARIABLE_STATEMENT",
+                "variable_type": {
+					"name": "Vec",
+					"generics": [
+						{
+							"name": "string"
+						}
+					]
+				}
+            },
+            {
+                "arguments": [
+                    {
+                        "type": "STRING_EXPR",
+                        "str": "Hello"
+                    }
+                ],
+                "name": "push",
+                "receiver": {
+                    "str": "x",
+                    "type": "IDENTIFIER_EXPR"
+                },
+                "type": "CALL_STATEMENT"
+            },
+            {
+                "arguments": [
+                    {
+                        "type": "STRING_EXPR",
+                        "str": "World"
+                    }
+                ],
+                "name": "push",
+                "receiver": {
+                    "str": "x",
+                    "type": "IDENTIFIER_EXPR"
+                },
+                "type": "CALL_STATEMENT"
+            },
+            {
+                "arguments": [
+                    {
+                        "type": "STRING_EXPR",
+                        "str": "I'm"
+                    }
+                ],
+                "name": "push",
+                "receiver": {
+                    "str": "x",
+                    "type": "IDENTIFIER_EXPR"
+                },
+                "type": "CALL_STATEMENT"
+            },
+            {
+                "arguments": [
+                    {
+                        "type": "STRING_EXPR",
+                        "str": "here"
+                    }
+                ],
+                "name": "push",
+                "receiver": {
+                    "str": "x",
+                    "type": "IDENTIFIER_EXPR"
+                },
+                "type": "CALL_STATEMENT"
+            },
+            {
+                "arguments": [
+                    {
+                        "type": "NUMBER_EXPR",
+                        "value": "3"
+                    },
+                    {
+                        "type": "STRING_EXPR",
+                        "str": "not"
+                    }
+                ],
+                "name": "insert",
+                "receiver": {
+                    "str": "x",
+                    "type": "IDENTIFIER_EXPR"
+                },
+                "type": "CALL_STATEMENT"
+            },
+            {
+                "name": "pop",
+                "receiver": {
+                    "str": "x",
+                    "type": "IDENTIFIER_EXPR"
+                },
+                "type": "CALL_STATEMENT"
+            },
+            {
+                "name": "pop",
+                "receiver": {
+                    "str": "x",
+                    "type": "IDENTIFIER_EXPR"
+                },
+                "type": "CALL_STATEMENT"
+            },
+            {
+                "name": "pop",
+                "receiver": {
+                    "str": "x",
+                    "type": "IDENTIFIER_EXPR"
+                },
+                "type": "CALL_STATEMENT"
+            }
+        ],
+        "type": "GLOBAL_ON_FN"
+    },
+	{
+		"type": "GLOBAL_EMPTY_LINE"
+	},
+    {
+        "name": "c",
+        "statements": [
+            {
+                "assignment": {
+                    "name": "vec",
+                    "type": "CALL_EXPR"
+                },
+                "name": "x",
+                "type": "VARIABLE_STATEMENT",
+                "variable_type": {
+					"name": "Vec",
+					"generics": [
+						{
+							"name": "bool"
+						}
+					]
+				}
+            },
+            {
+                "arguments": [
+                    {
+                        "type": "TRUE_EXPR"
+                    }
+                ],
+                "name": "push",
+                "receiver": {
+                    "str": "x",
+                    "type": "IDENTIFIER_EXPR"
+                },
+                "type": "CALL_STATEMENT"
+            },
+            {
+                "arguments": [
+                    {
+                        "type": "FALSE_EXPR"
+                    }
+                ],
+                "name": "push",
+                "receiver": {
+                    "str": "x",
+                    "type": "IDENTIFIER_EXPR"
+                },
+                "type": "CALL_STATEMENT"
+            },
+            {
+                "arguments": [
+                    {
+                        "type": "TRUE_EXPR"
+                    }
+                ],
+                "name": "push",
+                "receiver": {
+                    "str": "x",
+                    "type": "IDENTIFIER_EXPR"
+                },
+                "type": "CALL_STATEMENT"
+            },
+            {
+                "arguments": [
+                    {
+                        "type": "FALSE_EXPR"
+                    }
+                ],
+                "name": "push",
+                "receiver": {
+                    "str": "x",
+                    "type": "IDENTIFIER_EXPR"
+                },
+                "type": "CALL_STATEMENT"
+            },
+            {
+                "arguments": [
+                    {
+                        "type": "NUMBER_EXPR",
+                        "value": "3"
+                    },
+                    {
+                        "type": "TRUE_EXPR"
+                    }
+                ],
+                "name": "insert",
+                "receiver": {
+                    "str": "x",
+                    "type": "IDENTIFIER_EXPR"
+                },
+                "type": "CALL_STATEMENT"
+            },
+            {
+                "name": "pop",
+                "receiver": {
+                    "str": "x",
+                    "type": "IDENTIFIER_EXPR"
+                },
+                "type": "CALL_STATEMENT"
+            },
+            {
+                "name": "pop",
+                "receiver": {
+                    "str": "x",
+                    "type": "IDENTIFIER_EXPR"
+                },
+                "type": "CALL_STATEMENT"
+            }
+        ],
+        "type": "GLOBAL_ON_FN"
+    }
+]

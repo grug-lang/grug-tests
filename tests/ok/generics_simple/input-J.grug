@@ -1,0 +1,34 @@
+export a() {
+    x: Vec[number] = vec()
+    x.push(30)
+    x.push(10)
+    x.push(15)
+    x.push(25)
+    x.insert(1, 3)
+    x.pop()
+    x.pop()
+    x.pop()
+}
+
+export b() {
+    x: Vec[string] = vec()
+    x.push("Hello")
+    x.push("World")
+    x.push("I'm")
+    x.push("here")
+    x.insert(3, "not")
+    x.pop()
+    x.pop()
+    x.pop()
+}
+
+export c() {
+    x: Vec[bool] = vec()
+    x.push(true)
+    x.push(false)
+    x.push(true)
+    x.push(false)
+    x.insert(3, true)
+    x.pop()
+    x.pop()
+}

@@ -1,3 +1,30 @@
+// These should be removed before the final merge
+// TODO: generic with incorrect number of generics
+// TODO: class not mentioned in mod_api but has generics
+//
+// TODO: Existential as one of the direct inputs to an operator e.g (-unbox(y))
+// 		- Both as a success and error case
+// 		- for `-`, `not`, and `and` at least
+//
+// TODO: Failed generics instantiation (both methods and host functions)
+// TODO: Make sure the error message for this case works as intended
+//  	y: List[Pair[List[number], number]] = list()
+//
+//  	z: Dict[number, Dict[number, number]] = dict()
+//
+//  	z.put(25, dict_from_list(y))
+//		this should print `Expected Dict[List, _] but got Dict[number, _]`
+//
+// TODO: Function argument does not match parameter (check error message)
+// 		host foo[$T](Vec[$T]) but called as foo(Box[number])
+//
+// TODO: Function argument partially matches parameter but not fully
+// 		host foo[$T](Vec[$T], $T) but called as foo(Vec[number], string)
+// 		
+// TODO: resource strings in generics (not allowed for now)
+// TODO: entity strings in generics (not allowed for now)
+//
+// TODO: method calls in globals
 #include "tests.h"
 
 #include "cJSON.h"
@@ -2808,6 +2835,52 @@ static void ok_ge_true_2(struct grug_state* grug_state, struct grug_entity_id* e
 	assert_true(game_fn_initialize_bool_b);
 }
 
+static void ok_generics_simple(struct grug_state* grug_state, struct grug_entity_id* entity) {
+	assert_call_count(vec_number_new, 0);
+	assert_call_count(vec_number_push, 0);
+	assert_call_count(vec_number_pop, 0);
+	assert_call_count(vec_number_insert, 0);
+
+    call_export_fn_argless(grug_state, entity, "a");
+	assert_call_count(vec_number_new, 1);
+	assert_call_count(vec_number_push, 4);
+	assert_call_count(vec_number_pop, 3);
+	assert_call_count(vec_number_insert, 1);
+
+	assert_number(vec_number_last_pushed._number, 25.0);
+	assert_number(vec_number_last_inserted._number, 3.0);
+	assert_number(vec_number_last_popped._number, 10.0);
+	assert_size_t(vec_number_last_new->len, (size_t)2);
+	assert_number(vec_number_last_new->items[0]._number, 30.0);
+	assert_number(vec_number_last_new->items[1]._number, 3.0);
+
+    call_export_fn_argless(grug_state, entity, "b");
+	assert_call_count(vec_number_new, 2);
+	assert_call_count(vec_number_push, 8);
+	assert_call_count(vec_number_pop, 6);
+	assert_call_count(vec_number_insert, 2);
+
+	assert_string(vec_number_last_pushed._string, "here");
+	assert_string(vec_number_last_inserted._string, "not");
+	assert_string(vec_number_last_popped._string, "I'm");
+	assert_size_t(vec_number_last_new->len, (size_t)2);
+	assert_string(vec_number_last_new->items[0]._string, "Hello");
+	assert_string(vec_number_last_new->items[1]._string, "World");
+
+    call_export_fn_argless(grug_state, entity, "c");
+	assert_call_count(vec_number_new, 3);
+	assert_call_count(vec_number_push, 12);
+	assert_call_count(vec_number_pop, 8);
+	assert_call_count(vec_number_insert, 3);
+
+	assert_false(vec_number_last_pushed._bool);
+	assert_true (vec_number_last_inserted._bool);
+	assert_true (vec_number_last_popped._bool);
+	assert_size_t(vec_number_last_new->len, (size_t)3);
+	assert_true (vec_number_last_new->items[0]._bool);
+	assert_false(vec_number_last_new->items[1]._bool);
+}
+
 static void ok_global_2_does_not_have_error_handling(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	(void)grug_state;
 	(void)entity;
@@ -3158,11 +3231,11 @@ static void ok_mov_32_bits_global_i32(struct grug_state* grug_state, struct grug
 	(void)entity;
 }
 
-static void ok_method_return_value(struct grug_state* grug_state, struct grug_entity_id* file_id) {
+static void ok_method_return_value(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	assert_call_count(vec_number_new, 0);
 	assert_call_count(vec_number_push, 0);
 	assert_call_count(vec_number_pop, 0);
-    call_export_fn_argless(grug_state, file_id, "a");
+    call_export_fn_argless(grug_state, entity, "a");
 	assert_call_count(vec_number_new, 1);
 	assert_call_count(vec_number_push, 1);
 	assert_call_count(vec_number_pop, 1);
@@ -3171,12 +3244,12 @@ static void ok_method_return_value(struct grug_state* grug_state, struct grug_en
 	assert_size_t(vec_number_last_new->len, (size_t)0);
 }
 
-static void ok_method_simple(struct grug_state* grug_state, struct grug_entity_id* file_id) {
+static void ok_method_simple(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	assert_call_count(vec_number_new, 0);
 	assert_call_count(vec_number_push, 0);
 	assert_call_count(vec_number_pop, 0);
 	assert_call_count(vec_number_insert, 0);
-    call_export_fn_argless(grug_state, file_id, "a");
+    call_export_fn_argless(grug_state, entity, "a");
 	assert_call_count(vec_number_new, 1);
 	assert_call_count(vec_number_push, 4);
 	assert_call_count(vec_number_pop, 3);
@@ -3480,9 +3553,9 @@ static void ok_resource_can_contain_dot_dot_2(struct grug_state* grug_state, str
 	assert_string(game_fn_draw_sprite_path, "ok/resource_can_contain_dot_dot_2/foo..bar");
 }
 
-static void ok_resource_can_contain_dot_dot_3(struct grug_state* grug_state, struct grug_entity_id* file_id) {
+static void ok_resource_can_contain_dot_dot_3(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	assert_call_count(draw, 0);
-    call_export_fn_argless(grug_state, file_id, "a");
+    call_export_fn_argless(grug_state, entity, "a");
 	assert_call_count(draw, 1);
 
 	assert_string(game_fn_draw_sprite_path, "ok/..a");
@@ -4509,6 +4582,7 @@ static void add_ok_tests(void) {
 	ADD_TEST_OK(ge_false, "D");
 	ADD_TEST_OK(ge_true_1, "D");
 	ADD_TEST_OK(ge_true_2, "D");
+	ADD_TEST_OK(generics_simple, "J");
 	ADD_TEST_OK(global_2_does_not_have_error_handling, "A");
 	ADD_TEST_OK(global_call_using_me, "D");
 	ADD_TEST_OK(global_can_use_earlier_global, "D");

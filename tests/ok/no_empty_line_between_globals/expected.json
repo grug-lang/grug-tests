@@ -6,7 +6,9 @@
         },
         "name": "a",
         "type": "GLOBAL_VARIABLE",
-        "variable_type": "number"
+        "variable_type": {
+			"name": "number"
+		}
     },
     {
         "assignment": {
@@ -15,6 +17,8 @@
         },
         "name": "b",
         "type": "GLOBAL_VARIABLE",
-        "variable_type": "number"
+        "variable_type": {
+			"name": "number"
+		}
     }
 ]

@@ -6,7 +6,9 @@
         },
         "name": "g",
         "type": "GLOBAL_VARIABLE",
-        "variable_type": "number"
+        "variable_type": {
+			"name": "number"
+		}
     },
     {
         "type": "GLOBAL_EMPTY_LINE"
@@ -171,143 +173,213 @@
         "parameters": [
             {
                 "name": "f1",
-                "type": "number"
+                "type": {
+					"name": "number"
+				}
             },
             {
                 "name": "f2",
-                "type": "number"
+                "type": {
+					"name": "number"
+				}
             },
             {
                 "name": "f3",
-                "type": "number"
+                "type": {
+					"name": "number"
+				}
             },
             {
                 "name": "f4",
-                "type": "number"
+                "type": {
+					"name": "number"
+				}
             },
             {
                 "name": "f5",
-                "type": "number"
+                "type": {
+					"name": "number"
+				}
             },
             {
                 "name": "f6",
-                "type": "number"
+                "type": {
+					"name": "number"
+				}
             },
             {
                 "name": "f7",
-                "type": "number"
+                "type": {
+					"name": "number"
+				}
             },
             {
                 "name": "f8",
-                "type": "number"
+                "type": {
+					"name": "number"
+				}
             },
             {
                 "name": "f9",
-                "type": "number"
+                "type": {
+					"name": "number"
+				}
             },
             {
                 "name": "f10",
-                "type": "number"
+                "type": {
+					"name": "number"
+				}
             },
             {
                 "name": "f11",
-                "type": "number"
+                "type": {
+					"name": "number"
+				}
             },
             {
                 "name": "f12",
-                "type": "number"
+                "type": {
+					"name": "number"
+				}
             },
             {
                 "name": "f13",
-                "type": "number"
+                "type": {
+					"name": "number"
+				}
             },
             {
                 "name": "f14",
-                "type": "number"
+                "type": {
+					"name": "number"
+				}
             },
             {
                 "name": "f15",
-                "type": "number"
+                "type": {
+					"name": "number"
+				}
             },
             {
                 "name": "f16",
-                "type": "number"
+                "type": {
+					"name": "number"
+				}
             },
             {
                 "name": "f17",
-                "type": "number"
+                "type": {
+					"name": "number"
+				}
             },
             {
                 "name": "f18",
-                "type": "number"
+                "type": {
+					"name": "number"
+				}
             },
             {
                 "name": "f19",
-                "type": "number"
+                "type": {
+					"name": "number"
+				}
             },
             {
                 "name": "f20",
-                "type": "number"
+                "type": {
+					"name": "number"
+				}
             },
             {
                 "name": "f21",
-                "type": "number"
+                "type": {
+					"name": "number"
+				}
             },
             {
                 "name": "f22",
-                "type": "number"
+                "type": {
+					"name": "number"
+				}
             },
             {
                 "name": "f23",
-                "type": "number"
+                "type": {
+					"name": "number"
+				}
             },
             {
                 "name": "f24",
-                "type": "number"
+                "type": {
+					"name": "number"
+				}
             },
             {
                 "name": "f25",
-                "type": "number"
+                "type": {
+					"name": "number"
+				}
             },
             {
                 "name": "f26",
-                "type": "number"
+                "type": {
+					"name": "number"
+				}
             },
             {
                 "name": "f27",
-                "type": "number"
+                "type": {
+					"name": "number"
+				}
             },
             {
                 "name": "f28",
-                "type": "number"
+                "type": {
+					"name": "number"
+				}
             },
             {
                 "name": "f29",
-                "type": "number"
+                "type": {
+					"name": "number"
+				}
             },
             {
                 "name": "f30",
-                "type": "number"
+                "type": {
+					"name": "number"
+				}
             },
             {
                 "name": "i1",
-                "type": "number"
+                "type": {
+					"name": "number"
+				}
             },
             {
                 "name": "i2",
-                "type": "number"
+                "type": {
+					"name": "number"
+				}
             },
             {
                 "name": "i3",
-                "type": "number"
+                "type": {
+					"name": "number"
+				}
             },
             {
                 "name": "i4",
-                "type": "number"
+                "type": {
+					"name": "number"
+				}
             },
             {
                 "name": "i5",
-                "type": "number"
+                "type": {
+					"name": "number"
+				}
             }
         ],
         "statements": [

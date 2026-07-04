@@ -4,7 +4,9 @@
         "parameters": [
             {
                 "name": "x",
-                "type": "number"
+                "type": {
+					"name": "number"
+				}
             }
         ],
         "statements": [
@@ -39,7 +41,9 @@
         "parameters": [
             {
                 "name": "x",
-                "type": "number"
+                "type": {
+					"name": "number"
+				}
             }
         ],
         "statements": [
@@ -58,7 +62,9 @@
         "parameters": [
             {
                 "name": "x",
-                "type": "number"
+                "type": {
+					"name": "number"
+				}
             }
         ],
         "statements": [

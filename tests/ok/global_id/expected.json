@@ -6,7 +6,9 @@
         },
         "name": "opponent",
         "type": "GLOBAL_VARIABLE",
-        "variable_type": "Opponent"
+        "variable_type": {
+			"name": "Opponent"
+		}
     },
     {
         "type": "GLOBAL_EMPTY_LINE"

@@ -4,7 +4,9 @@
         "parameters": [
             {
                 "name": "id",
-                "type": "id"
+                "type": {
+					"name": "id"
+				}
             }
         ],
         "statements": [

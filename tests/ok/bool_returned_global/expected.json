@@ -5,7 +5,9 @@
         },
         "name": "getting_down",
         "type": "GLOBAL_VARIABLE",
-        "variable_type": "bool"
+        "variable_type": {
+			"name": "bool"
+		}
     },
     {
         "type": "GLOBAL_EMPTY_LINE"

@@ -29,10 +29,14 @@
         "parameters": [
             {
                 "name": "n",
-                "type": "number"
+                "type": {
+					"name": "number"
+				}
             }
         ],
-        "return_type": "number",
+        "return_type": {
+			"name": "number"
+		},
         "statements": [
             {
                 "condition": {

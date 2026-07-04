@@ -6,7 +6,9 @@
         },
         "name": "message",
         "type": "GLOBAL_VARIABLE",
-        "variable_type": "string"
+        "variable_type": {
+			"name": "string"
+		}
     },
     {
         "type": "GLOBAL_EMPTY_LINE"

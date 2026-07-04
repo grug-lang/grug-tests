@@ -6,7 +6,9 @@
         },
         "name": "g",
         "type": "GLOBAL_VARIABLE",
-        "variable_type": "number"
+        "variable_type": {
+			"name": "number"
+		}
     },
     {
         "type": "GLOBAL_EMPTY_LINE"
@@ -99,71 +101,105 @@
         "parameters": [
             {
                 "name": "i1",
-                "type": "number"
+                "type": {
+					"name": "number"
+				}
             },
             {
                 "name": "i2",
-                "type": "number"
+                "type": {
+					"name": "number"
+				}
             },
             {
                 "name": "i3",
-                "type": "number"
+                "type": {
+					"name": "number"
+				}
             },
             {
                 "name": "i4",
-                "type": "number"
+                "type": {
+					"name": "number"
+				}
             },
             {
                 "name": "i5",
-                "type": "number"
+                "type": {
+					"name": "number"
+				}
             },
             {
                 "name": "i6",
-                "type": "number"
+                "type": {
+					"name": "number"
+				}
             },
             {
                 "name": "f1",
-                "type": "number"
+                "type": {
+					"name": "number"
+				}
             },
             {
                 "name": "f2",
-                "type": "number"
+                "type": {
+					"name": "number"
+				}
             },
             {
                 "name": "f3",
-                "type": "number"
+                "type": {
+					"name": "number"
+				}
             },
             {
                 "name": "f4",
-                "type": "number"
+                "type": {
+					"name": "number"
+				}
             },
             {
                 "name": "f5",
-                "type": "number"
+                "type": {
+					"name": "number"
+				}
             },
             {
                 "name": "f6",
-                "type": "number"
+                "type": {
+					"name": "number"
+				}
             },
             {
                 "name": "f7",
-                "type": "number"
+                "type": {
+					"name": "number"
+				}
             },
             {
                 "name": "f8",
-                "type": "number"
+                "type": {
+					"name": "number"
+				}
             },
             {
                 "name": "f9",
-                "type": "number"
+                "type": {
+					"name": "number"
+				}
             },
             {
                 "name": "id",
-                "type": "D"
+                "type": {
+					"name": "D"
+				}
             },
             {
                 "name": "f10",
-                "type": "number"
+                "type": {
+					"name": "number"
+				}
             }
         ],
         "statements": [

@@ -9,7 +9,9 @@
                 },
                 "name": "x",
                 "type": "VARIABLE_STATEMENT",
-                "variable_type": "VecNumber"
+                "variable_type": {
+					"name": "VecNumber"
+				}
             },
             {
                 "arguments": [

@@ -9,7 +9,9 @@
                 },
                 "name": "foo",
                 "type": "VARIABLE_STATEMENT",
-                "variable_type": "D"
+                "variable_type": {
+					"name": "D"
+				}
             },
             {
                 "arguments": [

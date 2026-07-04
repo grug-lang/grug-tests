@@ -23,7 +23,9 @@
         "parameters": [
             {
                 "name": "message",
-                "type": "string"
+                "type": {
+					"name": "string"
+				}
             }
         ],
         "statements": [

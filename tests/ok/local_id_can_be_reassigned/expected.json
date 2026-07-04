@@ -9,7 +9,9 @@
                 },
                 "name": "foo",
                 "type": "VARIABLE_STATEMENT",
-                "variable_type": "Opponent"
+                "variable_type": {
+					"name": "Opponent"
+				}
             },
             {
                 "assignment": {

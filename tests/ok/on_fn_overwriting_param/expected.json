@@ -4,11 +4,15 @@
         "parameters": [
             {
                 "name": "i",
-                "type": "number"
+                "type": {
+					"name": "number"
+				}
             },
             {
                 "name": "f",
-                "type": "number"
+                "type": {
+					"name": "number"
+				}
             }
         ],
         "statements": [

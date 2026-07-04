@@ -331,9 +331,15 @@ game_fn reg_game_fn_vec_push                        (struct grug_type* types);
 game_fn reg_game_fn_vec_pop                         (struct grug_type* types);
 game_fn reg_game_fn_vec_insert                      (struct grug_type* types);
 
+/* this is _not_ a generic version of box_number since that doesn't actually
+ * box anything */
+/* game_fn reg_game_fn_box                             (struct grug_type* types); */
+/* game_fn reg_game_fn_box_set                         (struct grug_type* types); */
+/* game_fn reg_game_fn_box_get                         (struct grug_type* types); */
+
 // Vec struct for grug
 struct Vec {
-	double* items;
+	union grug_value* items;
 	size_t len;
 	size_t cap;
 };

@@ -12,7 +12,9 @@
         },
         "name": "pos",
         "type": "GLOBAL_VARIABLE",
-        "variable_type": "Position"
+        "variable_type": {
+			"name": "Position"
+		}
     },
     {
         "type": "GLOBAL_EMPTY_LINE"

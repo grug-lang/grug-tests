@@ -23,7 +23,9 @@
         "parameters": [
             {
                 "name": "n",
-                "type": "number"
+                "type": {
+					"name": "number"
+				}
             }
         ],
         "statements": [

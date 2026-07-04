@@ -1,0 +1,3 @@
+  in a (err/custom_id_decays_to_id/input-D.grug:2:11)
+Error: Function call 'store' expected the type id for argument 'id', but got D
+2 $ store(me)

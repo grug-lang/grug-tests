@@ -6,7 +6,9 @@
         },
         "name": "g",
         "type": "GLOBAL_VARIABLE",
-        "variable_type": "number"
+        "variable_type": {
+			"name": "number"
+		}
     },
     {
         "type": "GLOBAL_EMPTY_LINE"
@@ -123,95 +125,141 @@
         "parameters": [
             {
                 "name": "s1",
-                "type": "string"
+                "type": {
+					"name": "string"
+				}
             },
             {
                 "name": "s2",
-                "type": "string"
+                "type": {
+					"name": "string"
+				}
             },
             {
                 "name": "s3",
-                "type": "string"
+                "type": {
+					"name": "string"
+				}
             },
             {
                 "name": "s4",
-                "type": "string"
+                "type": {
+					"name": "string"
+				}
             },
             {
                 "name": "s5",
-                "type": "string"
+                "type": {
+					"name": "string"
+				}
             },
             {
                 "name": "s6",
-                "type": "string"
+                "type": {
+					"name": "string"
+				}
             },
             {
                 "name": "s7",
-                "type": "string"
+                "type": {
+					"name": "string"
+				}
             },
             {
                 "name": "s8",
-                "type": "string"
+                "type": {
+					"name": "string"
+				}
             },
             {
                 "name": "s9",
-                "type": "string"
+                "type": {
+					"name": "string"
+				}
             },
             {
                 "name": "s10",
-                "type": "string"
+                "type": {
+					"name": "string"
+				}
             },
             {
                 "name": "s11",
-                "type": "string"
+                "type": {
+					"name": "string"
+				}
             },
             {
                 "name": "s12",
-                "type": "string"
+                "type": {
+					"name": "string"
+				}
             },
             {
                 "name": "s13",
-                "type": "string"
+                "type": {
+					"name": "string"
+				}
             },
             {
                 "name": "s14",
-                "type": "string"
+                "type": {
+					"name": "string"
+				}
             },
             {
                 "name": "s15",
-                "type": "string"
+                "type": {
+					"name": "string"
+				}
             },
             {
                 "name": "f1",
-                "type": "number"
+                "type": {
+					"name": "number"
+				}
             },
             {
                 "name": "f2",
-                "type": "number"
+                "type": {
+					"name": "number"
+				}
             },
             {
                 "name": "f3",
-                "type": "number"
+                "type": {
+					"name": "number"
+				}
             },
             {
                 "name": "f4",
-                "type": "number"
+                "type": {
+					"name": "number"
+				}
             },
             {
                 "name": "f5",
-                "type": "number"
+                "type": {
+					"name": "number"
+				}
             },
             {
                 "name": "f6",
-                "type": "number"
+                "type": {
+					"name": "number"
+				}
             },
             {
                 "name": "f7",
-                "type": "number"
+                "type": {
+					"name": "number"
+				}
             },
             {
                 "name": "f8",
-                "type": "number"
+                "type": {
+					"name": "number"
+				}
             }
         ],
         "statements": [

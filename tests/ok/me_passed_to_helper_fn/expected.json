@@ -23,7 +23,9 @@
         "parameters": [
             {
                 "name": "foo",
-                "type": "D"
+                "type": {
+					"name": "D"
+				}
             }
         ],
         "statements": [

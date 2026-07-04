@@ -10,7 +10,9 @@
         },
         "name": "g1",
         "type": "GLOBAL_VARIABLE",
-        "variable_type": "number"
+        "variable_type": {
+			"name": "number"
+		}
     },
     {
         "assignment": {
@@ -19,6 +21,8 @@
         },
         "name": "g",
         "type": "GLOBAL_VARIABLE",
-        "variable_type": "number"
+        "variable_type": {
+			"name": "number"
+		}
     }
 ]

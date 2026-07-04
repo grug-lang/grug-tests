@@ -6,7 +6,9 @@
         },
         "name": "foo",
         "type": "GLOBAL_VARIABLE",
-        "variable_type": "id"
+        "variable_type": {
+			"name": "id"
+		}
     },
     {
         "type": "GLOBAL_EMPTY_LINE"

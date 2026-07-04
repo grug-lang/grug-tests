@@ -10,7 +10,9 @@
         },
         "name": "uses",
         "type": "GLOBAL_VARIABLE",
-        "variable_type": "number"
+        "variable_type": {
+			"name": "number"
+		}
     },
     {
         "type": "GLOBAL_EMPTY_LINE"
@@ -30,7 +32,9 @@
         },
         "name": "armor",
         "type": "GLOBAL_VARIABLE",
-        "variable_type": "number"
+        "variable_type": {
+			"name": "number"
+		}
     },
     {
         "assignment": {
@@ -39,6 +43,8 @@
         },
         "name": "health",
         "type": "GLOBAL_VARIABLE",
-        "variable_type": "number"
+        "variable_type": {
+			"name": "number"
+		}
     }
 ]

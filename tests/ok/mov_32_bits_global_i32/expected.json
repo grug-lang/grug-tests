@@ -6,7 +6,9 @@
         },
         "name": "v1",
         "type": "GLOBAL_VARIABLE",
-        "variable_type": "number"
+        "variable_type": {
+			"name": "number"
+		}
     },
     {
         "assignment": {
@@ -15,7 +17,9 @@
         },
         "name": "v2",
         "type": "GLOBAL_VARIABLE",
-        "variable_type": "number"
+        "variable_type": {
+			"name": "number"
+		}
     },
     {
         "assignment": {
@@ -24,7 +28,9 @@
         },
         "name": "v3",
         "type": "GLOBAL_VARIABLE",
-        "variable_type": "number"
+        "variable_type": {
+			"name": "number"
+		}
     },
     {
         "assignment": {
@@ -33,7 +39,9 @@
         },
         "name": "v4",
         "type": "GLOBAL_VARIABLE",
-        "variable_type": "number"
+        "variable_type": {
+			"name": "number"
+		}
     },
     {
         "assignment": {
@@ -42,7 +50,9 @@
         },
         "name": "v5",
         "type": "GLOBAL_VARIABLE",
-        "variable_type": "number"
+        "variable_type": {
+			"name": "number"
+		}
     },
     {
         "assignment": {
@@ -51,7 +61,9 @@
         },
         "name": "v6",
         "type": "GLOBAL_VARIABLE",
-        "variable_type": "number"
+        "variable_type": {
+			"name": "number"
+		}
     },
     {
         "assignment": {
@@ -60,7 +72,9 @@
         },
         "name": "v7",
         "type": "GLOBAL_VARIABLE",
-        "variable_type": "number"
+        "variable_type": {
+			"name": "number"
+		}
     },
     {
         "assignment": {
@@ -69,7 +83,9 @@
         },
         "name": "v8",
         "type": "GLOBAL_VARIABLE",
-        "variable_type": "number"
+        "variable_type": {
+			"name": "number"
+		}
     },
     {
         "assignment": {
@@ -78,7 +94,9 @@
         },
         "name": "v9",
         "type": "GLOBAL_VARIABLE",
-        "variable_type": "number"
+        "variable_type": {
+			"name": "number"
+		}
     },
     {
         "assignment": {
@@ -87,7 +105,9 @@
         },
         "name": "v10",
         "type": "GLOBAL_VARIABLE",
-        "variable_type": "number"
+        "variable_type": {
+			"name": "number"
+		}
     },
     {
         "assignment": {
@@ -96,7 +116,9 @@
         },
         "name": "v11",
         "type": "GLOBAL_VARIABLE",
-        "variable_type": "number"
+        "variable_type": {
+			"name": "number"
+		}
     },
     {
         "assignment": {
@@ -105,7 +127,9 @@
         },
         "name": "v12",
         "type": "GLOBAL_VARIABLE",
-        "variable_type": "number"
+        "variable_type": {
+			"name": "number"
+		}
     },
     {
         "assignment": {
@@ -114,7 +138,9 @@
         },
         "name": "v13",
         "type": "GLOBAL_VARIABLE",
-        "variable_type": "number"
+        "variable_type": {
+			"name": "number"
+		}
     },
     {
         "assignment": {
@@ -123,7 +149,9 @@
         },
         "name": "v14",
         "type": "GLOBAL_VARIABLE",
-        "variable_type": "number"
+        "variable_type": {
+			"name": "number"
+		}
     },
     {
         "assignment": {
@@ -132,7 +160,9 @@
         },
         "name": "v15",
         "type": "GLOBAL_VARIABLE",
-        "variable_type": "number"
+        "variable_type": {
+			"name": "number"
+		}
     },
     {
         "assignment": {
@@ -141,7 +171,9 @@
         },
         "name": "v16",
         "type": "GLOBAL_VARIABLE",
-        "variable_type": "number"
+        "variable_type": {
+			"name": "number"
+		}
     },
     {
         "assignment": {
@@ -150,7 +182,9 @@
         },
         "name": "v17",
         "type": "GLOBAL_VARIABLE",
-        "variable_type": "number"
+        "variable_type": {
+			"name": "number"
+		}
     },
     {
         "assignment": {
@@ -159,7 +193,9 @@
         },
         "name": "v18",
         "type": "GLOBAL_VARIABLE",
-        "variable_type": "number"
+        "variable_type": {
+			"name": "number"
+		}
     },
     {
         "assignment": {
@@ -168,7 +204,9 @@
         },
         "name": "v19",
         "type": "GLOBAL_VARIABLE",
-        "variable_type": "number"
+        "variable_type": {
+			"name": "number"
+		}
     },
     {
         "assignment": {
@@ -177,7 +215,9 @@
         },
         "name": "v20",
         "type": "GLOBAL_VARIABLE",
-        "variable_type": "number"
+        "variable_type": {
+			"name": "number"
+		}
     },
     {
         "assignment": {
@@ -186,7 +226,9 @@
         },
         "name": "v21",
         "type": "GLOBAL_VARIABLE",
-        "variable_type": "number"
+        "variable_type": {
+			"name": "number"
+		}
     },
     {
         "assignment": {
@@ -195,7 +237,9 @@
         },
         "name": "v22",
         "type": "GLOBAL_VARIABLE",
-        "variable_type": "number"
+        "variable_type": {
+			"name": "number"
+		}
     },
     {
         "assignment": {
@@ -204,7 +248,9 @@
         },
         "name": "v23",
         "type": "GLOBAL_VARIABLE",
-        "variable_type": "number"
+        "variable_type": {
+			"name": "number"
+		}
     },
     {
         "assignment": {
@@ -213,7 +259,9 @@
         },
         "name": "v24",
         "type": "GLOBAL_VARIABLE",
-        "variable_type": "number"
+        "variable_type": {
+			"name": "number"
+		}
     },
     {
         "assignment": {
@@ -222,7 +270,9 @@
         },
         "name": "v25",
         "type": "GLOBAL_VARIABLE",
-        "variable_type": "number"
+        "variable_type": {
+			"name": "number"
+		}
     },
     {
         "assignment": {
@@ -231,7 +281,9 @@
         },
         "name": "v26",
         "type": "GLOBAL_VARIABLE",
-        "variable_type": "number"
+        "variable_type": {
+			"name": "number"
+		}
     },
     {
         "assignment": {
@@ -240,7 +292,9 @@
         },
         "name": "v27",
         "type": "GLOBAL_VARIABLE",
-        "variable_type": "number"
+        "variable_type": {
+			"name": "number"
+		}
     },
     {
         "assignment": {
@@ -249,7 +303,9 @@
         },
         "name": "v28",
         "type": "GLOBAL_VARIABLE",
-        "variable_type": "number"
+        "variable_type": {
+			"name": "number"
+		}
     },
     {
         "assignment": {
@@ -258,7 +314,9 @@
         },
         "name": "v29",
         "type": "GLOBAL_VARIABLE",
-        "variable_type": "number"
+        "variable_type": {
+			"name": "number"
+		}
     },
     {
         "assignment": {
@@ -267,7 +325,9 @@
         },
         "name": "v30",
         "type": "GLOBAL_VARIABLE",
-        "variable_type": "number"
+        "variable_type": {
+			"name": "number"
+		}
     },
     {
         "assignment": {
@@ -276,6 +336,8 @@
         },
         "name": "v31",
         "type": "GLOBAL_VARIABLE",
-        "variable_type": "number"
+        "variable_type": {
+			"name": "number"
+		}
     }
 ]

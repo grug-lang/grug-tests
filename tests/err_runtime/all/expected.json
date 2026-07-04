@@ -34,7 +34,9 @@
                 },
                 "name": "foo",
                 "type": "VARIABLE_STATEMENT",
-                "variable_type": "number"
+                "variable_type": {
+					"name": "number"
+				}
             }
         ],
         "type": "GLOBAL_ON_FN"

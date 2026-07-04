@@ -6,7 +6,9 @@
         },
         "name": "foo",
         "type": "GLOBAL_VARIABLE",
-        "variable_type": "Opponent"
+        "variable_type": {
+			"name": "Opponent"
+		}
     },
     {
         "assignment": {
@@ -15,7 +17,9 @@
         },
         "name": "bar",
         "type": "GLOBAL_VARIABLE",
-        "variable_type": "Opponent"
+        "variable_type": {
+			"name": "Opponent"
+		}
     },
     {
         "type": "GLOBAL_EMPTY_LINE"

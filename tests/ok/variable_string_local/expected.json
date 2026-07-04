@@ -9,7 +9,9 @@
                 },
                 "name": "message",
                 "type": "VARIABLE_STATEMENT",
-                "variable_type": "string"
+                "variable_type": {
+					"name": "string"
+				}
             },
             {
                 "type": "EMPTY_LINE_STATEMENT"

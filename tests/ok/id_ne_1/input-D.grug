@@ -1,3 +1,0 @@
-export a() {
-    initialize_bool(retrieve() != me)
-}

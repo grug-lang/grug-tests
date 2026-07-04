@@ -1,3 +1,3 @@
   in a (err/me_plus_me/input-D.grug:2:14)
-Error: '+' operator expects number
+Error: '+' operator expects number but got D
 2 $ set_d(me + me)

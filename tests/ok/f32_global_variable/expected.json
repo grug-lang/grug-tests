@@ -6,7 +6,9 @@
         },
         "name": "x",
         "type": "GLOBAL_VARIABLE",
-        "variable_type": "number"
+        "variable_type": {
+			"name": "number"
+		}
     },
     {
         "type": "GLOBAL_EMPTY_LINE"

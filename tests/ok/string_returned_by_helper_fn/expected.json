@@ -20,7 +20,9 @@
     },
     {
         "name": "_foo",
-        "return_type": "string",
+        "return_type": {
+			"name": "string"
+		},
         "statements": [
             {
                 "expr": {

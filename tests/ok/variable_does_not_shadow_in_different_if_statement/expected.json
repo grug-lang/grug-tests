@@ -14,7 +14,9 @@
                         },
                         "name": "a",
                         "type": "VARIABLE_STATEMENT",
-                        "variable_type": "number"
+                        "variable_type": {
+							"name": "number"
+						}
                     },
                     {
                         "arguments": [
@@ -44,7 +46,9 @@
                         },
                         "name": "a",
                         "type": "VARIABLE_STATEMENT",
-                        "variable_type": "number"
+                        "variable_type": {
+							"name": "number"
+						}
                     },
                     {
                         "arguments": [

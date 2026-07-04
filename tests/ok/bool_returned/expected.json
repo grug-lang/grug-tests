@@ -9,7 +9,9 @@
                 },
                 "name": "getting_down",
                 "type": "VARIABLE_STATEMENT",
-                "variable_type": "bool"
+                "variable_type": {
+					"name": "bool"
+				}
             },
             {
                 "arguments": [

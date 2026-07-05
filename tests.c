@@ -1,6 +1,7 @@
 // These should be removed before the final merge
-// TODO: generic with incorrect number of generics
-// TODO: class not mentioned in mod_api but has generics
+// (done) TODO: generic with too many generics
+// (done) TODO: generic with too few generics
+// (done) TODO: class not mentioned in mod_api but has generics
 //
 // TODO: Existential as one of the direct inputs to an operator e.g (-unbox(y))
 // 		- Both as a success and error case
@@ -4352,6 +4353,9 @@ static void add_error_tests(void) {
 	ADD_TEST_ERROR(global_cant_call_helper_fn, "A");
 	ADD_TEST_ERROR(global_cant_call_on_fn, "D");
 	ADD_TEST_ERROR(global_cant_use_later_global, "A");
+	ADD_TEST_ERROR(generics_too_few_types, "A");
+	ADD_TEST_ERROR(generics_too_many_types, "A");
+	ADD_TEST_ERROR(generics_type_cant_have_generics, "A");
 	ADD_TEST_ERROR(global_id_cant_be_reassigned, "D");
 	ADD_TEST_ERROR(global_variable_after_on_fns, "D");
 	ADD_TEST_ERROR(global_variable_already_uses_local_variable_name, "D");

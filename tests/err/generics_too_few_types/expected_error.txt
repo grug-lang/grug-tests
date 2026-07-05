@@ -1,0 +1,3 @@
+  in member scope (err/generics_too_few_types/input-A.grug:1:4)
+Error: type Vec has 1 generics, but was given 0
+1 $ x: Vec = vec()

@@ -1,0 +1,4 @@
+export a() {
+    x: Box[string] = box("Hello")
+    y: number = default() + x.get()
+}

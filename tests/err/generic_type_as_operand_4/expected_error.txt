@@ -1,0 +1,3 @@
+  in a (err/generic_type_as_operand_4/input-D.grug:4:25)
+Error: cannot add strings with '+'
+4 $ z: number = x.get() + y.get()

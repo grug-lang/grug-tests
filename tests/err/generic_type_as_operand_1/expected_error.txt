@@ -1,0 +1,3 @@
+  in a (err/generic_type_as_operand_1/input-D.grug:3:17)
+Error: Found '-' before bool, but it can only be put before a number
+3 $ y: number = -x.get()

@@ -254,6 +254,31 @@
 					]
 				}
 			}
+		},
+		"Box": {
+			"description": "A heap allocated version of a type. Allows sharing of primitive types",
+			"used_generics": [
+				"$T"
+			],
+			"methods": {
+				"get": {
+					"description": "Gets the inner item",
+					"return_type": {
+						"name": "$T"
+					}
+				},
+				"set": {
+					"description": "Sets the value inside the box",
+					"parameters": [
+						{
+							"name": "new_item",
+							"type": {
+								"name": "$T"
+							}
+						}
+					]
+				}
+			}
 		}
 	},
 	"host_functions": {
@@ -1629,6 +1654,28 @@
 			"parameters": [ ],
 			"return_type": {
 				"name": "Vec",
+				"generics": [
+					{
+						"name": "$T"
+					}
+				]
+			}
+		},
+		"box": {
+			"description": "Creates a boxed item",
+			"used_generics": [
+				"$T"
+			],
+			"parameters": [
+				{
+					"name": "item",
+					"type": {
+						"name": "$T"
+					}
+				}
+			],
+			"return_type": {
+				"name": "Box",
 				"generics": [
 					{
 						"name": "$T"

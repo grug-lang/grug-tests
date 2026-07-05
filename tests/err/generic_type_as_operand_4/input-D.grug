@@ -1,0 +1,5 @@
+export a() {
+    x: Box[string] = box("string")
+    y: Box[string] = box("Hello")
+    z: number = x.get() + y.get()
+}

@@ -1,0 +1,3 @@
+  in a (err/generic_type_as_operand_5/input-D.grug:3:27)
+Error: cannot add strings with '+'
+3 $ y: number = default() + x.get()

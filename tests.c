@@ -14,7 +14,7 @@
 // 		- (done) `and` error
 // 		- `+` successful
 // 		- (done) `+` error
-// 		- `+` with string where type cannot be determined from first expression alone
+// 		- (done) `+` with string where type cannot be determined from first expression alone
 // 		alone
 // 			- `x: Box[string] = box("hello")
 // 			- `y: number = default() + x.get()
@@ -1195,6 +1195,7 @@ game_fn reg_game_fn_box_set(struct grug_type* types) {
 
 static union grug_value game_fn_default_string(struct grug_state* grug_state, const union grug_value args[]) {
 	(void)grug_state;
+	(void)args;
 	ASSERT_16_BYTE_STACK_ALIGNED();
 	game_fn_default_string_call_count++;
 
@@ -1205,6 +1206,7 @@ game_fn reg_game_fn_default(struct grug_type* types) {
 	// Right now this only works for vec and string
 	switch (types[0].type) {
 		case GRUG_TYPE_ENUM_STRING:
+			return game_fn_default_string;
 		break;
 		case GRUG_TYPE_ENUM_ID:
 			if (strcmp(types[0].data.id.name, "Vec") == 0) {
@@ -1212,10 +1214,9 @@ game_fn reg_game_fn_default(struct grug_type* types) {
 			} else {
 				return NULL;
 			}
-			return 
 		break;
 		default:
-		return NULL
+		return NULL;
 	}
 }
 
@@ -4501,6 +4502,7 @@ static void add_error_tests(void) {
 	ADD_TEST_ERROR(generic_type_as_operand_2, "D");
 	ADD_TEST_ERROR(generic_type_as_operand_3, "D");
 	ADD_TEST_ERROR(generic_type_as_operand_4, "D");
+	ADD_TEST_ERROR(generic_type_as_operand_5, "D");
 	ADD_TEST_ERROR(global_id_cant_be_reassigned, "D");
 	ADD_TEST_ERROR(global_variable_after_on_fns, "D");
 	ADD_TEST_ERROR(global_variable_already_uses_local_variable_name, "D");

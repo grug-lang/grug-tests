@@ -1,0 +1,5 @@
+export a() {
+    x: Box[number] = box(25)
+    y: Box[number] = box(30)
+    z: bool = x.get() and y.get()
+}

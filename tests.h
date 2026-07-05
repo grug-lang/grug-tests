@@ -79,6 +79,8 @@ static inline union grug_value grug_number(GRUG_TYPE_NUMBER v) { union grug_valu
 static inline union grug_value grug_bool(GRUG_TYPE_BOOL v) { union grug_value r; r._bool = v; return r; }
 static inline union grug_value grug_string(GRUG_TYPE_STRING v) { union grug_value r; r._string = v; return r; }
 static inline union grug_value grug_id(GRUG_TYPE_ID v) { union grug_value r; r._id = v; return r; }
+// TODO: replace all uses of (union grug_value) {0} with a call to this // function
+static inline union grug_value grug_void() { union grug_value r = {0}; return r; }
 
 enum grug_runtime_error_type {
 	GRUG_ON_FN_STACK_OVERFLOW,
@@ -333,9 +335,11 @@ game_fn reg_game_fn_vec_insert                      (struct grug_type* types);
 
 /* this is _not_ a generic version of box_number since that doesn't actually
  * box anything */
-/* game_fn reg_game_fn_box                             (struct grug_type* types); */
-/* game_fn reg_game_fn_box_set                         (struct grug_type* types); */
-/* game_fn reg_game_fn_box_get                         (struct grug_type* types); */
+/* We don't need to declare the specific version of these functions because
+ * they're handled by these functions*/
+game_fn reg_game_fn_box                             (struct grug_type* types);
+game_fn reg_game_fn_box_set                         (struct grug_type* types);
+game_fn reg_game_fn_box_get                         (struct grug_type* types);
 
 // Vec struct for grug
 struct Vec {

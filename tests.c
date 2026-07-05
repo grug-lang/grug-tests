@@ -5,7 +5,19 @@
 //
 // TODO: Existential as one of the direct inputs to an operator e.g (-unbox(y))
 // 		- Both as a success and error case
-// 		- for `-`, `not`, and `and` at least
+// 		- for unary `-`, `not`, `and`, and `+` at least
+// 		- unary `-` successful
+// 		- (done) unary `-` error
+// 		- `not` successful
+// 		- (done) `not` error
+// 		- `and` successful
+// 		- (done) `and` error
+// 		- `+` successful
+// 		- (done) `+` error
+// 		- `+` with string where type cannot be determined from first expression alone
+// 		alone
+// 			- `x: Box[string] = box("hello")
+// 			- `y: number = default() + x.get()
 //
 // TODO: Failed generics instantiation (both methods and host functions)
 // TODO: Make sure the error message for this case works as intended
@@ -273,10 +285,9 @@ static size_t game_fn_vec_number_push_call_count;
 static size_t game_fn_vec_number_pop_call_count;
 static size_t game_fn_vec_number_insert_call_count;
 
-static size_t game_fn_vec_new_call_count;
-static size_t game_fn_vec_push_call_count;
-static size_t game_fn_vec_pop_call_count;
-static size_t game_fn_vec_insert_call_count;
+static size_t game_fn_box_call_count;
+static size_t game_fn_box_get_call_count;
+static size_t game_fn_box_set_call_count;
 
 static bool had_runtime_error = false;
 static size_t error_handler_call_count = 0;
@@ -1131,6 +1142,55 @@ game_fn reg_game_fn_vec_insert(struct grug_type* types) {
 	return game_fn_vec_number_insert;
 }
 
+static union grug_value game_fn_box(struct grug_state* grug_state, const union grug_value args[]) {
+	(void)grug_state;
+	ASSERT_16_BYTE_STACK_ALIGNED();
+	game_fn_box_call_count++;
+	union grug_value* box = malloc(sizeof(union grug_value));
+	assert(box);
+
+	*box = args[0];
+	
+	return grug_id((GRUG_TYPE_ID) box);
+}
+
+static union grug_value game_fn_box_get(struct grug_state* grug_state, const union grug_value args[]) {
+	(void)grug_state;
+	ASSERT_16_BYTE_STACK_ALIGNED();
+	game_fn_box_get_call_count++;
+
+	union grug_value* box = (union grug_value*)args[0]._id;
+	assert(box);
+	
+	return *box;
+}
+
+static union grug_value game_fn_box_set(struct grug_state* grug_state, const union grug_value args[]) {
+	(void)grug_state;
+	ASSERT_16_BYTE_STACK_ALIGNED();
+	game_fn_box_set_call_count++;
+
+	union grug_value* box = (union grug_value*)args[0]._id;
+	assert(box);
+	
+	*box = args[1];
+
+	return grug_void();
+}
+
+game_fn reg_game_fn_box(struct grug_type* types) {
+	(void)(types);
+	return game_fn_box;
+}
+game_fn reg_game_fn_box_get(struct grug_type* types) {
+	(void)(types);
+	return game_fn_box_get;
+}
+game_fn reg_game_fn_box_set(struct grug_type* types) {
+	(void)(types);
+	return game_fn_box_set;
+}
+
 static void check(int status, const char *fn_name, const char *msg) {
 	if (status < 0) {
 		perror(fn_name);
@@ -1732,58 +1792,58 @@ static void diff_roundtrip(
 }
 
 static void reset(void) {
-	had_runtime_error = false;
-	error_handler_call_count = 0;
-	runtime_error_type = 0;
-
-	game_fn_nothing_call_count = 0;
-	game_fn_magic_call_count = 0;
-	game_fn_initialize_call_count = 0;
-	game_fn_initialize_bool_call_count = 0;
-	game_fn_identity_call_count = 0;
-	game_fn_max_call_count = 0;
-	game_fn_say_call_count = 0;
-	game_fn_sin_call_count = 0;
-	game_fn_cos_call_count = 0;
-	game_fn_mega_call_count = 0;
-	game_fn_get_false_call_count = 0;
-	game_fn_set_is_happy_call_count = 0;
-	game_fn_mega_f32_call_count = 0;
-	game_fn_mega_i32_call_count = 0;
-	game_fn_draw_call_count = 0;
-	game_fn_utils_call_count = 0;
-	game_fn_assert_state_is_not_null_call_count = 0;
-	game_fn_Utils_assert_state_is_not_null_call_count = 0;
-	game_fn_blocked_alrm_call_count = 0;
-	game_fn_spawn_call_count = 0;
-	game_fn_spawn_d_call_count = 0;
-	game_fn_has_resource_call_count = 0;
-	game_fn_has_entity_call_count = 0;
-	game_fn_has_string_call_count = 0;
-	game_fn_get_opponent_call_count = 0;
-	game_fn_get_os_call_count = 0;
-	game_fn_set_d_call_count = 0;
-	game_fn_set_opponent_call_count = 0;
-	game_fn_motherload_call_count = 0;
-	game_fn_motherload_subless_call_count = 0;
-	game_fn_offset_32_bit_f32_call_count = 0;
-	game_fn_offset_32_bit_i32_call_count = 0;
-	game_fn_offset_32_bit_string_call_count = 0;
-	game_fn_talk_call_count = 0;
-	game_fn_get_position_call_count = 0;
-	game_fn_set_position_call_count = 0;
-	game_fn_cause_game_fn_error_call_count = 0;
+	had_runtime_error                            = false;
+	error_handler_call_count                     = 0;
+	runtime_error_type                           = 0;
+	game_fn_nothing_call_count                   = 0;
+	game_fn_magic_call_count                     = 0;
+	game_fn_initialize_call_count                = 0;
+	game_fn_initialize_bool_call_count           = 0;
+	game_fn_identity_call_count                  = 0;
+	game_fn_max_call_count                       = 0;
+	game_fn_say_call_count                       = 0;
+	game_fn_sin_call_count                       = 0;
+	game_fn_cos_call_count                       = 0;
+	game_fn_mega_call_count                      = 0;
+	game_fn_get_false_call_count                 = 0;
+	game_fn_set_is_happy_call_count              = 0;
+	game_fn_mega_f32_call_count                  = 0;
+	game_fn_mega_i32_call_count                  = 0;
+	game_fn_draw_call_count                      = 0;
+	game_fn_assert_state_is_not_null_call_count  = 0;
+	game_fn_blocked_alrm_call_count              = 0;
+	game_fn_spawn_call_count                     = 0;
+	game_fn_spawn_d_call_count                   = 0;
+	game_fn_has_resource_call_count              = 0;
+	game_fn_has_entity_call_count                = 0;
+	game_fn_has_string_call_count                = 0;
+	game_fn_get_opponent_call_count              = 0;
+	game_fn_get_os_call_count                    = 0;
+	game_fn_set_d_call_count                     = 0;
+	game_fn_set_opponent_call_count              = 0;
+	game_fn_motherload_call_count                = 0;
+	game_fn_motherload_subless_call_count        = 0;
+	game_fn_offset_32_bit_f32_call_count         = 0;
+	game_fn_offset_32_bit_i32_call_count         = 0;
+	game_fn_offset_32_bit_string_call_count      = 0;
+	game_fn_talk_call_count                      = 0;
+	game_fn_get_position_call_count              = 0;
+	game_fn_set_position_call_count              = 0;
+	game_fn_cause_game_fn_error_call_count       = 0;
 	game_fn_Utils_cause_game_fn_error_call_count = 0;
-	game_fn_call_on_b_fn_call_count = 0;
-	game_fn_Utils_call_on_b_fn_call_count = 0;
-	game_fn_store_call_count = 0;
-	game_fn_print_csv_call_count = 0;
-	game_fn_retrieve_call_count = 0;
-	game_fn_box_number_call_count = 0;
-	game_fn_vec_number_new_call_count = 0;
-	game_fn_vec_number_push_call_count = 0;
-	game_fn_vec_number_pop_call_count = 0;
-	game_fn_vec_number_insert_call_count = 0;
+	game_fn_call_on_b_fn_call_count              = 0;
+	game_fn_Utils_call_on_b_fn_call_count        = 0;
+	game_fn_store_call_count                     = 0;
+	game_fn_print_csv_call_count                 = 0;
+	game_fn_retrieve_call_count                  = 0;
+	game_fn_box_number_call_count                = 0;
+	game_fn_vec_number_new_call_count            = 0;
+	game_fn_vec_number_push_call_count           = 0;
+	game_fn_vec_number_pop_call_count            = 0;
+	game_fn_vec_number_insert_call_count         = 0;
+	game_fn_box_call_count                       = 0;
+	game_fn_box_get_call_count                   = 0;
+	game_fn_box_set_call_count                   = 0;
 }
 
 static void remove_dir_recursive(const char* path) {
@@ -4356,6 +4416,10 @@ static void add_error_tests(void) {
 	ADD_TEST_ERROR(generics_too_few_types, "A");
 	ADD_TEST_ERROR(generics_too_many_types, "A");
 	ADD_TEST_ERROR(generics_type_cant_have_generics, "A");
+	ADD_TEST_ERROR(generic_type_as_operand_1, "D");
+	ADD_TEST_ERROR(generic_type_as_operand_2, "D");
+	ADD_TEST_ERROR(generic_type_as_operand_3, "D");
+	ADD_TEST_ERROR(generic_type_as_operand_4, "D");
 	ADD_TEST_ERROR(global_id_cant_be_reassigned, "D");
 	ADD_TEST_ERROR(global_variable_after_on_fns, "D");
 	ADD_TEST_ERROR(global_variable_already_uses_local_variable_name, "D");

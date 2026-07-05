@@ -1,0 +1,4 @@
+export a() {
+    x: Box[string] = box("Hello world")
+    y: bool = not x.get()
+}

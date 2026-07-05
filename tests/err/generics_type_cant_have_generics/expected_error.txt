@@ -1,0 +1,3 @@
+  in member scope (err/generics_type_cant_have_generics/input-A.grug:1:4)
+Error: type Bleh has 0 generics, but was given 2
+1 $ x: Bleh[number, string] = vec()

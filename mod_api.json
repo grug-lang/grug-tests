@@ -1682,6 +1682,15 @@
 					}
 				]
 			}
+		},
+		"default": {
+			"description": "Creates a default new item for the type. Only works for Vec and string",
+			"used_generics": [
+				"$T"
+			],
+			"return_type": {
+				"name": "$T"
+			}
 		}
 	}
 }

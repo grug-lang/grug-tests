@@ -1220,6 +1220,33 @@ game_fn reg_game_fn_default(struct grug_type* types) {
 	}
 }
 
+// This function is not intended to actually be called
+static union grug_value game_fn_dict(struct grug_state* grug_state, const union grug_value args[]) {
+	(void)(grug_state);
+	(void)(args);
+	fprintf(stderr, "host function `dict` called");
+	exit(EXIT_FAILURE);
+}
+
+// Not intended to actually run, only used for checking error messages.
+// Should probably be replaced with a more dummy function instead
+game_fn reg_game_fn_dict(struct grug_type* types) {
+	(void)(types);
+	return game_fn_dict;
+}
+
+// Not intended to actually run, only used for checking error messages.
+// Should probably be replaced with a more dummy function instead
+game_fn reg_game_fn_dict_from_vec(struct grug_type* types) {
+	(void)(types);
+	return NULL;
+}
+
+game_fn reg_game_fn_dict_put(struct grug_type* types) {
+	(void)(types);
+	return NULL;
+}
+
 static void check(int status, const char *fn_name, const char *msg) {
 	if (status < 0) {
 		perror(fn_name);
@@ -4500,6 +4527,7 @@ static void add_error_tests(void) {
 	ADD_TEST_ERROR(generic_type_as_operand_3, "D");
 	ADD_TEST_ERROR(generic_type_as_operand_4, "D");
 	ADD_TEST_ERROR(generic_type_as_operand_5, "D");
+	ADD_TEST_ERROR(generics_complex_error_message, "D");
 	ADD_TEST_ERROR(generics_failed_instantiation, "A");
 	ADD_TEST_ERROR(generics_too_few_types, "A");
 	ADD_TEST_ERROR(generics_too_many_types, "A");

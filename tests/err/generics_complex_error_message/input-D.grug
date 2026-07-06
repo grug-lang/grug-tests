@@ -1,0 +1,7 @@
+export a() {
+    y: Vec[Pair[Vec[number], number]] = vec()
+
+    z: Dict[number, Dict[number, number]] = dict()
+
+    z.put(25, dict_from_vec(y))
+}

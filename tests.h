@@ -343,6 +343,10 @@ game_fn reg_game_fn_box_get                         (struct grug_type* types);
 
 game_fn reg_game_fn_default                         (struct grug_type* types);
 
+game_fn reg_game_fn_dict                            (struct grug_type* types);
+game_fn reg_game_fn_dict_from_vec                   (struct grug_type* types);
+game_fn reg_game_fn_dict_put                        (struct grug_type* types);
+
 // Vec struct for grug
 struct Vec {
 	union grug_value* items;

@@ -1,0 +1,3 @@
+  in a (err/generics_function_argument_type_partial_mismatch/input-D.grug:3:45)
+Error: Function call 'dict_from_vec' expected the type Vec[Pair] for argument 'list', but got Vec[number]
+3 $ y: Dict[number, string] = dict_from_vec(x)

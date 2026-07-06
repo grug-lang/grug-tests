@@ -19,7 +19,7 @@
 // 			- `x: Box[string] = box("hello")
 // 			- `y: number = default() + x.get()
 //
-// TODO: Failed generics instantiation (both methods and host functions)
+// TODO: (done) Failed generics instantiation (both methods and host functions)
 // TODO: Make sure the error message for this case works as intended
 //  	y: List[Pair[List[number], number]] = list()
 //
@@ -4495,14 +4495,15 @@ static void add_error_tests(void) {
 	ADD_TEST_ERROR(global_cant_call_helper_fn, "A");
 	ADD_TEST_ERROR(global_cant_call_on_fn, "D");
 	ADD_TEST_ERROR(global_cant_use_later_global, "A");
-	ADD_TEST_ERROR(generics_too_few_types, "A");
-	ADD_TEST_ERROR(generics_too_many_types, "A");
-	ADD_TEST_ERROR(generics_type_cant_have_generics, "A");
 	ADD_TEST_ERROR(generic_type_as_operand_1, "D");
 	ADD_TEST_ERROR(generic_type_as_operand_2, "D");
 	ADD_TEST_ERROR(generic_type_as_operand_3, "D");
 	ADD_TEST_ERROR(generic_type_as_operand_4, "D");
 	ADD_TEST_ERROR(generic_type_as_operand_5, "D");
+	ADD_TEST_ERROR(generics_failed_instantiation, "A");
+	ADD_TEST_ERROR(generics_too_few_types, "A");
+	ADD_TEST_ERROR(generics_too_many_types, "A");
+	ADD_TEST_ERROR(generics_type_cant_have_generics, "A");
 	ADD_TEST_ERROR(global_id_cant_be_reassigned, "D");
 	ADD_TEST_ERROR(global_variable_after_on_fns, "D");
 	ADD_TEST_ERROR(global_variable_already_uses_local_variable_name, "D");

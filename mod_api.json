@@ -255,6 +255,13 @@
 				}
 			}
 		},
+		"Pair": {
+			"description": "An id that stores two different types",
+			"used_generics": [
+				"$K",
+				"$V"
+			]
+		},
 		"Box": {
 			"description": "A heap allocated version of a type. Allows sharing of primitive types",
 			"used_generics": [
@@ -274,6 +281,32 @@
 							"name": "new_item",
 							"type": {
 								"name": "$T"
+							}
+						}
+					]
+				}
+			}
+		},
+		"Dict": {
+			"description": "just a type with two generic arguments",
+			"used_generics": [
+				"$K",
+				"$V"
+			],
+			"methods": {
+				"put": {
+					"description": "just a method on Dict",
+					"parameters": [
+						{
+							"name": "key",
+							"type": {
+								"name": "$K"
+							}
+						},
+						{
+							"name": "value",
+							"type": {
+								"name": "$V"
 							}
 						}
 					]
@@ -1691,6 +1724,63 @@
 			"return_type": {
 				"name": "$T"
 			}
+		},
+		"dict": {
+			"description": "Creates a new empty dict",
+			"used_generics": [
+				"$K",
+				"$V"
+			],
+			"return_type": {
+				"name": "Dict",
+				"generics": [
+					{
+						"name": "$K"
+					},
+					{
+						"name": "$V"
+					}
+				]
+			}
+		},
+		"dict_from_vec": {
+			"description": "Creates a dict from a list of pairs of items",
+			"used_generics": [
+				"$K",
+				"$V"
+			],
+			"return_type": {
+				"name": "Dict",
+				"generics": [
+					{
+						"name": "$K"
+					},
+					{
+						"name": "$V"
+					}
+				]
+			},
+			"parameters": [
+				{
+					"name": "list",
+					"type": {
+						"name": "Vec",
+						"generics": [
+							{
+								"name": "Pair",
+								"generics": [
+									{
+										"name": "$K"
+									},
+									{
+										"name": "$V"
+									}
+								]
+							}
+						]
+					}
+				}
+			]
 		}
 	}
 }

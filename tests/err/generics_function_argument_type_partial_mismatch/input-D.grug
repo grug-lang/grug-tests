@@ -1,0 +1,4 @@
+export a() {
+    x: Vec[number] = vec()
+    y: Dict[number, string] = dict_from_vec(x)
+}

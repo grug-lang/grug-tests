@@ -1,3 +1,3 @@
-  in member_scope (err/generics_entity_string/input-A.grug:1:22)
-Error: cannot use entity strings in generics
+  in member scope (err/generics_entity_string/input-A.grug:1:4)
+Error: The global variable 'x' can't contain 'entity' in its type
 1 $ x: Box[entity] = box(e"hello-D.grug")

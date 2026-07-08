@@ -1,0 +1,1 @@
+x: Box[entity] = box(e"hello-D.grug")

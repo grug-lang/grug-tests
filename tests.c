@@ -6,38 +6,43 @@
 // TODO: Existential as one of the direct inputs to an operator e.g (-unbox(y))
 // 		- Both as a success and error case
 // 		- for unary `-`, `not`, `and`, and `+` at least
-// 		- unary `-` successful
-// 		- (done) unary `-` error
-// 		- `not` successful
-// 		- (done) `not` error
-// 		- `and` successful
-// 		- (done) `and` error
-// 		- `+` successful
-// 		- (done) `+` error
-// 		- (done) `+` with string where type cannot be determined from first expression alone
-// 		alone
-// 			- `x: Box[string] = box("hello")
-// 			- `y: number = default() + x.get()
+//
+// 	 		- unary `-` successful
+// 	 		- (done) unary `-` error
+// 	 		- `not` successful
+// 	 		- (done) `not` error
+// 	 		- `and` successful
+// 	 		- (done) `and` error
+// 	 		- `+` successful
+// 	 		- (done) `+` error
+// 	 		- (done) `+` with string where type cannot be determined from first expression alone
+// 			alone
+// 				- `x: Box[string] = box("hello")
+// 				- `y: number = default() + x.get()
 //
 // TODO: (done) Failed generics instantiation (both methods and host functions)
-// TODO: Make sure the error message for this case works as intended
+// TODO: (done) Make sure the error message for this case works as intended
 //  	y: List[Pair[List[number], number]] = list()
 //
 //  	z: Dict[number, Dict[number, number]] = dict()
 //
 //  	z.put(25, dict_from_list(y))
-//		this should print `Expected Dict[List, _] but got Dict[number, _]`
+//		this should print `Function call 'put' expected the type Dict[number, _] for argument 'value', but got Dict[Vec, _]`
 //
-// TODO: Function argument does not match parameter (check error message)
+// TODO: (done) Function argument does not match parameter (check error message)
 // 		host foo[$T](Vec[$T]) but called as foo(Box[number])
 //
-// TODO: Function argument partially matches parameter but not fully
+// TODO: (done) Function argument partially matches parameter but not fully
 // 		host foo[$T](Vec[$T], $T) but called as foo(Vec[number], string)
 // 		
-// TODO: resource strings in generics (not allowed for now)
-// TODO: entity strings in generics (not allowed for now)
+// TODO: (done) Unable to infer generics
+// 		`vec()` alone on a single line
+//
+// TODO: (done) resource strings in generics (not allowed for now)
+// TODO: (done) entity strings in generics (not allowed for now)
 //
 // TODO: method calls in globals
+// TODO: method chaining is allowed
 #include "tests.h"
 
 #include "cJSON.h"
@@ -4528,10 +4533,15 @@ static void add_error_tests(void) {
 	ADD_TEST_ERROR(generic_type_as_operand_4, "D");
 	ADD_TEST_ERROR(generic_type_as_operand_5, "D");
 	ADD_TEST_ERROR(generics_complex_error_message, "D");
+	ADD_TEST_ERROR(generics_entity_string, "A");
 	ADD_TEST_ERROR(generics_failed_instantiation, "A");
+	ADD_TEST_ERROR(generics_function_argument_type_full_mismatch, "D");
+	ADD_TEST_ERROR(generics_function_argument_type_partial_mismatch, "D");
+	ADD_TEST_ERROR(generics_resource_string, "A");
 	ADD_TEST_ERROR(generics_too_few_types, "A");
 	ADD_TEST_ERROR(generics_too_many_types, "A");
 	ADD_TEST_ERROR(generics_type_cant_have_generics, "A");
+	ADD_TEST_ERROR(generics_unable_to_infer, "D");
 	ADD_TEST_ERROR(global_id_cant_be_reassigned, "D");
 	ADD_TEST_ERROR(global_variable_after_on_fns, "D");
 	ADD_TEST_ERROR(global_variable_already_uses_local_variable_name, "D");

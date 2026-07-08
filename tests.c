@@ -7,7 +7,7 @@
 // 		- Both as a success and error case
 // 		- for unary `-`, `not`, `and`, and `+` at least
 //
-// 	 		- unary `-` successful
+// 	 		- (done) unary `-` successful
 // 	 		- (done) unary `-` error
 // 	 		- `not` successful
 // 	 		- (done) `not` error
@@ -1149,6 +1149,7 @@ game_fn reg_game_fn_vec_insert(struct grug_type* types) {
 	return game_fn_vec_number_insert;
 }
 
+static union grug_value* box_last_created;
 static union grug_value game_fn_box(struct grug_state* grug_state, const union grug_value args[]) {
 	(void)grug_state;
 	ASSERT_16_BYTE_STACK_ALIGNED();
@@ -1156,22 +1157,26 @@ static union grug_value game_fn_box(struct grug_state* grug_state, const union g
 	union grug_value* box = malloc(sizeof(union grug_value));
 	assert(box);
 
+	box_last_created = box;
 	*box = args[0];
 	
 	return grug_id((GRUG_TYPE_ID) box);
 }
 
+static union grug_value box_last_got;
 static union grug_value game_fn_box_get(struct grug_state* grug_state, const union grug_value args[]) {
 	(void)grug_state;
 	ASSERT_16_BYTE_STACK_ALIGNED();
 	game_fn_box_get_call_count++;
 
 	union grug_value* box = (union grug_value*)args[0]._id;
+	box_last_got = *box;
 	assert(box);
 	
 	return *box;
 }
 
+static union grug_value box_last_set;
 static union grug_value game_fn_box_set(struct grug_state* grug_state, const union grug_value args[]) {
 	(void)grug_state;
 	ASSERT_16_BYTE_STACK_ALIGNED();
@@ -1180,6 +1185,7 @@ static union grug_value game_fn_box_set(struct grug_state* grug_state, const uni
 	union grug_value* box = (union grug_value*)args[0]._id;
 	assert(box);
 	
+	box_last_set = args[1];
 	*box = args[1];
 
 	return grug_void();
@@ -3010,6 +3016,60 @@ static void ok_ge_true_2(struct grug_state* grug_state, struct grug_entity_id* e
 	assert_true(game_fn_initialize_bool_b);
 }
 
+static void ok_generic_type_as_operand_1(struct grug_state* grug_state, struct grug_entity_id* entity) {
+	assert_call_count(box, 0);
+	assert_call_count(box_get, 0);
+
+    call_export_fn_argless(grug_state, entity, "a");
+
+	assert_call_count(box, 2);
+	assert_call_count(box_get, 1);
+
+	assert_number(box_last_created->_number, -25.0);
+	assert_number(box_last_got._number, 25.0);
+}
+
+/* WIP */
+static void ok_generic_type_as_operand_2(struct grug_state* grug_state, struct grug_entity_id* entity) {
+	assert_call_count(box, 0);
+	assert_call_count(box_get, 0);
+
+    call_export_fn_argless(grug_state, entity, "a");
+
+	assert_call_count(box, 2);
+	assert_call_count(box_get, 1);
+
+	assert_false(box_last_created->_bool);
+	assert_true (box_last_got._bool);
+}
+
+static void ok_generic_type_as_operand_3(struct grug_state* grug_state, struct grug_entity_id* entity) {
+	assert_call_count(box, 0);
+	assert_call_count(box_get, 0);
+
+    call_export_fn_argless(grug_state, entity, "a");
+
+	assert_call_count(box, 2);
+	assert_call_count(box_get, 1);
+
+	assert_false(box_last_created->_bool);
+	assert_false(box_last_got._bool);
+}
+
+static void ok_generic_type_as_operand_4(struct grug_state* grug_state, struct grug_entity_id* entity) {
+	assert_call_count(box, 0);
+	assert_call_count(box_get, 0);
+
+    call_export_fn_argless(grug_state, entity, "a");
+
+	assert_call_count(box, 2);
+	assert_call_count(box_get, 1);
+
+	assert_number(box_last_created->_number, 55.0);
+	assert_number(box_last_got._number, 25.0);
+}
+/* WIP */
+
 static void ok_generics_simple(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	assert_call_count(vec_number_new, 0);
 	assert_call_count(vec_number_push, 0);
@@ -4772,6 +4832,7 @@ static void add_ok_tests(void) {
 	ADD_TEST_OK(ge_false, "D");
 	ADD_TEST_OK(ge_true_1, "D");
 	ADD_TEST_OK(ge_true_2, "D");
+	ADD_TEST_OK(generic_type_as_operand_1, "D");
 	ADD_TEST_OK(generics_simple, "J");
 	ADD_TEST_OK(global_2_does_not_have_error_handling, "A");
 	ADD_TEST_OK(global_call_using_me, "D");

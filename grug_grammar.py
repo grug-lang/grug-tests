@@ -120,7 +120,7 @@ class GrugTransformer(Transformer[Tree[Any], Any]):
 
     def type(self, items: List[Any]) -> Dict[str, Any]:
         generics = items[1:]
-        obj = {
+        obj: Dict[str, Any] = {
             "name": str(items[0])
         }
         if len(generics) != 0:

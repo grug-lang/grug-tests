@@ -52,6 +52,12 @@
                     "description": {
                         "type": "string"
                     },
+					"used_generics": {
+						"type": "array",
+						"items": {
+							"type": "string"
+						}
+					},
                     "methods": {
                         "type": "object",
 						"additionalProperties": {
@@ -71,7 +77,7 @@
 									"$ref": "#/definitions/parametersArray"
 								},
 								"return_type": {
-									"type": "string"
+									"$ref": "#/definitions/type"
 								}
 							}
 						}
@@ -91,8 +97,14 @@
                     "description": {
                         "type": "string"
                     },
+					"used_generics": {
+						"type": "array",
+						"items": {
+							"type": "string"
+						}
+					},
                     "return_type": {
-                        "type": "string"
+                        "$ref": "#/definitions/type"
                     },
                     "parameters": {
                         "$ref": "#/definitions/parametersArray"
@@ -116,7 +128,7 @@
                         "type": "string"
                     },
                     "type": {
-                        "type": "string"
+                        "ref": "#/definitions/type"
                     },
                     "resource_extension": {
                         "type": "string"
@@ -125,6 +137,24 @@
                         "type": "string"
                     }
                 }
+            }
+        },
+        "type": {
+            "type": "object",
+			"required": [
+				"name"
+			],
+			"additionalProperties": false,
+			"properties": {
+				"name": {
+					"type": "string"
+				},
+				"generics": {
+					"type": "array",
+					"items": {
+						"$ref": "#/definitions/type"
+					}
+				}
             }
         }
     }

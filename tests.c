@@ -1155,7 +1155,7 @@ static union grug_value game_fn_box(struct grug_state* grug_state, const union g
 	ASSERT_16_BYTE_STACK_ALIGNED();
 	game_fn_box_call_count++;
 	union grug_value* box = malloc(sizeof(union grug_value));
-	assert(box);
+	assert_ptr(box);
 
 	box_last_created = box;
 	*box = args[0];

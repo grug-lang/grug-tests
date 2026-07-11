@@ -5,14 +5,14 @@
             {
                 "name": "i",
                 "type": {
-					"name": "number"
-				}
+                    "name": "number"
+                }
             },
             {
                 "name": "f",
                 "type": {
-					"name": "number"
-				}
+                    "name": "number"
+                }
             }
         ],
         "statements": [

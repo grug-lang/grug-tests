@@ -7,8 +7,8 @@
         "name": "a",
         "type": "GLOBAL_VARIABLE",
         "variable_type": {
-			"name": "number"
-		}
+            "name": "number"
+        }
     },
     {
         "assignment": {
@@ -18,8 +18,8 @@
         "name": "b",
         "type": "GLOBAL_VARIABLE",
         "variable_type": {
-			"name": "number"
-		}
+            "name": "number"
+        }
     },
     {
         "type": "GLOBAL_EMPTY_LINE"

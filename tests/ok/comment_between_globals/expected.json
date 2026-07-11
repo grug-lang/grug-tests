@@ -7,8 +7,8 @@
         "name": "a",
         "type": "GLOBAL_VARIABLE",
         "variable_type": {
-			"name": "number"
-		}
+            "name": "number"
+        }
     },
     {
         "comment": "foo",
@@ -22,7 +22,7 @@
         "name": "b",
         "type": "GLOBAL_VARIABLE",
         "variable_type": {
-			"name": "number"
-		}
+            "name": "number"
+        }
     }
 ]

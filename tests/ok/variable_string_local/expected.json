@@ -10,8 +10,8 @@
                 "name": "message",
                 "type": "VARIABLE_STATEMENT",
                 "variable_type": {
-					"name": "string"
-				}
+                    "name": "string"
+                }
             },
             {
                 "type": "EMPTY_LINE_STATEMENT"

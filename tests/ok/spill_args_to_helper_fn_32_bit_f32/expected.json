@@ -7,8 +7,8 @@
         "name": "g",
         "type": "GLOBAL_VARIABLE",
         "variable_type": {
-			"name": "number"
-		}
+            "name": "number"
+        }
     },
     {
         "type": "GLOBAL_EMPTY_LINE"
@@ -126,140 +126,140 @@
             {
                 "name": "s1",
                 "type": {
-					"name": "string"
-				}
+                    "name": "string"
+                }
             },
             {
                 "name": "s2",
                 "type": {
-					"name": "string"
-				}
+                    "name": "string"
+                }
             },
             {
                 "name": "s3",
                 "type": {
-					"name": "string"
-				}
+                    "name": "string"
+                }
             },
             {
                 "name": "s4",
                 "type": {
-					"name": "string"
-				}
+                    "name": "string"
+                }
             },
             {
                 "name": "s5",
                 "type": {
-					"name": "string"
-				}
+                    "name": "string"
+                }
             },
             {
                 "name": "s6",
                 "type": {
-					"name": "string"
-				}
+                    "name": "string"
+                }
             },
             {
                 "name": "s7",
                 "type": {
-					"name": "string"
-				}
+                    "name": "string"
+                }
             },
             {
                 "name": "s8",
                 "type": {
-					"name": "string"
-				}
+                    "name": "string"
+                }
             },
             {
                 "name": "s9",
                 "type": {
-					"name": "string"
-				}
+                    "name": "string"
+                }
             },
             {
                 "name": "s10",
                 "type": {
-					"name": "string"
-				}
+                    "name": "string"
+                }
             },
             {
                 "name": "s11",
                 "type": {
-					"name": "string"
-				}
+                    "name": "string"
+                }
             },
             {
                 "name": "s12",
                 "type": {
-					"name": "string"
-				}
+                    "name": "string"
+                }
             },
             {
                 "name": "s13",
                 "type": {
-					"name": "string"
-				}
+                    "name": "string"
+                }
             },
             {
                 "name": "s14",
                 "type": {
-					"name": "string"
-				}
+                    "name": "string"
+                }
             },
             {
                 "name": "s15",
                 "type": {
-					"name": "string"
-				}
+                    "name": "string"
+                }
             },
             {
                 "name": "f1",
                 "type": {
-					"name": "number"
-				}
+                    "name": "number"
+                }
             },
             {
                 "name": "f2",
                 "type": {
-					"name": "number"
-				}
+                    "name": "number"
+                }
             },
             {
                 "name": "f3",
                 "type": {
-					"name": "number"
-				}
+                    "name": "number"
+                }
             },
             {
                 "name": "f4",
                 "type": {
-					"name": "number"
-				}
+                    "name": "number"
+                }
             },
             {
                 "name": "f5",
                 "type": {
-					"name": "number"
-				}
+                    "name": "number"
+                }
             },
             {
                 "name": "f6",
                 "type": {
-					"name": "number"
-				}
+                    "name": "number"
+                }
             },
             {
                 "name": "f7",
                 "type": {
-					"name": "number"
-				}
+                    "name": "number"
+                }
             },
             {
                 "name": "f8",
                 "type": {
-					"name": "number"
-				}
+                    "name": "number"
+                }
             }
         ],
         "statements": [

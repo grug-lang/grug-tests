@@ -24,8 +24,8 @@
             {
                 "name": "s",
                 "type": {
-					"name": "string"
-				}
+                    "name": "string"
+                }
             }
         ],
         "statements": [

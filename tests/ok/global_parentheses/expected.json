@@ -26,8 +26,8 @@
         "name": "foo",
         "type": "GLOBAL_VARIABLE",
         "variable_type": {
-			"name": "number"
-		}
+            "name": "number"
+        }
     },
     {
         "type": "GLOBAL_EMPTY_LINE"

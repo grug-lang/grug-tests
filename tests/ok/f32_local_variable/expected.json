@@ -10,8 +10,8 @@
                 "name": "x",
                 "type": "VARIABLE_STATEMENT",
                 "variable_type": {
-					"name": "number"
-				}
+                    "name": "number"
+                }
             },
             {
                 "arguments": [

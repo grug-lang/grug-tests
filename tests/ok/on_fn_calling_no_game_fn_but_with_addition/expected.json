@@ -18,8 +18,8 @@
                 "name": "foo",
                 "type": "VARIABLE_STATEMENT",
                 "variable_type": {
-					"name": "number"
-				}
+                    "name": "number"
+                }
             }
         ],
         "type": "GLOBAL_ON_FN"

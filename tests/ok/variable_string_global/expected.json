@@ -7,8 +7,8 @@
         "name": "message",
         "type": "GLOBAL_VARIABLE",
         "variable_type": {
-			"name": "string"
-		}
+            "name": "string"
+        }
     },
     {
         "type": "GLOBAL_EMPTY_LINE"

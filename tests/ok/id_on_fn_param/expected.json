@@ -5,8 +5,8 @@
             {
                 "name": "id",
                 "type": {
-					"name": "id"
-				}
+                    "name": "id"
+                }
             }
         ],
         "statements": [

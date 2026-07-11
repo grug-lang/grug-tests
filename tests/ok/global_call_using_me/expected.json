@@ -13,8 +13,8 @@
         "name": "pos",
         "type": "GLOBAL_VARIABLE",
         "variable_type": {
-			"name": "Position"
-		}
+            "name": "Position"
+        }
     },
     {
         "type": "GLOBAL_EMPTY_LINE"

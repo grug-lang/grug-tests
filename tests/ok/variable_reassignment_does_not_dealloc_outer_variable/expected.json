@@ -10,8 +10,8 @@
                 "name": "foo",
                 "type": "VARIABLE_STATEMENT",
                 "variable_type": {
-					"name": "number"
-				}
+                    "name": "number"
+                }
             },
             {
                 "type": "EMPTY_LINE_STATEMENT"

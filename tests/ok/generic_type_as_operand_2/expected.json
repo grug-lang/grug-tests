@@ -1,0 +1,59 @@
+[
+    {
+        "type": "GLOBAL_ON_FN",
+        "name": "a",
+        "statements": [
+            {
+                "type": "VARIABLE_STATEMENT",
+                "name": "x",
+                "assignment": {
+                    "type": "CALL_EXPR",
+                    "name": "box",
+                    "arguments": [
+                        {
+                            "type": "TRUE_EXPR"
+                        }
+                    ]
+                },
+                "variable_type": {
+                    "name": "Box",
+                    "generics": [
+                        {
+                            "name": "bool"
+                        }
+                    ]
+                }
+            },
+            {
+                "type": "VARIABLE_STATEMENT",
+                "name": "y",
+                "assignment": {
+                    "type": "CALL_EXPR",
+                    "name": "box",
+                    "arguments": [
+                        {
+                            "type": "UNARY_EXPR",
+                            "operator": "NOT_TOKEN",
+                            "expr": {
+                                "type": "CALL_EXPR",
+                                "name": "get",
+                                "receiver": {
+                                    "type": "IDENTIFIER_EXPR",
+                                    "str": "x"
+                                }
+                            }
+                        }
+                    ]
+                },
+                "variable_type": {
+                    "name": "Box",
+                    "generics": [
+                        {
+                            "name": "bool"
+                        }
+                    ]
+                }
+            }
+        ]
+    }
+]

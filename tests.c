@@ -3029,7 +3029,6 @@ static void ok_generic_type_as_operand_1(struct grug_state* grug_state, struct g
 	assert_number(box_last_got._number, 25.0);
 }
 
-/* WIP */
 static void ok_generic_type_as_operand_2(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	assert_call_count(box, 0);
 	assert_call_count(box_get, 0);
@@ -3065,10 +3064,9 @@ static void ok_generic_type_as_operand_4(struct grug_state* grug_state, struct g
 	assert_call_count(box, 2);
 	assert_call_count(box_get, 1);
 
-	assert_number(box_last_created->_number, 55.0);
+	assert_number(box_last_created->_number, 117.0);
 	assert_number(box_last_got._number, 25.0);
 }
-/* WIP */
 
 static void ok_generics_simple(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	assert_call_count(vec_number_new, 0);
@@ -4833,6 +4831,9 @@ static void add_ok_tests(void) {
 	ADD_TEST_OK(ge_true_1, "D");
 	ADD_TEST_OK(ge_true_2, "D");
 	ADD_TEST_OK(generic_type_as_operand_1, "D");
+	ADD_TEST_OK(generic_type_as_operand_2, "D");
+	ADD_TEST_OK(generic_type_as_operand_3, "D");
+	ADD_TEST_OK(generic_type_as_operand_4, "D");
 	ADD_TEST_OK(generics_simple, "J");
 	ADD_TEST_OK(global_2_does_not_have_error_handling, "A");
 	ADD_TEST_OK(global_call_using_me, "D");

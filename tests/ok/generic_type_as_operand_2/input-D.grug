@@ -1,0 +1,4 @@
+export a() {
+    x: Box[bool] = box(true)
+    y: Box[bool] = box(not x.get())
+}

@@ -21,8 +21,8 @@
     {
         "name": "_foo",
         "return_type": {
-			"name": "number"
-		},
+            "name": "number"
+        },
         "statements": [
             {
                 "expr": {

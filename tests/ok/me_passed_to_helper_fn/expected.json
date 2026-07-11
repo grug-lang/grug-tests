@@ -24,8 +24,8 @@
             {
                 "name": "foo",
                 "type": {
-					"name": "D"
-				}
+                    "name": "D"
+                }
             }
         ],
         "statements": [

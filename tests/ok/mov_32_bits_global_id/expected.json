@@ -7,8 +7,8 @@
         "name": "v1",
         "type": "GLOBAL_VARIABLE",
         "variable_type": {
-			"name": "Opponent"
-		}
+            "name": "Opponent"
+        }
     },
     {
         "assignment": {
@@ -18,8 +18,8 @@
         "name": "v2",
         "type": "GLOBAL_VARIABLE",
         "variable_type": {
-			"name": "Opponent"
-		}
+            "name": "Opponent"
+        }
     },
     {
         "assignment": {
@@ -29,8 +29,8 @@
         "name": "v3",
         "type": "GLOBAL_VARIABLE",
         "variable_type": {
-			"name": "Opponent"
-		}
+            "name": "Opponent"
+        }
     },
     {
         "assignment": {
@@ -40,8 +40,8 @@
         "name": "v4",
         "type": "GLOBAL_VARIABLE",
         "variable_type": {
-			"name": "Opponent"
-		}
+            "name": "Opponent"
+        }
     },
     {
         "assignment": {
@@ -51,8 +51,8 @@
         "name": "v5",
         "type": "GLOBAL_VARIABLE",
         "variable_type": {
-			"name": "Opponent"
-		}
+            "name": "Opponent"
+        }
     },
     {
         "assignment": {
@@ -62,8 +62,8 @@
         "name": "v6",
         "type": "GLOBAL_VARIABLE",
         "variable_type": {
-			"name": "Opponent"
-		}
+            "name": "Opponent"
+        }
     },
     {
         "assignment": {
@@ -73,8 +73,8 @@
         "name": "v7",
         "type": "GLOBAL_VARIABLE",
         "variable_type": {
-			"name": "Opponent"
-		}
+            "name": "Opponent"
+        }
     },
     {
         "assignment": {
@@ -84,8 +84,8 @@
         "name": "v8",
         "type": "GLOBAL_VARIABLE",
         "variable_type": {
-			"name": "Opponent"
-		}
+            "name": "Opponent"
+        }
     },
     {
         "assignment": {
@@ -95,8 +95,8 @@
         "name": "v9",
         "type": "GLOBAL_VARIABLE",
         "variable_type": {
-			"name": "Opponent"
-		}
+            "name": "Opponent"
+        }
     },
     {
         "assignment": {
@@ -106,8 +106,8 @@
         "name": "v10",
         "type": "GLOBAL_VARIABLE",
         "variable_type": {
-			"name": "Opponent"
-		}
+            "name": "Opponent"
+        }
     },
     {
         "assignment": {
@@ -117,8 +117,8 @@
         "name": "v11",
         "type": "GLOBAL_VARIABLE",
         "variable_type": {
-			"name": "Opponent"
-		}
+            "name": "Opponent"
+        }
     },
     {
         "assignment": {
@@ -128,8 +128,8 @@
         "name": "v12",
         "type": "GLOBAL_VARIABLE",
         "variable_type": {
-			"name": "Opponent"
-		}
+            "name": "Opponent"
+        }
     },
     {
         "assignment": {
@@ -139,8 +139,8 @@
         "name": "v13",
         "type": "GLOBAL_VARIABLE",
         "variable_type": {
-			"name": "Opponent"
-		}
+            "name": "Opponent"
+        }
     },
     {
         "assignment": {
@@ -150,8 +150,8 @@
         "name": "v14",
         "type": "GLOBAL_VARIABLE",
         "variable_type": {
-			"name": "Opponent"
-		}
+            "name": "Opponent"
+        }
     },
     {
         "assignment": {
@@ -161,8 +161,8 @@
         "name": "v15",
         "type": "GLOBAL_VARIABLE",
         "variable_type": {
-			"name": "Opponent"
-		}
+            "name": "Opponent"
+        }
     },
     {
         "assignment": {
@@ -172,7 +172,7 @@
         "name": "v16",
         "type": "GLOBAL_VARIABLE",
         "variable_type": {
-			"name": "Opponent"
-		}
+            "name": "Opponent"
+        }
     }
 ]

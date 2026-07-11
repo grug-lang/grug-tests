@@ -7,7 +7,7 @@
         "name": "foo",
         "type": "GLOBAL_VARIABLE",
         "variable_type": {
-			"name": "string"
-		}
+            "name": "string"
+        }
     }
 ]

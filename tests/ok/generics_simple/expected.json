@@ -10,13 +10,13 @@
                 "name": "x",
                 "type": "VARIABLE_STATEMENT",
                 "variable_type": {
-					"name": "Vec",
-					"generics": [
-						{
-							"name": "number"
-						}
-					]
-				}
+                    "generics": [
+                        {
+                            "name": "number"
+                        }
+                    ],
+                    "name": "Vec"
+                }
             },
             {
                 "arguments": [
@@ -119,9 +119,9 @@
         ],
         "type": "GLOBAL_ON_FN"
     },
-	{
-		"type": "GLOBAL_EMPTY_LINE"
-	},
+    {
+        "type": "GLOBAL_EMPTY_LINE"
+    },
     {
         "name": "b",
         "statements": [
@@ -133,19 +133,19 @@
                 "name": "x",
                 "type": "VARIABLE_STATEMENT",
                 "variable_type": {
-					"name": "Vec",
-					"generics": [
-						{
-							"name": "string"
-						}
-					]
-				}
+                    "generics": [
+                        {
+                            "name": "string"
+                        }
+                    ],
+                    "name": "Vec"
+                }
             },
             {
                 "arguments": [
                     {
-                        "type": "STRING_EXPR",
-                        "str": "Hello"
+                        "str": "Hello",
+                        "type": "STRING_EXPR"
                     }
                 ],
                 "name": "push",
@@ -158,8 +158,8 @@
             {
                 "arguments": [
                     {
-                        "type": "STRING_EXPR",
-                        "str": "World"
+                        "str": "World",
+                        "type": "STRING_EXPR"
                     }
                 ],
                 "name": "push",
@@ -172,8 +172,8 @@
             {
                 "arguments": [
                     {
-                        "type": "STRING_EXPR",
-                        "str": "I'm"
+                        "str": "I'm",
+                        "type": "STRING_EXPR"
                     }
                 ],
                 "name": "push",
@@ -186,8 +186,8 @@
             {
                 "arguments": [
                     {
-                        "type": "STRING_EXPR",
-                        "str": "here"
+                        "str": "here",
+                        "type": "STRING_EXPR"
                     }
                 ],
                 "name": "push",
@@ -204,8 +204,8 @@
                         "value": "3"
                     },
                     {
-                        "type": "STRING_EXPR",
-                        "str": "not"
+                        "str": "not",
+                        "type": "STRING_EXPR"
                     }
                 ],
                 "name": "insert",
@@ -242,9 +242,9 @@
         ],
         "type": "GLOBAL_ON_FN"
     },
-	{
-		"type": "GLOBAL_EMPTY_LINE"
-	},
+    {
+        "type": "GLOBAL_EMPTY_LINE"
+    },
     {
         "name": "c",
         "statements": [
@@ -256,13 +256,13 @@
                 "name": "x",
                 "type": "VARIABLE_STATEMENT",
                 "variable_type": {
-					"name": "Vec",
-					"generics": [
-						{
-							"name": "bool"
-						}
-					]
-				}
+                    "generics": [
+                        {
+                            "name": "bool"
+                        }
+                    ],
+                    "name": "Vec"
+                }
             },
             {
                 "arguments": [

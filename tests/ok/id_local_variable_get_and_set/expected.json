@@ -10,8 +10,8 @@
                 "name": "opponent",
                 "type": "VARIABLE_STATEMENT",
                 "variable_type": {
-					"name": "Opponent"
-				}
+                    "name": "Opponent"
+                }
             },
             {
                 "arguments": [

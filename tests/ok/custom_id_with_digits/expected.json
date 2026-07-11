@@ -13,7 +13,7 @@
         "name": "foo",
         "type": "GLOBAL_VARIABLE",
         "variable_type": {
-			"name": "BoxedNumber"
-		}
+            "name": "BoxedNumber"
+        }
     }
 ]

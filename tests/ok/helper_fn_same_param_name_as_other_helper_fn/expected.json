@@ -5,8 +5,8 @@
             {
                 "name": "x",
                 "type": {
-					"name": "number"
-				}
+                    "name": "number"
+                }
             }
         ],
         "statements": [
@@ -42,8 +42,8 @@
             {
                 "name": "x",
                 "type": {
-					"name": "number"
-				}
+                    "name": "number"
+                }
             }
         ],
         "statements": [
@@ -63,8 +63,8 @@
             {
                 "name": "x",
                 "type": {
-					"name": "number"
-				}
+                    "name": "number"
+                }
             }
         ],
         "statements": [

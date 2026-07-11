@@ -92,7 +92,7 @@ class GrugTransformer(Transformer[Tree[Any], Any]):
         return {
             "type": "VARIABLE_STATEMENT",
             "name": str(name),
-            "variable_type": str(typ),
+            "variable_type": typ,
             "assignment": expr,
         }
 
@@ -118,8 +118,14 @@ class GrugTransformer(Transformer[Tree[Any], Any]):
             result["arguments"] = items[1]
         return result
 
-    def type(self, items: List[Any]) -> str:
-        return str(items[0])
+    def type(self, items: List[Any]) -> Dict[str, Any]:
+        generics = items[1:]
+        obj = {
+            "name": str(items[0])
+        }
+        if len(generics) != 0:
+            obj["generics"] = generics
+        return obj
 
     def reassign(self, items: List[Any]) -> Dict[str, Any]:
         name, expr = items
@@ -276,7 +282,7 @@ class GrugTransformer(Transformer[Tree[Any], Any]):
         return items
 
     def param(self, items: List[Any]) -> Dict[str, str]:
-        return {"name": str(items[0]), "type": str(items[1])}
+        return {"name": str(items[0]), "type": items[1]}
 
     def comment(self, items: List[Any]) -> Dict[str, str]:
         content: str = str(items[0]).lstrip("#").strip()

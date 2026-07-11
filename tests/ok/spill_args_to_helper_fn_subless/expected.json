@@ -7,8 +7,8 @@
         "name": "g",
         "type": "GLOBAL_VARIABLE",
         "variable_type": {
-			"name": "number"
-		}
+            "name": "number"
+        }
     },
     {
         "type": "GLOBAL_EMPTY_LINE"
@@ -102,104 +102,104 @@
             {
                 "name": "i1",
                 "type": {
-					"name": "number"
-				}
+                    "name": "number"
+                }
             },
             {
                 "name": "i2",
                 "type": {
-					"name": "number"
-				}
+                    "name": "number"
+                }
             },
             {
                 "name": "i3",
                 "type": {
-					"name": "number"
-				}
+                    "name": "number"
+                }
             },
             {
                 "name": "i4",
                 "type": {
-					"name": "number"
-				}
+                    "name": "number"
+                }
             },
             {
                 "name": "i5",
                 "type": {
-					"name": "number"
-				}
+                    "name": "number"
+                }
             },
             {
                 "name": "i6",
                 "type": {
-					"name": "number"
-				}
+                    "name": "number"
+                }
             },
             {
                 "name": "f1",
                 "type": {
-					"name": "number"
-				}
+                    "name": "number"
+                }
             },
             {
                 "name": "f2",
                 "type": {
-					"name": "number"
-				}
+                    "name": "number"
+                }
             },
             {
                 "name": "f3",
                 "type": {
-					"name": "number"
-				}
+                    "name": "number"
+                }
             },
             {
                 "name": "f4",
                 "type": {
-					"name": "number"
-				}
+                    "name": "number"
+                }
             },
             {
                 "name": "f5",
                 "type": {
-					"name": "number"
-				}
+                    "name": "number"
+                }
             },
             {
                 "name": "f6",
                 "type": {
-					"name": "number"
-				}
+                    "name": "number"
+                }
             },
             {
                 "name": "f7",
                 "type": {
-					"name": "number"
-				}
+                    "name": "number"
+                }
             },
             {
                 "name": "f8",
                 "type": {
-					"name": "number"
-				}
+                    "name": "number"
+                }
             },
             {
                 "name": "f9",
                 "type": {
-					"name": "number"
-				}
+                    "name": "number"
+                }
             },
             {
                 "name": "id",
                 "type": {
-					"name": "D"
-				}
+                    "name": "D"
+                }
             },
             {
                 "name": "f10",
                 "type": {
-					"name": "number"
-				}
+                    "name": "number"
+                }
             }
         ],
         "statements": [

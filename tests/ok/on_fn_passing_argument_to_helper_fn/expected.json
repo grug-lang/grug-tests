@@ -24,8 +24,8 @@
             {
                 "name": "n",
                 "type": {
-					"name": "number"
-				}
+                    "name": "number"
+                }
             }
         ],
         "statements": [

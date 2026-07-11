@@ -1,64 +1,64 @@
 [
     {
-        "type": "GLOBAL_ON_FN",
         "name": "a",
         "statements": [
             {
-                "type": "VARIABLE_STATEMENT",
-                "name": "x",
                 "assignment": {
-                    "type": "CALL_EXPR",
-                    "name": "box",
                     "arguments": [
                         {
                             "type": "NUMBER_EXPR",
                             "value": "25"
                         }
-                    ]
+                    ],
+                    "name": "box",
+                    "type": "CALL_EXPR"
                 },
+                "name": "x",
+                "type": "VARIABLE_STATEMENT",
                 "variable_type": {
-                    "name": "Box",
                     "generics": [
                         {
                             "name": "number"
                         }
-                    ]
+                    ],
+                    "name": "Box"
                 }
             },
             {
-                "type": "VARIABLE_STATEMENT",
-                "name": "y",
                 "assignment": {
-                    "type": "CALL_EXPR",
-                    "name": "box",
                     "arguments": [
                         {
-                            "type": "BINARY_EXPR",
-                            "operator": "PLUS_TOKEN",
                             "left_expr": {
                                 "type": "NUMBER_EXPR",
                                 "value": "92"
                             },
+                            "operator": "PLUS_TOKEN",
                             "right_expr": {
-                                "type": "CALL_EXPR",
                                 "name": "get",
                                 "receiver": {
-                                    "type": "IDENTIFIER_EXPR",
-                                    "str": "x"
-                                }
-                            }
+                                    "str": "x",
+                                    "type": "IDENTIFIER_EXPR"
+                                },
+                                "type": "CALL_EXPR"
+                            },
+                            "type": "BINARY_EXPR"
                         }
-                    ]
+                    ],
+                    "name": "box",
+                    "type": "CALL_EXPR"
                 },
+                "name": "y",
+                "type": "VARIABLE_STATEMENT",
                 "variable_type": {
-                    "name": "Box",
                     "generics": [
                         {
                             "name": "number"
                         }
-                    ]
+                    ],
+                    "name": "Box"
                 }
             }
-        ]
+        ],
+        "type": "GLOBAL_ON_FN"
     }
 ]

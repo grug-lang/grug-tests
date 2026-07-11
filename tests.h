@@ -80,7 +80,7 @@ static inline union grug_value grug_bool(GRUG_TYPE_BOOL v) { union grug_value r;
 static inline union grug_value grug_string(GRUG_TYPE_STRING v) { union grug_value r; r._string = v; return r; }
 static inline union grug_value grug_id(GRUG_TYPE_ID v) { union grug_value r; r._id = v; return r; }
 // TODO: replace all uses of (union grug_value) {0} with a call to this // function
-static inline union grug_value grug_void() { union grug_value r = {0}; return r; }
+static inline union grug_value grug_void(void) { union grug_value r = {0}; return r; }
 
 enum grug_runtime_error_type {
 	GRUG_ON_FN_STACK_OVERFLOW,

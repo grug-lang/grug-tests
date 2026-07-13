@@ -22,7 +22,9 @@
                 },
                 "name": "u",
                 "type": "VARIABLE_STATEMENT",
-                "variable_type": "Utils"
+                "variable_type": {
+					"name": "Utils"
+				}
             },
             {
                 "name": "assert_state_is_not_null",

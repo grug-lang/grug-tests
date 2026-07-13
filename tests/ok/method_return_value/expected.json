@@ -10,8 +10,8 @@
                 "name": "x",
                 "type": "VARIABLE_STATEMENT",
                 "variable_type": {
-					"name": "VecNumber"
-				}
+                    "name": "VecNumber"
+                }
             },
             {
                 "arguments": [
@@ -47,8 +47,8 @@
                 "name": "y",
                 "type": "VARIABLE_STATEMENT",
                 "variable_type": {
-					"name": "number"
-				}
+                    "name": "number"
+                }
             }
         ],
         "type": "GLOBAL_ON_FN"

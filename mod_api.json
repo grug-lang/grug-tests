@@ -320,7 +320,9 @@
 		},
 		"utils": {
 			"description": "Creates a new Utils",
-			"return_type": "Utils"
+			"return_type": {
+				"name": "Utils"
+			}
 		},
 		"blocked_alrm": {
 			"description": "foo"

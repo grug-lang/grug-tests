@@ -9,7 +9,9 @@
                 },
                 "name": "u",
                 "type": "VARIABLE_STATEMENT",
-                "variable_type": "Utils"
+                "variable_type": {
+                    "name": "Utils"
+                }
             },
             {
                 "name": "cause_game_fn_error",

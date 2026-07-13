@@ -317,26 +317,25 @@ union grug_value game_fn_store                   (struct grug_state* grug_state,
 union grug_value game_fn_print_csv               (struct grug_state* grug_state, const union grug_value args[]);
 union grug_value game_fn_retrieve                (struct grug_state* grug_state, const union grug_value args[]);
 union grug_value game_fn_box_number              (struct grug_state* grug_state, const union grug_value args[]);
-/* these are the non generic verions for the normal methods tests */
+// these are the non generic verions for the normal methods tests
 union grug_value game_fn_vec_number_new          (struct grug_state* grug_state, const union grug_value args[]);
 union grug_value game_fn_vec_number_push         (struct grug_state* grug_state, const union grug_value args[]);
 union grug_value game_fn_vec_number_pop          (struct grug_state* grug_state, const union grug_value args[]);
 union grug_value game_fn_vec_number_insert       (struct grug_state* grug_state, const union grug_value args[]);
-/* these are the generic verions for the generics tests */
 
-/* Generic registration functions */
-/* These ones just return into the non generic number versions because they
- * should have the exact same implementations but these registration functions
- * are needed for generics to work as intended */
+// Generic registration functions
+// These ones just return into the non-generic number versions, because they
+// should have the exact same implementations, but these registration
+// functions are needed for generics to work as intended
 game_fn reg_game_fn_vec_new                         (struct grug_type* types);
 game_fn reg_game_fn_vec_push                        (struct grug_type* types);
 game_fn reg_game_fn_vec_pop                         (struct grug_type* types);
 game_fn reg_game_fn_vec_insert                      (struct grug_type* types);
 
-/* this is _not_ a generic version of box_number since that doesn't actually
- * box anything */
-/* We don't need to declare the specific version of these functions because
- * they're handled by these functions*/
+// this is _not_ a generic version of box_number since that doesn't actually
+// box anything 
+// We don't need to declare the specific version of these functions because
+// they're handled by these functions
 game_fn reg_game_fn_box                             (struct grug_type* types);
 game_fn reg_game_fn_box_set                         (struct grug_type* types);
 game_fn reg_game_fn_box_get                         (struct grug_type* types);
@@ -347,7 +346,6 @@ game_fn reg_game_fn_dict                            (struct grug_type* types);
 game_fn reg_game_fn_dict_from_vec                   (struct grug_type* types);
 game_fn reg_game_fn_dict_put                        (struct grug_type* types);
 
-// Vec struct for grug
 struct Vec {
 	union grug_value* items;
 	size_t len;

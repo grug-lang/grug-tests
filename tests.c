@@ -1214,7 +1214,6 @@ static union grug_value game_fn_default_string(struct grug_state* grug_state, co
 }
 
 game_fn reg_game_fn_default(struct grug_type* types) {
-	// Right now this only works for vec and string
 	switch (types[0].type) {
 		case GRUG_TYPE_ENUM_STRING:
 			return game_fn_default_string;
@@ -1231,23 +1230,17 @@ game_fn reg_game_fn_default(struct grug_type* types) {
 	}
 }
 
-// This function is not intended to actually be called
 static union grug_value game_fn_dict(struct grug_state* grug_state, const union grug_value args[]) {
 	(void)(grug_state);
 	(void)(args);
-	fprintf(stderr, "host function `dict` called");
-	exit(EXIT_FAILURE);
+	return grug_void();
 }
 
-// Not intended to actually run, only used for checking error messages.
-// Should probably be replaced with a more dummy function instead
 game_fn reg_game_fn_dict(struct grug_type* types) {
 	(void)(types);
 	return game_fn_dict;
 }
 
-// Not intended to actually run, only used for checking error messages.
-// Should probably be replaced with a more dummy function instead
 game_fn reg_game_fn_dict_from_vec(struct grug_type* types) {
 	(void)(types);
 	return NULL;

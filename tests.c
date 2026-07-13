@@ -1,48 +1,3 @@
-// These should be removed before the final merge
-// (done) TODO: generic with too many generics
-// (done) TODO: generic with too few generics
-// (done) TODO: class not mentioned in mod_api but has generics
-//
-// TODO: Existential as one of the direct inputs to an operator e.g (-unbox(y))
-// 		- Both as a success and error case
-// 		- for unary `-`, `not`, `and`, and `+` at least
-//
-// 	 		- (done) unary `-` successful
-// 	 		- (done) unary `-` error
-// 	 		- `not` successful
-// 	 		- (done) `not` error
-// 	 		- `and` successful
-// 	 		- (done) `and` error
-// 	 		- `+` successful
-// 	 		- (done) `+` error
-// 	 		- (done) `+` with string where type cannot be determined from first expression alone
-// 			alone
-// 				- `x: Box[string] = box("hello")
-// 				- `y: number = default() + x.get()
-//
-// TODO: (done) Failed generics instantiation (both methods and host functions)
-// TODO: (done) Make sure the error message for this case works as intended
-//  	y: List[Pair[List[number], number]] = list()
-//
-//  	z: Dict[number, Dict[number, number]] = dict()
-//
-//  	z.put(25, dict_from_list(y))
-//		this should print `Function call 'put' expected the type Dict[number, _] for argument 'value', but got Dict[Vec, _]`
-//
-// TODO: (done) Function argument does not match parameter (check error message)
-// 		host foo[$T](Vec[$T]) but called as foo(Box[number])
-//
-// TODO: (done) Function argument partially matches parameter but not fully
-// 		host foo[$T](Vec[$T], $T) but called as foo(Vec[number], string)
-// 		
-// TODO: (done) Unable to infer generics
-// 		`vec()` alone on a single line
-//
-// TODO: (done) resource strings in generics (not allowed for now)
-// TODO: (done) entity strings in generics (not allowed for now)
-//
-// TODO: method calls in globals
-// TODO: method chaining is allowed
 #include "tests.h"
 
 #include "cJSON.h"
@@ -360,7 +315,7 @@ union grug_value game_fn_nothing(struct grug_state* grug_state, const union grug
 	(void)args;
 	ASSERT_16_BYTE_STACK_ALIGNED();
 	game_fn_nothing_call_count++;
-	return (union grug_value) {0};
+	return grug_void();
 }
 union grug_value game_fn_magic(struct grug_state* grug_state, const union grug_value args[]) {
 	(void)grug_state;
@@ -377,7 +332,7 @@ union grug_value game_fn_initialize(struct grug_state* grug_state, const union g
 	game_fn_initialize_call_count++;
 
 	game_fn_initialize_x = args[0]._number;
-	return (union grug_value) {0};
+	return grug_void();
 }
 static bool game_fn_initialize_bool_b;
 union grug_value game_fn_initialize_bool(struct grug_state* grug_state, const union grug_value args[]) {
@@ -386,7 +341,7 @@ union grug_value game_fn_initialize_bool(struct grug_state* grug_state, const un
 	game_fn_initialize_bool_call_count++;
 
 	game_fn_initialize_bool_b = args[0]._bool;
-	return (union grug_value) {0};
+	return grug_void();
 }
 static double game_fn_identity_x;
 union grug_value game_fn_identity(struct grug_state* grug_state, const union grug_value args[]) {
@@ -417,7 +372,7 @@ union grug_value game_fn_say(struct grug_state* grug_state, const union grug_val
 	game_fn_say_call_count++;
 
 	strcpy(game_fn_say_message, args[0]._string);
-	return (union grug_value) {0};
+	return grug_void();
 }
 static double game_fn_sin_x;
 union grug_value game_fn_sin(struct grug_state* grug_state, const union grug_value args[]) {
@@ -472,7 +427,7 @@ union grug_value game_fn_mega(struct grug_state* grug_state, const union grug_va
 	game_fn_mega_f8 = args[11]._number;
 	game_fn_mega_id = args[12]._id;
 	strcpy(game_fn_mega_str, args[13]._string);
-	return (union grug_value) {0};
+	return grug_void();
 }
 union grug_value game_fn_get_false(struct grug_state* grug_state, const union grug_value args[]) {
 	(void)grug_state;
@@ -489,7 +444,7 @@ union grug_value game_fn_set_is_happy(struct grug_state* grug_state, const union
 	game_fn_set_is_happy_call_count++;
 
 	game_fn_set_is_happy_is_happy = args[0]._bool;
-	return (union grug_value) {0};
+	return grug_void();
 }
 static double game_fn_mega_f32_f1;
 static double game_fn_mega_f32_f2;
@@ -514,7 +469,7 @@ union grug_value game_fn_mega_f32(struct grug_state* grug_state, const union gru
 	game_fn_mega_f32_f7 = args[6]._number;
 	game_fn_mega_f32_f8 = args[7]._number;
 	game_fn_mega_f32_f9 = args[8]._number;
-	return (union grug_value) {0};
+	return grug_void();
 }
 static double game_fn_mega_i32_i1;
 static double game_fn_mega_i32_i2;
@@ -535,7 +490,7 @@ union grug_value game_fn_mega_i32(struct grug_state* grug_state, const union gru
 	game_fn_mega_i32_i5 = args[4]._number;
 	game_fn_mega_i32_i6 = args[5]._number;
 	game_fn_mega_i32_i7 = args[6]._number;
-	return (union grug_value) {0};
+	return grug_void();
 }
 static char game_fn_draw_sprite_path[256];
 union grug_value game_fn_draw(struct grug_state* grug_state, const union grug_value args[]) {
@@ -543,7 +498,7 @@ union grug_value game_fn_draw(struct grug_state* grug_state, const union grug_va
 	ASSERT_16_BYTE_STACK_ALIGNED();
 	game_fn_draw_call_count++;
 	strcpy(game_fn_draw_sprite_path, args[0]._string);
-	return (union grug_value) {0};
+	return grug_void();
 }
 union grug_value game_fn_utils(struct grug_state* grug_state, const union grug_value args[]) {
 	(void)grug_state;
@@ -560,7 +515,7 @@ union grug_value game_fn_assert_state_is_not_null(struct grug_state* grug_state,
 		fprintf(stderr, "Error: state was NULL\n");
 		exit(EXIT_FAILURE);
 	}
-	return (union grug_value) {0};
+	return grug_void();
 }
 union grug_value game_fn_Utils_assert_state_is_not_null(struct grug_state* grug_state, const union grug_value args[]) {
 	(void)args;
@@ -570,14 +525,14 @@ union grug_value game_fn_Utils_assert_state_is_not_null(struct grug_state* grug_
 		fprintf(stderr, "Error: state was NULL\n");
 		exit(EXIT_FAILURE);
 	}
-	return (union grug_value) {0};
+	return grug_void();
 }
 union grug_value game_fn_blocked_alrm(struct grug_state* grug_state, const union grug_value args[]) {
 	(void)grug_state;
 	(void)args;
 	ASSERT_16_BYTE_STACK_ALIGNED();
 	game_fn_blocked_alrm_call_count++;
-	return (union grug_value) {0};
+	return grug_void();
 }
 static char game_fn_spawn_name[256];
 union grug_value game_fn_spawn(struct grug_state* grug_state, const union grug_value args[]) {
@@ -586,7 +541,7 @@ union grug_value game_fn_spawn(struct grug_state* grug_state, const union grug_v
 	game_fn_spawn_call_count++;
 
 	strcpy(game_fn_spawn_name, args[0]._string);
-	return (union grug_value) {0};
+	return grug_void();
 }
 static char game_fn_spawn_d_name[256];
 union grug_value game_fn_spawn_d(struct grug_state* grug_state, const union grug_value args[]) {
@@ -595,7 +550,7 @@ union grug_value game_fn_spawn_d(struct grug_state* grug_state, const union grug
 	game_fn_spawn_d_call_count++;
 
 	strcpy(game_fn_spawn_d_name, args[0]._string);
-	return (union grug_value) {0};
+	return grug_void();
 }
 static char game_fn_has_resource_path[256];
 union grug_value game_fn_has_resource(struct grug_state* grug_state, const union grug_value args[]) {
@@ -650,7 +605,7 @@ union grug_value game_fn_set_d(struct grug_state* grug_state, const union grug_v
 	game_fn_set_d_call_count++;
 
 	game_fn_set_d_target = args[0]._id;
-	return (union grug_value) {0};
+	return grug_void();
 }
 static uint64_t game_fn_set_opponent_target;
 union grug_value game_fn_set_opponent(struct grug_state* grug_state, const union grug_value args[]) {
@@ -659,7 +614,7 @@ union grug_value game_fn_set_opponent(struct grug_state* grug_state, const union
 	game_fn_set_opponent_call_count++;
 
 	game_fn_set_opponent_target = args[0]._id;
-	return (union grug_value) {0};
+	return grug_void();
 }
 static double game_fn_motherload_i1;
 static double game_fn_motherload_i2;
@@ -700,7 +655,7 @@ union grug_value game_fn_motherload(struct grug_state* grug_state, const union g
 	game_fn_motherload_f8 = args[14]._number;
 	game_fn_motherload_id = args[15]._id;
 	game_fn_motherload_f9 = args[16]._number;
-	return (union grug_value) {0};
+	return grug_void();
 }
 static double game_fn_motherload_subless_i1;
 static double game_fn_motherload_subless_i2;
@@ -743,7 +698,7 @@ union grug_value game_fn_motherload_subless(struct grug_state* grug_state, const
 	game_fn_motherload_subless_f9 = args[15]._number;
 	game_fn_motherload_subless_id = args[16]._id;
 	game_fn_motherload_subless_f10 = args[17]._number;
-	return (union grug_value) {0};
+	return grug_void();
 }
 static char game_fn_offset_32_bit_f32_s1[256];
 static char game_fn_offset_32_bit_f32_s2[256];
@@ -798,7 +753,7 @@ union grug_value game_fn_offset_32_bit_f32(struct grug_state* grug_state, const 
 	game_fn_offset_32_bit_f32_f7 = args[21]._number;
 	game_fn_offset_32_bit_f32_f8 = args[22]._number;
 	game_fn_offset_32_bit_f32_g = args[23]._number;
-	return (union grug_value) {0};
+	return grug_void();
 }
 static double game_fn_offset_32_bit_i32_f1;
 static double game_fn_offset_32_bit_i32_f2;
@@ -877,7 +832,7 @@ union grug_value game_fn_offset_32_bit_i32(struct grug_state* grug_state, const 
 	game_fn_offset_32_bit_i32_i4 = args[33]._number;
 	game_fn_offset_32_bit_i32_i5 = args[34]._number;
 	game_fn_offset_32_bit_i32_g = args[35]._number;
-	return (union grug_value) {0};
+	return grug_void();
 }
 static double game_fn_offset_32_bit_string_f1;
 static double game_fn_offset_32_bit_string_f2;
@@ -956,7 +911,7 @@ union grug_value game_fn_offset_32_bit_string(struct grug_state* grug_state, con
 	strcpy(game_fn_offset_32_bit_string_s4, args[33]._string);
 	strcpy(game_fn_offset_32_bit_string_s5, args[34]._string);
 	game_fn_offset_32_bit_string_g = args[35]._number;
-	return (union grug_value) {0};
+	return grug_void();
 }
 static char game_fn_talk_message1[256];
 static char game_fn_talk_message2[256];
@@ -971,7 +926,7 @@ union grug_value game_fn_talk(struct grug_state* grug_state, const union grug_va
 	strcpy(game_fn_talk_message2, args[1]._string);
 	strcpy(game_fn_talk_message3, args[2]._string);
 	strcpy(game_fn_talk_message4, args[3]._string);
-	return (union grug_value) {0};
+	return grug_void();
 }
 union grug_value game_fn_get_position(struct grug_state* grug_state, const union grug_value args[]) {
 	(void)grug_state;
@@ -989,7 +944,7 @@ union grug_value game_fn_set_position(struct grug_state* grug_state, const union
 	game_fn_set_position_call_count++;
 
 	game_fn_set_position_pos = args[0]._id;
-	return (union grug_value) {0};
+	return grug_void();
 }
 union grug_value game_fn_cause_game_fn_error(struct grug_state* grug_state, const union grug_value args[]) {
 	(void)args;
@@ -1013,7 +968,7 @@ union grug_value game_fn_call_on_b_fn(struct grug_state* grug_state, const union
 	game_fn_call_on_b_fn_call_count++;
 
 	call_export_fn_argless(grug_state, current_entity, "b");
-	return (union grug_value) {0};
+	return grug_void();
 }
 union grug_value game_fn_Utils_call_on_b_fn(struct grug_state* grug_state, const union grug_value args[]) {
 	(void)args;
@@ -1030,7 +985,7 @@ union grug_value game_fn_store(struct grug_state* grug_state, const union grug_v
 	game_fn_store_call_count++;
 
 	game_fn_store_id = args[0]._id;
-	return (union grug_value) {0};
+	return grug_void();
 }
 static char game_fn_print_csv_path[256];
 union grug_value game_fn_print_csv(struct grug_state* grug_state, const union grug_value args[]) {
@@ -1038,7 +993,7 @@ union grug_value game_fn_print_csv(struct grug_state* grug_state, const union gr
 	ASSERT_16_BYTE_STACK_ALIGNED();
 	game_fn_print_csv_call_count++;
 	strcpy(game_fn_print_csv_path, args[0]._string);
-	return (union grug_value) {0};
+	return grug_void();
 }
 union grug_value game_fn_retrieve(struct grug_state* grug_state, const union grug_value args[]) {
 	(void)grug_state;
@@ -1090,7 +1045,7 @@ union grug_value game_fn_vec_number_push(struct grug_state* grug_state, const un
 	ptr->items[ptr->len++] = args[1];
 	vec_number_last_pushed = args[1];
 
-	return (union grug_value) {0};
+	return grug_void();
 }
 
 static union grug_value vec_number_last_popped;
@@ -1129,7 +1084,7 @@ union grug_value game_fn_vec_number_insert(struct grug_state* grug_state, const 
 	ptr->len++;
 	vec_number_last_inserted = args[2];
 
-	return (union grug_value) {0};
+	return grug_void();
 }
 
 game_fn reg_game_fn_vec_new   (struct grug_type* types) {
@@ -1852,57 +1807,6 @@ static void diff_roundtrip(
 }
 
 static void reset(void) {
-<<<<<<< HEAD
-	had_runtime_error                            = false;
-	error_handler_call_count                     = 0;
-	runtime_error_type                           = 0;
-	game_fn_nothing_call_count                   = 0;
-	game_fn_magic_call_count                     = 0;
-	game_fn_initialize_call_count                = 0;
-	game_fn_initialize_bool_call_count           = 0;
-	game_fn_identity_call_count                  = 0;
-	game_fn_max_call_count                       = 0;
-	game_fn_say_call_count                       = 0;
-	game_fn_sin_call_count                       = 0;
-	game_fn_cos_call_count                       = 0;
-	game_fn_mega_call_count                      = 0;
-	game_fn_get_false_call_count                 = 0;
-	game_fn_set_is_happy_call_count              = 0;
-	game_fn_mega_f32_call_count                  = 0;
-	game_fn_mega_i32_call_count                  = 0;
-	game_fn_draw_call_count                      = 0;
-	game_fn_assert_state_is_not_null_call_count  = 0;
-	game_fn_blocked_alrm_call_count              = 0;
-	game_fn_spawn_call_count                     = 0;
-	game_fn_spawn_d_call_count                   = 0;
-	game_fn_has_resource_call_count              = 0;
-	game_fn_has_entity_call_count                = 0;
-	game_fn_has_string_call_count                = 0;
-	game_fn_get_opponent_call_count              = 0;
-	game_fn_get_os_call_count                    = 0;
-	game_fn_set_d_call_count                     = 0;
-	game_fn_set_opponent_call_count              = 0;
-	game_fn_motherload_call_count                = 0;
-	game_fn_motherload_subless_call_count        = 0;
-	game_fn_offset_32_bit_f32_call_count         = 0;
-	game_fn_offset_32_bit_i32_call_count         = 0;
-	game_fn_offset_32_bit_string_call_count      = 0;
-	game_fn_talk_call_count                      = 0;
-	game_fn_get_position_call_count              = 0;
-	game_fn_set_position_call_count              = 0;
-	game_fn_cause_game_fn_error_call_count       = 0;
-	game_fn_store_call_count                     = 0;
-	game_fn_print_csv_call_count                 = 0;
-	game_fn_retrieve_call_count                  = 0;
-	game_fn_box_number_call_count                = 0;
-	game_fn_vec_number_new_call_count            = 0;
-	game_fn_vec_number_push_call_count           = 0;
-	game_fn_vec_number_pop_call_count            = 0;
-	game_fn_vec_number_insert_call_count         = 0;
-	game_fn_box_call_count                       = 0;
-	game_fn_box_get_call_count                   = 0;
-	game_fn_box_set_call_count                   = 0;
-=======
 	had_runtime_error                            = false;
 	error_handler_call_count                     = 0;
 	runtime_error_type                           = 0;
@@ -1956,7 +1860,6 @@ static void reset(void) {
 	game_fn_box_get_call_count                   = 0;
 	game_fn_box_set_call_count                   = 0;
 	game_fn_default_string_call_count            = 0;
->>>>>>> fe8bd70c (added generic game function `default` for Vec and string)
 }
 
 static void remove_dir_recursive(const char* path) {

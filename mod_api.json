@@ -213,7 +213,7 @@
 			}
 		},
 		"Vec": {
-			"description": "A growable list of items",
+			"description": "A vector",
 			"used_generics": [
 				"$T"
 			],
@@ -237,7 +237,7 @@
 					}
 				},
 				"insert": {
-					"description": "inserts an element at index i",
+					"description": "Inserts an element at index i",
 					"parameters": [
 						{
 							"name": "index",
@@ -256,7 +256,7 @@
 			}
 		},
 		"Pair": {
-			"description": "An id that stores two different types",
+			"description": "A pair of two different values",
 			"used_generics": [
 				"$K",
 				"$V"
@@ -288,14 +288,14 @@
 			}
 		},
 		"Dict": {
-			"description": "just a type with two generic arguments",
+			"description": "A dictionary",
 			"used_generics": [
 				"$K",
 				"$V"
 			],
 			"methods": {
 				"put": {
-					"description": "just a method on Dict",
+					"description": "Inserts a key and value into the dictionary",
 					"parameters": [
 						{
 							"name": "key",

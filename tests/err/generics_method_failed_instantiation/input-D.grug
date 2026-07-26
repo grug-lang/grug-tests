@@ -1,0 +1,4 @@
+export a() {
+    x: Dict[Dict[number, string], number] = dict()
+    x.get(dict())
+}

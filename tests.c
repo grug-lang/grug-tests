@@ -1,12 +1,13 @@
-// TODO:
+// TODO: remove before final merge
 // 
-// - failed instantiation for generic method
-// - unable to infer method receiver
+// - (Done) failed instantiation for generic method
+// - (Done) unable to infer method receiver
 // - generic fn decorator
-// - ok test for multiple generics in a single type
+// - (Done) ok test for multiple generics in a single type
 // - generic function with a runtime error
+// - generic method with a runtime error
 // 
-// - Test
+// - (Done) Test
 // 		```grug
 // 		x: Dict[number, string] = dict_from_list(dict())
 // 		```
@@ -16,9 +17,9 @@
 // 		mismatch is realized before the inner types are inferred
 //
 // - mod_api parsing tests
-// 	- Need ok and error tests for similar cases so regressions are actually caught
+// 		- Need ok and error tests for similar cases so regressions are actually caught
 // - mod_api registration tests
-// -  non-generic method not registered
+// 		- non-generic method not registered
 #include "tests.h"
 
 #include "cJSON.h"
@@ -271,6 +272,10 @@ static size_t game_fn_box_get_call_count;
 static size_t game_fn_box_set_call_count;
 
 static size_t game_fn_default_string_call_count;
+
+static size_t game_fn_make_pair_call_count;
+static size_t game_fn_pair_first_call_count;
+static size_t game_fn_pair_second_call_count;
 
 static bool had_runtime_error = false;
 static size_t error_handler_call_count = 0;
@@ -1076,7 +1081,9 @@ union grug_value game_fn_vec_number_pop(struct grug_state* grug_state, const uni
 	game_fn_vec_number_pop_call_count++;
 	struct Vec* ptr = (struct Vec*)args[0]._id;
 
-	assert(ptr->len > 0);
+	if (ptr->len == 0) {
+		game_fn_error(grug_state, "cause_game_fn_error(): Tried popping from an empty Vec");
+	}
 	union grug_value item = ptr->items[ptr->len-- - 1];
 	vec_number_last_popped = item;
 
@@ -1225,6 +1232,52 @@ game_fn reg_game_fn_dict_from_vec(struct grug_type* types) {
 game_fn reg_game_fn_dict_put(struct grug_type* types) {
 	(void)(types);
 	return NULL;
+}
+
+static union grug_value game_fn_make_pair(struct grug_state* grug_state, const union grug_value args[]) {
+	(void)grug_state;
+	ASSERT_16_BYTE_STACK_ALIGNED();
+	game_fn_make_pair_call_count++;
+	union grug_value (*pair)[2] = malloc(sizeof(union grug_value) * 2);
+	assert_ptr(box);
+
+	(*pair)[0] = args[0];
+	(*pair)[1] = args[1];
+	
+	return grug_id((GRUG_TYPE_ID) pair);
+}
+
+game_fn reg_game_fn_make_pair(struct grug_type* types) {
+	(void)(types);
+	return game_fn_make_pair;
+}
+
+static union grug_value game_fn_pair_first(struct grug_state* grug_state, const union grug_value args[]) {
+	(void)grug_state;
+	ASSERT_16_BYTE_STACK_ALIGNED();
+	game_fn_pair_first_call_count++;
+
+	union grug_value (*pair)[2] = (union grug_value (*)[2])(args[0]._id);
+	return (*pair)[0] = args[0];
+}
+
+game_fn reg_game_fn_pair_first(struct grug_type* types) {
+	(void)(types);
+	return game_fn_pair_first;
+}
+
+static union grug_value game_fn_pair_second(struct grug_state* grug_state, const union grug_value args[]) {
+	(void)grug_state;
+	ASSERT_16_BYTE_STACK_ALIGNED();
+	game_fn_pair_second_call_count++;
+
+	union grug_value (*pair)[2] = (union grug_value (*)[2])(args[0]._id);
+	return (*pair)[1] = args[1];
+}
+
+game_fn reg_game_fn_pair_second(struct grug_type* types) {
+	(void)(types);
+	return game_fn_pair_second;
 }
 
 static void check(int status, const char *fn_name, const char *msg) {
@@ -4513,6 +4566,8 @@ static void add_error_tests(void) {
 	ADD_TEST_ERROR(generics_complex_error_message, "D");
 	ADD_TEST_ERROR(generics_entity_string, "A");
 	ADD_TEST_ERROR(generics_failed_instantiation, "A");
+	ADD_TEST_ERROR(generics_method_failed_instantiation, "D");
+	ADD_TEST_ERROR(generics_method_unable_to_infer, "D");
 	ADD_TEST_ERROR(generics_function_argument_type_full_mismatch, "D");
 	ADD_TEST_ERROR(generics_function_argument_type_partial_mismatch, "D");
 	ADD_TEST_ERROR(generics_resource_string, "A");
@@ -4755,6 +4810,7 @@ static void add_ok_tests(void) {
 	ADD_TEST_OK(generic_type_as_operand_3, "D");
 	ADD_TEST_OK(generic_type_as_operand_4, "D");
 	ADD_TEST_OK(generics_simple, "J");
+	ADD_TEST_OK(generics_simple_2, "D");
 	ADD_TEST_OK(global_2_does_not_have_error_handling, "A");
 	ADD_TEST_OK(global_call_using_me, "D");
 	ADD_TEST_OK(global_can_use_earlier_global, "D");

@@ -258,9 +258,23 @@
 		"Pair": {
 			"description": "A pair of two different values",
 			"used_generics": [
-				"$K",
-				"$V"
-			]
+				"$T1",
+				"$T2"
+			],
+			"methods": {
+				"first": {
+					"description": "Gets the first item from the pair",
+					"return_type": {
+						"name": "$T1"
+					}
+				},
+				"second": {
+					"description": "Gets the second item from the pair",
+					"return_type": {
+						"name": "$T2"
+					}
+				}
+			}
 		},
 		"Box": {
 			"description": "A heap allocated version of a type. Allows sharing of primitive types",
@@ -334,6 +348,38 @@
 	"host_functions": {
 		"assert_state_is_not_null": {
 			"description": "foo"
+		},
+		"make_pair": {
+			"description": "Creates a pair of two values",
+			"used_generics": [
+				"$T1",
+				"$T2"
+			],
+			"return_type": {
+				"name": "Pair",
+				"generics": [
+					{
+						"name": "$T1"
+					},
+					{
+						"name": "$T2"
+					}
+				]
+			},
+			"parameters": [
+				{
+					"name": "first", 
+					"type": {
+						"name": "$T1"
+					}
+				},
+				{
+					"name": "second", 
+					"type": {
+						"name": "$T2"
+					}
+				}
+			]
 		},
 		"utils": {
 			"description": "Creates a new Utils",

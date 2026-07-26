@@ -1,0 +1,5 @@
+export a() {
+    # Technically, the only type that works for `default` here is `Dict[number,
+    # number]`, but grug deliberately does not try to infer this
+    x: number = default().get(2)
+}

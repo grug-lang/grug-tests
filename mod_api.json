@@ -310,6 +310,23 @@
 							}
 						}
 					]
+				},
+				"get": {
+					"description": "Gets the value associated with a key in the dictionary",
+					"return_type": {
+						"name": "value",
+						"type": {
+							"name": "$V"
+						}
+					},
+					"parameters": [
+						{
+							"name": "key",
+							"type": {
+								"name": "$K"
+							}
+						}
+					]
 				}
 			}
 		}

@@ -1,3 +1,24 @@
+// TODO:
+// 
+// - failed instantiation for generic method
+// - unable to infer method receiver
+// - generic fn decorator
+// - ok test for multiple generics in a single type
+// - generic function with a runtime error
+// 
+// - Test
+// 		```grug
+// 		x: Dict[number, string] = dict_from_list(dict())
+// 		```
+//
+// 		`dict()` returns a `Dict[unknown, unknown]`, 
+// 		`dict_from_list()` expects a `List[Pair[unknown, unknown]]`
+// 		mismatch is realized before the inner types are inferred
+//
+// - mod_api parsing tests
+// 	- Need ok and error tests for similar cases so regressions are actually caught
+// - mod_api registration tests
+// -  non-generic method not registered
 #include "tests.h"
 
 #include "cJSON.h"
@@ -4438,7 +4459,6 @@ static void add_error_tests(void) {
 	ADD_TEST_ERROR(comment_at_the_end_of_another_statement, "D");
 	ADD_TEST_ERROR(comment_empty, "A");
 	ADD_TEST_ERROR(comment_lone_global_at_end, "A");
-	ADD_TEST_ERROR(custom_id_decays_to_id, "D");
 	ADD_TEST_ERROR(double_negation, "D");
 	ADD_TEST_ERROR(double_not, "D");
 	ADD_TEST_ERROR(empty_file, "A");

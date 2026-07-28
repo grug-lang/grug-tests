@@ -313,9 +313,7 @@ union grug_value game_fn_talk                              (struct grug_state* g
 union grug_value game_fn_get_position                      (struct grug_state* grug_state, const union grug_value args[]);
 union grug_value game_fn_set_position                      (struct grug_state* grug_state, const union grug_value args[]);
 union grug_value game_fn_cause_game_fn_error               (struct grug_state* grug_state, const union grug_value args[]);
-union grug_value game_fn_cause_game_fn_error_generic       (struct grug_state* grug_state, const union grug_value args[]);
 union grug_value game_fn_Utils_cause_game_fn_error         (struct grug_state* grug_state, const union grug_value args[]);
-union grug_value game_fn_Utils_cause_game_fn_error_generic (struct grug_state* grug_state, const union grug_value args[]);
 union grug_value game_fn_call_on_b_fn                      (struct grug_state* grug_state, const union grug_value args[]);
 union grug_value game_fn_Utils_call_on_b_fn                (struct grug_state* grug_state, const union grug_value args[]);
 union grug_value game_fn_store                             (struct grug_state* grug_state, const union grug_value args[]);
@@ -327,6 +325,9 @@ union grug_value game_fn_vec_number_new                    (struct grug_state* g
 union grug_value game_fn_vec_number_push                   (struct grug_state* grug_state, const union grug_value args[]);
 union grug_value game_fn_vec_number_pop                    (struct grug_state* grug_state, const union grug_value args[]);
 union grug_value game_fn_vec_number_insert                 (struct grug_state* grug_state, const union grug_value args[]);
+
+game_fn reg_game_fn_cause_game_fn_error_generic       (struct grug_type* types);
+game_fn reg_game_fn_Utils_cause_game_fn_error_generic (struct grug_type* types);
 
 // Generic registration functions
 // These ones just return into the non-generic number versions, because they

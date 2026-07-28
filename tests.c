@@ -1238,6 +1238,8 @@ game_fn reg_game_fn_dict(struct grug_type* types) {
 		case GRUG_TYPE_ENUM_ID:
 			if (strcmp(types[0].data.id.name, "Dict") == 0) {
 				return NULL;
+			} else {
+				return game_fn_dict;
 			}
 		default:
 			return game_fn_dict;

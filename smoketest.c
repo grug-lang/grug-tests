@@ -88,15 +88,20 @@ static game_fn p_game_fn_vec_insert;
 
 static generic_fn_reg p_reg_box;
 static game_fn p_game_fn_box;
+
 static generic_fn_reg p_reg_box_get;
 static game_fn p_game_fn_box_get;
+
 static generic_fn_reg p_reg_box_set;
-static game_fn p_game_fn_box_set;
+// Unused for now
+// static game_fn p_game_fn_box_set;
 
 static generic_fn_reg p_reg_make_pair;
 static game_fn p_game_fn_make_pair;
+
 static generic_fn_reg p_reg_pair_first;
 static game_fn p_game_fn_pair_first;
+
 static generic_fn_reg p_reg_pair_second;
 static game_fn p_game_fn_pair_second;
 

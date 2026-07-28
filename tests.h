@@ -348,6 +348,10 @@ game_fn reg_game_fn_dict                            (struct grug_type* types);
 game_fn reg_game_fn_dict_from_vec                   (struct grug_type* types);
 game_fn reg_game_fn_dict_put                        (struct grug_type* types);
 
+game_fn reg_game_fn_make_pair                        (struct grug_type* types);
+game_fn reg_game_fn_pair_first                       (struct grug_type* types);
+game_fn reg_game_fn_pair_second                      (struct grug_type* types);
+
 struct Vec {
 	union grug_value* items;
 	size_t len;

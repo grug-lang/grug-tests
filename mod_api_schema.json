@@ -70,6 +70,12 @@
 								"name": {
 									"type": "string"
 								},
+								"used_generics": {
+									"type": "array",
+									"items": {
+										"type": "string"
+									}
+								},
 								"description": {
 									"type": "string"
 								},

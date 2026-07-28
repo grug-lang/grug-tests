@@ -1,0 +1,71 @@
+[
+    {
+        "name": "a",
+        "statements": [
+            {
+                "comment": "TODO: Incomplete, verify that these values are correct",
+                "type": "COMMENT_STATEMENT"
+            },
+            {
+                "assignment": {
+                    "arguments": [
+                        {
+                            "type": "NUMBER_EXPR",
+                            "value": "25"
+                        },
+                        {
+                            "str": "Hello",
+                            "type": "STRING_EXPR"
+                        }
+                    ],
+                    "name": "make_pair",
+                    "type": "CALL_EXPR"
+                },
+                "name": "pair",
+                "type": "VARIABLE_STATEMENT",
+                "variable_type": {
+                    "generics": [
+                        {
+                            "name": "number"
+                        },
+                        {
+                            "name": "string"
+                        }
+                    ],
+                    "name": "Pair"
+                }
+            },
+            {
+                "assignment": {
+                    "name": "second",
+                    "receiver": {
+                        "str": "pair",
+                        "type": "IDENTIFIER_EXPR"
+                    },
+                    "type": "CALL_EXPR"
+                },
+                "name": "str",
+                "type": "VARIABLE_STATEMENT",
+                "variable_type": {
+                    "name": "string"
+                }
+            },
+            {
+                "assignment": {
+                    "name": "first",
+                    "receiver": {
+                        "str": "pair",
+                        "type": "IDENTIFIER_EXPR"
+                    },
+                    "type": "CALL_EXPR"
+                },
+                "name": "int",
+                "type": "VARIABLE_STATEMENT",
+                "variable_type": {
+                    "name": "number"
+                }
+            }
+        ],
+        "type": "GLOBAL_ON_FN"
+    }
+]

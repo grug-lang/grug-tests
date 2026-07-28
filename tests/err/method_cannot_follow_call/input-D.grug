@@ -1,3 +1,0 @@
-export a() {
-    vec_number_new().push(25)
-}

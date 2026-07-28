@@ -87,8 +87,18 @@ static game_fn p_game_fn_vec_pop;
 static game_fn p_game_fn_vec_insert;
 
 static generic_fn_reg p_reg_box;
+static game_fn p_game_fn_box;
 static generic_fn_reg p_reg_box_get;
+static game_fn p_game_fn_box_get;
 static generic_fn_reg p_reg_box_set;
+static game_fn p_game_fn_box_set;
+
+static generic_fn_reg p_reg_make_pair;
+static game_fn p_game_fn_make_pair;
+static generic_fn_reg p_reg_pair_first;
+static game_fn p_game_fn_pair_first;
+static generic_fn_reg p_reg_pair_second;
+static game_fn p_game_fn_pair_second;
 
 static const char *saved_grug_file_path;
 static const char *saved_on_fn_name;
@@ -147,7 +157,26 @@ static struct grug_file_id *compile_grug_file(struct grug_state* grug_state, con
         fclose(f);
 		*error_out = buf;
 		return NULL;
-    }
+    } else if (starts_with(path, "ok/generic_type_as_operand_1/")) {
+		p_game_fn_box     = p_reg_box    (&(struct grug_type) {.type = GRUG_TYPE_ENUM_NUMBER});
+		p_game_fn_box_get = p_reg_box_get(&(struct grug_type) {.type = GRUG_TYPE_ENUM_NUMBER});
+    } else if (starts_with(path, "ok/generic_type_as_operand_2/")) {
+		p_game_fn_box     = p_reg_box    (&(struct grug_type) {.type = GRUG_TYPE_ENUM_NUMBER});
+		p_game_fn_box_get = p_reg_box_get(&(struct grug_type) {.type = GRUG_TYPE_ENUM_NUMBER});
+    } else if (starts_with(path, "ok/generic_type_as_operand_3/")) {
+		p_game_fn_box     = p_reg_box    (&(struct grug_type) {.type = GRUG_TYPE_ENUM_NUMBER});
+		p_game_fn_box_get = p_reg_box_get(&(struct grug_type) {.type = GRUG_TYPE_ENUM_NUMBER});
+    } else if (starts_with(path, "ok/generic_type_as_operand_4/")) {
+		p_game_fn_box     = p_reg_box    (&(struct grug_type) {.type = GRUG_TYPE_ENUM_NUMBER});
+		p_game_fn_box_get = p_reg_box_get(&(struct grug_type) {.type = GRUG_TYPE_ENUM_NUMBER});
+    } else if (starts_with(path, "ok/generics_simple/")) {
+		p_game_fn_box     = p_reg_box    (&(struct grug_type) {.type = GRUG_TYPE_ENUM_NUMBER});
+		p_game_fn_box_get = p_reg_box_get(&(struct grug_type) {.type = GRUG_TYPE_ENUM_NUMBER});
+    } else if (starts_with(path, "ok/generics_simple_2/")) {
+		p_game_fn_make_pair   = p_reg_make_pair  ((struct grug_type[2]) {{.type = GRUG_TYPE_ENUM_NUMBER}, {.type = GRUG_TYPE_ENUM_STRING}});
+		p_game_fn_pair_first  = p_reg_pair_first ((struct grug_type[2]) {{.type = GRUG_TYPE_ENUM_NUMBER}, {.type = GRUG_TYPE_ENUM_STRING}});
+		p_game_fn_pair_second = p_reg_pair_second((struct grug_type[2]) {{.type = GRUG_TYPE_ENUM_NUMBER}, {.type = GRUG_TYPE_ENUM_STRING}});
+	}
 
 	*error_out = NULL;
     return (struct grug_file_id*)path;
@@ -201,10 +230,17 @@ static void call_export_fn(struct grug_state* grug_state, struct grug_entity_id*
     if (starts_with(path, "err_runtime/all/")) {
         p_grug_tests_runtime_error_handler("Stack overflow, so check for accidental infinite recursion", GRUG_ON_FN_STACK_OVERFLOW, on_fn_name, path);
     } else if (starts_with(path, "err_runtime/game_fn_error/")) {
-        CALL_ARGLESS(grug_state, cause_game_fn_error);
-    } else if (starts_with(path, "err_runtime/game_fn_error_in_method/")) {
-        CALL_ARGLESS(grug_state, utils);
-        CALL_ARGLESS(grug_state, Utils_cause_game_fn_error);
+		if (args[0]._number == 0.0) {
+			CALL_ARGLESS(grug_state, cause_game_fn_error);
+		} else if (args[0]._number == 1.0) {
+			union grug_value ut = CALL_ARGLESS(grug_state, utils);
+			CALL(grug_state, Utils_cause_game_fn_error, ut);
+		} else if (args[0]._number == 2.0) {
+			CALL(grug_state, cause_game_fn_error, grug_bool(true));
+		} else {
+			union grug_value ut = CALL_ARGLESS(grug_state, utils);
+			CALL(grug_state, Utils_cause_game_fn_error, ut, grug_bool(true));
+		}
     } else if (starts_with(path, "err_runtime/game_fn_error_once/")) {
         if (streq(on_fn_name, "a")) {
             CALL_ARGLESS(grug_state, cause_game_fn_error);
@@ -432,26 +468,18 @@ static void call_export_fn(struct grug_state* grug_state, struct grug_entity_id*
     } else if (starts_with(path, "ok/ge_true_2/")) {
         CALL(grug_state, initialize_bool, grug_bool(true));
     } else if (starts_with(path, "ok/generic_type_as_operand_1/")) {
-		game_fn p_game_fn_box = p_reg_box(&(struct grug_type) {.type = GRUG_TYPE_ENUM_NUMBER});
-		game_fn p_game_fn_box_get = p_reg_box_get(&(struct grug_type) {.type = GRUG_TYPE_ENUM_NUMBER});
         union grug_value box = CALL(grug_state, box, grug_number(25));
         CALL(grug_state, box_get, box);
         CALL(grug_state, box, grug_number(-25));
     } else if (starts_with(path, "ok/generic_type_as_operand_2/")) {
-		game_fn p_game_fn_box = p_reg_box(&(struct grug_type) {.type = GRUG_TYPE_ENUM_BOOL});
-		game_fn p_game_fn_box_get = p_reg_box_get(&(struct grug_type) {.type = GRUG_TYPE_ENUM_BOOL});
         union grug_value box = CALL(grug_state, box, grug_bool(true));
         CALL(grug_state, box_get, box);
         CALL(grug_state, box, grug_bool(false));
     } else if (starts_with(path, "ok/generic_type_as_operand_3/")) {
-		game_fn p_game_fn_box = p_reg_box(&(struct grug_type) {.type = GRUG_TYPE_ENUM_BOOL});
-		game_fn p_game_fn_box_get = p_reg_box_get(&(struct grug_type) {.type = GRUG_TYPE_ENUM_BOOL});
         union grug_value box = CALL(grug_state, box, grug_bool(false));
         CALL(grug_state, box_get, box);
         CALL(grug_state, box, grug_bool(false));
     } else if (starts_with(path, "ok/generic_type_as_operand_4/")) {
-		game_fn p_game_fn_box = p_reg_box(&(struct grug_type) {.type = GRUG_TYPE_ENUM_NUMBER});
-		game_fn p_game_fn_box_get = p_reg_box_get(&(struct grug_type) {.type = GRUG_TYPE_ENUM_NUMBER});
         union grug_value box = CALL(grug_state, box, grug_number(25.0));
         CALL(grug_state, box_get, box);
         CALL(grug_state, box, grug_number(117.0));
@@ -489,6 +517,10 @@ static void call_export_fn(struct grug_state* grug_state, struct grug_entity_id*
 			CALL(grug_state, vec_pop, vec);
 			CALL(grug_state, vec_pop, vec);
 		}
+    } else if (starts_with(path, "ok/generics_simple_2/")) {
+		union grug_value pair   = CALL(grug_state, make_pair, grug_number(25), grug_string("Hello"));
+		CALL(grug_state, pair_second, pair);
+		CALL(grug_state, pair_first, pair);
     } else if (starts_with(path, "ok/global_call_using_me/")) {
         CALL(grug_state, set_position, grug_id(1337));
     } else if (starts_with(path, "ok/global_can_use_earlier_global/")) {
@@ -1026,6 +1058,10 @@ static void load_tests_library(void) {
     p_reg_box                                = (generic_fn_reg)load_sym(h, "reg_game_fn_box");
     p_reg_box_get                            = (generic_fn_reg)load_sym(h, "reg_game_fn_box_get");
     p_reg_box_set                            = (generic_fn_reg)load_sym(h, "reg_game_fn_box_set");
+
+    p_reg_make_pair                          = (generic_fn_reg)load_sym(h, "reg_game_fn_make_pair");
+    p_reg_pair_first                         = (generic_fn_reg)load_sym(h, "reg_game_fn_pair_first");
+    p_reg_pair_second                        = (generic_fn_reg)load_sym(h, "reg_game_fn_pair_second");
 	#pragma GCC diagnostic pop
 }
 

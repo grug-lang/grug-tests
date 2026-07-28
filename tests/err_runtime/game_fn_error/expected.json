@@ -1,10 +1,128 @@
 [
     {
         "name": "a",
+        "parameters": [
+            {
+                "name": "x",
+                "type": {
+                    "name": "number"
+                }
+            }
+        ],
         "statements": [
             {
-                "name": "cause_game_fn_error",
-                "type": "CALL_STATEMENT"
+                "condition": {
+                    "left_expr": {
+                        "str": "x",
+                        "type": "IDENTIFIER_EXPR"
+                    },
+                    "operator": "EQUALS_TOKEN",
+                    "right_expr": {
+                        "type": "NUMBER_EXPR",
+                        "value": "0"
+                    },
+                    "type": "BINARY_EXPR"
+                },
+                "else_statements": [
+                    {
+                        "condition": {
+                            "left_expr": {
+                                "str": "x",
+                                "type": "IDENTIFIER_EXPR"
+                            },
+                            "operator": "EQUALS_TOKEN",
+                            "right_expr": {
+                                "type": "NUMBER_EXPR",
+                                "value": "1"
+                            },
+                            "type": "BINARY_EXPR"
+                        },
+                        "else_statements": [
+                            {
+                                "condition": {
+                                    "left_expr": {
+                                        "str": "x",
+                                        "type": "IDENTIFIER_EXPR"
+                                    },
+                                    "operator": "EQUALS_TOKEN",
+                                    "right_expr": {
+                                        "type": "NUMBER_EXPR",
+                                        "value": "2"
+                                    },
+                                    "type": "BINARY_EXPR"
+                                },
+                                "else_statements": [
+                                    {
+                                        "assignment": {
+                                            "name": "utils",
+                                            "type": "CALL_EXPR"
+                                        },
+                                        "name": "utils",
+                                        "type": "VARIABLE_STATEMENT",
+                                        "variable_type": {
+                                            "name": "Utils"
+                                        }
+                                    },
+                                    {
+                                        "arguments": [
+                                            {
+                                                "str": "hello",
+                                                "type": "STRING_EXPR"
+                                            }
+                                        ],
+                                        "name": "cause_game_fn_error_generic",
+                                        "receiver": {
+                                            "str": "utils",
+                                            "type": "IDENTIFIER_EXPR"
+                                        },
+                                        "type": "CALL_STATEMENT"
+                                    }
+                                ],
+                                "if_statements": [
+                                    {
+                                        "arguments": [
+                                            {
+                                                "type": "TRUE_EXPR"
+                                            }
+                                        ],
+                                        "name": "cause_game_fn_error_generic",
+                                        "type": "CALL_STATEMENT"
+                                    }
+                                ],
+                                "type": "IF_STATEMENT"
+                            }
+                        ],
+                        "if_statements": [
+                            {
+                                "assignment": {
+                                    "name": "utils",
+                                    "type": "CALL_EXPR"
+                                },
+                                "name": "utils",
+                                "type": "VARIABLE_STATEMENT",
+                                "variable_type": {
+                                    "name": "Utils"
+                                }
+                            },
+                            {
+                                "name": "cause_game_fn_error",
+                                "receiver": {
+                                    "str": "utils",
+                                    "type": "IDENTIFIER_EXPR"
+                                },
+                                "type": "CALL_STATEMENT"
+                            }
+                        ],
+                        "type": "IF_STATEMENT"
+                    }
+                ],
+                "if_statements": [
+                    {
+                        "name": "cause_game_fn_error",
+                        "type": "CALL_STATEMENT"
+                    }
+                ],
+                "type": "IF_STATEMENT"
             }
         ],
         "type": "GLOBAL_ON_FN"

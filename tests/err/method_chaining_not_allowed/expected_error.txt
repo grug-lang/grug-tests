@@ -1,3 +1,0 @@
-  in a (err/method_chaining_not_allowed/input-D.grug:3:17)
-Error: Method chaining is not allowed
-3 $ y: number = x.push(25).pop()

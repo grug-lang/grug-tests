@@ -1,0 +1,3 @@
+  in a (err/generics_method_unable_to_infer/input-D.grug:4:17)
+Error: Unable to infer type of method receiver
+4 $ x: number = default().get(2)

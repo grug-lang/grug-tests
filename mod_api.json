@@ -209,6 +209,23 @@
 				},
 				"call_on_b_fn": {
 					"description": "Calls its own on_b function."
+				},
+				"cause_game_fn_error_generic": {
+					"description": "accepts a generic value and unconditionally causes a runtime error",
+					"used_generics": [
+						"$T"
+					],
+					"parameters": [
+						{
+							"name": "input",
+							"type": {
+								"name": "$T"
+							}
+						}
+					],
+					"return_type": {
+						"name": "bool"
+					}
 				}
 			}
 		},
@@ -409,6 +426,23 @@
 		},
 		"cause_game_fn_error": {
 			"description": "foo",
+			"return_type": {
+				"name": "bool"
+			}
+		},
+		"cause_game_fn_error_generic": {
+			"description": "accepts a generic value and unconditionally causes a runtime error",
+			"used_generics": [
+				"$T"
+			],
+			"parameters": [
+				{
+					"name": "input",
+					"type": {
+						"name": "$T"
+					}
+				}
+			],
 			"return_type": {
 				"name": "bool"
 			}

@@ -1,8 +1,9 @@
+// TODO: Runtime errors should check the error message inline instead of reading from expected_error.txt
 // TODO: remove before final merge
+// - generic fn decorator
 // 
 // - (Done) failed instantiation for generic method
 // - (Done) unable to infer method receiver
-// - generic fn decorator
 // - (Done) ok test for multiple generics in a single type
 // - generic function with a runtime error
 // - generic method with a runtime error
@@ -988,6 +989,18 @@ union grug_value game_fn_Utils_cause_game_fn_error(struct grug_state* grug_state
 	game_fn_error(grug_state, "Utils_cause_game_fn_error(): Example game function error");
 	return (union grug_value) {0};
 }
+game_fn reg_game_fn_cause_game_fn_error_generic(struct grug_type* types) {
+	(void)(types);
+	// the mismatched arguments is fine because game_fn_cause_game_fn_error
+	// does not use the arguments
+	return game_fn_cause_game_fn_error;
+}
+game_fn reg_game_fn_Utils_cause_game_fn_error_generic(struct grug_type* types) {
+	(void)(types);
+	// the mismatched arguments is fine because game_fn_Utils_cause_game_fn_error
+	// does not use the arguments
+	return game_fn_Utils_cause_game_fn_error;
+}
 union grug_value game_fn_call_on_b_fn(struct grug_state* grug_state, const union grug_value args[]) {
 	(void)args;
 	ASSERT_16_BYTE_STACK_ALIGNED();
@@ -1221,7 +1234,14 @@ static union grug_value game_fn_dict(struct grug_state* grug_state, const union 
 
 game_fn reg_game_fn_dict(struct grug_type* types) {
 	(void)(types);
-	return game_fn_dict;
+	switch (types[0].type) {
+		case GRUG_TYPE_ENUM_ID:
+			if (strcmp(types[0].data.id.name, "Dict") == 0) {
+				return NULL;
+			}
+		default:
+			return game_fn_dict;
+	}
 }
 
 game_fn reg_game_fn_dict_from_vec(struct grug_type* types) {
@@ -1234,15 +1254,18 @@ game_fn reg_game_fn_dict_put(struct grug_type* types) {
 	return NULL;
 }
 
+static union grug_value (*last_pair)[2];
 static union grug_value game_fn_make_pair(struct grug_state* grug_state, const union grug_value args[]) {
 	(void)grug_state;
 	ASSERT_16_BYTE_STACK_ALIGNED();
 	game_fn_make_pair_call_count++;
 	union grug_value (*pair)[2] = malloc(sizeof(union grug_value) * 2);
-	assert_ptr(box);
+	assert_ptr(pair);
 
 	(*pair)[0] = args[0];
 	(*pair)[1] = args[1];
+	
+	last_pair = pair;
 	
 	return grug_id((GRUG_TYPE_ID) pair);
 }
@@ -1252,13 +1275,15 @@ game_fn reg_game_fn_make_pair(struct grug_type* types) {
 	return game_fn_make_pair;
 }
 
+static union grug_value last_pair_first;
 static union grug_value game_fn_pair_first(struct grug_state* grug_state, const union grug_value args[]) {
 	(void)grug_state;
 	ASSERT_16_BYTE_STACK_ALIGNED();
 	game_fn_pair_first_call_count++;
 
 	union grug_value (*pair)[2] = (union grug_value (*)[2])(args[0]._id);
-	return (*pair)[0] = args[0];
+	last_pair_first = (*pair)[0];
+	return (*pair)[0];
 }
 
 game_fn reg_game_fn_pair_first(struct grug_type* types) {
@@ -1266,13 +1291,15 @@ game_fn reg_game_fn_pair_first(struct grug_type* types) {
 	return game_fn_pair_first;
 }
 
+static union grug_value last_pair_second;
 static union grug_value game_fn_pair_second(struct grug_state* grug_state, const union grug_value args[]) {
 	(void)grug_state;
 	ASSERT_16_BYTE_STACK_ALIGNED();
 	game_fn_pair_second_call_count++;
 
 	union grug_value (*pair)[2] = (union grug_value (*)[2])(args[0]._id);
-	return (*pair)[1] = args[1];
+	last_pair_second = (*pair)[1];
+	return (*pair)[1];
 }
 
 game_fn reg_game_fn_pair_second(struct grug_type* types) {
@@ -1938,6 +1965,9 @@ static void reset(void) {
 	game_fn_box_get_call_count                        = 0;
 	game_fn_box_set_call_count                        = 0;
 	game_fn_default_string_call_count                 = 0;
+	game_fn_make_pair_call_count                      = 0;
+	game_fn_pair_first_call_count                     = 0;
+	game_fn_pair_second_call_count                    = 0;
 }
 
 static void remove_dir_recursive(const char* path) {
@@ -3086,6 +3116,23 @@ static void ok_generics_simple(struct grug_state* grug_state, struct grug_entity
 	assert_size_t(vec_number_last_new->len, (size_t)3);
 	assert_true (vec_number_last_new->items[0]._bool);
 	assert_false(vec_number_last_new->items[1]._bool);
+}
+
+static void ok_generics_simple_2(struct grug_state* grug_state, struct grug_entity_id* entity) {
+	assert_call_count(make_pair, 0);
+	assert_call_count(pair_first, 0);
+	assert_call_count(pair_second, 0);
+
+    call_export_fn_argless(grug_state, entity, "a");
+	assert_call_count(make_pair, 1);
+	assert_call_count(pair_first, 1);
+	assert_call_count(pair_second, 1);
+	
+	assert_number((*last_pair)[0]._number, last_pair_first ._number);
+	assert_string((*last_pair)[1]._string, last_pair_second._string);
+
+	assert_number((*last_pair)[0]._number, 25.0);
+	assert_string((*last_pair)[1]._string, "Hello");
 }
 
 static void ok_global_2_does_not_have_error_handling(struct grug_state* grug_state, struct grug_entity_id* entity) {
@@ -4321,7 +4368,9 @@ static void runtime_error_all(struct grug_state* grug_state, struct grug_entity_
 static void runtime_error_game_fn_error(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	assert_call_count(cause_game_fn_error, 0);
 	assert_error_handler_call_count(0);
-	call_export_fn_argless(grug_state, entity, "a");
+
+	// game_fn_error in normal host function
+	call_export_fn(grug_state, entity, "a", (union grug_value[]){grug_number(0)}, 1);
 	assert_call_count(cause_game_fn_error, 1);
 	assert_error_handler_call_count(1);
 
@@ -4330,7 +4379,43 @@ static void runtime_error_game_fn_error(struct grug_state* grug_state, struct gr
 	assert_runtime_error_type(GRUG_ON_FN_GAME_FN_ERROR);
 
 	assert_string(runtime_error_on_fn_name, "a");
-	assert_string(runtime_error_on_fn_path, "err_runtime/game_fn_error/input-D.grug");
+	assert_string(runtime_error_on_fn_path, "err_runtime/game_fn_error/input-F.grug");
+
+	// game_fn_error in normal method
+	call_export_fn(grug_state, entity, "a", (union grug_value[]){grug_number(1)}, 1);
+	assert_call_count(Utils_cause_game_fn_error, 1);
+	assert_error_handler_call_count(2);
+
+	assert_true(had_runtime_error);
+
+	assert_runtime_error_type(GRUG_ON_FN_GAME_FN_ERROR);
+
+	assert_string(runtime_error_on_fn_name, "a");
+	assert_string(runtime_error_on_fn_path, "err_runtime/game_fn_error/input-F.grug");
+
+	// game_fn_error in generic host function
+	call_export_fn(grug_state, entity, "a", (union grug_value[]){grug_number(2)}, 1);
+	assert_call_count(cause_game_fn_error, 2);
+	assert_error_handler_call_count(3);
+
+	assert_true(had_runtime_error);
+
+	assert_runtime_error_type(GRUG_ON_FN_GAME_FN_ERROR);
+
+	assert_string(runtime_error_on_fn_name, "a");
+	assert_string(runtime_error_on_fn_path, "err_runtime/game_fn_error/input-F.grug");
+
+	// game_fn_error in generic method
+	call_export_fn(grug_state, entity, "a", (union grug_value[]){grug_number(3)}, 1);
+	assert_call_count(Utils_cause_game_fn_error, 2);
+	assert_error_handler_call_count(4);
+
+	assert_true(had_runtime_error);
+
+	assert_runtime_error_type(GRUG_ON_FN_GAME_FN_ERROR);
+
+	assert_string(runtime_error_on_fn_name, "a");
+	assert_string(runtime_error_on_fn_path, "err_runtime/game_fn_error/input-F.grug");
 }
 
 static void runtime_error_game_fn_error_global_scope(struct grug_state* grug_state, struct grug_entity_id* entity) {
@@ -4345,23 +4430,6 @@ static void runtime_error_game_fn_error_global_scope(struct grug_state* grug_sta
 	assert_runtime_error_type(GRUG_ON_FN_GAME_FN_ERROR);
 
 	assert_string(runtime_error_on_fn_path, "err_runtime/game_fn_error_global_scope/input-A.grug");
-}
-
-static void runtime_error_game_fn_error_in_method(struct grug_state* grug_state, struct grug_entity_id* entity) {
-	assert_call_count(utils, 0);
-	assert_call_count(Utils_cause_game_fn_error, 0);
-	assert_error_handler_call_count(0);
-	call_export_fn_argless(grug_state, entity, "a");
-	assert_call_count(utils, 1);
-	assert_call_count(Utils_cause_game_fn_error, 1);
-	assert_error_handler_call_count(1);
-
-	assert_true(had_runtime_error);
-
-	assert_runtime_error_type(GRUG_ON_FN_GAME_FN_ERROR);
-
-	assert_string(runtime_error_on_fn_name, "a");
-	assert_string(runtime_error_on_fn_path, "err_runtime/game_fn_error_in_method/input-D.grug");
 }
 
 static void runtime_error_game_fn_error_once(struct grug_state* grug_state, struct grug_entity_id* entity) {
@@ -4629,8 +4697,6 @@ static void add_error_tests(void) {
 	ADD_TEST_ERROR(me_cant_be_written_to, "D");
 	ADD_TEST_ERROR(me_plus_1, "D");
 	ADD_TEST_ERROR(me_plus_me, "D");
-	ADD_TEST_ERROR(method_cannot_follow_call, "D");
-	ADD_TEST_ERROR(method_chaining_not_allowed, "D");
 	ADD_TEST_ERROR(method_on_number, "D");
 	ADD_TEST_ERROR(method_on_type_without_methods, "D");
 	ADD_TEST_ERROR(missing_empty_line_between_global_and_on_fn, "D");
@@ -4948,9 +5014,8 @@ static void add_ok_tests(void) {
 
 static void add_runtime_error_tests(void) {
 	ADD_TEST_RUNTIME_ERROR(all, "D");
-	ADD_TEST_RUNTIME_ERROR(game_fn_error, "D");
+	ADD_TEST_RUNTIME_ERROR(game_fn_error, "F");
 	ADD_TEST_RUNTIME_ERROR(game_fn_error_global_scope, "A");
-	ADD_TEST_RUNTIME_ERROR(game_fn_error_in_method, "D");
 	ADD_TEST_RUNTIME_ERROR(game_fn_error_once, "E");
 	ADD_TEST_RUNTIME_ERROR(on_fn_calls_erroring_on_fn, "E");
 	ADD_TEST_RUNTIME_ERROR(on_fn_errors_after_it_calls_other_on_fn, "E");

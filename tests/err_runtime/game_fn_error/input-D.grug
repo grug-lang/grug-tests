@@ -1,3 +1,0 @@
-export a() {
-    cause_game_fn_error()
-}

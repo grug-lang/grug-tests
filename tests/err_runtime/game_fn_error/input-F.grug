@@ -1,0 +1,13 @@
+export a(x: number) {
+    if x == 0 {
+        cause_game_fn_error()
+    } else if x == 1 {
+        utils: Utils = utils()
+        utils.cause_game_fn_error()
+    } else if x == 2 {
+        cause_game_fn_error_generic(true)
+    } else {
+        utils: Utils = utils()
+        utils.cause_game_fn_error_generic("hello")
+    }
+}

@@ -24,7 +24,7 @@ def main():
         validate(instance=valid_data, schema=schema)
         print("SUCCESS: mod_api.json passed schema validation.")
     except ValidationError as e:
-        print(f"FAIL: mod_api.json failed schema validation.\nError: {e.message}")
+        print(f"FAIL: mod_api.json failed schema validation.\nError: {e.message} at {e.path}")
         sys.exit(1)
     except FileNotFoundError:
         print("Warning: mod_api.json not found, skipping valid file check.")

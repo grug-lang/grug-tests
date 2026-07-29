@@ -179,6 +179,7 @@ static const char *whitelisted_test;
 
 static struct grug_entity_id* current_entity;
 
+static parse_mod_api_t      parse_mod_api;
 static create_grug_state_t  create_grug_state;
 static destroy_grug_state_t destroy_grug_state;
 static compile_grug_file_t  compile_grug_file;
@@ -1631,23 +1632,58 @@ static void run_err_mod_api_test(const char *name) {
 		exit(EXIT_FAILURE);
 	}
 
-	void* grug_state = create_grug_state(path, tests_dir_path, true);
-	if (grug_state) {
-		fprintf(stderr, "Error: Expected create_grug_state(\"%s\", \"%s\") to return NULL\n", path, tests_dir_path);
+	if (!parse_mod_api(path)) {
+		fprintf(stderr, "Error: Expected parse_mod_api(\"%s\") to return an error\n", path);
 		exit(EXIT_FAILURE);
 	}
 }
 
 static void run_err_mod_api_tests(void) {
-	run_err_mod_api_test("classes_must_be_json_object.json");
-	run_err_mod_api_test("class_must_be_json_object.json");
-	run_err_mod_api_test("entities_must_be_json_object.json");
-	run_err_mod_api_test("entity_must_be_json_object.json");
-	run_err_mod_api_test("methods_must_be_json_object.json");
-	run_err_mod_api_test("game_fns_must_be_json_object.json");
-	run_err_mod_api_test("on_fns_must_be_json_array.json");
-	run_err_mod_api_test("on_fns_must_be_sorted.json");
-	run_err_mod_api_test("root_must_be_object.json");
+	run_err_mod_api_test("00_mod_api_must_be_valid_json.json");
+	run_err_mod_api_test("01_root_must_be_object.json");
+	run_err_mod_api_test("02_entities_must_be_json_object.json");
+	run_err_mod_api_test("03_classes_must_be_json_object.json");
+	run_err_mod_api_test("04_host_functions_must_be_json_object.json");
+	run_err_mod_api_test("05_class_must_be_json_object.json");
+	run_err_mod_api_test("06_methods_must_be_json_object.json");
+	run_err_mod_api_test("07_entity_must_be_json_object.json");
+	run_err_mod_api_test("08_export_functions_must_be_array.json");
+	run_err_mod_api_test("09_export_fn_must_be_object.json");
+	run_err_mod_api_test("10_class_generic_must_be_string.json");
+	run_err_mod_api_test("11_class_generic_must_begin_with_$.json");
+}
+
+static void run_ok_mod_api_test(const char *name) {
+	if (!is_whitelisted_test(name)) {
+		return;
+	}
+
+    printf("Running tests/ok_mod_api/%s...\n", name);
+	fflush(stdout);
+
+    char path[4096];
+    int len = snprintf(path, sizeof(path), "%s/ok_mod_api/%s", tests_dir_path, name);
+    if (len < 0 || (size_t)len >= sizeof(path)) {
+		fprintf(stderr, "Error: Filling ok_mod_api path failed\n");
+		exit(EXIT_FAILURE);
+	}
+
+	char* error = parse_mod_api(path);
+	if (error) {
+		fprintf(stderr, "Error: Expected parse_mod_api(\"%s\") to return NULL but it returned this error:\n", path);
+		fprintf(stderr, "%s", error);
+		exit(EXIT_FAILURE);
+	}
+}
+
+static void run_ok_mod_api_tests(void) {
+	run_ok_mod_api_test("01_root_is_object.json");
+	run_ok_mod_api_test("05_class_is_object.json");
+	run_ok_mod_api_test("06_methods_is_object.json");
+	run_ok_mod_api_test("07_entity_is_object.json");
+	run_ok_mod_api_test("08_export_fns_is_array.json");
+	run_ok_mod_api_test("09_export_fn_is_object.json");
+	run_ok_mod_api_test("10_class_generic_is_string.json");
 }
 
 static void test_error(
@@ -5039,6 +5075,7 @@ void grug_tests_run(
 	mod_api_path               = mod_api_path_;
 	whitelisted_test           = whitelisted_test_;
 
+	parse_mod_api              = vtable.parse_mod_api; assert(parse_mod_api);
 	create_grug_state          = vtable.create_grug_state; assert(create_grug_state);
 	destroy_grug_state         = vtable.destroy_grug_state; assert(destroy_grug_state);
 	compile_grug_file          = vtable.compile_grug_file; assert(compile_grug_file);
@@ -5097,6 +5134,7 @@ void grug_tests_run(
 #endif
 
 	run_err_mod_api_tests();
+	run_ok_mod_api_tests ();
 
     run_err_spaces_tests(grug_state);
 	run_err_tests(grug_state);

@@ -108,6 +108,14 @@ typedef struct grug_state* (*create_grug_state_t) (
  *
  * @param grug_state The state to destroy.
  */
+typedef char* (*parse_mod_api_t)(char* mod_api_path);
+
+/**
+ * @typedef destroy_grug_state_t
+ * @brief Destroy a `state` that was created from a previous call to `create_grug_state`.
+ *
+ * @param grug_state The state to destroy.
+ */
 typedef void (*destroy_grug_state_t)(struct grug_state* state);
 
 /**
@@ -223,6 +231,7 @@ typedef void (*game_fn_error_t)(struct grug_state* state, const char *message);
 /// A vtable of pointers passed from the grug implementation to grug-tests.
 /// Contains all the functions needed to run the entire test suite.
 struct grug_state_vtable {
+	parse_mod_api_t parse_mod_api;
 	create_grug_state_t create_grug_state;
 	destroy_grug_state_t destroy_grug_state;
 	compile_grug_file_t compile_grug_file;

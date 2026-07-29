@@ -1,0 +1,9 @@
+{
+	"entities": {
+		"A": {
+			"description": "Foo"
+		}
+	},
+	"classes": {},
+	"host_functions": {}
+}

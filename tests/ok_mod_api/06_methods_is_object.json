@@ -1,0 +1,10 @@
+{
+	"entities": {},
+	"classes": {
+		"SomeClass": {
+			"description": "Something",
+			"methods": {}
+		}
+	},
+	"host_functions": {}
+}

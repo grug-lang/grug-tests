@@ -1,0 +1,10 @@
+{
+	"entities": {
+		"A": {
+			"description": "",
+			"export_functions": 42
+		}
+	},
+	"classes": {},
+	"host_functions": {}
+}

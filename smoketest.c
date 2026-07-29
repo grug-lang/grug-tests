@@ -1070,12 +1070,18 @@ static void load_tests_library(void) {
 	#pragma GCC diagnostic pop
 }
 
+static char* parse_mod_api(const char* mod_api_path) {
+    if (starts_with(mod_api_path, "tests/err_mod_api/")) {
+        return "Error parsing mod_api";
+    } else {
+		return NULL;
+	}
+}
+
 static struct grug_state* create_grug_state(const char* mod_api_path, const char* mods_dir, bool safe_mode) {
+	(void)(mod_api_path);
 	(void)mods_dir;
     (void)safe_mode;
-    if (starts_with(mod_api_path, "tests/err_mod_api/")) {
-        return NULL;
-    }
 	return (struct grug_state*)42;
 }
 
@@ -1098,6 +1104,7 @@ int main(int argc, const char *argv[]) {
         "tests",
 		"mod_api.json",
 		(struct grug_state_vtable) {
+			.parse_mod_api = parse_mod_api,
 			.create_grug_state = create_grug_state,
 			.destroy_grug_state = destroy_grug_state,
 			.compile_grug_file = compile_grug_file,

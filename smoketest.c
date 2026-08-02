@@ -740,7 +740,7 @@ static void call_export_fn(struct grug_state* grug_state, struct grug_entity_id*
         CALL(grug_state, initialize, grug_number(1.0));
         update_called = false;
     } else {
-        fprintf(stderr, "Error: add an elif for path '%s'\n", path);
+        fprintf(stderr, __FILE__ ":%d: Error: add an elif for path '%s'\n", __LINE__, path);
         exit(EXIT_FAILURE);
     }
 }

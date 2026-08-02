@@ -1,0 +1,7 @@
+export a() {
+    initialize_bool(_overflow() and true)
+}
+
+local _overflow() bool {
+    return not _overflow()
+}

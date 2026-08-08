@@ -1,0 +1,16 @@
+{
+    "entities": {},
+	"classes": {
+		"Test": {
+			"description": "hello"
+		}
+	},
+    "host_functions": {
+		"test": {
+			"description": "Foo",
+			"used_generics": [
+				"Hi"
+			]
+		}
+	}
+}

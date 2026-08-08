@@ -1,0 +1,11 @@
+{
+    "entities": {},
+	"classes": {
+		"Test": {
+			"description": "hello"
+		}
+	},
+    "host_functions": {
+		"test": 42
+	}
+}

@@ -1,26 +1,4 @@
 // TODO: Runtime errors should check the error message inline instead of reading from expected_error.txt
-// TODO: remove before final merge
-// - generic fn decorator
-// 
-// - (Done) failed instantiation for generic method
-// - (Done) unable to infer method receiver
-// - (Done) ok test for multiple generics in a single type
-// - generic function with a runtime error
-// - generic method with a runtime error
-// 
-// - (Done) Test
-// 		```grug
-// 		x: Dict[number, string] = dict_from_list(dict())
-// 		```
-//
-// 		`dict()` returns a `Dict[unknown, unknown]`, 
-// 		`dict_from_list()` expects a `List[Pair[unknown, unknown]]`
-// 		mismatch is realized before the inner types are inferred
-//
-// - mod_api parsing tests
-// 		- Need ok and error tests for similar cases so regressions are actually caught
-// - mod_api registration tests
-// 		- non-generic method not registered
 #include "tests.h"
 
 #include "cJSON.h"
@@ -258,6 +236,7 @@ static size_t game_fn_set_position_call_count;
 static size_t game_fn_cause_game_fn_error_call_count;
 static size_t game_fn_Utils_cause_game_fn_error_call_count;
 static size_t game_fn_call_on_b_fn_call_count;
+static size_t game_fn_call_on_b_fn_number_call_count;
 static size_t game_fn_Utils_call_on_b_fn_call_count;
 static size_t game_fn_store_call_count;
 static size_t game_fn_print_csv_call_count;
@@ -1010,6 +989,16 @@ union grug_value game_fn_call_on_b_fn(struct grug_state* grug_state, const union
 	call_export_fn_argless(grug_state, current_entity, "b");
 	return grug_void();
 }
+
+union grug_value game_fn_call_on_b_fn_number(struct grug_state* grug_state, const union grug_value args[]) {
+	(void)args;
+	ASSERT_16_BYTE_STACK_ALIGNED();
+	game_fn_call_on_b_fn_number_call_count++;
+
+	call_export_fn(grug_state, current_entity, "b", (union grug_value[]){args[0]}, 1);
+	return grug_void();
+}
+
 union grug_value game_fn_Utils_call_on_b_fn(struct grug_state* grug_state, const union grug_value args[]) {
 	(void)args;
 	ASSERT_16_BYTE_STACK_ALIGNED();
@@ -1235,16 +1224,7 @@ static union grug_value game_fn_dict(struct grug_state* grug_state, const union 
 
 game_fn reg_game_fn_dict(struct grug_type* types) {
 	(void)(types);
-	switch (types[0].type) {
-		case GRUG_TYPE_ENUM_ID:
-			if (strcmp(types[0].data.id.name, "Dict") == 0) {
-				return NULL;
-			} else {
-				return game_fn_dict;
-			}
-		default:
-			return game_fn_dict;
-	}
+	return game_fn_dict;
 }
 
 game_fn reg_game_fn_dict_from_vec(struct grug_type* types) {
@@ -1252,9 +1232,22 @@ game_fn reg_game_fn_dict_from_vec(struct grug_type* types) {
 	return NULL;
 }
 
+static union grug_value game_fn_dict_put(struct grug_state* grug_state, const union grug_value args[]) {
+	(void)(grug_state);
+	(void)(args);
+	return grug_void();
+}
 game_fn reg_game_fn_dict_put(struct grug_type* types) {
-	(void)(types);
-	return NULL;
+	switch (types[0].type) {
+		case GRUG_TYPE_ENUM_ID:
+			if (strcmp(types[0].data.id.name, "Dict") == 0) {
+				return NULL;
+			} else {
+				return game_fn_dict_put;
+			}
+		default:
+			return game_fn_dict_put;
+	}
 }
 
 static union grug_value (*last_pair)[2];
@@ -1639,18 +1632,34 @@ static void run_err_mod_api_test(const char *name) {
 }
 
 static void run_err_mod_api_tests(void) {
-	run_err_mod_api_test("00_mod_api_must_be_valid_json.json");
-	run_err_mod_api_test("01_root_must_be_object.json");
-	run_err_mod_api_test("02_entities_must_be_json_object.json");
-	run_err_mod_api_test("03_classes_must_be_json_object.json");
-	run_err_mod_api_test("04_host_functions_must_be_json_object.json");
-	run_err_mod_api_test("05_class_must_be_json_object.json");
-	run_err_mod_api_test("06_methods_must_be_json_object.json");
-	run_err_mod_api_test("07_entity_must_be_json_object.json");
-	run_err_mod_api_test("08_export_functions_must_be_array.json");
-	run_err_mod_api_test("09_export_fn_must_be_object.json");
-	run_err_mod_api_test("10_class_generic_must_be_string.json");
-	run_err_mod_api_test("11_class_generic_must_begin_with_$.json");
+	run_err_mod_api_test("mod_api_must_be_valid_json.json");
+	run_err_mod_api_test("classes_must_be_present.json");
+	run_err_mod_api_test("description_must_be_present.json");
+	run_err_mod_api_test("description_must_be_string.json");
+	run_err_mod_api_test("root_must_be_object.json");
+	run_err_mod_api_test("entities_must_be_json_object.json");
+	run_err_mod_api_test("classes_must_be_json_object.json");
+	run_err_mod_api_test("host_functions_must_be_json_object.json");
+	run_err_mod_api_test("host_fn_must_be_object.json");
+	run_err_mod_api_test("host_fn_generic_must_be_string.json");
+	run_err_mod_api_test("host_fn_generic_must_begin_with_$.json");
+	run_err_mod_api_test("host_fn_cannot_return_resource.json");
+	run_err_mod_api_test("host_fn_cannot_return_entity.json");
+	run_err_mod_api_test("class_must_be_json_object.json");
+	run_err_mod_api_test("methods_must_be_json_object.json");
+	run_err_mod_api_test("method_must_be_object.json");
+	run_err_mod_api_test("entity_must_be_json_object.json");
+	run_err_mod_api_test("export_functions_must_be_array.json");
+	run_err_mod_api_test("parameter_must_be_object.json");
+	run_err_mod_api_test("parameter_type_must_be_present.json");
+	run_err_mod_api_test("parameter_type_must_be_object.json");
+	run_err_mod_api_test("export_fn_must_be_object.json");
+	run_err_mod_api_test("class_generic_must_be_string.json");
+	run_err_mod_api_test("class_generic_must_begin_with_$.json");
+	run_err_mod_api_test("generic_must_be_declared.json");
+	run_err_mod_api_test("number_of_generics_on_class_must_match.json");
+	run_err_mod_api_test("cannot_have_generic_on_undeclared_class.json");
+	run_err_mod_api_test("class_cannot_have_same_name_as_entity.json");
 }
 
 static void run_ok_mod_api_test(const char *name) {
@@ -1677,13 +1686,13 @@ static void run_ok_mod_api_test(const char *name) {
 }
 
 static void run_ok_mod_api_tests(void) {
-	run_ok_mod_api_test("01_root_is_object.json");
-	run_ok_mod_api_test("05_class_is_object.json");
-	run_ok_mod_api_test("06_methods_is_object.json");
-	run_ok_mod_api_test("07_entity_is_object.json");
-	run_ok_mod_api_test("08_export_fns_is_array.json");
-	run_ok_mod_api_test("09_export_fn_is_object.json");
-	run_ok_mod_api_test("10_class_generic_is_string.json");
+	run_ok_mod_api_test("root_is_object.json");
+	run_ok_mod_api_test("class_is_object.json");
+	run_ok_mod_api_test("methods_is_object.json");
+	run_ok_mod_api_test("entity_is_object.json");
+	run_ok_mod_api_test("export_fns_is_array.json");
+	run_ok_mod_api_test("export_fn_is_object.json");
+	run_ok_mod_api_test("class_generic_is_string.json");
 }
 
 static void test_error(
@@ -1989,6 +1998,7 @@ static void reset(void) {
 	game_fn_cause_game_fn_error_call_count            = 0;
 	game_fn_Utils_cause_game_fn_error_call_count      = 0;
 	game_fn_call_on_b_fn_call_count                   = 0;
+	game_fn_call_on_b_fn_number_call_count            = 0;
 	game_fn_Utils_call_on_b_fn_call_count             = 0;
 	game_fn_store_call_count                          = 0;
 	game_fn_print_csv_call_count                      = 0;
@@ -4417,7 +4427,7 @@ static void runtime_error_game_fn_error(struct grug_state* grug_state, struct gr
 	assert_runtime_error_type(GRUG_ON_FN_GAME_FN_ERROR);
 
 	assert_string(runtime_error_on_fn_name, "a");
-	assert_string(runtime_error_on_fn_path, "err_runtime/game_fn_error/input-F.grug");
+	assert_string(runtime_error_on_fn_path, "err_runtime/game_fn_error/input-V.grug");
 
 	// game_fn_error in normal method
 	call_export_fn(grug_state, entity, "a", (union grug_value[]){grug_number(1)}, 1);
@@ -4429,7 +4439,7 @@ static void runtime_error_game_fn_error(struct grug_state* grug_state, struct gr
 	assert_runtime_error_type(GRUG_ON_FN_GAME_FN_ERROR);
 
 	assert_string(runtime_error_on_fn_name, "a");
-	assert_string(runtime_error_on_fn_path, "err_runtime/game_fn_error/input-F.grug");
+	assert_string(runtime_error_on_fn_path, "err_runtime/game_fn_error/input-V.grug");
 
 	// game_fn_error in generic host function
 	call_export_fn(grug_state, entity, "a", (union grug_value[]){grug_number(2)}, 1);
@@ -4441,7 +4451,7 @@ static void runtime_error_game_fn_error(struct grug_state* grug_state, struct gr
 	assert_runtime_error_type(GRUG_ON_FN_GAME_FN_ERROR);
 
 	assert_string(runtime_error_on_fn_name, "a");
-	assert_string(runtime_error_on_fn_path, "err_runtime/game_fn_error/input-F.grug");
+	assert_string(runtime_error_on_fn_path, "err_runtime/game_fn_error/input-V.grug");
 
 	// game_fn_error in generic method
 	call_export_fn(grug_state, entity, "a", (union grug_value[]){grug_number(3)}, 1);
@@ -4453,7 +4463,56 @@ static void runtime_error_game_fn_error(struct grug_state* grug_state, struct gr
 	assert_runtime_error_type(GRUG_ON_FN_GAME_FN_ERROR);
 
 	assert_string(runtime_error_on_fn_name, "a");
-	assert_string(runtime_error_on_fn_path, "err_runtime/game_fn_error/input-F.grug");
+	assert_string(runtime_error_on_fn_path, "err_runtime/game_fn_error/input-V.grug");
+
+	// in nested on function call
+	// game_fn_error in normal host function
+	call_export_fn(grug_state, entity, "a", (union grug_value[]){grug_number(4)}, 1);
+	assert_call_count(cause_game_fn_error, 3);
+	assert_error_handler_call_count(5);
+
+	assert_true(had_runtime_error);
+
+	assert_runtime_error_type(GRUG_ON_FN_GAME_FN_ERROR);
+
+	assert_string(runtime_error_on_fn_name, "b");
+	assert_string(runtime_error_on_fn_path, "err_runtime/game_fn_error/input-V.grug");
+
+	// game_fn_error in normal method
+	call_export_fn(grug_state, entity, "a", (union grug_value[]){grug_number(5)}, 1);
+	assert_call_count(Utils_cause_game_fn_error, 3);
+	assert_error_handler_call_count(6);
+
+	assert_true(had_runtime_error);
+
+	assert_runtime_error_type(GRUG_ON_FN_GAME_FN_ERROR);
+
+	assert_string(runtime_error_on_fn_name, "b");
+	assert_string(runtime_error_on_fn_path, "err_runtime/game_fn_error/input-V.grug");
+
+	// game_fn_error in generic host function
+	call_export_fn(grug_state, entity, "a", (union grug_value[]){grug_number(6)}, 1);
+	assert_call_count(cause_game_fn_error, 4);
+	assert_error_handler_call_count(7);
+
+	assert_true(had_runtime_error);
+
+	assert_runtime_error_type(GRUG_ON_FN_GAME_FN_ERROR);
+
+	assert_string(runtime_error_on_fn_name, "b");
+	assert_string(runtime_error_on_fn_path, "err_runtime/game_fn_error/input-V.grug");
+
+	// game_fn_error in generic method
+	call_export_fn(grug_state, entity, "a", (union grug_value[]){grug_number(7)}, 1);
+	assert_call_count(Utils_cause_game_fn_error, 4);
+	assert_error_handler_call_count(8);
+
+	assert_true(had_runtime_error);
+
+	assert_runtime_error_type(GRUG_ON_FN_GAME_FN_ERROR);
+
+	assert_string(runtime_error_on_fn_name, "b");
+	assert_string(runtime_error_on_fn_path, "err_runtime/game_fn_error/input-V.grug");
 }
 
 static void runtime_error_game_fn_error_global_scope(struct grug_state* grug_state, struct grug_entity_id* entity) {
@@ -4670,6 +4729,7 @@ static void add_error_tests(void) {
 	ADD_TEST_ERROR(generic_type_as_operand_4, "D");
 	ADD_TEST_ERROR(generic_type_as_operand_5, "D");
 	ADD_TEST_ERROR(generics_complex_error_message, "D");
+	ADD_TEST_ERROR(generics_complex_error_message_2, "D");
 	ADD_TEST_ERROR(generics_entity_string, "A");
 	ADD_TEST_ERROR(generics_failed_instantiation, "A");
 	ADD_TEST_ERROR(generics_method_failed_instantiation, "D");
@@ -5052,7 +5112,7 @@ static void add_ok_tests(void) {
 
 static void add_runtime_error_tests(void) {
 	ADD_TEST_RUNTIME_ERROR(all, "D");
-	ADD_TEST_RUNTIME_ERROR(game_fn_error, "F");
+	ADD_TEST_RUNTIME_ERROR(game_fn_error, "V");
 	ADD_TEST_RUNTIME_ERROR(game_fn_error_global_scope, "A");
 	ADD_TEST_RUNTIME_ERROR(game_fn_error_once, "E");
 	ADD_TEST_RUNTIME_ERROR(on_fn_calls_erroring_on_fn, "E");

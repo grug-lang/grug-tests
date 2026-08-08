@@ -155,6 +155,35 @@
 					]
 				}
 			]
+		},
+		"V": {
+			"description": "foo",
+			"export_functions": [
+				{
+					"name": "a",
+					"description": "foo",
+					"parameters": [
+						{
+							"name": "x",
+							"type": {
+								"name": "number"
+							}
+						}
+					]
+				},
+				{
+					"name": "b",
+					"description": "foo",
+					"parameters": [
+						{
+							"name": "x",
+							"type": {
+								"name": "number"
+							}
+						}
+					]
+				}
+			]
 		}
 	},
 	"classes": {
@@ -420,6 +449,17 @@
 		},
 		"call_on_b_fn": {
 			"description": "foo"
+		},
+		"call_on_b_fn_number": {
+			"description": "calls the entity's on function with a number argument",
+			"parameters": [
+				{
+					"name": "input",
+					"type": {
+						"name": "number"
+					}
+				}
+			]
 		},
 		"cause_game_fn_error": {
 			"description": "foo",

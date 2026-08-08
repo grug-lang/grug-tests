@@ -1,0 +1,12 @@
+{
+	"entities": {},
+	"classes": {
+		"Test": {
+			"description": 42,
+			"used_generics": [
+				42
+			]
+		}
+	},
+	"host_functions": {}
+}

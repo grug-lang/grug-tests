@@ -1,3 +1,4 @@
 export a() {
     x: Dict[Dict[number, string], number] = dict()
+    x.put(dict(), 25)
 }

@@ -1,0 +1,17 @@
+{
+    "entities": {},
+	"classes": {
+		"Test": {
+			"description": "hello"
+		}
+	},
+    "host_functions": {
+		"test": {
+			"description": "Foo",
+			"return_type": {
+				"name": "resource",
+				"resource_extension": ".txt"
+			}
+		}
+	}
+}

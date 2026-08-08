@@ -1,0 +1,20 @@
+{
+	"entities": {},
+	"classes": {
+		"Test": {
+			"description": "Foo",
+			"used_generics": [
+				"$T"
+			],
+			"methods": {
+				"test": {
+					"description": "Foo",
+					"return_type": {
+						"name": "$K"
+					}
+				}
+			}
+		}
+	},
+	"host_functions": {}
+}

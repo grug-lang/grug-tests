@@ -1604,10 +1604,10 @@ static void json_mismatch_exit(void) {
 }
 
 static void compare_nodes(cJSON *exp, cJSON *act, const char *path) {
-	if (!exp && !act) {
+	if (exp == NULL && act == NULL) {
 		return;
 	}
-	if (!exp || !act) {
+	if (exp == NULL || act == NULL) {
 		fprintf(stderr, "Mismatch at '%s': One side is missing.\n", path);
 		json_mismatch_exit();
 	}

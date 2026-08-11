@@ -1592,16 +1592,10 @@ static void run_err_tests(struct grug_state *grug_state) {
 	}
 }
 
-#ifdef _MSC_VER
-    #define NORETURN __declspec(noreturn)
-#else
-    #define NORETURN _Noreturn
-#endif
-
 static const char *g_actual_json_for_mismatch = NULL;
 static const char *g_expected_json_for_mismatch = NULL;
 
-NORETURN static void json_mismatch_exit(void) {
+static void json_mismatch_exit(void) {
 	assert(g_actual_json_for_mismatch);
 	assert(g_expected_json_for_mismatch);
 	fprintf(stderr, "\nCurrent JSON:\n%s\n", g_actual_json_for_mismatch);

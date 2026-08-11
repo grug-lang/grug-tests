@@ -1592,16 +1592,10 @@ static void run_err_tests(struct grug_state *grug_state) {
 	}
 }
 
-#ifdef _MSC_VER
-    #define NORETURN __declspec(noreturn)
-#else
-    #define NORETURN _Noreturn
-#endif
-
 static const char *g_actual_json_for_mismatch = NULL;
 static const char *g_expected_json_for_mismatch = NULL;
 
-NORETURN static void json_mismatch_exit(void) {
+static void json_mismatch_exit(void) {
 	assert(g_actual_json_for_mismatch);
 	assert(g_expected_json_for_mismatch);
 	fprintf(stderr, "\nCurrent JSON:\n%s\n", g_actual_json_for_mismatch);
@@ -1616,6 +1610,7 @@ static void compare_nodes(cJSON *exp, cJSON *act, const char *path) {
 	if (!exp || !act) {
 		fprintf(stderr, "Mismatch at '%s': One side is missing.\n", path);
 		json_mismatch_exit();
+		return;
 	}
 
 	if (cJSON_IsBool(exp) && cJSON_IsBool(act)) {
@@ -1623,6 +1618,7 @@ static void compare_nodes(cJSON *exp, cJSON *act, const char *path) {
 			fprintf(stderr, "Mismatch at '%s': Expected %s, got %s.\n",
 					path, cJSON_IsTrue(exp) ? "true" : "false", cJSON_IsTrue(act) ? "true" : "false");
 			json_mismatch_exit();
+			return;
 		}
 		return;
 	}
@@ -1630,12 +1626,14 @@ static void compare_nodes(cJSON *exp, cJSON *act, const char *path) {
 	if (exp->type != act->type) {
 		fprintf(stderr, "Mismatch at '%s': Value types differ.\n", path);
 		json_mismatch_exit();
+		return;
 	}
 
 	if (cJSON_IsNumber(exp)) {
 		if (fabs(exp->valuedouble - act->valuedouble) > 1e-6) {
 			fprintf(stderr, "Mismatch at '%s': Expected %f, got %f.\n", path, exp->valuedouble, act->valuedouble);
 			json_mismatch_exit();
+			return;
 		}
 		return;
 	}
@@ -1644,6 +1642,7 @@ static void compare_nodes(cJSON *exp, cJSON *act, const char *path) {
 		if (strcmp(exp->valuestring, act->valuestring) != 0) {
 			fprintf(stderr, "Mismatch at '%s': Expected '%s', got '%s'.\n", path, exp->valuestring, act->valuestring);
 			json_mismatch_exit();
+			return;
 		}
 		return;
 	}
@@ -1654,6 +1653,7 @@ static void compare_nodes(cJSON *exp, cJSON *act, const char *path) {
 		if (size_exp != size_act) {
 			fprintf(stderr, "Mismatch at '%s': Array size expected %d, got %d.\n", path, size_exp, size_act);
 			json_mismatch_exit();
+			return;
 		}
 		for (int i = 0; i < size_exp; i++) {
 			char new_path[512];
@@ -1669,6 +1669,7 @@ static void compare_nodes(cJSON *exp, cJSON *act, const char *path) {
 		if (size_exp != size_act) {
 			fprintf(stderr, "Mismatch at '%s': Object key count expected %d, got %d.\n", path, size_exp, size_act);
 			json_mismatch_exit();
+			return;
 		}
 
 		cJSON *child_exp = exp->child;
@@ -1680,6 +1681,7 @@ static void compare_nodes(cJSON *exp, cJSON *act, const char *path) {
 			if (!child_act) {
 				fprintf(stderr, "Mismatch at '%s': Key '%s' missing in actual output.\n", path, child_exp->string);
 				json_mismatch_exit();
+				return;
 			}
 
 			compare_nodes(child_exp, child_act, new_path);

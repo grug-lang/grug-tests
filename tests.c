@@ -1618,7 +1618,7 @@ static void compare_nodes(cJSON *exp, cJSON *act, const char *path) {
 			fprintf(stderr, "Mismatch at '%s': Expected %s, got %s.\n",
 					path, cJSON_IsTrue(exp) ? "true" : "false", cJSON_IsTrue(act) ? "true" : "false");
 			json_mismatch_exit();
-			return
+			return;
 		}
 		return;
 	}

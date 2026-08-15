@@ -1,0 +1,8 @@
+{
+	"classes": {
+		"SomeClass": {
+			"description": "Something",
+			"methods": {}
+		}
+	}
+}

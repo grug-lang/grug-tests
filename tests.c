@@ -1610,18 +1610,18 @@ static void run_err_spaces_tests(struct grug_state *grug_state) {
 	run_err_spaces_test(grug_state, "while_02-D.grug");
 }
 
-static void run_err_mod_api_test(const char *name) {
+static void run_mod_api_test(const char *name) {
 	if (!is_whitelisted_test(name)) {
 		return;
 	}
 
-    printf("Running tests/err_mod_api/%s...\n", name);
+    printf("Running tests/mod_api/%s/err_mod_api.json...\n", name);
 	fflush(stdout);
 
     char path[4096];
-    int len = snprintf(path, sizeof(path), "%s/err_mod_api/%s", tests_dir_path, name);
+    int len = snprintf(path, sizeof(path), "%s/mod_api/%s/err_mod_api.json", tests_dir_path, name);
     if (len < 0 || (size_t)len >= sizeof(path)) {
-		fprintf(stderr, "Error: Filling err_mod_api path failed\n");
+		fprintf(stderr, "Error: Filling mod_api test path failed\n");
 		exit(EXIT_FAILURE);
 	}
 
@@ -1629,51 +1629,13 @@ static void run_err_mod_api_test(const char *name) {
 		fprintf(stderr, "Error: Expected parse_mod_api(\"%s\") to return an error\n", path);
 		exit(EXIT_FAILURE);
 	}
-}
 
-static void run_err_mod_api_tests(void) {
-	run_err_mod_api_test("mod_api_must_be_valid_json.json");
-	run_err_mod_api_test("classes_must_be_present.json");
-	run_err_mod_api_test("description_must_be_present.json");
-	run_err_mod_api_test("description_must_be_string.json");
-	run_err_mod_api_test("root_must_be_object.json");
-	run_err_mod_api_test("entities_must_be_json_object.json");
-	run_err_mod_api_test("classes_must_be_json_object.json");
-	run_err_mod_api_test("host_functions_must_be_json_object.json");
-	run_err_mod_api_test("host_fn_must_be_object.json");
-	run_err_mod_api_test("host_fn_generic_must_be_string.json");
-	run_err_mod_api_test("host_fn_generic_must_begin_with_$.json");
-	run_err_mod_api_test("host_fn_cannot_return_resource.json");
-	run_err_mod_api_test("host_fn_cannot_return_entity.json");
-	run_err_mod_api_test("class_must_be_json_object.json");
-	run_err_mod_api_test("methods_must_be_json_object.json");
-	run_err_mod_api_test("method_must_be_object.json");
-	run_err_mod_api_test("entity_must_be_json_object.json");
-	run_err_mod_api_test("export_functions_must_be_array.json");
-	run_err_mod_api_test("parameter_must_be_object.json");
-	run_err_mod_api_test("parameter_type_must_be_present.json");
-	run_err_mod_api_test("parameter_type_must_be_object.json");
-	run_err_mod_api_test("export_fn_must_be_object.json");
-	run_err_mod_api_test("class_generic_must_be_string.json");
-	run_err_mod_api_test("class_generic_must_begin_with_$.json");
-	run_err_mod_api_test("generic_must_be_declared.json");
-	run_err_mod_api_test("number_of_generics_on_class_must_match.json");
-	run_err_mod_api_test("cannot_have_generic_on_undeclared_class.json");
-	run_err_mod_api_test("class_cannot_have_same_name_as_entity.json");
-}
-
-static void run_ok_mod_api_test(const char *name) {
-	if (!is_whitelisted_test(name)) {
-		return;
-	}
-
-    printf("Running tests/ok_mod_api/%s...\n", name);
+    printf("Running tests/mod_api/%s/ok_mod_api.json...\n", name);
 	fflush(stdout);
 
-    char path[4096];
-    int len = snprintf(path, sizeof(path), "%s/ok_mod_api/%s", tests_dir_path, name);
+    len = snprintf(path, sizeof(path), "%s/mod_api/%s/ok_mod_api.json", tests_dir_path, name);
     if (len < 0 || (size_t)len >= sizeof(path)) {
-		fprintf(stderr, "Error: Filling ok_mod_api path failed\n");
+		fprintf(stderr, "Error: Filling mod_api test path failed\n");
 		exit(EXIT_FAILURE);
 	}
 
@@ -1685,14 +1647,40 @@ static void run_ok_mod_api_test(const char *name) {
 	}
 }
 
-static void run_ok_mod_api_tests(void) {
-	run_ok_mod_api_test("root_is_object.json");
-	run_ok_mod_api_test("class_is_object.json");
-	run_ok_mod_api_test("methods_is_object.json");
-	run_ok_mod_api_test("entity_is_object.json");
-	run_ok_mod_api_test("export_fns_is_array.json");
-	run_ok_mod_api_test("export_fn_is_object.json");
-	run_ok_mod_api_test("class_generic_is_string.json");
+static void run_mod_api_tests(void) {
+	run_mod_api_test("mod_api_must_be_valid_json");
+	run_mod_api_test("root_must_be_object");
+
+	run_mod_api_test("description_must_be_present");
+	run_mod_api_test("description_must_be_string");
+
+	run_mod_api_test("host_functions_must_be_object");
+	run_mod_api_test("host_fn_must_be_object");
+	run_mod_api_test("host_fn_generic_must_be_string");
+	run_mod_api_test("host_fn_generic_must_begin_with_$");
+	run_mod_api_test("host_fn_cannot_return_resource");
+	run_mod_api_test("host_fn_cannot_return_entity");
+
+	run_mod_api_test("classes_must_be_object");
+	run_mod_api_test("class_must_be_object");
+	run_mod_api_test("class_generic_must_be_string");
+	run_mod_api_test("class_generic_must_begin_with_$");
+	run_mod_api_test("methods_must_be_object");
+	run_mod_api_test("method_must_be_object");
+
+	run_mod_api_test("entities_must_be_object");
+	run_mod_api_test("entity_must_be_object");
+	run_mod_api_test("export_functions_must_be_array");
+	run_mod_api_test("export_fn_must_be_object");
+
+	run_mod_api_test("parameter_must_be_object");
+	run_mod_api_test("parameter_type_must_be_present");
+	run_mod_api_test("parameter_type_must_be_object");
+
+	run_mod_api_test("generic_must_be_declared");
+	run_mod_api_test("number_of_generics_on_class_must_match");
+	run_mod_api_test("cannot_have_generic_on_undeclared_class");
+	run_mod_api_test("class_cannot_have_same_name_as_entity");
 }
 
 static void test_error(
@@ -5193,8 +5181,7 @@ void grug_tests_run(
 	SHUFFLE(runtime_error_test_datas, err_runtime_test_datas_size, struct runtime_error_test_data);
 #endif
 
-	run_err_mod_api_tests();
-	run_ok_mod_api_tests ();
+	run_mod_api_tests();
 
     run_err_spaces_tests(grug_state);
 	run_err_tests(grug_state);

@@ -1,0 +1,9 @@
+{ "entities": {},
+	"classes": {
+		"Test": {
+			"description" : "Hello",
+			"used_generics": [ ]
+		}
+	},
+	"host_functions": {}
+}

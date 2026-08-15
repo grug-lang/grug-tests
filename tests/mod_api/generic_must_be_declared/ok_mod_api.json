@@ -1,0 +1,19 @@
+{
+	"classes": {
+		"Test": {
+			"description": "Foo",
+			"used_generics": [
+				"$T",
+				"$K"
+			],
+			"methods": {
+				"test": {
+					"description": "Foo",
+					"return_type": {
+						"name": "$K"
+					}
+				}
+			}
+		}
+	}
+}

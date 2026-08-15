@@ -1,5 +1,4 @@
 export a() {
-    # TODO: Incomplete, verify that these values are correct
     pair: Pair[number, string] = make_pair(25, "Hello")
     str: string = pair.second()
     int: number = pair.first()

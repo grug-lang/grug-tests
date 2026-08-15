@@ -3,10 +3,6 @@
         "name": "a",
         "statements": [
             {
-                "comment": "TODO: Incomplete, verify that these values are correct",
-                "type": "COMMENT_STATEMENT"
-            },
-            {
                 "assignment": {
                     "arguments": [
                         {

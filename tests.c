@@ -1657,14 +1657,12 @@ static void run_mod_api_tests(void) {
 	run_mod_api_test("host_functions_must_be_object");
 	run_mod_api_test("host_fn_must_be_object");
 	run_mod_api_test("host_fn_generic_must_be_string");
-	run_mod_api_test("host_fn_generic_must_begin_with_$");
 	run_mod_api_test("host_fn_cannot_return_resource");
 	run_mod_api_test("host_fn_cannot_return_entity");
 
 	run_mod_api_test("classes_must_be_object");
 	run_mod_api_test("class_must_be_object");
 	run_mod_api_test("class_generic_must_be_string");
-	run_mod_api_test("class_generic_must_begin_with_$");
 	run_mod_api_test("methods_must_be_object");
 	run_mod_api_test("method_must_be_object");
 
@@ -1676,11 +1674,56 @@ static void run_mod_api_tests(void) {
 	run_mod_api_test("parameter_must_be_object");
 	run_mod_api_test("parameter_type_must_be_present");
 	run_mod_api_test("parameter_type_must_be_object");
+}
 
-	run_mod_api_test("generic_must_be_declared");
-	run_mod_api_test("number_of_generics_on_class_must_match");
-	run_mod_api_test("cannot_have_generic_on_undeclared_class");
-	run_mod_api_test("class_cannot_have_same_name_as_entity");
+static void run_mod_api_semantic_err_test(const char *name) {
+	if (!is_whitelisted_test(name)) {
+		return;
+	}
+
+    printf("Running tests/mod_api_semantic_err/%s/err_mod_api.json...\n", name);
+	fflush(stdout);
+
+    char path[4096];
+    int len = snprintf(path, sizeof(path), "%s/mod_api_semantic_err/%s/err_mod_api.json", tests_dir_path, name);
+    if (len < 0 || (size_t)len >= sizeof(path)) {
+		fprintf(stderr, "Error: Filling mod_api test path failed\n");
+		exit(EXIT_FAILURE);
+	}
+
+	if (!parse_mod_api(path)) {
+		fprintf(stderr, "Error: Expected parse_mod_api(\"%s\") to return an error\n", path);
+		exit(EXIT_FAILURE);
+	}
+
+    printf("Running tests/mod_api_semantic_err/%s/ok_mod_api.json...\n", name);
+	fflush(stdout);
+
+    len = snprintf(path, sizeof(path), "%s/mod_api_semantic_err/%s/ok_mod_api.json", tests_dir_path, name);
+    if (len < 0 || (size_t)len >= sizeof(path)) {
+		fprintf(stderr, "Error: Filling mod_api test path failed\n");
+		exit(EXIT_FAILURE);
+	}
+
+	char* error = parse_mod_api(path);
+	if (error) {
+		fprintf(stderr, "Error: Expected parse_mod_api(\"%s\") to return NULL but it returned this error:\n", path);
+		fprintf(stderr, "%s", error);
+		exit(EXIT_FAILURE);
+	}
+}
+
+static void run_mod_api_semantic_err_tests(void) {
+	run_mod_api_semantic_err_test("host_fn_generic_must_begin_with_$");
+	run_mod_api_semantic_err_test("host_fn_cannot_return_resource");
+	run_mod_api_semantic_err_test("host_fn_cannot_return_entity");
+
+	run_mod_api_semantic_err_test("class_generic_must_begin_with_$");
+
+	run_mod_api_semantic_err_test("generic_must_be_declared");
+	run_mod_api_semantic_err_test("number_of_generics_on_class_must_match");
+	run_mod_api_semantic_err_test("cannot_have_generic_on_undeclared_class");
+	run_mod_api_semantic_err_test("class_cannot_have_same_name_as_entity");
 }
 
 static void test_error(
@@ -5182,6 +5225,7 @@ void grug_tests_run(
 #endif
 
 	run_mod_api_tests();
+	run_mod_api_semantic_err_tests();
 
     run_err_spaces_tests(grug_state);
 	run_err_tests(grug_state);

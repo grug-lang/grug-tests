@@ -4,6 +4,7 @@ import os
 import sys
 
 from jsonschema import ValidationError, validate
+from json.decoder import JSONDecodeError
 
 
 def load_json(path: str):
@@ -30,7 +31,7 @@ def main():
         print("Warning: mod_api.json not found, skipping valid file check.")
 
     # Validate that files in tests/err_mod_api/ intentionally FAIL
-    err_files = glob.glob("tests/err_mod_api/*.json")
+    err_files = glob.glob("tests/mod_api/*/err_mod_api.json")
     for err_file in err_files:
         try:
             err_data = load_json(err_file)
@@ -41,6 +42,25 @@ def main():
         except ValidationError as e:
             # Expected outcome
             print(f"SUCCESS: {err_file} correctly failed schema validation.")
+            print(f"  {e.message}")
+        except JSONDecodeError as e:
+            # Expected outcome
+            print(f"SUCCESS: {err_file} correctly failed schema validation.")
+            print(f"  {e}")
+        except Exception as e:
+            print(f"Error reading {err_file}: {e}")
+            sys.exit(1)
+
+    ok_files = glob.glob("tests/mod_api/*/ok_mod_api.json")
+    for ok_file in ok_files:
+        try:
+            ok_data = load_json(err_file)
+            validate(instance=ok_data, schema=schema)
+            # If we reach here, the file passed when it shouldn't have
+            print(f"FAIL: {err_file} SHOULD have failed validation, but it passed.")
+            sys.exit(1)
+        except ValidationError as e:
+            print(f"FAIL: {err_file} failed validation, but it should have passed.")
             print(f"  {e.message}")
         except Exception as e:
             print(f"Error reading {err_file}: {e}")

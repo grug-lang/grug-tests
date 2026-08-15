@@ -45,7 +45,7 @@ def main():
             print(f"  {e.message}")
         except JSONDecodeError as e:
             # Expected outcome
-            print(f"SUCCESS: {err_file} correctly failed schema validation.")
+            print(f"SUCCESS: {err_file} correctly failed to parse")
             print(f"  {e}")
         except Exception as e:
             print(f"Error reading {err_file}: {e}")
@@ -57,11 +57,25 @@ def main():
             ok_data = load_json(err_file)
             validate(instance=ok_data, schema=schema)
             # If we reach here, the file passed when it shouldn't have
-            print(f"FAIL: {err_file} SHOULD have failed validation, but it passed.")
+            print(f"SUCCESS: {err_file} passed validation")
             sys.exit(1)
         except ValidationError as e:
             print(f"FAIL: {err_file} failed validation, but it should have passed.")
             print(f"  {e.message}")
+            sys.exit(1)
+        except Exception as e:
+            print(f"Error reading {err_file}: {e}")
+            sys.exit(1)
+
+    semantic_err_files = glob.glob("tests/mod_api_semantic_error/*/*.json")
+    for semantic_err_file in semantic_err_files:
+        try:
+            semantic_err_data = load_json(semantic_err_file)
+            validate(instance=semantic_err_data, schema=schema)
+        except ValidationError as e:
+            print(f"FAIL: {err_file} failed validation, but it should have passed.")
+            print(f"  {e.message}")
+            sys.exit(1)
         except Exception as e:
             print(f"Error reading {err_file}: {e}")
             sys.exit(1)

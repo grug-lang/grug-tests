@@ -76,6 +76,7 @@ static game_fn p_game_fn_set_position;
 static game_fn p_game_fn_cause_game_fn_error;
 static game_fn p_game_fn_Utils_cause_game_fn_error;
 static game_fn p_game_fn_call_on_b_fn;
+static game_fn p_game_fn_call_on_b_fn_number;
 static game_fn p_game_fn_Utils_call_on_b_fn;
 static game_fn p_game_fn_store;
 static game_fn p_game_fn_print_csv;
@@ -110,6 +111,15 @@ static const char *saved_on_fn_name;
 
 static bool streq(const char *a, const char *b) {
     return strcmp(a, b) == 0;
+}
+
+static bool ends_with(const char* haystack, const char* needle) {
+	size_t haystack_len = strlen(haystack);
+	size_t needle_len = strlen(needle);
+	if (needle_len > haystack_len) {
+		return false;
+	}
+	return (strncmp(haystack + haystack_len - needle_len, needle, needle_len) == 0);
 }
 
 static bool starts_with(const char *haystack, const char *needle) {
@@ -235,16 +245,32 @@ static void call_export_fn(struct grug_state* grug_state, struct grug_entity_id*
     if (starts_with(path, "err_runtime/all/")) {
         p_grug_tests_runtime_error_handler("Stack overflow, so check for accidental infinite recursion", GRUG_ON_FN_STACK_OVERFLOW, on_fn_name, path);
     } else if (starts_with(path, "err_runtime/game_fn_error/")) {
-		if (args[0]._number == 0.0) {
-			CALL_ARGLESS(grug_state, cause_game_fn_error);
-		} else if (args[0]._number == 1.0) {
-			union grug_value ut = CALL_ARGLESS(grug_state, utils);
-			CALL(grug_state, Utils_cause_game_fn_error, ut);
-		} else if (args[0]._number == 2.0) {
-			CALL(grug_state, cause_game_fn_error, grug_bool(true));
-		} else {
-			union grug_value ut = CALL_ARGLESS(grug_state, utils);
-			CALL(grug_state, Utils_cause_game_fn_error, ut, grug_bool(true));
+		if (streq(on_fn_name, "a")) {
+			if (args[0]._number == 0.0) {
+				CALL_ARGLESS(grug_state, cause_game_fn_error);
+			} else if (args[0]._number == 1.0) {
+				union grug_value ut = CALL_ARGLESS(grug_state, utils);
+				CALL(grug_state, Utils_cause_game_fn_error, ut);
+			} else if (args[0]._number == 2.0) {
+				CALL(grug_state, cause_game_fn_error, grug_bool(true));
+			} else if (args[0]._number == 3.0) {
+				union grug_value ut = CALL_ARGLESS(grug_state, utils);
+				CALL(grug_state, Utils_cause_game_fn_error, ut, grug_bool(true));
+			} else {
+				CALL(grug_state, call_on_b_fn_number, grug_number(args[0]._number - 4.0));
+			}
+		} else if (streq(on_fn_name, "b")) {
+			if (args[0]._number == 0.0) {
+				CALL_ARGLESS(grug_state, cause_game_fn_error);
+			} else if (args[0]._number == 1.0) {
+				union grug_value ut = CALL_ARGLESS(grug_state, utils);
+				CALL(grug_state, Utils_cause_game_fn_error, ut);
+			} else if (args[0]._number == 2.0) {
+				CALL(grug_state, cause_game_fn_error, grug_bool(true));
+			} else {
+				union grug_value ut = CALL_ARGLESS(grug_state, utils);
+				CALL(grug_state, Utils_cause_game_fn_error, ut, grug_bool(true));
+			}
 		}
     } else if (starts_with(path, "err_runtime/game_fn_error_once/")) {
         if (streq(on_fn_name, "a")) {
@@ -1050,6 +1076,7 @@ static void load_tests_library(void) {
     p_game_fn_cause_game_fn_error            = (game_fn)load_sym(h, "game_fn_cause_game_fn_error");
     p_game_fn_Utils_cause_game_fn_error      = (game_fn)load_sym(h, "game_fn_Utils_cause_game_fn_error");
     p_game_fn_call_on_b_fn                   = (game_fn)load_sym(h, "game_fn_call_on_b_fn");
+    p_game_fn_call_on_b_fn_number            = (game_fn)load_sym(h, "game_fn_call_on_b_fn_number");
     p_game_fn_Utils_call_on_b_fn             = (game_fn)load_sym(h, "game_fn_Utils_call_on_b_fn");
     p_game_fn_store                          = (game_fn)load_sym(h, "game_fn_store");
     p_game_fn_print_csv                      = (game_fn)load_sym(h, "game_fn_print_csv");
@@ -1071,7 +1098,7 @@ static void load_tests_library(void) {
 }
 
 static char* parse_mod_api(const char* mod_api_path) {
-    if (starts_with(mod_api_path, "tests/err_mod_api/")) {
+    if (ends_with(mod_api_path, "err_mod_api.json")) {
         return "Error parsing mod_api";
     } else {
 		return NULL;

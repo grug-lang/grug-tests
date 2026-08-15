@@ -1,0 +1,10 @@
+{
+	"classes": {
+		"Test": {
+			"description": "Foo",
+			"used_generics": [
+				"T"
+			]
+		}
+	}
+}

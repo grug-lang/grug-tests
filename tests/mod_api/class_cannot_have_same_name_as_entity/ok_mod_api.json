@@ -1,0 +1,12 @@
+{
+	"entities": {
+		"Test2": {
+			"description": "Foo"
+		}
+	},
+	"classes": {
+		"Test": {
+			"description": "Foo"
+		}
+	}
+}

@@ -1,0 +1,18 @@
+{
+	"classes": {
+		"Test": {
+			"description": "Foo",
+			"used_generics": [
+				"$T"
+			]
+		}
+	},
+	"host_functions": {
+		"test": {
+			"description": "Foo",
+			"return_type": {
+				"name": "Test"
+			}
+		}
+	}
+}

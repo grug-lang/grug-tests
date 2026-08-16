@@ -104,7 +104,7 @@ typedef struct grug_state* (*create_grug_state_t) (
 
 /**
  * @typedef parse_mod_api_t
- * @brief Check if the input file path constitues a valid mod_api.
+ * @brief Check if the input file path constitutes a valid mod_api.
  *
  * @param mod_api_path The path to the mod_api file.
  */

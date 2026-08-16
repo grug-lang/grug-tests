@@ -108,7 +108,7 @@ typedef struct grug_state* (*create_grug_state_t) (
  *
  * @param grug_state The state to destroy.
  */
-typedef char* (*parse_mod_api_t)(char* mod_api_path);
+typedef char* (*parse_mod_api_t)(const char* mod_api_path);
 
 /**
  * @typedef destroy_grug_state_t
@@ -323,6 +323,7 @@ union grug_value game_fn_set_position                      (struct grug_state* g
 union grug_value game_fn_cause_game_fn_error               (struct grug_state* grug_state, const union grug_value args[]);
 union grug_value game_fn_Utils_cause_game_fn_error         (struct grug_state* grug_state, const union grug_value args[]);
 union grug_value game_fn_call_on_b_fn                      (struct grug_state* grug_state, const union grug_value args[]);
+union grug_value game_fn_call_on_b_fn_number               (struct grug_state* grug_state, const union grug_value args[]);
 union grug_value game_fn_Utils_call_on_b_fn                (struct grug_state* grug_state, const union grug_value args[]);
 union grug_value game_fn_store                             (struct grug_state* grug_state, const union grug_value args[]);
 union grug_value game_fn_print_csv                         (struct grug_state* grug_state, const union grug_value args[]);

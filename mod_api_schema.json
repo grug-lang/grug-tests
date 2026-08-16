@@ -135,12 +135,6 @@
                     },
                     "type": {
                         "$ref": "#/definitions/type"
-                    },
-                    "resource_extension": {
-                        "type": "string"
-                    },
-                    "entity_type": {
-                        "type": "string"
                     }
                 }
             }
@@ -160,6 +154,12 @@
 					"items": {
 						"$ref": "#/definitions/type"
 					}
+				},
+				"resource_extension": {
+					"type": "string"
+				},
+				"entity_type": {
+					"type": "string"
 				}
             }
         }

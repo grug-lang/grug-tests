@@ -4621,7 +4621,7 @@ static void runtime_error_time_limit_exceeded(struct grug_state* grug_state, str
 	assert_true(had_runtime_error);
 
 	assert_runtime_error_type(GRUG_ON_FN_TIME_LIMIT_EXCEEDED);
-	assert_runtime_error_reason("Took longer than 1000 milliseconds to run");
+	assert_runtime_error_reason("Took longer than 100 milliseconds to run");
 
 	assert_string(runtime_error_on_fn_name, "a");
 	assert_string(runtime_error_on_fn_path, "err_runtime/time_limit_exceeded/input-D.grug");
@@ -4633,7 +4633,7 @@ static void runtime_error_time_limit_exceeded_exponential_calls(struct grug_stat
 	assert_true(had_runtime_error);
 
 	assert_runtime_error_type(GRUG_ON_FN_TIME_LIMIT_EXCEEDED);
-	assert_runtime_error_reason("Took longer than 1000 milliseconds to run");
+	assert_runtime_error_reason("Took longer than 100 milliseconds to run");
 
 	assert_string(runtime_error_on_fn_name, "a");
 	assert_string(runtime_error_on_fn_path, "err_runtime/time_limit_exceeded_exponential_calls/input-D.grug");
@@ -4645,7 +4645,7 @@ static void runtime_error_time_limit_exceeded_fibonacci(struct grug_state* grug_
 	assert_true(had_runtime_error);
 
 	assert_runtime_error_type(GRUG_ON_FN_TIME_LIMIT_EXCEEDED);
-	assert_runtime_error_reason("Took longer than 1000 milliseconds to run");
+	assert_runtime_error_reason("Took longer than 100 milliseconds to run");
 
 	assert_string(runtime_error_on_fn_name, "a");
 	assert_string(runtime_error_on_fn_path, "err_runtime/time_limit_exceeded_fibonacci/input-D.grug");

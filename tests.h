@@ -103,10 +103,10 @@ typedef struct grug_state* (*create_grug_state_t) (
 );
 
 /**
- * @typedef destroy_grug_state_t
- * @brief Destroy a `state` that was created from a previous call to `create_grug_state`.
+ * @typedef parse_mod_api_t
+ * @brief Check if the input file path constitues a valid mod_api.
  *
- * @param grug_state The state to destroy.
+ * @param mod_api_path The path to the mod_api file.
  */
 typedef char* (*parse_mod_api_t)(const char* mod_api_path);
 
@@ -329,7 +329,7 @@ union grug_value game_fn_store                             (struct grug_state* g
 union grug_value game_fn_print_csv                         (struct grug_state* grug_state, const union grug_value args[]);
 union grug_value game_fn_retrieve                          (struct grug_state* grug_state, const union grug_value args[]);
 union grug_value game_fn_box_number                        (struct grug_state* grug_state, const union grug_value args[]);
-// these are the non generic verions for the normal methods tests
+
 union grug_value game_fn_vec_number_new                    (struct grug_state* grug_state, const union grug_value args[]);
 union grug_value game_fn_vec_number_push                   (struct grug_state* grug_state, const union grug_value args[]);
 union grug_value game_fn_vec_number_pop                    (struct grug_state* grug_state, const union grug_value args[]);

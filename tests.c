@@ -1,4 +1,3 @@
-// TODO: Runtime errors should check the error message inline instead of reading from expected_error.txt
 #include "tests.h"
 
 #include "cJSON.h"
@@ -85,6 +84,13 @@ static const char *get_type_name[] = {
 	[GRUG_ON_FN_TIME_LIMIT_EXCEEDED] = "GRUG_ON_FN_TIME_LIMIT_EXCEEDED",
 	[GRUG_ON_FN_GAME_FN_ERROR] = "GRUG_ON_FN_GAME_FN_ERROR",
 };
+
+#define assert_runtime_error_reason(expected_reason) do { \
+	if (!streq(expected_reason, runtime_error_reason)) { \
+		fprintf(stderr, "%s:%d: Assertion runtime error reason ('%s') == ('%s') failed.\n", __FILE__, __LINE__, expected_reason, runtime_error_reason); \
+		exit(EXIT_FAILURE); \
+	} \
+} while (0)
 
 #define assert_runtime_error_type(expected_type) do { \
 	if (runtime_error_type != expected_type) { \
@@ -1610,16 +1616,16 @@ static void run_err_spaces_tests(struct grug_state *grug_state) {
 	run_err_spaces_test(grug_state, "while_02-D.grug");
 }
 
-static void run_mod_api_test(const char *name) {
+static void run_mod_api_schema_test(const char *name) {
 	if (!is_whitelisted_test(name)) {
 		return;
 	}
 
-    printf("Running tests/mod_api/%s/err_mod_api.json...\n", name);
+    printf("Running tests/mod_api_schema/%s/err_mod_api.json...\n", name);
 	fflush(stdout);
 
     char path[4096];
-    int len = snprintf(path, sizeof(path), "%s/mod_api/%s/err_mod_api.json", tests_dir_path, name);
+    int len = snprintf(path, sizeof(path), "%s/mod_api_schema/%s/err_mod_api.json", tests_dir_path, name);
     if (len < 0 || (size_t)len >= sizeof(path)) {
 		fprintf(stderr, "Error: Filling mod_api test path failed\n");
 		exit(EXIT_FAILURE);
@@ -1630,10 +1636,10 @@ static void run_mod_api_test(const char *name) {
 		exit(EXIT_FAILURE);
 	}
 
-    printf("Running tests/mod_api/%s/ok_mod_api.json...\n", name);
+    printf("Running tests/mod_api_schema/%s/ok_mod_api.json...\n", name);
 	fflush(stdout);
 
-    len = snprintf(path, sizeof(path), "%s/mod_api/%s/ok_mod_api.json", tests_dir_path, name);
+    len = snprintf(path, sizeof(path), "%s/mod_api_schema/%s/ok_mod_api.json", tests_dir_path, name);
     if (len < 0 || (size_t)len >= sizeof(path)) {
 		fprintf(stderr, "Error: Filling mod_api test path failed\n");
 		exit(EXIT_FAILURE);
@@ -1647,45 +1653,43 @@ static void run_mod_api_test(const char *name) {
 	}
 }
 
-static void run_mod_api_tests(void) {
-	run_mod_api_test("mod_api_must_be_valid_json");
-	run_mod_api_test("root_must_be_object");
+static void run_mod_api_schema_tests(void) {
+	run_mod_api_schema_test("mod_api_must_be_valid_json");
+	run_mod_api_schema_test("root_must_be_object");
 
-	run_mod_api_test("description_must_be_present");
-	run_mod_api_test("description_must_be_string");
+	run_mod_api_schema_test("description_must_be_present");
+	run_mod_api_schema_test("description_must_be_string");
 
-	run_mod_api_test("host_functions_must_be_object");
-	run_mod_api_test("host_fn_must_be_object");
-	run_mod_api_test("host_fn_generic_must_be_string");
-	run_mod_api_test("host_fn_cannot_return_resource");
-	run_mod_api_test("host_fn_cannot_return_entity");
+	run_mod_api_schema_test("host_functions_must_be_object");
+	run_mod_api_schema_test("host_fn_must_be_object");
+	run_mod_api_schema_test("host_fn_generic_must_be_string");
 
-	run_mod_api_test("classes_must_be_object");
-	run_mod_api_test("class_must_be_object");
-	run_mod_api_test("class_generic_must_be_string");
-	run_mod_api_test("methods_must_be_object");
-	run_mod_api_test("method_must_be_object");
+	run_mod_api_schema_test("classes_must_be_object");
+	run_mod_api_schema_test("class_must_be_object");
+	run_mod_api_schema_test("class_generic_must_be_string");
+	run_mod_api_schema_test("methods_must_be_object");
+	run_mod_api_schema_test("method_must_be_object");
 
-	run_mod_api_test("entities_must_be_object");
-	run_mod_api_test("entity_must_be_object");
-	run_mod_api_test("export_functions_must_be_array");
-	run_mod_api_test("export_fn_must_be_object");
+	run_mod_api_schema_test("entities_must_be_object");
+	run_mod_api_schema_test("entity_must_be_object");
+	run_mod_api_schema_test("export_functions_must_be_array");
+	run_mod_api_schema_test("export_fn_must_be_object");
 
-	run_mod_api_test("parameter_must_be_object");
-	run_mod_api_test("parameter_type_must_be_present");
-	run_mod_api_test("parameter_type_must_be_object");
+	run_mod_api_schema_test("parameter_must_be_object");
+	run_mod_api_schema_test("parameter_type_must_be_present");
+	run_mod_api_schema_test("parameter_type_must_be_object");
 }
 
-static void run_mod_api_semantic_err_test(const char *name) {
+static void run_mod_api_semantic_test(const char *name) {
 	if (!is_whitelisted_test(name)) {
 		return;
 	}
 
-    printf("Running tests/mod_api_semantic_err/%s/err_mod_api.json...\n", name);
+    printf("Running tests/mod_api_semantics/%s/err_mod_api.json...\n", name);
 	fflush(stdout);
 
     char path[4096];
-    int len = snprintf(path, sizeof(path), "%s/mod_api_semantic_err/%s/err_mod_api.json", tests_dir_path, name);
+    int len = snprintf(path, sizeof(path), "%s/mod_api_semantics/%s/err_mod_api.json", tests_dir_path, name);
     if (len < 0 || (size_t)len >= sizeof(path)) {
 		fprintf(stderr, "Error: Filling mod_api test path failed\n");
 		exit(EXIT_FAILURE);
@@ -1696,10 +1700,10 @@ static void run_mod_api_semantic_err_test(const char *name) {
 		exit(EXIT_FAILURE);
 	}
 
-    printf("Running tests/mod_api_semantic_err/%s/ok_mod_api.json...\n", name);
+    printf("Running tests/mod_api_semantics/%s/ok_mod_api.json...\n", name);
 	fflush(stdout);
 
-    len = snprintf(path, sizeof(path), "%s/mod_api_semantic_err/%s/ok_mod_api.json", tests_dir_path, name);
+    len = snprintf(path, sizeof(path), "%s/mod_api_semantics/%s/ok_mod_api.json", tests_dir_path, name);
     if (len < 0 || (size_t)len >= sizeof(path)) {
 		fprintf(stderr, "Error: Filling mod_api test path failed\n");
 		exit(EXIT_FAILURE);
@@ -1713,17 +1717,17 @@ static void run_mod_api_semantic_err_test(const char *name) {
 	}
 }
 
-static void run_mod_api_semantic_err_tests(void) {
-	run_mod_api_semantic_err_test("host_fn_generic_must_begin_with_$");
-	run_mod_api_semantic_err_test("host_fn_cannot_return_resource");
-	run_mod_api_semantic_err_test("host_fn_cannot_return_entity");
+static void run_mod_api_semantic_tests(void) {
+	run_mod_api_semantic_test("host_fn_generic_must_begin_with_$");
+	run_mod_api_semantic_test("host_fn_cannot_return_resource");
+	run_mod_api_semantic_test("host_fn_cannot_return_entity");
 
-	run_mod_api_semantic_err_test("class_generic_must_begin_with_$");
+	run_mod_api_semantic_test("class_generic_must_begin_with_$");
 
-	run_mod_api_semantic_err_test("generic_must_be_declared");
-	run_mod_api_semantic_err_test("number_of_generics_on_class_must_match");
-	run_mod_api_semantic_err_test("cannot_have_generic_on_undeclared_class");
-	run_mod_api_semantic_err_test("class_cannot_have_same_name_as_entity");
+	run_mod_api_semantic_test("generic_must_be_declared");
+	run_mod_api_semantic_test("number_of_generics_on_class_must_match");
+	run_mod_api_semantic_test("cannot_have_generic_on_undeclared_class");
+	run_mod_api_semantic_test("class_cannot_have_same_name_as_entity");
 }
 
 static void test_error(
@@ -2411,19 +2415,6 @@ static void rerun_err_runtime_tests(struct grug_state *grug_state) {
 			fn_data->run(grug_state, entity);	
 		}
 
-		const char *expected_error = get_expected_error(fn_data->expected_error_path);
-
-		if (!streq_allowing_number_placeholder(runtime_error_reason, expected_error)) {
-			fprintf(stderr, "\nError: The error message differs from the expected error message.\n");
-			fprintf(stderr, "Output:\n");
-			print_string_debug(runtime_error_reason);
-
-			fprintf(stderr, "Expected:\n");
-			print_string_debug(expected_error);
-
-			exit(EXIT_FAILURE);
-		}
-
 		if (!msg) {
 			destroy_entity(grug_state, entity);
 		}
@@ -2453,19 +2444,6 @@ static void run_err_runtime_tests(struct grug_state *grug_state) {
 		if (!msg) {
 			current_entity = entity;
 			fn_data->run(grug_state, entity);	
-		}
-
-		const char *expected_error = get_expected_error(fn_data->expected_error_path);
-
-		if (!streq_allowing_number_placeholder(runtime_error_reason, expected_error)) {
-			fprintf(stderr, "\nError: The error message differs from the expected error message.\n");
-			fprintf(stderr, "Output:\n");
-			print_string_debug(runtime_error_reason);
-
-			fprintf(stderr, "Expected:\n");
-			print_string_debug(expected_error);
-
-			exit(EXIT_FAILURE);
 		}
 
 		if (!msg) {
@@ -4439,6 +4417,7 @@ static void runtime_error_all(struct grug_state* grug_state, struct grug_entity_
 	assert_true(had_runtime_error);
 
 	assert_runtime_error_type(GRUG_ON_FN_STACK_OVERFLOW);
+	assert_runtime_error_reason("Stack overflow, so check for accidental infinite recursion");
 
 	assert_string(runtime_error_on_fn_name, "a");
 	assert_string(runtime_error_on_fn_path, "err_runtime/all/input-D.grug");
@@ -4456,6 +4435,7 @@ static void runtime_error_game_fn_error(struct grug_state* grug_state, struct gr
 	assert_true(had_runtime_error);
 
 	assert_runtime_error_type(GRUG_ON_FN_GAME_FN_ERROR);
+	assert_runtime_error_reason("cause_game_fn_error(): Example game function error");
 
 	assert_string(runtime_error_on_fn_name, "a");
 	assert_string(runtime_error_on_fn_path, "err_runtime/game_fn_error/input-V.grug");
@@ -4468,6 +4448,7 @@ static void runtime_error_game_fn_error(struct grug_state* grug_state, struct gr
 	assert_true(had_runtime_error);
 
 	assert_runtime_error_type(GRUG_ON_FN_GAME_FN_ERROR);
+	assert_runtime_error_reason("Utils_cause_game_fn_error(): Example game function error");
 
 	assert_string(runtime_error_on_fn_name, "a");
 	assert_string(runtime_error_on_fn_path, "err_runtime/game_fn_error/input-V.grug");
@@ -4480,6 +4461,7 @@ static void runtime_error_game_fn_error(struct grug_state* grug_state, struct gr
 	assert_true(had_runtime_error);
 
 	assert_runtime_error_type(GRUG_ON_FN_GAME_FN_ERROR);
+	assert_runtime_error_reason("cause_game_fn_error(): Example game function error");
 
 	assert_string(runtime_error_on_fn_name, "a");
 	assert_string(runtime_error_on_fn_path, "err_runtime/game_fn_error/input-V.grug");
@@ -4492,6 +4474,7 @@ static void runtime_error_game_fn_error(struct grug_state* grug_state, struct gr
 	assert_true(had_runtime_error);
 
 	assert_runtime_error_type(GRUG_ON_FN_GAME_FN_ERROR);
+	assert_runtime_error_reason("Utils_cause_game_fn_error(): Example game function error");
 
 	assert_string(runtime_error_on_fn_name, "a");
 	assert_string(runtime_error_on_fn_path, "err_runtime/game_fn_error/input-V.grug");
@@ -4505,6 +4488,7 @@ static void runtime_error_game_fn_error(struct grug_state* grug_state, struct gr
 	assert_true(had_runtime_error);
 
 	assert_runtime_error_type(GRUG_ON_FN_GAME_FN_ERROR);
+	assert_runtime_error_reason("cause_game_fn_error(): Example game function error");
 
 	assert_string(runtime_error_on_fn_name, "b");
 	assert_string(runtime_error_on_fn_path, "err_runtime/game_fn_error/input-V.grug");
@@ -4517,6 +4501,7 @@ static void runtime_error_game_fn_error(struct grug_state* grug_state, struct gr
 	assert_true(had_runtime_error);
 
 	assert_runtime_error_type(GRUG_ON_FN_GAME_FN_ERROR);
+	assert_runtime_error_reason("Utils_cause_game_fn_error(): Example game function error");
 
 	assert_string(runtime_error_on_fn_name, "b");
 	assert_string(runtime_error_on_fn_path, "err_runtime/game_fn_error/input-V.grug");
@@ -4529,6 +4514,7 @@ static void runtime_error_game_fn_error(struct grug_state* grug_state, struct gr
 	assert_true(had_runtime_error);
 
 	assert_runtime_error_type(GRUG_ON_FN_GAME_FN_ERROR);
+	assert_runtime_error_reason("cause_game_fn_error(): Example game function error");
 
 	assert_string(runtime_error_on_fn_name, "b");
 	assert_string(runtime_error_on_fn_path, "err_runtime/game_fn_error/input-V.grug");
@@ -4541,6 +4527,7 @@ static void runtime_error_game_fn_error(struct grug_state* grug_state, struct gr
 	assert_true(had_runtime_error);
 
 	assert_runtime_error_type(GRUG_ON_FN_GAME_FN_ERROR);
+	assert_runtime_error_reason("Utils_cause_game_fn_error(): Example game function error");
 
 	assert_string(runtime_error_on_fn_name, "b");
 	assert_string(runtime_error_on_fn_path, "err_runtime/game_fn_error/input-V.grug");
@@ -4556,6 +4543,7 @@ static void runtime_error_game_fn_error_global_scope(struct grug_state* grug_sta
 	assert_true(had_runtime_error);
 
 	assert_runtime_error_type(GRUG_ON_FN_GAME_FN_ERROR);
+	assert_runtime_error_reason("cause_game_fn_error(): Example game function error");
 
 	assert_string(runtime_error_on_fn_path, "err_runtime/game_fn_error_global_scope/input-A.grug");
 }
@@ -4570,6 +4558,7 @@ static void runtime_error_game_fn_error_once(struct grug_state* grug_state, stru
 	assert_true(had_runtime_error);
 
 	assert_runtime_error_type(GRUG_ON_FN_GAME_FN_ERROR);
+	assert_runtime_error_reason("cause_game_fn_error(): Example game function error");
 
 	assert_string(runtime_error_on_fn_name, "a");
 	assert_string(runtime_error_on_fn_path, "err_runtime/game_fn_error_once/input-E.grug");
@@ -4601,6 +4590,7 @@ static void runtime_error_on_fn_calls_erroring_on_fn(struct grug_state* grug_sta
 	assert_true(had_runtime_error);
 
 	assert_runtime_error_type(GRUG_ON_FN_GAME_FN_ERROR);
+	assert_runtime_error_reason("cause_game_fn_error(): Example game function error");
 
 	assert_string(runtime_error_on_fn_name, "b");
 	assert_string(runtime_error_on_fn_path, "err_runtime/on_fn_calls_erroring_on_fn/input-E.grug");
@@ -4620,6 +4610,7 @@ static void runtime_error_on_fn_errors_after_it_calls_other_on_fn(struct grug_st
 	assert_true(had_runtime_error);
 
 	assert_runtime_error_type(GRUG_ON_FN_GAME_FN_ERROR);
+	assert_runtime_error_reason("cause_game_fn_error(): Example game function error");
 
 	assert_string(runtime_error_on_fn_name, "a");
 	assert_string(runtime_error_on_fn_path, "err_runtime/on_fn_errors_after_it_calls_other_on_fn/input-E.grug");
@@ -4641,6 +4632,7 @@ static void runtime_error_on_fn_method_calls_erroring_on_fn(struct grug_state* g
 	assert_true(had_runtime_error);
 
 	assert_runtime_error_type(GRUG_ON_FN_GAME_FN_ERROR);
+	assert_runtime_error_reason("cause_game_fn_error(): Example game function error");
 
 	assert_string(runtime_error_on_fn_name, "b");
 	assert_string(runtime_error_on_fn_path, "err_runtime/on_fn_method_calls_erroring_on_fn/input-E.grug");
@@ -4652,6 +4644,7 @@ static void runtime_error_stack_overflow(struct grug_state* grug_state, struct g
 	assert_true(had_runtime_error);
 
 	assert_runtime_error_type(GRUG_ON_FN_STACK_OVERFLOW);
+	assert_runtime_error_reason("Stack overflow, so check for accidental infinite recursion");
 
 	assert_string(runtime_error_on_fn_name, "a");
 	assert_string(runtime_error_on_fn_path, "err_runtime/stack_overflow/input-D.grug");
@@ -4663,6 +4656,7 @@ static void runtime_error_time_limit_exceeded(struct grug_state* grug_state, str
 	assert_true(had_runtime_error);
 
 	assert_runtime_error_type(GRUG_ON_FN_TIME_LIMIT_EXCEEDED);
+	assert_runtime_error_reason("Took longer than 1000 milliseconds to run");
 
 	assert_string(runtime_error_on_fn_name, "a");
 	assert_string(runtime_error_on_fn_path, "err_runtime/time_limit_exceeded/input-D.grug");
@@ -4674,6 +4668,7 @@ static void runtime_error_time_limit_exceeded_exponential_calls(struct grug_stat
 	assert_true(had_runtime_error);
 
 	assert_runtime_error_type(GRUG_ON_FN_TIME_LIMIT_EXCEEDED);
+	assert_runtime_error_reason("Took longer than 1000 milliseconds to run");
 
 	assert_string(runtime_error_on_fn_name, "a");
 	assert_string(runtime_error_on_fn_path, "err_runtime/time_limit_exceeded_exponential_calls/input-D.grug");
@@ -4685,6 +4680,7 @@ static void runtime_error_time_limit_exceeded_fibonacci(struct grug_state* grug_
 	assert_true(had_runtime_error);
 
 	assert_runtime_error_type(GRUG_ON_FN_TIME_LIMIT_EXCEEDED);
+	assert_runtime_error_reason("Took longer than 1000 milliseconds to run");
 
 	assert_string(runtime_error_on_fn_name, "a");
 	assert_string(runtime_error_on_fn_path, "err_runtime/time_limit_exceeded_fibonacci/input-D.grug");
@@ -5224,8 +5220,8 @@ void grug_tests_run(
 	SHUFFLE(runtime_error_test_datas, err_runtime_test_datas_size, struct runtime_error_test_data);
 #endif
 
-	run_mod_api_tests();
-	run_mod_api_semantic_err_tests();
+	run_mod_api_schema_tests();
+	run_mod_api_semantic_tests();
 
     run_err_spaces_tests(grug_state);
 	run_err_tests(grug_state);

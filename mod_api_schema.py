@@ -31,7 +31,7 @@ def main():
         print("Warning: mod_api.json not found, skipping valid file check.")
 
     # Validate that files in tests/err_mod_api/ intentionally FAIL
-    err_files = glob.glob("tests/mod_api/*/err_mod_api.json")
+    err_files = glob.glob("tests/mod_api_schema/*/err_mod_api.json")
     for err_file in err_files:
         try:
             err_data = load_json(err_file)
@@ -51,33 +51,33 @@ def main():
             print(f"Error reading {err_file}: {e}")
             sys.exit(1)
 
-    ok_files = glob.glob("tests/mod_api/*/ok_mod_api.json")
+    ok_files = glob.glob("tests/mod_api_schema/*/ok_mod_api.json")
     for ok_file in ok_files:
         try:
-            ok_data = load_json(err_file)
+            ok_data = load_json(ok_file)
             validate(instance=ok_data, schema=schema)
             # If we reach here, the file passed when it shouldn't have
-            print(f"SUCCESS: {err_file} passed validation")
-            sys.exit(1)
+            print(f"SUCCESS: {ok_file} passed validation")
         except ValidationError as e:
-            print(f"FAIL: {err_file} failed validation, but it should have passed.")
+            print(f"FAIL: {ok_file} failed validation, but it should have passed.")
             print(f"  {e.message}")
             sys.exit(1)
         except Exception as e:
-            print(f"Error reading {err_file}: {e}")
+            print(f"Error reading {ok_file}: {e}")
             sys.exit(1)
 
-    semantic_err_files = glob.glob("tests/mod_api_semantic_error/*/*.json")
+    semantic_err_files = glob.glob("tests/mod_api_semantics/*/*.json")
     for semantic_err_file in semantic_err_files:
         try:
             semantic_err_data = load_json(semantic_err_file)
             validate(instance=semantic_err_data, schema=schema)
+            print(f"SUCCESS: {semantic_err_file} passed validation")
         except ValidationError as e:
-            print(f"FAIL: {err_file} failed validation, but it should have passed.")
+            print(f"FAIL: {semantic_err_file} failed validation, but it should have passed.")
             print(f"  {e.message}")
             sys.exit(1)
         except Exception as e:
-            print(f"Error reading {err_file}: {e}")
+            print(f"Error reading {semantic_err_file}: {e}")
             sys.exit(1)
 
 

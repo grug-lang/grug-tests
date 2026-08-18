@@ -4541,6 +4541,51 @@ static void runtime_error_game_fn_error_once(struct grug_state* grug_state, stru
 	assert_false(had_runtime_error);
 }
 
+static void runtime_error_stack_overflow_logical_left(struct grug_state* grug_state, struct grug_entity_id* entity) {
+	assert_call_count(initialize_bool, 0);
+	assert_error_handler_call_count(0);
+	call_export_fn_argless(grug_state, entity, "a");
+	assert_call_count(initialize_bool, 0);
+	assert_error_handler_call_count(1);
+
+	assert_true(had_runtime_error);
+
+	assert_runtime_error_type(GRUG_ON_FN_STACK_OVERFLOW);
+
+	assert_string(runtime_error_on_fn_name, "a");
+	assert_string(runtime_error_on_fn_path, "err_runtime/stack_overflow_logical_left/input-D.grug");
+}
+
+static void runtime_error_stack_overflow_logical_right(struct grug_state* grug_state, struct grug_entity_id* entity) {
+	assert_call_count(initialize_bool, 0);
+	assert_error_handler_call_count(0);
+	call_export_fn_argless(grug_state, entity, "a");
+	assert_call_count(initialize_bool, 0);
+	assert_error_handler_call_count(1);
+
+	assert_true(had_runtime_error);
+
+	assert_runtime_error_type(GRUG_ON_FN_STACK_OVERFLOW);
+
+	assert_string(runtime_error_on_fn_name, "a");
+	assert_string(runtime_error_on_fn_path, "err_runtime/stack_overflow_logical_right/input-D.grug");
+}
+
+static void runtime_error_stack_overflow_unary(struct grug_state* grug_state, struct grug_entity_id* entity) {
+	assert_call_count(initialize_bool, 0);
+	assert_error_handler_call_count(0);
+	call_export_fn_argless(grug_state, entity, "a");
+	assert_call_count(initialize_bool, 0);
+	assert_error_handler_call_count(1);
+
+	assert_true(had_runtime_error);
+
+	assert_runtime_error_type(GRUG_ON_FN_STACK_OVERFLOW);
+
+	assert_string(runtime_error_on_fn_name, "a");
+	assert_string(runtime_error_on_fn_path, "err_runtime/stack_overflow_unary/input-D.grug");
+}
+
 static void runtime_error_on_fn_calls_erroring_on_fn(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	assert_call_count(call_on_b_fn, 0);
 	assert_call_count(cause_game_fn_error, 0);
@@ -5111,6 +5156,9 @@ static void add_runtime_error_tests(void) {
 	ADD_TEST_RUNTIME_ERROR(on_fn_errors_after_it_calls_other_on_fn, "E");
 	ADD_TEST_RUNTIME_ERROR(on_fn_method_calls_erroring_on_fn, "E");
 	ADD_TEST_RUNTIME_ERROR(stack_overflow, "D");
+	ADD_TEST_RUNTIME_ERROR(stack_overflow_logical_left, "D");
+	ADD_TEST_RUNTIME_ERROR(stack_overflow_logical_right, "D");
+	ADD_TEST_RUNTIME_ERROR(stack_overflow_unary, "D");
 	ADD_TEST_RUNTIME_ERROR(time_limit_exceeded, "D");
 	ADD_TEST_RUNTIME_ERROR(time_limit_exceeded_exponential_calls, "D");
 	ADD_TEST_RUNTIME_ERROR(time_limit_exceeded_fibonacci, "D");

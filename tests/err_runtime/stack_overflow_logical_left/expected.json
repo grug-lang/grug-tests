@@ -1,0 +1,46 @@
+[
+    {
+        "name": "a",
+        "statements": [
+            {
+                "arguments": [
+                    {
+                        "left_expr": {
+                            "name": "_overflow",
+                            "type": "CALL_EXPR"
+                        },
+                        "operator": "AND_TOKEN",
+                        "right_expr": {
+                            "type": "TRUE_EXPR"
+                        },
+                        "type": "LOGICAL_EXPR"
+                    }
+                ],
+                "name": "initialize_bool",
+                "type": "CALL_STATEMENT"
+            }
+        ],
+        "type": "GLOBAL_ON_FN"
+    },
+    {
+        "type": "GLOBAL_EMPTY_LINE"
+    },
+    {
+        "name": "_overflow",
+        "return_type": "bool",
+        "statements": [
+            {
+                "expr": {
+                    "expr": {
+                        "name": "_overflow",
+                        "type": "CALL_EXPR"
+                    },
+                    "operator": "NOT_TOKEN",
+                    "type": "UNARY_EXPR"
+                },
+                "type": "RETURN_STATEMENT"
+            }
+        ],
+        "type": "GLOBAL_HELPER_FN"
+    }
+]

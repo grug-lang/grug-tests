@@ -8,8 +8,7 @@ This is [grug](https://github.com/grug-lang/grug) its official test suite.
 2. Run CMake.
     - On Linux, run `cmake -S . -B build`
     - On Windows, run `cmake -S . -B build -G 'MinGW Makefile' -DCMAKE_C_COMPILER=gcc`
-3. Build the smoke tests with `cmake --build build`
-4. Run the smoke tests with `build/smoketest`
+3. Build and run the smoke tests with `cmake --build build && build/smoketest`
 
 ## Troubleshooting
 

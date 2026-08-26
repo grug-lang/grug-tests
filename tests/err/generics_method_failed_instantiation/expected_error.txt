@@ -1,3 +1,3 @@
-  in a (err/generics_method_failed_instantiation/input-D.grug:3:7)
-Error: generic method 'Dict.put' failed instantiation for types [Dict[number, string], number]
-3 $ x.put(dict(), 25)
+  in a (err/generics_method_failed_instantiation/input-D.grug:2:45)
+Error: host function 'dict' expects type 'Dict[number, string]' to implement constraint 'Hash' but it doesn't
+2 $ x: Dict[Dict[number, string], number] = dict()

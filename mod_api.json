@@ -1,4 +1,66 @@
 {
+	"constraints": {
+		"Default": {
+			"description": "A type where a default value can be created with no inputs",
+			"implementors": []
+		},
+		"Hash": {
+			"description": "A type that can be hashed deterministically",
+			"implementors": [
+				{
+					"type": {
+						"name": "number"
+					}
+				},
+				{
+					"type": {
+						"name": "string"
+					}
+				},
+				{
+					"type": {
+						"name": "bool"
+					}
+				},
+				{
+					"used_generics": [
+						{
+							"name": "$T1"
+						},
+						{
+							"name": "$T2"
+						}
+					],
+					"type": {
+						"name": "Pair",
+						"generics": [
+							{
+								"name": "$T1"
+							},
+							{
+								"name": "$T2"
+							}
+						]
+					}
+				},
+				{
+					"used_generics": [
+						{
+							"name": "$T"
+						}
+					],
+					"type": {
+						"name": "Vec",
+						"generics": [
+							{
+								"name": "$T"
+							}
+						]
+					}
+				}
+			]
+		}
+	},
 	"entities": {
 		"A": {
 			"description": "foo"
@@ -242,7 +304,9 @@
 				"cause_game_fn_error_generic": {
 					"description": "accepts a generic value and unconditionally causes a runtime error",
 					"used_generics": [
-						"$T"
+						{
+							"name": "$T"
+						}
 					],
 					"parameters": [
 						{
@@ -261,7 +325,9 @@
 		"Vec": {
 			"description": "A vector",
 			"used_generics": [
-				"$T"
+				{
+					"name": "$T"
+				}
 			],
 			"methods": {
 				"push": {
@@ -304,8 +370,12 @@
 		"Pair": {
 			"description": "A pair of two different values",
 			"used_generics": [
-				"$T1",
-				"$T2"
+				{
+					"name": "$T1"
+				},
+				{
+					"name": "$T2"
+				}
 			],
 			"methods": {
 				"first": {
@@ -325,7 +395,9 @@
 		"Box": {
 			"description": "A heap allocated version of a type. Allows sharing of primitive types",
 			"used_generics": [
-				"$T"
+				{
+					"name": "$T"
+				}
 			],
 			"methods": {
 				"get": {
@@ -350,8 +422,13 @@
 		"Dict": {
 			"description": "A dictionary",
 			"used_generics": [
-				"$K",
-				"$V"
+				{
+					"name": "$K",
+					"constraints": ["Hash"]
+				},
+				{
+					"name": "$V"
+				}
 			],
 			"methods": {
 				"put": {
@@ -381,8 +458,12 @@
 		"make_pair": {
 			"description": "Creates a pair of two values",
 			"used_generics": [
-				"$T1",
-				"$T2"
+				{
+					"name": "$T1"
+				},
+				{
+					"name": "$T2"
+				}
 			],
 			"return_type": {
 				"name": "Pair",
@@ -456,7 +537,9 @@
 		"cause_game_fn_error_generic": {
 			"description": "accepts a generic value and unconditionally causes a runtime error",
 			"used_generics": [
-				"$T"
+				{
+					"name": "$T"
+				}
 			],
 			"parameters": [
 				{
@@ -1804,7 +1887,9 @@
 		"vec": {
 			"description": "Creates a new Vec",
 			"used_generics": [
-				"$T"
+				{
+					"name": "$T"
+				}
 			],
 			"parameters": [ ],
 			"return_type": {
@@ -1819,7 +1904,9 @@
 		"box": {
 			"description": "Creates a boxed item",
 			"used_generics": [
-				"$T"
+				{
+					"name": "$T"
+				}
 			],
 			"parameters": [
 				{
@@ -1841,7 +1928,10 @@
 		"default": {
 			"description": "Creates a default new item for the type. Only works for Vec and string",
 			"used_generics": [
-				"$T"
+				{
+					"name": "$T",
+					"constraints": ["Default"]
+				}
 			],
 			"return_type": {
 				"name": "$T"
@@ -1850,8 +1940,13 @@
 		"dict": {
 			"description": "Creates a new empty dict",
 			"used_generics": [
-				"$K",
-				"$V"
+				{
+					"name": "$K",
+					"constraints": ["Hash"]
+				},
+				{
+					"name": "$V"
+				}
 			],
 			"return_type": {
 				"name": "Dict",
@@ -1868,8 +1963,13 @@
 		"dict_from_vec": {
 			"description": "Creates a dict from a list of pairs of items",
 			"used_generics": [
-				"$K",
-				"$V"
+				{
+					"name": "$K",
+					"constraints": ["Hash"]
+				},
+				{
+					"name": "$V"
+				}
 			],
 			"return_type": {
 				"name": "Dict",

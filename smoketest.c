@@ -87,23 +87,12 @@ static game_fn p_game_fn_vec_push;
 static game_fn p_game_fn_vec_pop;
 static game_fn p_game_fn_vec_insert;
 
-static generic_fn_reg p_reg_box;
 static game_fn p_game_fn_box;
-
-static generic_fn_reg p_reg_box_get;
 static game_fn p_game_fn_box_get;
+static game_fn p_game_fn_box_set;
 
-static generic_fn_reg p_reg_box_set;
-// Unused for now
-// static game_fn p_game_fn_box_set;
-
-static generic_fn_reg p_reg_make_pair;
 static game_fn p_game_fn_make_pair;
-
-static generic_fn_reg p_reg_pair_first;
 static game_fn p_game_fn_pair_first;
-
-static generic_fn_reg p_reg_pair_second;
 static game_fn p_game_fn_pair_second;
 
 static const char *saved_grug_file_path;
@@ -172,25 +161,6 @@ static struct grug_file_id *compile_grug_file(struct grug_state* grug_state, con
         fclose(f);
 		*error_out = buf;
 		return NULL;
-    } else if (starts_with(path, "ok/generic_type_as_operand_1/")) {
-		p_game_fn_box     = p_reg_box    (&(struct grug_type) {.type = GRUG_TYPE_ENUM_NUMBER});
-		p_game_fn_box_get = p_reg_box_get(&(struct grug_type) {.type = GRUG_TYPE_ENUM_NUMBER});
-    } else if (starts_with(path, "ok/generic_type_as_operand_2/")) {
-		p_game_fn_box     = p_reg_box    (&(struct grug_type) {.type = GRUG_TYPE_ENUM_NUMBER});
-		p_game_fn_box_get = p_reg_box_get(&(struct grug_type) {.type = GRUG_TYPE_ENUM_NUMBER});
-    } else if (starts_with(path, "ok/generic_type_as_operand_3/")) {
-		p_game_fn_box     = p_reg_box    (&(struct grug_type) {.type = GRUG_TYPE_ENUM_NUMBER});
-		p_game_fn_box_get = p_reg_box_get(&(struct grug_type) {.type = GRUG_TYPE_ENUM_NUMBER});
-    } else if (starts_with(path, "ok/generic_type_as_operand_4/")) {
-		p_game_fn_box     = p_reg_box    (&(struct grug_type) {.type = GRUG_TYPE_ENUM_NUMBER});
-		p_game_fn_box_get = p_reg_box_get(&(struct grug_type) {.type = GRUG_TYPE_ENUM_NUMBER});
-    } else if (starts_with(path, "ok/generics_simple/")) {
-		p_game_fn_box     = p_reg_box    (&(struct grug_type) {.type = GRUG_TYPE_ENUM_NUMBER});
-		p_game_fn_box_get = p_reg_box_get(&(struct grug_type) {.type = GRUG_TYPE_ENUM_NUMBER});
-    } else if (starts_with(path, "ok/generics_simple_2/")) {
-		p_game_fn_make_pair   = p_reg_make_pair  ((struct grug_type[2]) {{.type = GRUG_TYPE_ENUM_NUMBER}, {.type = GRUG_TYPE_ENUM_STRING}});
-		p_game_fn_pair_first  = p_reg_pair_first ((struct grug_type[2]) {{.type = GRUG_TYPE_ENUM_NUMBER}, {.type = GRUG_TYPE_ENUM_STRING}});
-		p_game_fn_pair_second = p_reg_pair_second((struct grug_type[2]) {{.type = GRUG_TYPE_ENUM_NUMBER}, {.type = GRUG_TYPE_ENUM_STRING}});
 	}
 
 	*error_out = NULL;
@@ -499,59 +469,88 @@ static void call_export_fn(struct grug_state* grug_state, struct grug_entity_id*
     } else if (starts_with(path, "ok/ge_true_2/")) {
         CALL(grug_state, initialize_bool, grug_bool(true));
     } else if (starts_with(path, "ok/generic_type_as_operand_1/")) {
-        union grug_value box = CALL(grug_state, box, grug_number(25));
-        CALL(grug_state, box_get, box);
-        CALL(grug_state, box, grug_number(-25));
+		struct grug_type type = {
+			.type = GRUG_TYPE_ENUM_NUMBER,
+		};
+        union grug_value box = CALL_GENERIC(grug_state, box, &type, grug_number(25));
+        CALL_GENERIC(grug_state, box_get, &type, box);
+        CALL_GENERIC(grug_state, box, &type, grug_number(-25));
     } else if (starts_with(path, "ok/generic_type_as_operand_2/")) {
-        union grug_value box = CALL(grug_state, box, grug_bool(true));
-        CALL(grug_state, box_get, box);
-        CALL(grug_state, box, grug_bool(false));
+		struct grug_type type = {
+			.type = GRUG_TYPE_ENUM_BOOL,
+		};
+        union grug_value box = CALL_GENERIC(grug_state, box, &type, grug_bool(true));
+        CALL_GENERIC(grug_state, box_get, &type, box);
+        CALL_GENERIC(grug_state, box, &type, grug_bool(false));
     } else if (starts_with(path, "ok/generic_type_as_operand_3/")) {
-        union grug_value box = CALL(grug_state, box, grug_bool(false));
-        CALL(grug_state, box_get, box);
-        CALL(grug_state, box, grug_bool(false));
+		struct grug_type type = {
+			.type = GRUG_TYPE_ENUM_BOOL,
+		};
+        union grug_value box = CALL_GENERIC(grug_state, box, &type, grug_bool(false));
+        CALL_GENERIC(grug_state, box_get, &type, box);
+        CALL_GENERIC(grug_state, box, &type, grug_bool(false));
     } else if (starts_with(path, "ok/generic_type_as_operand_4/")) {
-        union grug_value box = CALL(grug_state, box, grug_number(25.0));
-        CALL(grug_state, box_get, box);
-        CALL(grug_state, box, grug_number(117.0));
+		struct grug_type type = {
+			.type = GRUG_TYPE_ENUM_NUMBER,
+		};
+        union grug_value box = CALL_GENERIC(grug_state, box, &type, grug_number(25.0));
+        CALL_GENERIC(grug_state, box_get, &type, box);
+        CALL_GENERIC(grug_state, box, &type, grug_number(117.0));
     } else if (starts_with(path, "ok/generics_simple/")) {
 		if (streq(on_fn_name, "a")) {
-			union grug_value vec = CALL_ARGLESS(grug_state, vec_new);
-			CALL(grug_state, vec_push, vec, grug_number(30));
-			CALL(grug_state, vec_push, vec, grug_number(10));
-			CALL(grug_state, vec_push, vec, grug_number(15));
-			CALL(grug_state, vec_push, vec, grug_number(25));
-			CALL(grug_state, vec_insert, vec, grug_number(1), grug_number(3));
+			struct grug_type type = {
+				.type = GRUG_TYPE_ENUM_NUMBER,
+			};
+			union grug_value vec = CALL_ARGLESS_GENERIC(grug_state, vec_new, &type);
+			CALL_GENERIC(grug_state, vec_push, &type, vec, grug_number(30));
+			CALL_GENERIC(grug_state, vec_push, &type, vec, grug_number(10));
+			CALL_GENERIC(grug_state, vec_push, &type, vec, grug_number(15));
+			CALL_GENERIC(grug_state, vec_push, &type, vec, grug_number(25));
+			CALL_GENERIC(grug_state, vec_insert, &type, vec, grug_number(1), grug_number(3));
 
-			CALL(grug_state, vec_pop, vec);
-			CALL(grug_state, vec_pop, vec);
-			CALL(grug_state, vec_pop, vec);
+			CALL_GENERIC(grug_state, vec_pop, &type, vec);
+			CALL_GENERIC(grug_state, vec_pop, &type, vec);
+			CALL_GENERIC(grug_state, vec_pop, &type, vec);
 		} else if (streq(on_fn_name, "b")) {
-			union grug_value vec = CALL_ARGLESS(grug_state, vec_new);
-			CALL(grug_state, vec_push, vec, grug_string("Hello"));
-			CALL(grug_state, vec_push, vec, grug_string("World"));
-			CALL(grug_state, vec_push, vec, grug_string("I'm"));
-			CALL(grug_state, vec_push, vec, grug_string("here"));
-			CALL(grug_state, vec_insert, vec, grug_number(3), grug_string("not"));
+			struct grug_type type = {
+				.type = GRUG_TYPE_ENUM_STRING,
+			};
+			union grug_value vec = CALL_ARGLESS_GENERIC(grug_state, vec_new, &type);
+			CALL_GENERIC(grug_state, vec_push, &type, vec, grug_string("Hello"));
+			CALL_GENERIC(grug_state, vec_push, &type, vec, grug_string("World"));
+			CALL_GENERIC(grug_state, vec_push, &type, vec, grug_string("I'm"));
+			CALL_GENERIC(grug_state, vec_push, &type, vec, grug_string("here"));
+			CALL_GENERIC(grug_state, vec_insert, &type, vec, grug_number(3), grug_string("not"));
 
-			CALL(grug_state, vec_pop, vec);
-			CALL(grug_state, vec_pop, vec);
-			CALL(grug_state, vec_pop, vec);
+			CALL_GENERIC(grug_state, vec_pop, &type, vec);
+			CALL_GENERIC(grug_state, vec_pop, &type, vec);
+			CALL_GENERIC(grug_state, vec_pop, &type, vec);
 		} else if (streq(on_fn_name, "c")) {
-			union grug_value vec = CALL_ARGLESS(grug_state, vec_new);
-			CALL(grug_state, vec_push, vec, grug_bool(true));
-			CALL(grug_state, vec_push, vec, grug_bool(false));
-			CALL(grug_state, vec_push, vec, grug_bool(true));
-			CALL(grug_state, vec_push, vec, grug_bool(false));
-			CALL(grug_state, vec_insert, vec, grug_number(3), grug_bool(true));
+			struct grug_type type = {
+				.type = GRUG_TYPE_ENUM_BOOL,
+			};
+			union grug_value vec = CALL_ARGLESS_GENERIC(grug_state, vec_new, &type);
+			CALL_GENERIC(grug_state, vec_push, &type, vec, grug_bool(true));
+			CALL_GENERIC(grug_state, vec_push, &type, vec, grug_bool(false));
+			CALL_GENERIC(grug_state, vec_push, &type, vec, grug_bool(true));
+			CALL_GENERIC(grug_state, vec_push, &type, vec, grug_bool(false));
+			CALL_GENERIC(grug_state, vec_insert, &type, vec, grug_number(3), grug_bool(true));
 
-			CALL(grug_state, vec_pop, vec);
-			CALL(grug_state, vec_pop, vec);
+			CALL_GENERIC(grug_state, vec_pop, &type, vec);
+			CALL_GENERIC(grug_state, vec_pop, &type, vec);
 		}
     } else if (starts_with(path, "ok/generics_simple_2/")) {
-		union grug_value pair   = CALL(grug_state, make_pair, grug_number(25), grug_string("Hello"));
-		CALL(grug_state, pair_second, pair);
-		CALL(grug_state, pair_first, pair);
+		struct grug_type type[2] = {
+			{
+				.type = GRUG_TYPE_ENUM_NUMBER,
+			},
+			{
+				.type = GRUG_TYPE_ENUM_STRING,
+			}
+		};
+		union grug_value pair   = CALL_GENERIC(grug_state, make_pair, type, grug_number(25), grug_string("Hello"));
+		CALL_GENERIC(grug_state, pair_second, type, pair);
+		CALL_GENERIC(grug_state, pair_first , type, pair);
     } else if (starts_with(path, "ok/global_call_using_me/")) {
         CALL(grug_state, set_position, grug_id(1337));
     } else if (starts_with(path, "ok/global_can_use_earlier_global/")) {
@@ -1087,13 +1086,13 @@ static void load_tests_library(void) {
     p_game_fn_vec_pop                        = (game_fn)load_sym(h, "game_fn_vec_number_pop");
     p_game_fn_vec_insert                     = (game_fn)load_sym(h, "game_fn_vec_number_insert");
 
-    p_reg_box                                = (generic_fn_reg)load_sym(h, "reg_game_fn_box");
-    p_reg_box_get                            = (generic_fn_reg)load_sym(h, "reg_game_fn_box_get");
-    p_reg_box_set                            = (generic_fn_reg)load_sym(h, "reg_game_fn_box_set");
-
-    p_reg_make_pair                          = (generic_fn_reg)load_sym(h, "reg_game_fn_make_pair");
-    p_reg_pair_first                         = (generic_fn_reg)load_sym(h, "reg_game_fn_pair_first");
-    p_reg_pair_second                        = (generic_fn_reg)load_sym(h, "reg_game_fn_pair_second");
+    p_game_fn_box                            = (game_fn)load_sym(h, "game_fn_box");
+    p_game_fn_box_get                        = (game_fn)load_sym(h, "game_fn_box_get");
+    p_game_fn_box_set                        = (game_fn)load_sym(h, "game_fn_box_set");
+	
+    p_game_fn_make_pair                      = (game_fn)load_sym(h, "game_fn_make_pair");
+    p_game_fn_pair_first                     = (game_fn)load_sym(h, "game_fn_pair_first");
+    p_game_fn_pair_second                    = (game_fn)load_sym(h, "game_fn_pair_second");
 	#pragma GCC diagnostic pop
 }
 

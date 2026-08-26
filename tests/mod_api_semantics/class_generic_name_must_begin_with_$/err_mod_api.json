@@ -3,7 +3,9 @@
 		"Test": {
 			"description": "hello",
 			"used_generics": [
-				"Hi"
+				{
+					"name": "Hi"
+				}
 			]
 		}
 	}

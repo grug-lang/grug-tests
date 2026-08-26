@@ -3,7 +3,9 @@
 		"Test": {
 			"description": "Foo",
 			"used_generics": [
-				"$T"
+				{
+					"name": "$T"
+				}
 			],
 			"methods": {
 				"test": {

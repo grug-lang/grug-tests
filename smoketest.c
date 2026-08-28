@@ -23,6 +23,12 @@ typedef HMODULE DllLib;
 
 #endif
 
+#define FATAL(...) do { \
+    fprintf(stderr, "%s:%d: ", __FILE__, __LINE__); \
+    fprintf(stderr, __VA_ARGS__); \
+    exit(EXIT_FAILURE); \
+} while (0)
+
 static void (*p_grug_tests_run)(
     const char *,
 	const char *,
@@ -871,8 +877,7 @@ static void call_export_fn(struct grug_state* grug_state, struct grug_entity_id*
         CALL(grug_state, initialize, grug_number(1.0));
         update_called = false;
     } else {
-        fprintf(stderr, "Error: add an elif for path '%s'\n", path);
-        exit(EXIT_FAILURE);
+        FATAL("Error: add an elif for path '%s'\n", path);
     }
 }
 
@@ -937,8 +942,7 @@ static size_t read_file(const char *path, uint8_t *bytes) {
 	size_t len = fread(bytes, 1, (size_t)ftell_result, f);
 
 	if (ferror(f)) {
-		fprintf(stderr, "Error: fread error\n");
-		exit(EXIT_FAILURE);
+		FATAL("Error: fread error\n");
 	}
 
 	if (fclose(f) == EOF) {

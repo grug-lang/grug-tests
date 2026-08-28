@@ -1,11 +1,4 @@
-n: number = 1
-
 export a() {
-    # The value passed to initialize() must be 3
-    initialize(n + _foo())
-}
-
-local _foo() number {
-    n = n + 1
-    return n
+    # eval_order_1() must be called before eval_order_2(), as neither is marked pure
+    max(eval_order_1(), eval_order_2())
 }

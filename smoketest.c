@@ -53,6 +53,8 @@ static game_fn p_game_fn_say;
 static game_fn p_game_fn_sin;
 static game_fn p_game_fn_cos;
 static game_fn p_game_fn_mega;
+static game_fn p_game_fn_eval_order_1;
+static game_fn p_game_fn_eval_order_2;
 static game_fn p_game_fn_get_false;
 static game_fn p_game_fn_set_is_happy;
 static game_fn p_game_fn_mega_f32;
@@ -447,11 +449,17 @@ static void call_export_fn(struct grug_state* grug_state, struct grug_entity_id*
     } else if (starts_with(path, "ok/eq_true/")) {
         CALL(grug_state, initialize_bool, grug_bool(true));
     } else if (starts_with(path, "ok/evaluation_order_is_left_to_right_1/")) {
-        CALL_ARGLESS(grug_state, magic);
-        CALL(grug_state, identity, grug_number(1.0));
-        CALL(grug_state, initialize, grug_number(43.0));
-    } else if (starts_with(path, "ok/evaluation_order_is_left_to_right_2/")) {
+        CALL_ARGLESS(grug_state, eval_order_1);
+        CALL_ARGLESS(grug_state, eval_order_2);
         CALL(grug_state, initialize, grug_number(3.0));
+    } else if (starts_with(path, "ok/evaluation_order_is_left_to_right_2/")) {
+        CALL_ARGLESS(grug_state, eval_order_1);
+        CALL_ARGLESS(grug_state, eval_order_2);
+        CALL(grug_state, max, grug_number(1.0), grug_number(2.0));
+    } else if (starts_with(path, "ok/evaluation_order_is_left_to_right_3/")) {
+        CALL(grug_state, initialize, grug_number(3.0));
+    } else if (starts_with(path, "ok/evaluation_order_is_left_to_right_4/")) {
+        CALL(grug_state, max, grug_number(1.0), grug_number(2.0));
     } else if (starts_with(path, "ok/f32_addition/")) {
         CALL(grug_state, sin, grug_number(6.0));
     } else if (starts_with(path, "ok/f32_argument/")) {
@@ -1057,6 +1065,8 @@ static void load_tests_library(void) {
     p_game_fn_sin                            = (game_fn)load_sym(h, "game_fn_sin");
     p_game_fn_cos                            = (game_fn)load_sym(h, "game_fn_cos");
     p_game_fn_mega                           = (game_fn)load_sym(h, "game_fn_mega");
+    p_game_fn_eval_order_1                   = (game_fn)load_sym(h, "game_fn_eval_order_1");
+    p_game_fn_eval_order_2                   = (game_fn)load_sym(h, "game_fn_eval_order_2");
     p_game_fn_get_false                      = (game_fn)load_sym(h, "game_fn_get_false");
     p_game_fn_set_is_happy                   = (game_fn)load_sym(h, "game_fn_set_is_happy");
     p_game_fn_mega_f32                       = (game_fn)load_sym(h, "game_fn_mega_f32");

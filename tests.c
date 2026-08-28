@@ -213,6 +213,8 @@ static size_t game_fn_say_call_count;
 static size_t game_fn_sin_call_count;
 static size_t game_fn_cos_call_count;
 static size_t game_fn_mega_call_count;
+static size_t game_fn_eval_order_1_call_count;
+static size_t game_fn_eval_order_2_call_count;
 static size_t game_fn_get_false_call_count;
 static size_t game_fn_set_is_happy_call_count;
 static size_t game_fn_mega_f32_call_count;
@@ -406,6 +408,25 @@ union grug_value game_fn_mega(struct grug_state* grug_state, const union grug_va
 	game_fn_mega_id = args[12]._id;
 	strcpy(game_fn_mega_str, args[13]._string);
 	return grug_void();
+}
+static bool game_fn_eval_order_1_called_before_eval_order_2;
+union grug_value game_fn_eval_order_1(struct grug_state* grug_state, const union grug_value args[]) {
+	(void)grug_state;
+	(void)args;
+	ASSERT_16_BYTE_STACK_ALIGNED();
+	game_fn_eval_order_1_call_count++;
+
+	game_fn_eval_order_1_called_before_eval_order_2 = game_fn_eval_order_2_call_count == 0;
+
+	return grug_number(1.0);
+}
+union grug_value game_fn_eval_order_2(struct grug_state* grug_state, const union grug_value args[]) {
+	(void)grug_state;
+	(void)args;
+	ASSERT_16_BYTE_STACK_ALIGNED();
+	game_fn_eval_order_2_call_count++;
+
+	return grug_number(2.0);
 }
 union grug_value game_fn_get_false(struct grug_state* grug_state, const union grug_value args[]) {
 	(void)grug_state;
@@ -1970,6 +1991,8 @@ static void reset(void) {
 	game_fn_sin_call_count                            = 0;
 	game_fn_cos_call_count                            = 0;
 	game_fn_mega_call_count                           = 0;
+	game_fn_eval_order_1_call_count                   = 0;
+	game_fn_eval_order_2_call_count                   = 0;
 	game_fn_get_false_call_count                      = 0;
 	game_fn_set_is_happy_call_count                   = 0;
 	game_fn_mega_f32_call_count                       = 0;
@@ -2808,23 +2831,49 @@ static void ok_eq_true(struct grug_state* grug_state, struct grug_entity_id* ent
 }
 
 static void ok_evaluation_order_is_left_to_right_1(struct grug_state* grug_state, struct grug_entity_id* entity) {
-	assert_call_count(magic, 0);
-	assert_call_count(identity, 0);
+	assert_call_count(eval_order_1, 0);
+	assert_call_count(eval_order_2, 0);
 	assert_call_count(initialize, 0);
     call_export_fn_argless(grug_state, entity, "a");
-	assert_call_count(magic, 1);
-	assert_call_count(identity, 1);
+	assert_call_count(eval_order_1, 1);
+	assert_call_count(eval_order_2, 1);
 	assert_call_count(initialize, 1);
 
-	assert_number(game_fn_initialize_x, 43.0);
+	assert_number(game_fn_initialize_x, 3.0);
+
+	assert_true(game_fn_eval_order_1_called_before_eval_order_2);
 }
 
 static void ok_evaluation_order_is_left_to_right_2(struct grug_state* grug_state, struct grug_entity_id* entity) {
+	assert_call_count(eval_order_1, 0);
+	assert_call_count(eval_order_2, 0);
+	assert_call_count(max, 0);
+    call_export_fn_argless(grug_state, entity, "a");
+	assert_call_count(eval_order_1, 1);
+	assert_call_count(eval_order_2, 1);
+	assert_call_count(max, 1);
+
+	assert_number(game_fn_max_x, 1.0);
+	assert_number(game_fn_max_y, 2.0);
+
+	assert_true(game_fn_eval_order_1_called_before_eval_order_2);
+}
+
+static void ok_evaluation_order_is_left_to_right_3(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	assert_call_count(initialize, 0);
     call_export_fn_argless(grug_state, entity, "a");
 	assert_call_count(initialize, 1);
 
 	assert_number(game_fn_initialize_x, 3.0);
+}
+
+static void ok_evaluation_order_is_left_to_right_4(struct grug_state* grug_state, struct grug_entity_id* entity) {
+	assert_call_count(max, 0);
+    call_export_fn_argless(grug_state, entity, "a");
+	assert_call_count(max, 1);
+
+	assert_number(game_fn_max_x, 1.0);
+	assert_number(game_fn_max_y, 2.0);
 }
 
 static void ok_f32_addition(struct grug_state* grug_state, struct grug_entity_id* entity) {
@@ -4954,6 +5003,8 @@ static void add_ok_tests(void) {
 	ADD_TEST_OK(eq_true, "D");
 	ADD_TEST_OK(evaluation_order_is_left_to_right_1, "D");
 	ADD_TEST_OK(evaluation_order_is_left_to_right_2, "D");
+	ADD_TEST_OK(evaluation_order_is_left_to_right_3, "D");
+	ADD_TEST_OK(evaluation_order_is_left_to_right_4, "D");
 	ADD_TEST_OK(f32_addition, "D");
 	ADD_TEST_OK(f32_argument, "D");
 	ADD_TEST_OK(f32_division, "D");

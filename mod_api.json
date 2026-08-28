@@ -496,6 +496,18 @@
 				}
 			]
 		},
+		"eval_order_1": {
+			"description": "foo",
+			"return_type": {
+				"name": "number"
+			}
+		},
+		"eval_order_2": {
+			"description": "foo",
+			"return_type": {
+				"name": "number"
+			}
+		},
 		"get_false": {
 			"description": "foo",
 			"return_type": {

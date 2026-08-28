@@ -1,0 +1,75 @@
+[
+    {
+        "assignment": {
+            "type": "NUMBER_EXPR",
+            "value": "1"
+        },
+        "name": "n",
+        "type": "GLOBAL_VARIABLE",
+        "variable_type": {
+            "name": "number"
+        }
+    },
+    {
+        "type": "GLOBAL_EMPTY_LINE"
+    },
+    {
+        "name": "a",
+        "statements": [
+            {
+                "comment": "The first value passed to max() must be 1, and the second value 2",
+                "type": "COMMENT_STATEMENT"
+            },
+            {
+                "arguments": [
+                    {
+                        "str": "n",
+                        "type": "IDENTIFIER_EXPR"
+                    },
+                    {
+                        "name": "_foo",
+                        "type": "CALL_EXPR"
+                    }
+                ],
+                "name": "max",
+                "type": "CALL_STATEMENT"
+            }
+        ],
+        "type": "GLOBAL_ON_FN"
+    },
+    {
+        "type": "GLOBAL_EMPTY_LINE"
+    },
+    {
+        "name": "_foo",
+        "return_type": {
+            "name": "number"
+        },
+        "statements": [
+            {
+                "assignment": {
+                    "left_expr": {
+                        "str": "n",
+                        "type": "IDENTIFIER_EXPR"
+                    },
+                    "operator": "PLUS_TOKEN",
+                    "right_expr": {
+                        "type": "NUMBER_EXPR",
+                        "value": "1"
+                    },
+                    "type": "BINARY_EXPR"
+                },
+                "name": "n",
+                "type": "VARIABLE_STATEMENT"
+            },
+            {
+                "expr": {
+                    "str": "n",
+                    "type": "IDENTIFIER_EXPR"
+                },
+                "type": "RETURN_STATEMENT"
+            }
+        ],
+        "type": "GLOBAL_HELPER_FN"
+    }
+]

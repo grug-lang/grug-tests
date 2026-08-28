@@ -1,0 +1,11 @@
+n: number = 1
+
+export a() {
+    # The first value passed to max() must be 1, and the second value 2
+    max(n, _foo())
+}
+
+local _foo() number {
+    n = n + 1
+    return n
+}

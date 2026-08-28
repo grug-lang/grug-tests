@@ -1,4 +1,4 @@
 export a() {
-    # magic() must be called before identity(), as neither is marked pure
-    initialize(magic() + identity(1))
+    # eval_order_1() must be called before eval_order_2(), as neither is marked pure
+    initialize(eval_order_1() + eval_order_2())
 }

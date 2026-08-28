@@ -3,25 +3,19 @@
         "name": "a",
         "statements": [
             {
-                "comment": "magic() must be called before identity(), as neither is marked pure",
+                "comment": "eval_order_1() must be called before eval_order_2(), as neither is marked pure",
                 "type": "COMMENT_STATEMENT"
             },
             {
                 "arguments": [
                     {
                         "left_expr": {
-                            "name": "magic",
+                            "name": "eval_order_1",
                             "type": "CALL_EXPR"
                         },
                         "operator": "PLUS_TOKEN",
                         "right_expr": {
-                            "arguments": [
-                                {
-                                    "type": "NUMBER_EXPR",
-                                    "value": "1"
-                                }
-                            ],
-                            "name": "identity",
+                            "name": "eval_order_2",
                             "type": "CALL_EXPR"
                         },
                         "type": "BINARY_EXPR"

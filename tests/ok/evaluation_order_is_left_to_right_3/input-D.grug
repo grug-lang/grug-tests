@@ -1,0 +1,11 @@
+n: number = 1
+
+export a() {
+    # The value passed to initialize() must be 3
+    initialize(n + _foo())
+}
+
+local _foo() number {
+    n = n + 1
+    return n
+}

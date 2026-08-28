@@ -1,0 +1,4 @@
+export a() {
+    # magic() must be called before identity(), as neither is marked pure
+    initialize(magic() + identity(1))
+}

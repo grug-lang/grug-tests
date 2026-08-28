@@ -440,6 +440,12 @@ static void call_export_fn(struct grug_state* grug_state, struct grug_entity_id*
         CALL(grug_state, initialize_bool, grug_bool(false));
     } else if (starts_with(path, "ok/eq_true/")) {
         CALL(grug_state, initialize_bool, grug_bool(true));
+    } else if (starts_with(path, "ok/evaluation_order_is_left_to_right_1/")) {
+        CALL_ARGLESS(grug_state, magic);
+        CALL(grug_state, identity, grug_number(1.0));
+        CALL(grug_state, initialize, grug_number(43.0));
+    } else if (starts_with(path, "ok/evaluation_order_is_left_to_right_2/")) {
+        CALL(grug_state, initialize, grug_number(3.0));
     } else if (starts_with(path, "ok/f32_addition/")) {
         CALL(grug_state, sin, grug_number(6.0));
     } else if (starts_with(path, "ok/f32_argument/")) {

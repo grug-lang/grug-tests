@@ -15,6 +15,9 @@
                     "description": {
                         "type": "string"
                     },
+                    "static_methods": {
+                        "$ref": "#/definitions/functionsObject"
+                    },
                     "export_functions": {
                         "type": "array",
                         "items": {
@@ -59,34 +62,10 @@
 						}
 					},
                     "methods": {
-                        "type": "object",
-						"additionalProperties": {
-							"type": "object",
-							"required": [
-								"description"
-							],
-							"additionalProperties": false,
-							"properties": {
-								"name": {
-									"type": "string"
-								},
-								"used_generics": {
-									"type": "array",
-									"items": {
-										"type": "string"
-									}
-								},
-								"description": {
-									"type": "string"
-								},
-								"parameters": {
-									"$ref": "#/definitions/parametersArray"
-								},
-								"return_type": {
-									"$ref": "#/definitions/type"
-								}
-							}
-						}
+                        "$ref": "#/definitions/functionsObject"
+                    },
+                    "static_methods": {
+                        "$ref": "#/definitions/functionsObject"
                     }
                 }
             }
@@ -120,6 +99,36 @@
         }
     },
     "definitions": {
+        "functionsObject": {
+            "type": "object",
+            "additionalProperties": {
+                "type": "object",
+                "required": [
+                    "description"
+                ],
+                "additionalProperties": false,
+                "properties": {
+                    "name": {
+                        "type": "string"
+                    },
+                    "used_generics": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    },
+                    "description": {
+                        "type": "string"
+                    },
+                    "parameters": {
+                        "$ref": "#/definitions/parametersArray"
+                    },
+                    "return_type": {
+                        "$ref": "#/definitions/type"
+                    }
+                }
+            }
+        },
         "parametersArray": {
             "type": "array",
             "items": {

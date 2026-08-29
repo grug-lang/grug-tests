@@ -1,0 +1,14 @@
+{
+	"classes": {
+		"Test": {
+			"description": "Foo",
+			"static_methods": {
+				"new": {
+					"return_type": {
+						"name": "Test"
+					}
+				}
+			}
+		}
+	}
+}

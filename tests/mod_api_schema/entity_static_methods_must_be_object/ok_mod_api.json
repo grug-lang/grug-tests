@@ -1,0 +1,15 @@
+{
+	"entities": {
+		"Test": {
+			"description": "Foo",
+			"static_methods": {
+				"count": {
+					"description": "How many exist.",
+					"return_type": {
+						"name": "number"
+					}
+				}
+			}
+		}
+	}
+}

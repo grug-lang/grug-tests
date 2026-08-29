@@ -1,0 +1,8 @@
+{
+	"classes": {
+		"Test": {
+			"description": "Foo",
+			"static_methods": {}
+		}
+	}
+}

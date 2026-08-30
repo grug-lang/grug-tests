@@ -61,10 +61,10 @@
 							"type": "string"
 						}
 					},
-                    "methods": {
+                    "static_methods": {
                         "$ref": "#/definitions/functionsObject"
                     },
-                    "static_methods": {
+                    "methods": {
                         "$ref": "#/definitions/functionsObject"
                     }
                 }

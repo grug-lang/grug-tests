@@ -5,12 +5,6 @@
 		},
 		"D": {
 			"description": "foo",
-			"export_functions": [
-				{
-					"name": "a",
-					"description": "foo"
-				}
-			],
 			"static_methods": {
 				"magic": {
 					"description": "foo",
@@ -18,7 +12,13 @@
 						"name": "number"
 					}
 				}
-			}
+			},
+			"export_functions": [
+				{
+					"name": "a",
+					"description": "foo"
+				}
+			]
 		},
 		"E": {
 			"description": "foo",
@@ -197,6 +197,29 @@
 	"classes": {
 		"VecNumber": {
 			"description": "A growable list of numbers.",
+			"static_methods": {
+				"new": {
+					"description": "Creates a new empty VecNumber.",
+					"parameters": [],
+					"return_type": {
+						"name": "VecNumber"
+					}
+				},
+				"with_capacity": {
+					"description": "Creates a new empty VecNumber with a minimum capacity.",
+					"parameters": [
+						{
+							"name": "capacity",
+							"type": {
+								"name": "number"
+							}
+						}
+					],
+					"return_type": {
+						"name": "VecNumber"
+					}
+				}
+			},
 			"methods": {
 				"push": {
 					"description": "Pushes a number to the end of the list.",
@@ -233,33 +256,18 @@
 						}
 					]
 				}
-			},
-			"static_methods": {
-				"new": {
-					"description": "Creates a new empty VecNumber.",
-					"parameters": [],
-					"return_type": {
-						"name": "VecNumber"
-					}
-				},
-				"with_capacity": {
-					"description": "Creates a new empty VecNumber with a minimum capacity.",
-					"parameters": [
-						{
-							"name": "capacity",
-							"type": {
-								"name": "number"
-							}
-						}
-					],
-					"return_type": {
-						"name": "VecNumber"
-					}
-				}
 			}
 		},
 		"Utils": {
 			"description": "Asserts.",
+			"static_methods": {
+				"fail": {
+					"description": "foo",
+					"return_type": {
+						"name": "bool"
+					}
+				}
+			},
 			"methods": {
 				"assert_state_is_not_null": {
 					"description": "Asserts state is not null."
@@ -287,14 +295,6 @@
 						"name": "bool"
 					}
 				}
-			},
-			"static_methods": {
-				"fail": {
-					"description": "foo",
-					"return_type": {
-						"name": "bool"
-					}
-				}
 			}
 		},
 		"Vec": {
@@ -302,6 +302,20 @@
 			"used_generics": [
 				"$T"
 			],
+			"static_methods": {
+				"new": {
+					"description": "Creates a new empty Vec.",
+					"parameters": [],
+					"return_type": {
+						"name": "Vec",
+						"generics": [
+							{
+								"name": "$T"
+							}
+						]
+					}
+				}
+			},
 			"methods": {
 				"push": {
 					"description": "Pushes an item to the end of the list",
@@ -337,20 +351,6 @@
 							}
 						}
 					]
-				}
-			},
-			"static_methods": {
-				"new": {
-					"description": "Creates a new empty Vec.",
-					"parameters": [],
-					"return_type": {
-						"name": "Vec",
-						"generics": [
-							{
-								"name": "$T"
-							}
-						]
-					}
 				}
 			}
 		},

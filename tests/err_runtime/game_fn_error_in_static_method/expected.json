@@ -1,0 +1,16 @@
+[
+    {
+        "name": "a",
+        "statements": [
+            {
+                "name": "fail",
+                "receiver": {
+                    "str": "Utils",
+                    "type": "IDENTIFIER_EXPR"
+                },
+                "type": "CALL_STATEMENT"
+            }
+        ],
+        "type": "GLOBAL_ON_FN"
+    }
+]

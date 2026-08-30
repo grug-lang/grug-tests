@@ -1,0 +1,42 @@
+[
+    {
+        "name": "a",
+        "statements": [
+            {
+                "assignment": {
+                    "name": "new",
+                    "receiver": {
+                        "str": "Vec",
+                        "type": "IDENTIFIER_EXPR"
+                    },
+                    "type": "CALL_EXPR"
+                },
+                "name": "x",
+                "type": "VARIABLE_STATEMENT",
+                "variable_type": {
+                    "generics": [
+                        {
+                            "name": "number"
+                        }
+                    ],
+                    "name": "Vec"
+                }
+            },
+            {
+                "arguments": [
+                    {
+                        "type": "NUMBER_EXPR",
+                        "value": "7"
+                    }
+                ],
+                "name": "push",
+                "receiver": {
+                    "str": "x",
+                    "type": "IDENTIFIER_EXPR"
+                },
+                "type": "CALL_STATEMENT"
+            }
+        ],
+        "type": "GLOBAL_ON_FN"
+    }
+]

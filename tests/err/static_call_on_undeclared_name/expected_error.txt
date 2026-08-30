@@ -1,0 +1,3 @@
+  in a (err/static_call_on_undeclared_name/input-D.grug:2:5)
+Error: The variable 'NotAType' does not exist
+2 $ NotAType.magic()

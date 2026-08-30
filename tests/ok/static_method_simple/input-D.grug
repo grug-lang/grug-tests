@@ -1,0 +1,6 @@
+export a() {
+    x: VecNumber = VecNumber.new()
+    x.push(30)
+    x.push(10)
+    x.pop()
+}

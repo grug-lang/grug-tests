@@ -1,0 +1,3 @@
+  in a (err/static_method_not_found/input-D.grug:2:15)
+Error: Cannot find static method 'nonexistent' on 'VecNumber'
+2 $ VecNumber.nonexistent()

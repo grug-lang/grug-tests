@@ -1,0 +1,43 @@
+[
+    {
+        "name": "a",
+        "statements": [
+            {
+                "assignment": {
+                    "arguments": [
+                        {
+                            "type": "NUMBER_EXPR",
+                            "value": "8"
+                        }
+                    ],
+                    "name": "with_capacity",
+                    "receiver": {
+                        "str": "VecNumber",
+                        "type": "IDENTIFIER_EXPR"
+                    },
+                    "type": "CALL_EXPR"
+                },
+                "name": "x",
+                "type": "VARIABLE_STATEMENT",
+                "variable_type": {
+                    "name": "VecNumber"
+                }
+            },
+            {
+                "arguments": [
+                    {
+                        "type": "NUMBER_EXPR",
+                        "value": "42"
+                    }
+                ],
+                "name": "push",
+                "receiver": {
+                    "str": "x",
+                    "type": "IDENTIFIER_EXPR"
+                },
+                "type": "CALL_STATEMENT"
+            }
+        ],
+        "type": "GLOBAL_ON_FN"
+    }
+]

@@ -1,0 +1,4 @@
+export a() {
+    x: VecNumber = VecNumber.with_capacity(8)
+    x.push(42)
+}

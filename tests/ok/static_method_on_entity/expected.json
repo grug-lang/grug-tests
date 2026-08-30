@@ -1,0 +1,41 @@
+[
+    {
+        "name": "a",
+        "statements": [
+            {
+                "assignment": {
+                    "name": "magic",
+                    "receiver": {
+                        "str": "D",
+                        "type": "IDENTIFIER_EXPR"
+                    },
+                    "type": "CALL_EXPR"
+                },
+                "name": "x",
+                "type": "VARIABLE_STATEMENT",
+                "variable_type": {
+                    "name": "number"
+                }
+            },
+            {
+                "arguments": [
+                    {
+                        "left_expr": {
+                            "str": "x",
+                            "type": "IDENTIFIER_EXPR"
+                        },
+                        "operator": "EQUALS_TOKEN",
+                        "right_expr": {
+                            "type": "NUMBER_EXPR",
+                            "value": "42"
+                        },
+                        "type": "BINARY_EXPR"
+                    }
+                ],
+                "name": "set_is_happy",
+                "type": "CALL_STATEMENT"
+            }
+        ],
+        "type": "GLOBAL_ON_FN"
+    }
+]

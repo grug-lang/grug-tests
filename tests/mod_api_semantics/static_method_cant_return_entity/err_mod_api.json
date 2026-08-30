@@ -1,0 +1,21 @@
+{
+	"entities": {
+		"Foo": {
+			"description": "Foo"
+		}
+	},
+	"classes": {
+		"Test": {
+			"description": "Foo",
+			"static_methods": {
+				"new": {
+					"description": "A static method.",
+					"return_type": {
+						"name": "entity",
+						"entity_type": "Foo"
+					}
+				}
+			}
+		}
+	}
+}

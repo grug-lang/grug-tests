@@ -1,0 +1,4 @@
+export a() {
+    x: VecNumber = VecNumber.new()
+    x.new()
+}

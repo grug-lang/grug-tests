@@ -299,8 +299,6 @@ union grug_value game_fn_eval_order_1                      (struct grug_state* g
 union grug_value game_fn_eval_order_2                      (struct grug_state* grug_state, const union grug_value args[]);
 union grug_value game_fn_get_false                         (struct grug_state* grug_state, const union grug_value args[]);
 union grug_value game_fn_set_is_happy                      (struct grug_state* grug_state, const union grug_value args[]);
-union grug_value game_fn_mega_f32                          (struct grug_state* grug_state, const union grug_value args[]);
-union grug_value game_fn_mega_i32                          (struct grug_state* grug_state, const union grug_value args[]);
 union grug_value game_fn_draw                              (struct grug_state* grug_state, const union grug_value args[]);
 union grug_value game_fn_utils                             (struct grug_state* grug_state, const union grug_value args[]);
 union grug_value game_fn_assert_state_is_not_null          (struct grug_state* grug_state, const union grug_value args[]);
@@ -355,7 +353,6 @@ game_fn reg_game_fn_vec_insert                      (struct grug_type* types);
 // We don't need to declare the specific version of these functions because
 // they're handled by these functions
 game_fn reg_game_fn_box                             (struct grug_type* types);
-game_fn reg_game_fn_box_set                         (struct grug_type* types);
 game_fn reg_game_fn_box_get                         (struct grug_type* types);
 
 game_fn reg_game_fn_default                         (struct grug_type* types);

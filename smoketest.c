@@ -86,9 +86,7 @@ static game_fn p_game_fn_Utils_fail;
 static game_fn p_game_fn_call_on_b_fn;
 static game_fn p_game_fn_call_on_b_fn_number;
 static game_fn p_game_fn_Utils_call_on_b_fn;
-static game_fn p_game_fn_store;
 static game_fn p_game_fn_print_csv;
-static game_fn p_game_fn_retrieve;
 static game_fn p_game_fn_box_number;
 static game_fn p_game_fn_vec_new;
 static game_fn p_game_fn_vec_with_capacity;
@@ -388,8 +386,6 @@ static void call_export_fn(struct grug_state* grug_state, struct grug_entity_id*
     } else if (starts_with(path, "ok/continue/")) {
         CALL_ARGLESS(grug_state, nothing);
         CALL_ARGLESS(grug_state, nothing);
-    } else if (starts_with(path, "ok/custom_id_decays_to_id/")) {
-        CALL(grug_state, store, grug_id(42));
     } else if (starts_with(path, "ok/custom_id_transfer_between_globals/")) {
         CALL(grug_state, set_opponent, grug_id(69));
     } else if (starts_with(path, "ok/division_negative_result/")) {
@@ -621,28 +617,8 @@ static void call_export_fn(struct grug_state* grug_state, struct grug_entity_id*
         CALL(grug_state, initialize_bool, grug_bool(false));
     } else if (starts_with(path, "ok/id_binary_expr_true/")) {
         CALL(grug_state, initialize_bool, grug_bool(true));
-    } else if (starts_with(path, "ok/id_eq_1/")) {
-        CALL_ARGLESS(grug_state, retrieve);
-        CALL(grug_state, initialize_bool, grug_bool(false));
-    } else if (starts_with(path, "ok/id_eq_2/")) {
-        CALL_ARGLESS(grug_state, retrieve);
-        CALL(grug_state, initialize_bool, grug_bool(false));
-    } else if (starts_with(path, "ok/id_global_with_opponent_to_new_id/")) {
-        CALL(grug_state, store, grug_id(69));
     } else if (starts_with(path, "ok/id_local_variable_get_and_set/")) {
         CALL(grug_state, set_opponent, CALL_ARGLESS(grug_state, get_opponent));
-    } else if (starts_with(path, "ok/id_ne_1/")) {
-        CALL_ARGLESS(grug_state, retrieve);
-        CALL(grug_state, initialize_bool, grug_bool(true));
-    } else if (starts_with(path, "ok/id_ne_2/")) {
-        CALL_ARGLESS(grug_state, retrieve);
-        CALL(grug_state, initialize_bool, grug_bool(true));
-    } else if (starts_with(path, "ok/id_returned_from_helper/")) {
-        CALL(grug_state, store, grug_id(42));
-    } else if (starts_with(path, "ok/id_with_d_to_new_id_and_id_to_old_id/")) {
-        CALL(grug_state, store, CALL_ARGLESS(grug_state, retrieve));
-    } else if (starts_with(path, "ok/id_with_d_to_old_id/")) {
-        CALL(grug_state, store, grug_id(42));
     } else if (starts_with(path, "ok/if_false/")) {
         CALL_ARGLESS(grug_state, nothing);
         CALL_ARGLESS(grug_state, nothing);
@@ -1101,9 +1077,7 @@ static void load_tests_library(void) {
     p_game_fn_call_on_b_fn                   = (game_fn)load_sym(h, "game_fn_call_on_b_fn");
     p_game_fn_call_on_b_fn_number            = (game_fn)load_sym(h, "game_fn_call_on_b_fn_number");
     p_game_fn_Utils_call_on_b_fn             = (game_fn)load_sym(h, "game_fn_Utils_call_on_b_fn");
-    p_game_fn_store                          = (game_fn)load_sym(h, "game_fn_store");
     p_game_fn_print_csv                      = (game_fn)load_sym(h, "game_fn_print_csv");
-    p_game_fn_retrieve                       = (game_fn)load_sym(h, "game_fn_retrieve");
     p_game_fn_box_number                     = (game_fn)load_sym(h, "game_fn_box_number");
     p_game_fn_vec_new                        = (game_fn)load_sym(h, "game_fn_vec_number_new");
     p_game_fn_vec_with_capacity              = (game_fn)load_sym(h, "game_fn_vec_number_with_capacity");

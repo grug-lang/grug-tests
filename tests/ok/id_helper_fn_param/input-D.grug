@@ -1,7 +1,0 @@
-export a() {
-    _foo(retrieve())
-}
-
-local _foo(id: id) {
-    store(id)
-}

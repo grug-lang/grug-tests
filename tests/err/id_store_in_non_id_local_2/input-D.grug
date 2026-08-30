@@ -1,4 +1,0 @@
-export a() {
-    foo: D = me
-    foo = retrieve()
-}

@@ -26,7 +26,7 @@ param: NAME ": " type
 
 block: " {" _NL [_INDENT statement+ _DEDENT] "}"
 
-call_stmt: NAME "(" [args] ")"
+call_stmt: (NAME | HELPER_NAME) "(" [args] ")"
 		 | ident_ref "." NAME "(" [args] ")"
 
 args: expr (", " expr)*
@@ -64,7 +64,7 @@ type: TYPE_NAME ("[" type (", " type)* "]")?
            | call_expr
 
 ?call_expr: primary
-         | NAME "(" [args] ")"
+         | (NAME | HELPER_NAME) "(" [args] ")"
 		 | ident_ref "." NAME "(" [args] ")"
 
 ?primary: literal
@@ -77,7 +77,7 @@ string_lit: STRING
 entity_lit: "e" STRING
 resource_lit: "r" STRING
 
-ident_ref: NAME
+ident_ref: NAME | TYPE_NAME
 
 comment: /#[^\n\r]*/
 
@@ -97,9 +97,9 @@ WHILE.2: "while "
 
 ON_NAME.2: /[a-z0-9_]+/
 HELPER_NAME.2: /_[a-z0-9_]+/
-NAME: /[a-z_][a-z0-9_]*/
+NAME: /[a-z][a-z0-9_]*/
 
-TYPE_NAME: /[a-zA-Z_][a-zA-Z0-9_]*/
+TYPE_NAME.3: /[A-Z][a-zA-Z0-9]*/ | "number" | "bool" | "string"
 NUMBER: /[0-9]+(\.[0-9]+)?/
 STRING: /"([^"\\]|\\.)*"/
 

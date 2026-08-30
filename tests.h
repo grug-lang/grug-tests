@@ -287,6 +287,7 @@ void grug_tests_runtime_error_handler(const char *reason,
  */
 union grug_value game_fn_nothing                           (struct grug_state* grug_state, const union grug_value args[]);
 union grug_value game_fn_magic                             (struct grug_state* grug_state, const union grug_value args[]);
+union grug_value game_fn_d_magic                           (struct grug_state* grug_state, const union grug_value args[]);
 union grug_value game_fn_initialize                        (struct grug_state* grug_state, const union grug_value args[]);
 union grug_value game_fn_initialize_bool                   (struct grug_state* grug_state, const union grug_value args[]);
 union grug_value game_fn_identity                          (struct grug_state* grug_state, const union grug_value args[]);
@@ -323,6 +324,7 @@ union grug_value game_fn_get_position                      (struct grug_state* g
 union grug_value game_fn_set_position                      (struct grug_state* grug_state, const union grug_value args[]);
 union grug_value game_fn_cause_game_fn_error               (struct grug_state* grug_state, const union grug_value args[]);
 union grug_value game_fn_Utils_cause_game_fn_error         (struct grug_state* grug_state, const union grug_value args[]);
+union grug_value game_fn_Utils_fail                        (struct grug_state* grug_state, const union grug_value args[]);
 union grug_value game_fn_call_on_b_fn                      (struct grug_state* grug_state, const union grug_value args[]);
 union grug_value game_fn_call_on_b_fn_number               (struct grug_state* grug_state, const union grug_value args[]);
 union grug_value game_fn_Utils_call_on_b_fn                (struct grug_state* grug_state, const union grug_value args[]);

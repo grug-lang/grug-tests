@@ -1,0 +1,17 @@
+{
+	"classes": {
+		"Test": {
+			"description": "Foo",
+			"methods": {
+				"new": {
+					"description": "A method."
+				}
+			},
+			"static_methods": {
+				"new": {
+					"description": "A static method with the same name."
+				}
+			}
+		}
+	}
+}

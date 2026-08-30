@@ -1,0 +1,4 @@
+export a() {
+    x: Vec[number] = Vec.new()
+    x.push(7)
+}

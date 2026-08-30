@@ -1,0 +1,3 @@
+  in a (err/static_method_called_on_value/input-D.grug:3:7)
+Error: 'new' is a static method on 'VecNumber', so it must be called as 'VecNumber.new()'
+3 $ x.new()

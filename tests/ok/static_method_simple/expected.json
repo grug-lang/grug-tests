@@ -1,0 +1,59 @@
+[
+    {
+        "name": "a",
+        "statements": [
+            {
+                "assignment": {
+                    "name": "new",
+                    "receiver": {
+                        "str": "VecNumber",
+                        "type": "IDENTIFIER_EXPR"
+                    },
+                    "type": "CALL_EXPR"
+                },
+                "name": "x",
+                "type": "VARIABLE_STATEMENT",
+                "variable_type": {
+                    "name": "VecNumber"
+                }
+            },
+            {
+                "arguments": [
+                    {
+                        "type": "NUMBER_EXPR",
+                        "value": "30"
+                    }
+                ],
+                "name": "push",
+                "receiver": {
+                    "str": "x",
+                    "type": "IDENTIFIER_EXPR"
+                },
+                "type": "CALL_STATEMENT"
+            },
+            {
+                "arguments": [
+                    {
+                        "type": "NUMBER_EXPR",
+                        "value": "10"
+                    }
+                ],
+                "name": "push",
+                "receiver": {
+                    "str": "x",
+                    "type": "IDENTIFIER_EXPR"
+                },
+                "type": "CALL_STATEMENT"
+            },
+            {
+                "name": "pop",
+                "receiver": {
+                    "str": "x",
+                    "type": "IDENTIFIER_EXPR"
+                },
+                "type": "CALL_STATEMENT"
+            }
+        ],
+        "type": "GLOBAL_ON_FN"
+    }
+]

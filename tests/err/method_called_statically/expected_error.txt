@@ -1,0 +1,3 @@
+  in a (err/method_called_statically/input-D.grug:2:15)
+Error: 'push' is a method on 'VecNumber', so it must be called on a value of that type, like 'x.push()'
+2 $ VecNumber.push(3)

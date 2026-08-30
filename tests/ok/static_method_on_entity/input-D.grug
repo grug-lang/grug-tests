@@ -1,0 +1,4 @@
+export a() {
+    x: number = D.magic()
+    set_is_happy(x == 42)
+}

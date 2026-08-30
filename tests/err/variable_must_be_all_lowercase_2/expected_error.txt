@@ -1,0 +1,3 @@
+  in a (err/variable_must_be_all_lowercase_2/input-D.grug:2:5)
+Error: The variable 'itemStack' contains the invalid character 'S', since variable names must be lowercase
+2 $ itemStack: number = 1

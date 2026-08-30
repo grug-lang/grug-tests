@@ -257,6 +257,7 @@ static size_t game_fn_retrieve_call_count;
 static size_t game_fn_box_number_call_count;
 
 static size_t game_fn_vec_number_new_call_count;
+static size_t game_fn_vec_number_with_capacity_call_count;
 static size_t game_fn_vec_number_push_call_count;
 static size_t game_fn_vec_number_pop_call_count;
 static size_t game_fn_vec_number_insert_call_count;
@@ -1008,6 +1009,16 @@ union grug_value game_fn_vec_number_new(struct grug_state* grug_state, const uni
 	return grug_id((GRUG_TYPE_ID)ptr);
 }
 
+size_t vec_number_last_capacity;
+union grug_value game_fn_vec_number_with_capacity(struct grug_state* grug_state, const union grug_value args[]) {
+	(void)grug_state;
+	ASSERT_16_BYTE_STACK_ALIGNED();
+	game_fn_vec_number_with_capacity_call_count++;
+	vec_number_last_capacity = (size_t)args[0]._number;
+
+	return game_fn_vec_number_new(grug_state, args);
+}
+
 static union grug_value vec_number_last_pushed;
 union grug_value game_fn_vec_number_push(struct grug_state* grug_state, const union grug_value args[]) {
 	(void)grug_state;
@@ -1428,6 +1439,9 @@ static void run_err_spaces_test(struct grug_state *grug_state, const char *name)
 
 static void run_err_spaces_tests(struct grug_state *grug_state) {
 	run_err_spaces_test(grug_state, "add_expr_00-D.grug");
+	run_err_spaces_test(grug_state, "static_call_00-D.grug");
+	run_err_spaces_test(grug_state, "static_call_01-D.grug");
+	run_err_spaces_test(grug_state, "static_call_02-D.grug");
 	run_err_spaces_test(grug_state, "add_expr_01-D.grug");
 	run_err_spaces_test(grug_state, "add_expr_02-D.grug");
 	run_err_spaces_test(grug_state, "add_expr_03-D.grug");
@@ -1655,6 +1669,8 @@ static void run_mod_api_semantic_tests(void) {
 	run_mod_api_semantic_test("number_of_generics_on_class_must_match");
 	run_mod_api_semantic_test("cannot_have_generic_on_undeclared_class");
 	run_mod_api_semantic_test("class_cannot_have_same_name_as_entity");
+	run_mod_api_semantic_test("static_method_cant_have_same_name_as_method");
+	run_mod_api_semantic_test("static_method_cant_return_entity");
 }
 
 static void test_error(
@@ -1967,6 +1983,7 @@ static void reset(void) {
 	game_fn_retrieve_call_count                       = 0;
 	game_fn_box_number_call_count                     = 0;
 	game_fn_vec_number_new_call_count                 = 0;
+	game_fn_vec_number_with_capacity_call_count       = 0;
 	game_fn_vec_number_push_call_count                = 0;
 	game_fn_vec_number_pop_call_count                 = 0;
 	game_fn_vec_number_insert_call_count              = 0;
@@ -3527,6 +3544,46 @@ static void ok_method_return_value(struct grug_state* grug_state, struct grug_en
 	assert_size_t(vec_number_last_new->len, (size_t)0);
 }
 
+static void ok_static_method_simple(struct grug_state* grug_state, struct grug_entity_id* entity) {
+	assert_call_count(vec_number_new, 0);
+	assert_call_count(vec_number_push, 0);
+	assert_call_count(vec_number_pop, 0);
+    call_export_fn_argless(grug_state, entity, "a");
+	assert_call_count(vec_number_new, 1);
+	assert_call_count(vec_number_push, 2);
+	assert_call_count(vec_number_pop, 1);
+	assert_number(vec_number_last_popped._number, 10.0);
+	assert_size_t(vec_number_last_new->len, (size_t)1);
+	assert_number(vec_number_last_new->items[0]._number, 30.0);
+}
+
+static void ok_static_method_with_argument(struct grug_state* grug_state, struct grug_entity_id* entity) {
+	assert_call_count(vec_number_with_capacity, 0);
+    call_export_fn_argless(grug_state, entity, "a");
+	assert_call_count(vec_number_with_capacity, 1);
+	assert_call_count(vec_number_push, 1);
+	assert_size_t(vec_number_last_capacity, (size_t)8);
+	assert_number(vec_number_last_pushed._number, 42.0);
+}
+
+static void ok_static_method_on_entity(struct grug_state* grug_state, struct grug_entity_id* entity) {
+	assert_call_count(magic, 0);
+	assert_call_count(set_is_happy, 0);
+    call_export_fn_argless(grug_state, entity, "a");
+	assert_call_count(magic, 1);
+	assert_call_count(set_is_happy, 1);
+	assert_true(game_fn_set_is_happy_is_happy);
+}
+
+static void ok_generic_static_method(struct grug_state* grug_state, struct grug_entity_id* entity) {
+	assert_call_count(vec_number_new, 0);
+	assert_call_count(vec_number_push, 0);
+    call_export_fn_argless(grug_state, entity, "a");
+	assert_call_count(vec_number_new, 1);
+	assert_call_count(vec_number_push, 1);
+	assert_number(vec_number_last_pushed._number, 7.0);
+}
+
 static void ok_method_simple(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	assert_call_count(vec_number_new, 0);
 	assert_call_count(vec_number_push, 0);
@@ -4395,6 +4452,19 @@ static void runtime_error_all(struct grug_state* grug_state, struct grug_entity_
 	assert_string(runtime_error_on_fn_path, "err_runtime/all/input-D.grug");
 }
 
+static void runtime_error_game_fn_error_in_static_method(struct grug_state* grug_state, struct grug_entity_id* entity) {
+	assert_call_count(cause_game_fn_error, 0);
+	assert_error_handler_call_count(0);
+
+    call_export_fn_argless(grug_state, entity, "a");
+
+	assert_call_count(cause_game_fn_error, 1);
+	assert_error_handler_call_count(1);
+	assert_true(had_runtime_error);
+	assert_runtime_error_type(GRUG_ON_FN_GAME_FN_ERROR);
+	assert_runtime_error_reason("cause_game_fn_error(): Example game function error");
+}
+
 static void runtime_error_game_fn_error(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	assert_call_count(cause_game_fn_error, 0);
 	assert_error_handler_call_count(0);
@@ -4660,6 +4730,12 @@ static void runtime_error_time_limit_exceeded_fibonacci(struct grug_state* grug_
 
 static void add_error_tests(void) {
 	ADD_TEST_ERROR(assignment_isnt_expression, "D");
+	ADD_TEST_ERROR(method_called_statically, "D");
+	ADD_TEST_ERROR(static_method_called_on_value, "D");
+	ADD_TEST_ERROR(static_method_not_found, "D");
+	ADD_TEST_ERROR(static_call_on_undeclared_name, "D");
+	ADD_TEST_ERROR(variable_must_be_all_lowercase_1, "D");
+	ADD_TEST_ERROR(variable_must_be_all_lowercase_2, "D");
 	ADD_TEST_ERROR(bool_cant_be_initialized_with_1, "D");
 	ADD_TEST_ERROR(bool_ge, "D");
 	ADD_TEST_ERROR(bool_gt, "D");
@@ -5107,6 +5183,10 @@ static void add_ok_tests(void) {
 	ADD_TEST_OK(variable_reassignment, "D");
 	ADD_TEST_OK(variable_reassignment_does_not_dealloc_outer_variable, "D");
 	ADD_TEST_OK(variable_string_global, "D");
+	ADD_TEST_OK(static_method_simple, "D");
+	ADD_TEST_OK(static_method_with_argument, "D");
+	ADD_TEST_OK(static_method_on_entity, "D");
+	ADD_TEST_OK(generic_static_method, "D");
 	ADD_TEST_OK(variable_string_local, "D");
 	ADD_TEST_OK(void_function_early_return, "D");
 	ADD_TEST_OK(while_false, "D");
@@ -5116,6 +5196,7 @@ static void add_ok_tests(void) {
 static void add_runtime_error_tests(void) {
 	ADD_TEST_RUNTIME_ERROR(all, "D");
 	ADD_TEST_RUNTIME_ERROR(game_fn_error, "V");
+	ADD_TEST_RUNTIME_ERROR(game_fn_error_in_static_method, "D");
 	ADD_TEST_RUNTIME_ERROR(game_fn_error_global_scope, "A");
 	ADD_TEST_RUNTIME_ERROR(game_fn_error_once, "E");
 	ADD_TEST_RUNTIME_ERROR(on_fn_calls_erroring_on_fn, "E");

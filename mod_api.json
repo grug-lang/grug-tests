@@ -10,7 +10,15 @@
 					"name": "a",
 					"description": "foo"
 				}
-			]
+			],
+			"static_methods": {
+				"magic": {
+					"description": "foo",
+					"return_type": {
+						"name": "number"
+					}
+				}
+			}
 		},
 		"E": {
 			"description": "foo",
@@ -225,6 +233,29 @@
 						}
 					]
 				}
+			},
+			"static_methods": {
+				"new": {
+					"description": "Creates a new empty VecNumber.",
+					"parameters": [],
+					"return_type": {
+						"name": "VecNumber"
+					}
+				},
+				"with_capacity": {
+					"description": "Creates a new empty VecNumber with a minimum capacity.",
+					"parameters": [
+						{
+							"name": "capacity",
+							"type": {
+								"name": "number"
+							}
+						}
+					],
+					"return_type": {
+						"name": "VecNumber"
+					}
+				}
 			}
 		},
 		"Utils": {
@@ -252,6 +283,14 @@
 							}
 						}
 					],
+					"return_type": {
+						"name": "bool"
+					}
+				}
+			},
+			"static_methods": {
+				"fail": {
+					"description": "foo",
 					"return_type": {
 						"name": "bool"
 					}
@@ -298,6 +337,20 @@
 							}
 						}
 					]
+				}
+			},
+			"static_methods": {
+				"new": {
+					"description": "Creates a new empty Vec.",
+					"parameters": [],
+					"return_type": {
+						"name": "Vec",
+						"generics": [
+							{
+								"name": "$T"
+							}
+						]
+					}
 				}
 			}
 		},

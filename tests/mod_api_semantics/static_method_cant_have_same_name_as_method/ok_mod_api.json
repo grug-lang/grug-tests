@@ -2,14 +2,14 @@
 	"classes": {
 		"Test": {
 			"description": "Foo",
-			"methods": {
-				"reset": {
-					"description": "A method."
-				}
-			},
 			"static_methods": {
 				"new": {
 					"description": "A static method."
+				}
+			},
+			"methods": {
+				"reset": {
+					"description": "A method."
 				}
 			}
 		}

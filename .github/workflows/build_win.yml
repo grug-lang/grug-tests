@@ -20,6 +20,10 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Install Clang 23 (if needed)
+        if: matrix.compiler == 'clang'
+        run: choco install llvm --version=23.1.0 --force -y
+
       - name: Build and run tests (Debug + Release)
         run: |
           foreach ($BUILD_TYPE in @("Debug", "Release")) {

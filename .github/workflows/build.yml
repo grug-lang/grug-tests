@@ -26,6 +26,14 @@ jobs:
         if: matrix.sanitizer == 'valgrind'
         run: sudo apt-get update && sudo apt-get install -y valgrind
 
+      - name: Install Clang 23 (if needed)
+        if: matrix.compiler == 'clang'
+        run: |
+          wget https://apt.llvm.org/llvm.sh
+          chmod +x llvm.sh
+          sudo ./llvm.sh 23
+          sudo ln -sf /usr/bin/clang-23 /usr/local/bin/clang
+
       - name: Build and run tests (Debug + Release)
         run: |
           # Set sanitizer flags

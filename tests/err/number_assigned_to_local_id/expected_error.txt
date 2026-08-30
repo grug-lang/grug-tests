@@ -1,3 +1,3 @@
-  in a (err/number_assigned_to_local_id/input-D.grug:2:15)
-Error: Can't assign number to 'foo', which has type id
-2 $ foo: id = 25
+  in a (err/number_assigned_to_local_id/input-D.grug:2:14)
+Error: Can't assign number to 'foo', which has type D
+2 $ foo: D = 25

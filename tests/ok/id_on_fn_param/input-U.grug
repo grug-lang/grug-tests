@@ -1,3 +1,0 @@
-export a(id: id) {
-    store(id)
-}

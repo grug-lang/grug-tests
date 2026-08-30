@@ -2,6 +2,6 @@ export a() {
     _foo(25)
 }
 
-local _foo(x: id) {
+local _foo(x: D) {
     return
 }

@@ -1,7 +1,0 @@
-export a() {
-    set_opponent(_foo())
-}
-
-local _foo() Opponent {
-    return retrieve()
-}

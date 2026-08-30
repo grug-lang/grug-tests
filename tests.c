@@ -312,6 +312,9 @@ union grug_value game_fn_magic(struct grug_state* grug_state, const union grug_v
 
 	return grug_number(42.0);
 }
+union grug_value game_fn_d_magic(struct grug_state* grug_state, const union grug_value args[]) {
+	return game_fn_magic(grug_state, args);
+}
 static double game_fn_initialize_x;
 union grug_value game_fn_initialize(struct grug_state* grug_state, const union grug_value args[]) {
 	(void)grug_state;
@@ -921,6 +924,9 @@ union grug_value game_fn_Utils_cause_game_fn_error(struct grug_state* grug_state
 
 	game_fn_error(grug_state, "Utils_cause_game_fn_error(): Example game function error");
 	return (union grug_value) {0};
+}
+union grug_value game_fn_Utils_fail(struct grug_state* grug_state, const union grug_value args[]) {
+	return game_fn_cause_game_fn_error(grug_state, args);
 }
 game_fn reg_game_fn_cause_game_fn_error_generic(struct grug_type* types) {
 	(void)(types);
@@ -3381,26 +3387,6 @@ static void ok_id_binary_expr_true(struct grug_state* grug_state, struct grug_en
 	assert_true(game_fn_initialize_bool_b);
 }
 
-static void ok_id_global_with_id_to_new_id(struct grug_state* grug_state, struct grug_entity_id* entity) {
-	assert_call_count(retrieve, 1); // Called by create_entity()
-	assert_call_count(store, 0);
-    call_export_fn_argless(grug_state, entity, "a");
-	assert_call_count(retrieve, 1); // Called by create_entity()
-	assert_call_count(store, 1);
-
-	assert_id(game_fn_store_id, 123);
-}
-
-static void ok_id_helper_fn_param(struct grug_state* grug_state, struct grug_entity_id* entity) {
-	assert_call_count(retrieve, 0);
-	assert_call_count(store, 0);
-    call_export_fn_argless(grug_state, entity, "a");
-	assert_call_count(retrieve, 1);
-	assert_call_count(store, 1);
-
-	assert_id(game_fn_store_id, 123);
-}
-
 static void ok_id_local_variable_get_and_set(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	assert_call_count(get_opponent, 0);
 	assert_call_count(set_opponent, 0);
@@ -3409,24 +3395,6 @@ static void ok_id_local_variable_get_and_set(struct grug_state* grug_state, stru
 	assert_call_count(set_opponent, 1);
 
 	assert_id(game_fn_set_opponent_target, 69);
-}
-
-static void ok_id_on_fn_param(struct grug_state* grug_state, struct grug_entity_id* entity) {
-	assert_call_count(store, 0);
-    call_export_fn(grug_state, entity, "a", (const union grug_value[]){{._id=77}}, 1);
-	assert_call_count(store, 1);
-
-	assert_id(game_fn_store_id, 77);
-}
-
-static void ok_id_with_id_to_new_id(struct grug_state* grug_state, struct grug_entity_id* entity) {
-	assert_call_count(retrieve, 0);
-	assert_call_count(store, 0);
-    call_export_fn_argless(grug_state, entity, "a");
-	assert_call_count(retrieve, 1);
-	assert_call_count(store, 1);
-
-	assert_id(game_fn_store_id, 123);
 }
 
 static void ok_if_false(struct grug_state* grug_state, struct grug_entity_id* entity) {
@@ -4839,10 +4807,6 @@ static void add_error_tests(void) {
 	ADD_TEST_ERROR(helper_fn_return_with_comment_after_it, "D");
 	ADD_TEST_ERROR(i32_logical_not, "D");
 	ADD_TEST_ERROR(id_invalid_binary_op, "D");
-	ADD_TEST_ERROR(id_return, "D");
-	ADD_TEST_ERROR(id_store_in_non_id_global, "A");
-	ADD_TEST_ERROR(id_store_in_non_id_local, "D");
-	ADD_TEST_ERROR(id_store_in_non_id_local_2, "D");
 	ADD_TEST_ERROR(if_condition_not_bool, "D");
 	ADD_TEST_ERROR(indentation_going_down_by_2, "D");
 	ADD_TEST_ERROR(indented_call_argument, "D");
@@ -5079,11 +5043,7 @@ static void add_ok_tests(void) {
 	ADD_TEST_OK(i32_negative_is_smaller_than_positive, "D");
 	ADD_TEST_OK(id_binary_expr_false, "D");
 	ADD_TEST_OK(id_binary_expr_true, "D");
-	ADD_TEST_OK(id_global_with_id_to_new_id, "D");
-	ADD_TEST_OK(id_helper_fn_param, "D");
 	ADD_TEST_OK(id_local_variable_get_and_set, "D");
-	ADD_TEST_OK(id_on_fn_param, "U");
-	ADD_TEST_OK(id_with_id_to_new_id, "D");
 	ADD_TEST_OK(if_false, "D");
 	ADD_TEST_OK(if_true, "D");
 	ADD_TEST_OK(le_false, "D");

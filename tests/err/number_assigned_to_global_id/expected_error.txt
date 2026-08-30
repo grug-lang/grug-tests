@@ -1,3 +1,3 @@
-  in member scope (err/number_assigned_to_global_id/input-D.grug:1:11)
-Error: Can't assign number to 'foo', which has type id
-1 $ foo: id = 25
+  in member scope (err/number_assigned_to_global_id/input-D.grug:1:10)
+Error: Can't assign number to 'foo', which has type D
+1 $ foo: D = 25

@@ -1,4 +1,4 @@
-foo: id = 25
+foo: D = 25
 
 export a() {
     nothing()

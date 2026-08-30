@@ -1,4 +1,0 @@
-export a() {
-    foo: id = retrieve()
-    store(foo)
-}

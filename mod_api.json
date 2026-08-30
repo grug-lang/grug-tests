@@ -147,23 +147,6 @@
 				}
 			]
 		},
-		"U": {
-			"description": "foo",
-			"export_functions": [
-				{
-					"name": "a",
-					"description": "foo",
-					"parameters": [
-						{
-							"name": "id",
-							"type": {
-								"name": "id"
-							}
-						}
-					]
-				}
-			]
-		},
 		"V": {
 			"description": "foo",
 			"export_functions": [
@@ -1614,12 +1597,6 @@
 				}
 			]
 		},
-		"retrieve": {
-			"description": "foo",
-			"return_type": {
-				"name": "id"
-			}
-		},
 		"say": {
 			"description": "foo",
 			"parameters": [
@@ -1709,17 +1686,6 @@
 					"type": {
 						"name": "entity",
 						"entity_type": "D"
-					}
-				}
-			]
-		},
-		"store": {
-			"description": "foo",
-			"parameters": [
-				{
-					"name": "id",
-					"type": {
-						"name": "id"
 					}
 				}
 			]

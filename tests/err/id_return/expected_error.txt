@@ -1,3 +1,0 @@
-  in _foo (err/id_return/input-D.grug:6:12)
-Error: Function '_foo' is supposed to return Opponent, not id
-6 $ return retrieve()

@@ -251,9 +251,7 @@ static size_t game_fn_Utils_cause_game_fn_error_call_count;
 static size_t game_fn_call_on_b_fn_call_count;
 static size_t game_fn_call_on_b_fn_number_call_count;
 static size_t game_fn_Utils_call_on_b_fn_call_count;
-static size_t game_fn_store_call_count;
 static size_t game_fn_print_csv_call_count;
-static size_t game_fn_retrieve_call_count;
 static size_t game_fn_box_number_call_count;
 
 static size_t game_fn_vec_number_new_call_count;
@@ -966,15 +964,6 @@ union grug_value game_fn_Utils_call_on_b_fn(struct grug_state* grug_state, const
 	call_export_fn_argless(grug_state, current_entity, "b");
 	return (union grug_value) {0};
 }
-static uint64_t game_fn_store_id;
-union grug_value game_fn_store(struct grug_state* grug_state, const union grug_value args[]) {
-	(void)grug_state;
-	ASSERT_16_BYTE_STACK_ALIGNED();
-	game_fn_store_call_count++;
-
-	game_fn_store_id = args[0]._id;
-	return grug_void();
-}
 static char game_fn_print_csv_path[256];
 union grug_value game_fn_print_csv(struct grug_state* grug_state, const union grug_value args[]) {
 	(void)grug_state;
@@ -982,14 +971,6 @@ union grug_value game_fn_print_csv(struct grug_state* grug_state, const union gr
 	game_fn_print_csv_call_count++;
 	strcpy(game_fn_print_csv_path, args[0]._string);
 	return grug_void();
-}
-union grug_value game_fn_retrieve(struct grug_state* grug_state, const union grug_value args[]) {
-	(void)grug_state;
-	(void)args;
-	ASSERT_16_BYTE_STACK_ALIGNED();
-	game_fn_retrieve_call_count++;
-
-	return grug_id(123);
 }
 union grug_value game_fn_box_number(struct grug_state* grug_state, const union grug_value args[]) {
 	(void)grug_state;
@@ -1981,9 +1962,7 @@ static void reset(void) {
 	game_fn_call_on_b_fn_call_count                   = 0;
 	game_fn_call_on_b_fn_number_call_count            = 0;
 	game_fn_Utils_call_on_b_fn_call_count             = 0;
-	game_fn_store_call_count                          = 0;
 	game_fn_print_csv_call_count                      = 0;
-	game_fn_retrieve_call_count                       = 0;
 	game_fn_box_number_call_count                     = 0;
 	game_fn_vec_number_new_call_count                 = 0;
 	game_fn_vec_number_with_capacity_call_count       = 0;

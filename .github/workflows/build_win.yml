@@ -22,7 +22,10 @@ jobs:
 
       - name: Install Clang 23 (if needed)
         if: matrix.compiler == 'clang'
-        run: choco install llvm --version=23.1.0 --force -y
+        run: |
+          Invoke-WebRequest -Uri "https://github.com/llvm/llvm-project/releases/download/llvmorg-23.1.0/LLVM-23.1.0-win64.msi" -OutFile "LLVM-installer.msi"
+          Start-Process msiexec.exe -ArgumentList "/i LLVM-installer.msi /quiet /norestart" -Wait
+          echo "C:\Program Files\LLVM\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
 
       - name: Build and run tests (Debug + Release)
         run: |

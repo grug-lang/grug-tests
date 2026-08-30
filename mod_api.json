@@ -203,7 +203,7 @@
 				},
 				"pop": {
 					"description": "Removes the last element from the list and returns it",
-					"parameters": [ ],
+					"parameters": [],
 					"return_type": {
 						"name": "number"
 					}
@@ -277,7 +277,7 @@
 				},
 				"pop": {
 					"description": "Removes the last element from the list and returns it",
-					"parameters": [ ],
+					"parameters": [],
 					"return_type": {
 						"name": "$T"
 					}
@@ -397,13 +397,13 @@
 			},
 			"parameters": [
 				{
-					"name": "first", 
+					"name": "first",
 					"type": {
 						"name": "$T1"
 					}
 				},
 				{
-					"name": "second", 
+					"name": "second",
 					"type": {
 						"name": "$T2"
 					}
@@ -731,112 +731,6 @@
 					"name": "str",
 					"type": {
 						"name": "string"
-					}
-				}
-			]
-		},
-		"mega_f32": {
-			"description": "foo",
-			"parameters": [
-				{
-					"name": "f1",
-					"type": {
-						"name": "number"
-					}
-				},
-				{
-					"name": "f2",
-					"type": {
-						"name": "number"
-					}
-				},
-				{
-					"name": "f3",
-					"type": {
-						"name": "number"
-					}
-				},
-				{
-					"name": "f4",
-					"type": {
-						"name": "number"
-					}
-				},
-				{
-					"name": "f5",
-					"type": {
-						"name": "number"
-					}
-				},
-				{
-					"name": "f6",
-					"type": {
-						"name": "number"
-					}
-				},
-				{
-					"name": "f7",
-					"type": {
-						"name": "number"
-					}
-				},
-				{
-					"name": "f8",
-					"type": {
-						"name": "number"
-					}
-				},
-				{
-					"name": "f9",
-					"type": {
-						"name": "number"
-					}
-				}
-			]
-		},
-		"mega_i32": {
-			"description": "foo",
-			"parameters": [
-				{
-					"name": "i1",
-					"type": {
-						"name": "number"
-					}
-				},
-				{
-					"name": "i2",
-					"type": {
-						"name": "number"
-					}
-				},
-				{
-					"name": "i3",
-					"type": {
-						"name": "number"
-					}
-				},
-				{
-					"name": "i4",
-					"type": {
-						"name": "number"
-					}
-				},
-				{
-					"name": "i5",
-					"type": {
-						"name": "number"
-					}
-				},
-				{
-					"name": "i6",
-					"type": {
-						"name": "number"
-					}
-				},
-				{
-					"name": "i7",
-					"type": {
-						"name": "number"
 					}
 				}
 			]
@@ -1808,7 +1702,7 @@
 		},
 		"vec_number_new": {
 			"description": "Creates a new VecNumber",
-			"parameters": [ ],
+			"parameters": [],
 			"return_type": {
 				"name": "VecNumber"
 			}
@@ -1818,7 +1712,7 @@
 			"used_generics": [
 				"$T"
 			],
-			"parameters": [ ],
+			"parameters": [],
 			"return_type": {
 				"name": "Vec",
 				"generics": [

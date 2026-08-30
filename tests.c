@@ -203,6 +203,13 @@ struct runtime_error_test_data {
 static struct runtime_error_test_data runtime_error_test_datas[420420];
 static size_t err_runtime_test_datas_size;
 
+#pragma GCC diagnostic push
+#ifdef __clang__
+#if __has_warning("-Wunused-but-set-global")
+#pragma GCC diagnostic ignored "-Wunused-but-set-global"
+#endif
+#endif
+
 static size_t game_fn_nothing_call_count;
 static size_t game_fn_magic_call_count;
 static size_t game_fn_initialize_call_count;
@@ -217,8 +224,6 @@ static size_t game_fn_eval_order_1_call_count;
 static size_t game_fn_eval_order_2_call_count;
 static size_t game_fn_get_false_call_count;
 static size_t game_fn_set_is_happy_call_count;
-static size_t game_fn_mega_f32_call_count;
-static size_t game_fn_mega_i32_call_count;
 static size_t game_fn_draw_call_count;
 static size_t game_fn_utils_call_count;
 static size_t game_fn_assert_state_is_not_null_call_count;
@@ -258,13 +263,14 @@ static size_t game_fn_vec_number_insert_call_count;
 
 static size_t game_fn_box_call_count;
 static size_t game_fn_box_get_call_count;
-static size_t game_fn_box_set_call_count;
 
 static size_t game_fn_default_string_call_count;
 
 static size_t game_fn_make_pair_call_count;
 static size_t game_fn_pair_first_call_count;
 static size_t game_fn_pair_second_call_count;
+
+#pragma GCC diagnostic pop
 
 static bool had_runtime_error = false;
 static size_t error_handler_call_count = 0;
@@ -443,52 +449,6 @@ union grug_value game_fn_set_is_happy(struct grug_state* grug_state, const union
 	game_fn_set_is_happy_call_count++;
 
 	game_fn_set_is_happy_is_happy = args[0]._bool;
-	return grug_void();
-}
-static double game_fn_mega_f32_f1;
-static double game_fn_mega_f32_f2;
-static double game_fn_mega_f32_f3;
-static double game_fn_mega_f32_f4;
-static double game_fn_mega_f32_f5;
-static double game_fn_mega_f32_f6;
-static double game_fn_mega_f32_f7;
-static double game_fn_mega_f32_f8;
-static double game_fn_mega_f32_f9;
-union grug_value game_fn_mega_f32(struct grug_state* grug_state, const union grug_value args[]) {
-	(void)grug_state;
-	ASSERT_16_BYTE_STACK_ALIGNED();
-	game_fn_mega_f32_call_count++;
-
-	game_fn_mega_f32_f1 = args[0]._number;
-	game_fn_mega_f32_f2 = args[1]._number;
-	game_fn_mega_f32_f3 = args[2]._number;
-	game_fn_mega_f32_f4 = args[3]._number;
-	game_fn_mega_f32_f5 = args[4]._number;
-	game_fn_mega_f32_f6 = args[5]._number;
-	game_fn_mega_f32_f7 = args[6]._number;
-	game_fn_mega_f32_f8 = args[7]._number;
-	game_fn_mega_f32_f9 = args[8]._number;
-	return grug_void();
-}
-static double game_fn_mega_i32_i1;
-static double game_fn_mega_i32_i2;
-static double game_fn_mega_i32_i3;
-static double game_fn_mega_i32_i4;
-static double game_fn_mega_i32_i5;
-static double game_fn_mega_i32_i6;
-static double game_fn_mega_i32_i7;
-union grug_value game_fn_mega_i32(struct grug_state* grug_state, const union grug_value args[]) {
-	(void)grug_state;
-	ASSERT_16_BYTE_STACK_ALIGNED();
-	game_fn_mega_i32_call_count++;
-
-	game_fn_mega_i32_i1 = args[0]._number;
-	game_fn_mega_i32_i2 = args[1]._number;
-	game_fn_mega_i32_i3 = args[2]._number;
-	game_fn_mega_i32_i4 = args[3]._number;
-	game_fn_mega_i32_i5 = args[4]._number;
-	game_fn_mega_i32_i6 = args[5]._number;
-	game_fn_mega_i32_i7 = args[6]._number;
 	return grug_void();
 }
 static char game_fn_draw_sprite_path[256];
@@ -1154,21 +1114,6 @@ static union grug_value game_fn_box_get(struct grug_state* grug_state, const uni
 	return *box;
 }
 
-static union grug_value box_last_set;
-static union grug_value game_fn_box_set(struct grug_state* grug_state, const union grug_value args[]) {
-	(void)grug_state;
-	ASSERT_16_BYTE_STACK_ALIGNED();
-	game_fn_box_set_call_count++;
-
-	union grug_value* box = (union grug_value*)args[0]._id;
-	assert(box);
-	
-	box_last_set = args[1];
-	*box = args[1];
-
-	return grug_void();
-}
-
 game_fn reg_game_fn_box(struct grug_type* types) {
 	(void)(types);
 	return game_fn_box;
@@ -1176,10 +1121,6 @@ game_fn reg_game_fn_box(struct grug_type* types) {
 game_fn reg_game_fn_box_get(struct grug_type* types) {
 	(void)(types);
 	return game_fn_box_get;
-}
-game_fn reg_game_fn_box_set(struct grug_type* types) {
-	(void)(types);
-	return game_fn_box_set;
 }
 
 static union grug_value game_fn_default_string(struct grug_state* grug_state, const union grug_value args[]) {
@@ -1995,8 +1936,6 @@ static void reset(void) {
 	game_fn_eval_order_2_call_count                   = 0;
 	game_fn_get_false_call_count                      = 0;
 	game_fn_set_is_happy_call_count                   = 0;
-	game_fn_mega_f32_call_count                       = 0;
-	game_fn_mega_i32_call_count                       = 0;
 	game_fn_draw_call_count                           = 0;
 	game_fn_assert_state_is_not_null_call_count       = 0;
 	game_fn_Utils_assert_state_is_not_null_call_count = 0;
@@ -2034,7 +1973,6 @@ static void reset(void) {
 	game_fn_utils_call_count                          = 0;
 	game_fn_box_call_count                            = 0;
 	game_fn_box_get_call_count                        = 0;
-	game_fn_box_set_call_count                        = 0;
 	game_fn_default_string_call_count                 = 0;
 	game_fn_make_pair_call_count                      = 0;
 	game_fn_pair_first_call_count                     = 0;

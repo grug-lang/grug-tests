@@ -57,8 +57,6 @@ static game_fn p_game_fn_eval_order_1;
 static game_fn p_game_fn_eval_order_2;
 static game_fn p_game_fn_get_false;
 static game_fn p_game_fn_set_is_happy;
-static game_fn p_game_fn_mega_f32;
-static game_fn p_game_fn_mega_i32;
 static game_fn p_game_fn_draw;
 static game_fn p_game_fn_utils;
 static game_fn p_game_fn_assert_state_is_not_null;
@@ -100,10 +98,6 @@ static game_fn p_game_fn_box;
 
 static generic_fn_reg p_reg_box_get;
 static game_fn p_game_fn_box_get;
-
-static generic_fn_reg p_reg_box_set;
-// Unused for now
-// static game_fn p_game_fn_box_set;
 
 static generic_fn_reg p_reg_make_pair;
 static game_fn p_game_fn_make_pair;
@@ -1069,8 +1063,6 @@ static void load_tests_library(void) {
     p_game_fn_eval_order_2                   = (game_fn)load_sym(h, "game_fn_eval_order_2");
     p_game_fn_get_false                      = (game_fn)load_sym(h, "game_fn_get_false");
     p_game_fn_set_is_happy                   = (game_fn)load_sym(h, "game_fn_set_is_happy");
-    p_game_fn_mega_f32                       = (game_fn)load_sym(h, "game_fn_mega_f32");
-    p_game_fn_mega_i32                       = (game_fn)load_sym(h, "game_fn_mega_i32");
     p_game_fn_draw                           = (game_fn)load_sym(h, "game_fn_draw");
     p_game_fn_utils                          = (game_fn)load_sym(h, "game_fn_utils");
     p_game_fn_assert_state_is_not_null       = (game_fn)load_sym(h, "game_fn_assert_state_is_not_null");
@@ -1109,7 +1101,6 @@ static void load_tests_library(void) {
 
     p_reg_box                                = (generic_fn_reg)load_sym(h, "reg_game_fn_box");
     p_reg_box_get                            = (generic_fn_reg)load_sym(h, "reg_game_fn_box_get");
-    p_reg_box_set                            = (generic_fn_reg)load_sym(h, "reg_game_fn_box_set");
 
     p_reg_make_pair                          = (generic_fn_reg)load_sym(h, "reg_game_fn_make_pair");
     p_reg_pair_first                         = (generic_fn_reg)load_sym(h, "reg_game_fn_pair_first");

@@ -5401,7 +5401,7 @@ static void write_results_json(const char *results_json_path) {
 			}
 		}
 
-		qsort(sorted, sorted_count, sizeof(sorted[0]), compare_test_result_ptrs_by_name);
+		qsort((void *)sorted, sorted_count, sizeof(sorted[0]), compare_test_result_ptrs_by_name);
 
 		for (size_t i = 0; i < sorted_count; i++) {
 			const struct test_result_entry *entry = sorted[i];

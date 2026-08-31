@@ -2407,7 +2407,7 @@ static void test_code_reloading(void) {
 }
 
 static void rerun_ok_tests(struct grug_state *grug_state) {
-	for (size_t i = 0; i < ok_test_datas_size; i++) {
+	for (volatile size_t i = 0; i < ok_test_datas_size; i++) {
 		struct ok_test_data* fn_data = &ok_test_datas[i];
 
 		if (!fn_data->file) {
@@ -2453,7 +2453,7 @@ static struct grug_file_id* prologue(void* grug_state, const char *grug_path) {
 }
 
 static void rerun_err_runtime_tests(struct grug_state *grug_state) {
-	for (size_t i = 0; i < err_runtime_test_datas_size; i++) {
+	for (volatile size_t i = 0; i < err_runtime_test_datas_size; i++) {
 		struct runtime_error_test_data* fn_data = &runtime_error_test_datas[i];
 
 		if (!fn_data->file) {
@@ -2486,7 +2486,7 @@ static void rerun_err_runtime_tests(struct grug_state *grug_state) {
 }
 
 static void run_err_runtime_tests(struct grug_state *grug_state) {
-	for (size_t i = 0; i < err_runtime_test_datas_size; i++) {
+	for (volatile size_t i = 0; i < err_runtime_test_datas_size; i++) {
 		struct runtime_error_test_data* fn_data = &runtime_error_test_datas[i];
 
 		printf("Running tests/err_runtime/%s...\n", fn_data->test_name_str);
@@ -2520,7 +2520,7 @@ static void run_err_runtime_tests(struct grug_state *grug_state) {
 }
 
 static void run_ok_tests(struct grug_state *grug_state) {
-	for (size_t i = 0; i < ok_test_datas_size; i++) {
+	for (volatile size_t i = 0; i < ok_test_datas_size; i++) {
 		struct ok_test_data* fn_data = &ok_test_datas[i];
 
 		printf("Running tests/ok/%s...\n", fn_data->test_name_str);

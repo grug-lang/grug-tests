@@ -1,11 +1,11 @@
 [
     {
         "comment": "foo",
-        "type": "GLOBAL_COMMENT"
+        "type": "COMMENT_STATEMENT"
     },
     {
         "comment": "bar",
-        "type": "GLOBAL_COMMENT"
+        "type": "COMMENT_STATEMENT"
     },
     {
         "name": "a",

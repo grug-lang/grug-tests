@@ -5,7 +5,7 @@
             "value": "1"
         },
         "name": "g1",
-        "type": "GLOBAL_VARIABLE",
+        "type": "VARIABLE_STATEMENT",
         "variable_type": {
             "name": "number"
         }
@@ -16,7 +16,7 @@
             "value": "2"
         },
         "name": "g2",
-        "type": "GLOBAL_VARIABLE",
+        "type": "VARIABLE_STATEMENT",
         "variable_type": {
             "name": "number"
         }
@@ -27,7 +27,7 @@
             "value": "3"
         },
         "name": "g3",
-        "type": "GLOBAL_VARIABLE",
+        "type": "VARIABLE_STATEMENT",
         "variable_type": {
             "name": "number"
         }
@@ -38,7 +38,7 @@
             "value": "4"
         },
         "name": "g4",
-        "type": "GLOBAL_VARIABLE",
+        "type": "VARIABLE_STATEMENT",
         "variable_type": {
             "name": "number"
         }
@@ -49,7 +49,7 @@
             "value": "5"
         },
         "name": "g5",
-        "type": "GLOBAL_VARIABLE",
+        "type": "VARIABLE_STATEMENT",
         "variable_type": {
             "name": "number"
         }
@@ -60,7 +60,7 @@
             "value": "6"
         },
         "name": "g6",
-        "type": "GLOBAL_VARIABLE",
+        "type": "VARIABLE_STATEMENT",
         "variable_type": {
             "name": "number"
         }
@@ -71,7 +71,7 @@
             "value": "7"
         },
         "name": "g7",
-        "type": "GLOBAL_VARIABLE",
+        "type": "VARIABLE_STATEMENT",
         "variable_type": {
             "name": "number"
         }
@@ -82,7 +82,7 @@
             "value": "8"
         },
         "name": "g8",
-        "type": "GLOBAL_VARIABLE",
+        "type": "VARIABLE_STATEMENT",
         "variable_type": {
             "name": "number"
         }
@@ -93,7 +93,7 @@
             "value": "9"
         },
         "name": "g9",
-        "type": "GLOBAL_VARIABLE",
+        "type": "VARIABLE_STATEMENT",
         "variable_type": {
             "name": "number"
         }
@@ -104,7 +104,7 @@
             "value": "10"
         },
         "name": "g10",
-        "type": "GLOBAL_VARIABLE",
+        "type": "VARIABLE_STATEMENT",
         "variable_type": {
             "name": "number"
         }
@@ -115,7 +115,7 @@
             "value": "11"
         },
         "name": "g11",
-        "type": "GLOBAL_VARIABLE",
+        "type": "VARIABLE_STATEMENT",
         "variable_type": {
             "name": "number"
         }
@@ -126,7 +126,7 @@
             "value": "12"
         },
         "name": "g12",
-        "type": "GLOBAL_VARIABLE",
+        "type": "VARIABLE_STATEMENT",
         "variable_type": {
             "name": "number"
         }
@@ -137,7 +137,7 @@
             "value": "13"
         },
         "name": "g13",
-        "type": "GLOBAL_VARIABLE",
+        "type": "VARIABLE_STATEMENT",
         "variable_type": {
             "name": "number"
         }
@@ -148,7 +148,7 @@
             "value": "14"
         },
         "name": "g14",
-        "type": "GLOBAL_VARIABLE",
+        "type": "VARIABLE_STATEMENT",
         "variable_type": {
             "name": "number"
         }
@@ -159,7 +159,7 @@
             "value": "15"
         },
         "name": "g15",
-        "type": "GLOBAL_VARIABLE",
+        "type": "VARIABLE_STATEMENT",
         "variable_type": {
             "name": "number"
         }
@@ -170,7 +170,7 @@
             "value": "16"
         },
         "name": "g16",
-        "type": "GLOBAL_VARIABLE",
+        "type": "VARIABLE_STATEMENT",
         "variable_type": {
             "name": "number"
         }
@@ -181,7 +181,7 @@
             "value": "17"
         },
         "name": "g17",
-        "type": "GLOBAL_VARIABLE",
+        "type": "VARIABLE_STATEMENT",
         "variable_type": {
             "name": "number"
         }
@@ -192,7 +192,7 @@
             "value": "18"
         },
         "name": "g18",
-        "type": "GLOBAL_VARIABLE",
+        "type": "VARIABLE_STATEMENT",
         "variable_type": {
             "name": "number"
         }
@@ -203,7 +203,7 @@
             "value": "19"
         },
         "name": "g19",
-        "type": "GLOBAL_VARIABLE",
+        "type": "VARIABLE_STATEMENT",
         "variable_type": {
             "name": "number"
         }
@@ -214,7 +214,7 @@
             "value": "20"
         },
         "name": "g20",
-        "type": "GLOBAL_VARIABLE",
+        "type": "VARIABLE_STATEMENT",
         "variable_type": {
             "name": "number"
         }
@@ -225,7 +225,7 @@
             "value": "21"
         },
         "name": "g21",
-        "type": "GLOBAL_VARIABLE",
+        "type": "VARIABLE_STATEMENT",
         "variable_type": {
             "name": "number"
         }
@@ -236,7 +236,7 @@
             "value": "22"
         },
         "name": "g22",
-        "type": "GLOBAL_VARIABLE",
+        "type": "VARIABLE_STATEMENT",
         "variable_type": {
             "name": "number"
         }
@@ -247,7 +247,7 @@
             "value": "23"
         },
         "name": "g23",
-        "type": "GLOBAL_VARIABLE",
+        "type": "VARIABLE_STATEMENT",
         "variable_type": {
             "name": "number"
         }
@@ -258,7 +258,7 @@
             "value": "24"
         },
         "name": "g24",
-        "type": "GLOBAL_VARIABLE",
+        "type": "VARIABLE_STATEMENT",
         "variable_type": {
             "name": "number"
         }
@@ -269,7 +269,7 @@
             "value": "25"
         },
         "name": "g25",
-        "type": "GLOBAL_VARIABLE",
+        "type": "VARIABLE_STATEMENT",
         "variable_type": {
             "name": "number"
         }
@@ -280,7 +280,7 @@
             "value": "26"
         },
         "name": "g26",
-        "type": "GLOBAL_VARIABLE",
+        "type": "VARIABLE_STATEMENT",
         "variable_type": {
             "name": "number"
         }
@@ -291,7 +291,7 @@
             "value": "27"
         },
         "name": "g27",
-        "type": "GLOBAL_VARIABLE",
+        "type": "VARIABLE_STATEMENT",
         "variable_type": {
             "name": "number"
         }
@@ -302,7 +302,7 @@
             "value": "28"
         },
         "name": "g28",
-        "type": "GLOBAL_VARIABLE",
+        "type": "VARIABLE_STATEMENT",
         "variable_type": {
             "name": "number"
         }
@@ -313,7 +313,7 @@
             "value": "29"
         },
         "name": "g29",
-        "type": "GLOBAL_VARIABLE",
+        "type": "VARIABLE_STATEMENT",
         "variable_type": {
             "name": "number"
         }
@@ -324,7 +324,7 @@
             "value": "30"
         },
         "name": "g30",
-        "type": "GLOBAL_VARIABLE",
+        "type": "VARIABLE_STATEMENT",
         "variable_type": {
             "name": "number"
         }
@@ -335,7 +335,7 @@
             "value": "31"
         },
         "name": "g31",
-        "type": "GLOBAL_VARIABLE",
+        "type": "VARIABLE_STATEMENT",
         "variable_type": {
             "name": "number"
         }
@@ -346,7 +346,7 @@
             "value": "32"
         },
         "name": "g32",
-        "type": "GLOBAL_VARIABLE",
+        "type": "VARIABLE_STATEMENT",
         "variable_type": {
             "name": "number"
         }

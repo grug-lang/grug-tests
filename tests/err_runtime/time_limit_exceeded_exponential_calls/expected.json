@@ -14,7 +14,7 @@
         "type": "EXPORT_FN"
     },
     {
-        "type": "GLOBAL_EMPTY_LINE"
+        "type": "EMPTY_LINE_STATEMENT"
     },
     {
         "name": "_a",
@@ -31,7 +31,7 @@
         "type": "LOCAL_FN"
     },
     {
-        "type": "GLOBAL_EMPTY_LINE"
+        "type": "EMPTY_LINE_STATEMENT"
     },
     {
         "name": "_b",
@@ -48,7 +48,7 @@
         "type": "LOCAL_FN"
     },
     {
-        "type": "GLOBAL_EMPTY_LINE"
+        "type": "EMPTY_LINE_STATEMENT"
     },
     {
         "name": "_c",
@@ -65,7 +65,7 @@
         "type": "LOCAL_FN"
     },
     {
-        "type": "GLOBAL_EMPTY_LINE"
+        "type": "EMPTY_LINE_STATEMENT"
     },
     {
         "name": "_d",
@@ -82,7 +82,7 @@
         "type": "LOCAL_FN"
     },
     {
-        "type": "GLOBAL_EMPTY_LINE"
+        "type": "EMPTY_LINE_STATEMENT"
     },
     {
         "name": "_e",
@@ -99,7 +99,7 @@
         "type": "LOCAL_FN"
     },
     {
-        "type": "GLOBAL_EMPTY_LINE"
+        "type": "EMPTY_LINE_STATEMENT"
     },
     {
         "name": "_f",
@@ -116,7 +116,7 @@
         "type": "LOCAL_FN"
     },
     {
-        "type": "GLOBAL_EMPTY_LINE"
+        "type": "EMPTY_LINE_STATEMENT"
     },
     {
         "name": "_g",
@@ -133,7 +133,7 @@
         "type": "LOCAL_FN"
     },
     {
-        "type": "GLOBAL_EMPTY_LINE"
+        "type": "EMPTY_LINE_STATEMENT"
     },
     {
         "name": "_h",
@@ -150,7 +150,7 @@
         "type": "LOCAL_FN"
     },
     {
-        "type": "GLOBAL_EMPTY_LINE"
+        "type": "EMPTY_LINE_STATEMENT"
     },
     {
         "name": "_i",
@@ -167,7 +167,7 @@
         "type": "LOCAL_FN"
     },
     {
-        "type": "GLOBAL_EMPTY_LINE"
+        "type": "EMPTY_LINE_STATEMENT"
     },
     {
         "name": "_j",
@@ -184,7 +184,7 @@
         "type": "LOCAL_FN"
     },
     {
-        "type": "GLOBAL_EMPTY_LINE"
+        "type": "EMPTY_LINE_STATEMENT"
     },
     {
         "name": "_k",
@@ -201,7 +201,7 @@
         "type": "LOCAL_FN"
     },
     {
-        "type": "GLOBAL_EMPTY_LINE"
+        "type": "EMPTY_LINE_STATEMENT"
     },
     {
         "name": "_l",
@@ -218,7 +218,7 @@
         "type": "LOCAL_FN"
     },
     {
-        "type": "GLOBAL_EMPTY_LINE"
+        "type": "EMPTY_LINE_STATEMENT"
     },
     {
         "name": "_m",
@@ -235,7 +235,7 @@
         "type": "LOCAL_FN"
     },
     {
-        "type": "GLOBAL_EMPTY_LINE"
+        "type": "EMPTY_LINE_STATEMENT"
     },
     {
         "name": "_n",
@@ -252,7 +252,7 @@
         "type": "LOCAL_FN"
     },
     {
-        "type": "GLOBAL_EMPTY_LINE"
+        "type": "EMPTY_LINE_STATEMENT"
     },
     {
         "name": "_o",
@@ -269,7 +269,7 @@
         "type": "LOCAL_FN"
     },
     {
-        "type": "GLOBAL_EMPTY_LINE"
+        "type": "EMPTY_LINE_STATEMENT"
     },
     {
         "name": "_p",
@@ -286,7 +286,7 @@
         "type": "LOCAL_FN"
     },
     {
-        "type": "GLOBAL_EMPTY_LINE"
+        "type": "EMPTY_LINE_STATEMENT"
     },
     {
         "name": "_q",
@@ -303,7 +303,7 @@
         "type": "LOCAL_FN"
     },
     {
-        "type": "GLOBAL_EMPTY_LINE"
+        "type": "EMPTY_LINE_STATEMENT"
     },
     {
         "name": "_r",
@@ -320,7 +320,7 @@
         "type": "LOCAL_FN"
     },
     {
-        "type": "GLOBAL_EMPTY_LINE"
+        "type": "EMPTY_LINE_STATEMENT"
     },
     {
         "name": "_s",
@@ -337,7 +337,7 @@
         "type": "LOCAL_FN"
     },
     {
-        "type": "GLOBAL_EMPTY_LINE"
+        "type": "EMPTY_LINE_STATEMENT"
     },
     {
         "name": "_t",
@@ -354,7 +354,7 @@
         "type": "LOCAL_FN"
     },
     {
-        "type": "GLOBAL_EMPTY_LINE"
+        "type": "EMPTY_LINE_STATEMENT"
     },
     {
         "name": "_u",
@@ -371,7 +371,7 @@
         "type": "LOCAL_FN"
     },
     {
-        "type": "GLOBAL_EMPTY_LINE"
+        "type": "EMPTY_LINE_STATEMENT"
     },
     {
         "name": "_v",
@@ -388,7 +388,7 @@
         "type": "LOCAL_FN"
     },
     {
-        "type": "GLOBAL_EMPTY_LINE"
+        "type": "EMPTY_LINE_STATEMENT"
     },
     {
         "name": "_w",
@@ -405,7 +405,7 @@
         "type": "LOCAL_FN"
     },
     {
-        "type": "GLOBAL_EMPTY_LINE"
+        "type": "EMPTY_LINE_STATEMENT"
     },
     {
         "name": "_x",
@@ -422,7 +422,7 @@
         "type": "LOCAL_FN"
     },
     {
-        "type": "GLOBAL_EMPTY_LINE"
+        "type": "EMPTY_LINE_STATEMENT"
     },
     {
         "name": "_y",
@@ -439,7 +439,7 @@
         "type": "LOCAL_FN"
     },
     {
-        "type": "GLOBAL_EMPTY_LINE"
+        "type": "EMPTY_LINE_STATEMENT"
     },
     {
         "name": "_z",

@@ -1,7 +1,7 @@
 [
     {
         "comment": "foo",
-        "type": "GLOBAL_COMMENT"
+        "type": "COMMENT_STATEMENT"
     },
     {
         "assignment": {
@@ -9,21 +9,21 @@
             "value": "420"
         },
         "name": "uses",
-        "type": "GLOBAL_VARIABLE",
+        "type": "VARIABLE_STATEMENT",
         "variable_type": {
             "name": "number"
         }
     },
     {
-        "type": "GLOBAL_EMPTY_LINE"
+        "type": "EMPTY_LINE_STATEMENT"
     },
     {
         "comment": "bar",
-        "type": "GLOBAL_COMMENT"
+        "type": "COMMENT_STATEMENT"
     },
     {
         "comment": "baz",
-        "type": "GLOBAL_COMMENT"
+        "type": "COMMENT_STATEMENT"
     },
     {
         "assignment": {
@@ -31,7 +31,7 @@
             "value": "1337"
         },
         "name": "armor",
-        "type": "GLOBAL_VARIABLE",
+        "type": "VARIABLE_STATEMENT",
         "variable_type": {
             "name": "number"
         }
@@ -42,7 +42,7 @@
             "value": "100"
         },
         "name": "health",
-        "type": "GLOBAL_VARIABLE",
+        "type": "VARIABLE_STATEMENT",
         "variable_type": {
             "name": "number"
         }

@@ -22,7 +22,7 @@
         "type": "EXPORT_FN"
     },
     {
-        "type": "GLOBAL_EMPTY_LINE"
+        "type": "EMPTY_LINE_STATEMENT"
     },
     {
         "name": "_fib",

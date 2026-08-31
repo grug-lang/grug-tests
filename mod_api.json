@@ -178,186 +178,6 @@
 		}
 	},
 	"classes": {
-		"VecNumber": {
-			"description": "A growable list of numbers.",
-			"static_methods": {
-				"new": {
-					"description": "Creates a new empty VecNumber.",
-					"parameters": [],
-					"return_type": {
-						"name": "VecNumber"
-					}
-				},
-				"with_capacity": {
-					"description": "Creates a new empty VecNumber with a minimum capacity.",
-					"parameters": [
-						{
-							"name": "capacity",
-							"type": {
-								"name": "number"
-							}
-						}
-					],
-					"return_type": {
-						"name": "VecNumber"
-					}
-				}
-			},
-			"methods": {
-				"push": {
-					"description": "Pushes a number to the end of the list.",
-					"parameters": [
-						{
-							"name": "value",
-							"type": {
-								"name": "number"
-							}
-						}
-					]
-				},
-				"pop": {
-					"description": "Removes the last element from the list and returns it",
-					"parameters": [],
-					"return_type": {
-						"name": "number"
-					}
-				},
-				"insert": {
-					"description": "Inserts a value at an index.",
-					"parameters": [
-						{
-							"name": "index",
-							"type": {
-								"name": "number"
-							}
-						},
-						{
-							"name": "value",
-							"type": {
-								"name": "number"
-							}
-						}
-					]
-				}
-			}
-		},
-		"Utils": {
-			"description": "Asserts.",
-			"static_methods": {
-				"fail": {
-					"description": "foo",
-					"return_type": {
-						"name": "bool"
-					}
-				}
-			},
-			"methods": {
-				"assert_state_is_not_null": {
-					"description": "Asserts state is not null."
-				},
-				"cause_game_fn_error": {
-					"description": "Causes a game fn error."
-				},
-				"call_on_b_fn": {
-					"description": "Calls its own on_b function."
-				},
-				"cause_game_fn_error_generic": {
-					"description": "accepts a generic value and unconditionally causes a runtime error",
-					"used_generics": [
-						"$T"
-					],
-					"parameters": [
-						{
-							"name": "input",
-							"type": {
-								"name": "$T"
-							}
-						}
-					],
-					"return_type": {
-						"name": "bool"
-					}
-				}
-			}
-		},
-		"Vec": {
-			"description": "A vector",
-			"used_generics": [
-				"$T"
-			],
-			"static_methods": {
-				"new": {
-					"description": "Creates a new empty Vec.",
-					"parameters": [],
-					"return_type": {
-						"name": "Vec",
-						"generics": [
-							{
-								"name": "$T"
-							}
-						]
-					}
-				}
-			},
-			"methods": {
-				"push": {
-					"description": "Pushes an item to the end of the list",
-					"parameters": [
-						{
-							"name": "value",
-							"type": {
-								"name": "$T"
-							}
-						}
-					]
-				},
-				"pop": {
-					"description": "Removes the last element from the list and returns it",
-					"parameters": [],
-					"return_type": {
-						"name": "$T"
-					}
-				},
-				"insert": {
-					"description": "Inserts an element at index i",
-					"parameters": [
-						{
-							"name": "index",
-							"type": {
-								"name": "number"
-							}
-						},
-						{
-							"name": "value",
-							"type": {
-								"name": "$T"
-							}
-						}
-					]
-				}
-			}
-		},
-		"Pair": {
-			"description": "A pair of two different values",
-			"used_generics": [
-				"$T1",
-				"$T2"
-			],
-			"methods": {
-				"first": {
-					"description": "Gets the first item from the pair",
-					"return_type": {
-						"name": "$T1"
-					}
-				},
-				"second": {
-					"description": "Gets the second item from the pair",
-					"return_type": {
-						"name": "$T2"
-					}
-				}
-			}
-		},
 		"Box": {
 			"description": "A heap allocated version of a type. Allows sharing of primitive types",
 			"used_generics": [
@@ -408,52 +228,216 @@
 					]
 				}
 			}
+		},
+		"Pair": {
+			"description": "A pair of two different values",
+			"used_generics": [
+				"$T1",
+				"$T2"
+			],
+			"methods": {
+				"first": {
+					"description": "Gets the first item from the pair",
+					"return_type": {
+						"name": "$T1"
+					}
+				},
+				"second": {
+					"description": "Gets the second item from the pair",
+					"return_type": {
+						"name": "$T2"
+					}
+				}
+			}
+		},
+		"Utils": {
+			"description": "Asserts.",
+			"static_methods": {
+				"fail": {
+					"description": "foo",
+					"return_type": {
+						"name": "bool"
+					}
+				}
+			},
+			"methods": {
+				"assert_state_is_not_null": {
+					"description": "Asserts state is not null."
+				},
+				"call_on_b_fn": {
+					"description": "Calls its own on_b function."
+				},
+				"cause_game_fn_error": {
+					"description": "Causes a game fn error."
+				},
+				"cause_game_fn_error_generic": {
+					"description": "accepts a generic value and unconditionally causes a runtime error",
+					"used_generics": [
+						"$T"
+					],
+					"return_type": {
+						"name": "bool"
+					},
+					"parameters": [
+						{
+							"name": "input",
+							"type": {
+								"name": "$T"
+							}
+						}
+					]
+				}
+			}
+		},
+		"Vec": {
+			"description": "A vector",
+			"used_generics": [
+				"$T"
+			],
+			"static_methods": {
+				"new": {
+					"description": "Creates a new empty Vec.",
+					"return_type": {
+						"name": "Vec",
+						"generics": [
+							{
+								"name": "$T"
+							}
+						]
+					},
+					"parameters": []
+				}
+			},
+			"methods": {
+				"insert": {
+					"description": "Inserts an element at index i",
+					"parameters": [
+						{
+							"name": "index",
+							"type": {
+								"name": "number"
+							}
+						},
+						{
+							"name": "value",
+							"type": {
+								"name": "$T"
+							}
+						}
+					]
+				},
+				"pop": {
+					"description": "Removes the last element from the list and returns it",
+					"return_type": {
+						"name": "$T"
+					},
+					"parameters": []
+				},
+				"push": {
+					"description": "Pushes an item to the end of the list",
+					"parameters": [
+						{
+							"name": "value",
+							"type": {
+								"name": "$T"
+							}
+						}
+					]
+				}
+			}
+		},
+		"VecNumber": {
+			"description": "A growable list of numbers.",
+			"static_methods": {
+				"new": {
+					"description": "Creates a new empty VecNumber.",
+					"return_type": {
+						"name": "VecNumber"
+					},
+					"parameters": []
+				},
+				"with_capacity": {
+					"description": "Creates a new empty VecNumber with a minimum capacity.",
+					"return_type": {
+						"name": "VecNumber"
+					},
+					"parameters": [
+						{
+							"name": "capacity",
+							"type": {
+								"name": "number"
+							}
+						}
+					]
+				}
+			},
+			"methods": {
+				"insert": {
+					"description": "Inserts a value at an index.",
+					"parameters": [
+						{
+							"name": "index",
+							"type": {
+								"name": "number"
+							}
+						},
+						{
+							"name": "value",
+							"type": {
+								"name": "number"
+							}
+						}
+					]
+				},
+				"pop": {
+					"description": "Removes the last element from the list and returns it",
+					"return_type": {
+						"name": "number"
+					},
+					"parameters": []
+				},
+				"push": {
+					"description": "Pushes a number to the end of the list.",
+					"parameters": [
+						{
+							"name": "value",
+							"type": {
+								"name": "number"
+							}
+						}
+					]
+				}
+			}
 		}
 	},
 	"host_functions": {
 		"assert_state_is_not_null": {
 			"description": "foo"
 		},
-		"make_pair": {
-			"description": "Creates a pair of two values",
+		"blocked_alrm": {
+			"description": "foo"
+		},
+		"box": {
+			"description": "Creates a boxed item",
 			"used_generics": [
-				"$T1",
-				"$T2"
+				"$T"
 			],
 			"return_type": {
-				"name": "Pair",
+				"name": "Box",
 				"generics": [
 					{
-						"name": "$T1"
-					},
-					{
-						"name": "$T2"
+						"name": "$T"
 					}
 				]
 			},
 			"parameters": [
 				{
-					"name": "first",
+					"name": "item",
 					"type": {
-						"name": "$T1"
-					}
-				},
-				{
-					"name": "second",
-					"type": {
-						"name": "$T2"
+						"name": "$T"
 					}
 				}
 			]
-		},
-		"utils": {
-			"description": "Creates a new Utils",
-			"return_type": {
-				"name": "Utils"
-			}
-		},
-		"blocked_alrm": {
-			"description": "foo"
 		},
 		"box_number": {
 			"description": "foo",
@@ -494,6 +478,9 @@
 			"used_generics": [
 				"$T"
 			],
+			"return_type": {
+				"name": "bool"
+			},
 			"parameters": [
 				{
 					"name": "input",
@@ -501,10 +488,7 @@
 						"name": "$T"
 					}
 				}
-			],
-			"return_type": {
-				"name": "bool"
-			}
+			]
 		},
 		"cos": {
 			"description": "foo",
@@ -516,6 +500,72 @@
 					"name": "x",
 					"type": {
 						"name": "number"
+					}
+				}
+			]
+		},
+		"default": {
+			"description": "Creates a default new item for the type. Only works for Vec and string",
+			"used_generics": [
+				"$T"
+			],
+			"return_type": {
+				"name": "$T"
+			}
+		},
+		"dict": {
+			"description": "Creates a new empty dict",
+			"used_generics": [
+				"$K",
+				"$V"
+			],
+			"return_type": {
+				"name": "Dict",
+				"generics": [
+					{
+						"name": "$K"
+					},
+					{
+						"name": "$V"
+					}
+				]
+			}
+		},
+		"dict_from_vec": {
+			"description": "Creates a dict from a list of pairs of items",
+			"used_generics": [
+				"$K",
+				"$V"
+			],
+			"return_type": {
+				"name": "Dict",
+				"generics": [
+					{
+						"name": "$K"
+					},
+					{
+						"name": "$V"
+					}
+				]
+			},
+			"parameters": [
+				{
+					"name": "list",
+					"type": {
+						"name": "Vec",
+						"generics": [
+							{
+								"name": "Pair",
+								"generics": [
+									{
+										"name": "$K"
+									},
+									{
+										"name": "$V"
+									}
+								]
+							}
+						]
 					}
 				}
 			]
@@ -661,6 +711,38 @@
 			"return_type": {
 				"name": "number"
 			}
+		},
+		"make_pair": {
+			"description": "Creates a pair of two values",
+			"used_generics": [
+				"$T1",
+				"$T2"
+			],
+			"return_type": {
+				"name": "Pair",
+				"generics": [
+					{
+						"name": "$T1"
+					},
+					{
+						"name": "$T2"
+					}
+				]
+			},
+			"parameters": [
+				{
+					"name": "first",
+					"type": {
+						"name": "$T1"
+					}
+				},
+				{
+					"name": "second",
+					"type": {
+						"name": "$T2"
+					}
+				}
+			]
 		},
 		"max": {
 			"description": "foo",
@@ -1719,11 +1801,10 @@
 				}
 			]
 		},
-		"vec_number_new": {
-			"description": "Creates a new VecNumber",
-			"parameters": [],
+		"utils": {
+			"description": "Creates a new Utils",
 			"return_type": {
-				"name": "VecNumber"
+				"name": "Utils"
 			}
 		},
 		"vec": {
@@ -1731,7 +1812,6 @@
 			"used_generics": [
 				"$T"
 			],
-			"parameters": [],
 			"return_type": {
 				"name": "Vec",
 				"generics": [
@@ -1739,95 +1819,15 @@
 						"name": "$T"
 					}
 				]
-			}
-		},
-		"box": {
-			"description": "Creates a boxed item",
-			"used_generics": [
-				"$T"
-			],
-			"parameters": [
-				{
-					"name": "item",
-					"type": {
-						"name": "$T"
-					}
-				}
-			],
-			"return_type": {
-				"name": "Box",
-				"generics": [
-					{
-						"name": "$T"
-					}
-				]
-			}
-		},
-		"default": {
-			"description": "Creates a default new item for the type. Only works for Vec and string",
-			"used_generics": [
-				"$T"
-			],
-			"return_type": {
-				"name": "$T"
-			}
-		},
-		"dict": {
-			"description": "Creates a new empty dict",
-			"used_generics": [
-				"$K",
-				"$V"
-			],
-			"return_type": {
-				"name": "Dict",
-				"generics": [
-					{
-						"name": "$K"
-					},
-					{
-						"name": "$V"
-					}
-				]
-			}
-		},
-		"dict_from_vec": {
-			"description": "Creates a dict from a list of pairs of items",
-			"used_generics": [
-				"$K",
-				"$V"
-			],
-			"return_type": {
-				"name": "Dict",
-				"generics": [
-					{
-						"name": "$K"
-					},
-					{
-						"name": "$V"
-					}
-				]
 			},
-			"parameters": [
-				{
-					"name": "list",
-					"type": {
-						"name": "Vec",
-						"generics": [
-							{
-								"name": "Pair",
-								"generics": [
-									{
-										"name": "$K"
-									},
-									{
-										"name": "$V"
-									}
-								]
-							}
-						]
-					}
-				}
-			]
+			"parameters": []
+		},
+		"vec_number_new": {
+			"description": "Creates a new VecNumber",
+			"return_type": {
+				"name": "VecNumber"
+			},
+			"parameters": []
 		}
 	}
 }

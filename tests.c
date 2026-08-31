@@ -5407,10 +5407,10 @@ static void write_results_json(const char *results_json_path) {
 			const struct test_result_entry *entry = sorted[i];
 
 			cJSON *test_json = cJSON_CreateObject();
-			if (entry->has_rerun) {
+			if (streq(entry->category, "ok") || streq(entry->category, "err_runtime")) {
 				cJSON_AddBoolToObject(test_json, "passed", entry->passed && entry->passed_rerun);
 				cJSON_AddBoolToObject(test_json, "passed_run_1", entry->passed);
-				cJSON_AddBoolToObject(test_json, "passed_run_2", entry->passed_rerun);
+				cJSON_AddBoolToObject(test_json, "passed_run_2", entry->has_rerun ? entry->passed_rerun : false);
 			} else {
 				cJSON_AddBoolToObject(test_json, "passed", entry->passed);
 			}

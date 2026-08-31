@@ -81,6 +81,6 @@
                 "type": "CALL_STATEMENT"
             }
         ],
-        "type": "GLOBAL_ON_FN"
+        "type": "EXPORT_FN"
     }
 ]

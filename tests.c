@@ -8,6 +8,7 @@
 #include <fcntl.h>
 #include <inttypes.h>
 #include <math.h>
+#include <setjmp.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -15,10 +16,115 @@
 
 #define MiB (1024 * 1024)
 
+// -----------------------------
+// Test result tracking
+// -----------------------------
+//
+// By default grug-tests aborts the moment a single test fails, exactly like
+// it always has. Passing --continue-on-fail changes that: instead of the
+// process exiting immediately, we longjmp() back to the nearest test
+// boundary (see RUN_TRACKED_TEST below), record that one test as failed,
+// and keep going with the rest of the suite.
+//
+// This also drives results.json and the final "Tests passed: X% (Y/Z)" line.
+
+static bool g_continue_on_fail = false;
+static bool g_in_test = false;
+static jmp_buf g_test_jmp_buf;
+
+static bool streq(const char *a, const char *b);
+
+#define MAX_TEST_RESULTS 8192
+
+struct test_result_entry {
+	char category[32];
+	char name[192];
+	bool passed;
+	bool has_rerun;
+	bool passed_rerun;
+};
+static struct test_result_entry test_results[MAX_TEST_RESULTS];
+static size_t test_results_size;
+
+static struct test_result_entry *find_or_create_test_result(const char *category, const char *name) {
+	for (size_t i = 0; i < test_results_size; i++) {
+		if (streq(test_results[i].category, category) && streq(test_results[i].name, name)) {
+			return &test_results[i];
+		}
+	}
+
+	if (test_results_size >= MAX_TEST_RESULTS) {
+		fprintf(stderr, "Error: Too many test results to track (increase MAX_TEST_RESULTS)\n");
+		exit(EXIT_FAILURE);
+	}
+
+	struct test_result_entry *entry = &test_results[test_results_size++];
+	snprintf(entry->category, sizeof(entry->category), "%s", category);
+	snprintf(entry->name, sizeof(entry->name), "%s", name);
+	entry->has_rerun = false;
+	return entry;
+}
+
+// Records the result of a test's first (and, for categories without a
+// rerun pass, only) run.
+static void record_test_result(const char *category, const char *name, bool passed) {
+	struct test_result_entry *entry = find_or_create_test_result(category, name);
+	entry->passed = passed;
+}
+
+// Records the result of rerunning a test that has already been recorded via
+// record_test_result(). Only the "ok" and "err_runtime" categories get
+// rerun, so this never touches the other categories.
+static void record_test_rerun_result(const char *category, const char *name, bool passed) {
+	struct test_result_entry *entry = find_or_create_test_result(category, name);
+	entry->has_rerun = true;
+	entry->passed_rerun = passed;
+}
+
+// Called by every assertion/check that represents a single test failing.
+//
+// The caller is expected to have already printed diagnostics to stderr
+// before calling this.
+static void fail_current_test(void) {
+	if (g_continue_on_fail && g_in_test) {
+		longjmp(g_test_jmp_buf, 1);
+	}
+	exit(EXIT_FAILURE);
+}
+
+// Wraps the running of a single named test, so that a failure inside `body`
+// either aborts the whole program (default behavior), or is caught and
+// recorded so the remaining tests can still run (--continue-on-fail).
+#define RUN_TRACKED_TEST(category, name, body) do { \
+	g_in_test = true; \
+	if (setjmp(g_test_jmp_buf) == 0) { \
+		body \
+		record_test_result((category), (name), true); \
+	} else { \
+		record_test_result((category), (name), false); \
+	} \
+	g_in_test = false; \
+} while (0)
+
+// Same as RUN_TRACKED_TEST, but for the second ("rerun") pass that the "ok"
+// and "err_runtime" categories go through, recording into passed_rerun
+// (written to results.json as "passed_run_2") instead of passed (written
+// as "passed_run_1").
+#define RUN_TRACKED_RERUN_TEST(category, name, body) do { \
+	g_in_test = true; \
+	if (setjmp(g_test_jmp_buf) == 0) { \
+		body \
+		record_test_rerun_result((category), (name), true); \
+	} else { \
+		record_test_rerun_result((category), (name), false); \
+	} \
+	g_in_test = false; \
+} while (0)
+
 #define assert_ptr(ptr) do { \
 	if (!ptr) { \
 		fprintf(stderr, "%s:%d: Assertion null pointer (%s) failed.\n", __FILE__, __LINE__, #ptr); \
-		exit(EXIT_FAILURE); \
+		fail_current_test(); \
 	} \
 } while (0)
 
@@ -26,56 +132,56 @@
 	size_t count = game_fn_ ## game_fn_name ## _call_count; \
 	if (count != expected_count) { \
 		fprintf(stderr, "%s:%d: Assertion call count %zu (%s) == %d failed.\n", __FILE__, __LINE__, count, #game_fn_name, expected_count); \
-		exit(EXIT_FAILURE); \
+		fail_current_test(); \
 	} \
 } while (0)
 
 #define assert_error_handler_call_count(expected_count) do { \
 	if (error_handler_call_count != expected_count) { \
 		fprintf(stderr, "%s:%d: Assertion error handler call count %zu == %d failed.\n", __FILE__, __LINE__, error_handler_call_count, expected_count); \
-		exit(EXIT_FAILURE); \
+		fail_current_test(); \
 	} \
 } while (0)
 
 #define assert_number(d, expected_number) do { \
 	if (d != expected_number) { \
 		fprintf(stderr, "%s:%d: Assertion %f (%s) == %f failed.\n", __FILE__, __LINE__, d, #d, expected_number); \
-		exit(EXIT_FAILURE); \
+		fail_current_test(); \
 	} \
 } while (0)
 
 #define assert_size_t(d, expected_number) do { \
 	if (d != expected_number) { \
 		fprintf(stderr, "%s:%d: Assertion %zu (%s) == %zu failed.\n", __FILE__, __LINE__, d, #d, expected_number); \
-		exit(EXIT_FAILURE); \
+		fail_current_test(); \
 	} \
 } while (0)
 
 #define assert_true(b) do { \
 	if (!b) { \
 		fprintf(stderr, "%s:%d: Assertion %s == true failed.\n", __FILE__, __LINE__, #b); \
-		exit(EXIT_FAILURE); \
+		fail_current_test(); \
 	} \
 } while (0)
 
 #define assert_false(b) do { \
 	if (b) { \
 		fprintf(stderr, "%s:%d: Assertion %s == false failed.\n", __FILE__, __LINE__, #b); \
-		exit(EXIT_FAILURE); \
+		fail_current_test(); \
 	} \
 } while (0)
 
 #define assert_string(str, expected_str) do { \
 	if (!streq_normalized(str, expected_str)) { \
 		fprintf(stderr, "%s:%d: Assertion '%s' (%s) == '%s' failed.\n", __FILE__, __LINE__, str, #str, expected_str); \
-		exit(EXIT_FAILURE); \
+		fail_current_test(); \
 	} \
 } while (0)
 
 #define assert_id(id, expected_id) do { \
 	if (id != expected_id) { \
 		fprintf(stderr, "%s:%d: Assertion ID %"PRIu64" (%s) == %d failed.\n", __FILE__, __LINE__, id, #id, expected_id); \
-		exit(EXIT_FAILURE); \
+		fail_current_test(); \
 	} \
 } while (0)
 
@@ -88,14 +194,14 @@ static const char *get_type_name[] = {
 #define assert_runtime_error_reason(expected_reason) do { \
 	if (!streq(expected_reason, runtime_error_reason)) { \
 		fprintf(stderr, "%s:%d: Assertion runtime error reason ('%s') == ('%s') failed.\n", __FILE__, __LINE__, expected_reason, runtime_error_reason); \
-		exit(EXIT_FAILURE); \
+		fail_current_test(); \
 	} \
 } while (0)
 
 #define assert_runtime_error_type(expected_type) do { \
 	if (runtime_error_type != expected_type) { \
 		fprintf(stderr, "%s:%d: Assertion runtime error type %s == %s failed.\n", __FILE__, __LINE__, get_type_name[runtime_error_type], get_type_name[expected_type]); \
-		exit(EXIT_FAILURE); \
+		fail_current_test(); \
 	} \
 } while (0)
 
@@ -474,7 +580,7 @@ union grug_value game_fn_assert_state_is_not_null(struct grug_state* grug_state,
 	game_fn_assert_state_is_not_null_call_count++;
 	if (grug_state == NULL) {
 		fprintf(stderr, "Error: state was NULL\n");
-		exit(EXIT_FAILURE);
+		fail_current_test();
 	}
 	return grug_void();
 }
@@ -484,7 +590,7 @@ union grug_value game_fn_Utils_assert_state_is_not_null(struct grug_state* grug_
 	game_fn_Utils_assert_state_is_not_null_call_count++;
 	if (grug_state == NULL) {
 		fprintf(stderr, "Error: state was NULL\n");
-		exit(EXIT_FAILURE);
+		fail_current_test();
 	}
 	return grug_void();
 }
@@ -1400,28 +1506,30 @@ static void run_err_spaces_test(struct grug_state *grug_state, const char *name)
 	printf("Running tests/err_spaces/%s...\n", name);
 	fflush(stdout);
 
-    char grug_path[4096];
-    int grug_len = snprintf(grug_path, sizeof(grug_path), "%s/%s", tests_dir_path, name);
-    if (grug_len < 0 || (size_t)grug_len >= sizeof(grug_path)) {
-		fprintf(stderr, "Error: Filling grug_path failed\n");
-		exit(EXIT_FAILURE);
-	}
+	RUN_TRACKED_TEST("err_spaces", name, {
+	    char grug_path[4096];
+	    int grug_len = snprintf(grug_path, sizeof(grug_path), "%s/%s", tests_dir_path, name);
+	    if (grug_len < 0 || (size_t)grug_len >= sizeof(grug_path)) {
+			fprintf(stderr, "Error: Filling grug_path failed\n");
+			exit(EXIT_FAILURE);
+		}
 
-    // This version does not have the tests/ prefix
-    char relative_path[4096];
-    int rel_len = snprintf(relative_path, sizeof(relative_path), "err_spaces/%s", name);
-    if (rel_len < 0 || (size_t)rel_len >= sizeof(relative_path)) {
-		fprintf(stderr, "Error: Filling relative_path failed\n");
-		exit(EXIT_FAILURE);
-	}
+	    // This version does not have the tests/ prefix
+	    char relative_path[4096];
+	    int rel_len = snprintf(relative_path, sizeof(relative_path), "err_spaces/%s", name);
+	    if (rel_len < 0 || (size_t)rel_len >= sizeof(relative_path)) {
+			fprintf(stderr, "Error: Filling relative_path failed\n");
+			exit(EXIT_FAILURE);
+		}
 
-    const char *msg = impl_forgot_to_set_msg;
-    compile_grug_file(grug_state, relative_path, &msg);
+	    const char *msg = impl_forgot_to_set_msg;
+	    compile_grug_file(grug_state, relative_path, &msg);
 
-    if (msg == NULL) {
-        fprintf(stderr, "\nError: Expected compilation failure for %s-D.grug, but it succeeded\n", name);
-        exit(EXIT_FAILURE);
-    }
+	    if (msg == NULL) {
+	        fprintf(stderr, "\nError: Expected compilation failure for %s-D.grug, but it succeeded\n", name);
+	        fail_current_test();
+	    }
+	});
 }
 
 static void run_err_spaces_tests(struct grug_state *grug_state) {
@@ -1552,33 +1660,35 @@ static void run_mod_api_schema_test(const char *name) {
     printf("Running tests/mod_api_schema/%s/err_mod_api.json...\n", name);
 	fflush(stdout);
 
-    char path[4096];
-    int len = snprintf(path, sizeof(path), "%s/mod_api_schema/%s/err_mod_api.json", tests_dir_path, name);
-    if (len < 0 || (size_t)len >= sizeof(path)) {
-		fprintf(stderr, "Error: Filling mod_api test path failed\n");
-		exit(EXIT_FAILURE);
-	}
+	RUN_TRACKED_TEST("mod_api_schema", name, {
+	    char path[4096];
+	    int len = snprintf(path, sizeof(path), "%s/mod_api_schema/%s/err_mod_api.json", tests_dir_path, name);
+	    if (len < 0 || (size_t)len >= sizeof(path)) {
+			fprintf(stderr, "Error: Filling mod_api test path failed\n");
+			exit(EXIT_FAILURE);
+		}
 
-	if (!parse_mod_api(path)) {
-		fprintf(stderr, "Error: Expected parse_mod_api(\"%s\") to return an error\n", path);
-		exit(EXIT_FAILURE);
-	}
+		if (!parse_mod_api(path)) {
+			fprintf(stderr, "Error: Expected parse_mod_api(\"%s\") to return an error\n", path);
+			fail_current_test();
+		}
 
-    printf("Running tests/mod_api_schema/%s/ok_mod_api.json...\n", name);
-	fflush(stdout);
+	    printf("Running tests/mod_api_schema/%s/ok_mod_api.json...\n", name);
+		fflush(stdout);
 
-    len = snprintf(path, sizeof(path), "%s/mod_api_schema/%s/ok_mod_api.json", tests_dir_path, name);
-    if (len < 0 || (size_t)len >= sizeof(path)) {
-		fprintf(stderr, "Error: Filling mod_api test path failed\n");
-		exit(EXIT_FAILURE);
-	}
+	    len = snprintf(path, sizeof(path), "%s/mod_api_schema/%s/ok_mod_api.json", tests_dir_path, name);
+	    if (len < 0 || (size_t)len >= sizeof(path)) {
+			fprintf(stderr, "Error: Filling mod_api test path failed\n");
+			exit(EXIT_FAILURE);
+		}
 
-	char* error = parse_mod_api(path);
-	if (error) {
-		fprintf(stderr, "Error: Expected parse_mod_api(\"%s\") to return NULL but it returned this error:\n", path);
-		fprintf(stderr, "%s", error);
-		exit(EXIT_FAILURE);
-	}
+		char* error = parse_mod_api(path);
+		if (error) {
+			fprintf(stderr, "Error: Expected parse_mod_api(\"%s\") to return NULL but it returned this error:\n", path);
+			fprintf(stderr, "%s", error);
+			fail_current_test();
+		}
+	});
 }
 
 static void run_mod_api_schema_tests(void) {
@@ -1615,33 +1725,35 @@ static void run_mod_api_semantic_test(const char *name) {
     printf("Running tests/mod_api_semantics/%s/err_mod_api.json...\n", name);
 	fflush(stdout);
 
-    char path[4096];
-    int len = snprintf(path, sizeof(path), "%s/mod_api_semantics/%s/err_mod_api.json", tests_dir_path, name);
-    if (len < 0 || (size_t)len >= sizeof(path)) {
-		fprintf(stderr, "Error: Filling mod_api test path failed\n");
-		exit(EXIT_FAILURE);
-	}
+	RUN_TRACKED_TEST("mod_api_semantics", name, {
+	    char path[4096];
+	    int len = snprintf(path, sizeof(path), "%s/mod_api_semantics/%s/err_mod_api.json", tests_dir_path, name);
+	    if (len < 0 || (size_t)len >= sizeof(path)) {
+			fprintf(stderr, "Error: Filling mod_api test path failed\n");
+			exit(EXIT_FAILURE);
+		}
 
-	if (!parse_mod_api(path)) {
-		fprintf(stderr, "Error: Expected parse_mod_api(\"%s\") to return an error\n", path);
-		exit(EXIT_FAILURE);
-	}
+		if (!parse_mod_api(path)) {
+			fprintf(stderr, "Error: Expected parse_mod_api(\"%s\") to return an error\n", path);
+			fail_current_test();
+		}
 
-    printf("Running tests/mod_api_semantics/%s/ok_mod_api.json...\n", name);
-	fflush(stdout);
+	    printf("Running tests/mod_api_semantics/%s/ok_mod_api.json...\n", name);
+		fflush(stdout);
 
-    len = snprintf(path, sizeof(path), "%s/mod_api_semantics/%s/ok_mod_api.json", tests_dir_path, name);
-    if (len < 0 || (size_t)len >= sizeof(path)) {
-		fprintf(stderr, "Error: Filling mod_api test path failed\n");
-		exit(EXIT_FAILURE);
-	}
+	    len = snprintf(path, sizeof(path), "%s/mod_api_semantics/%s/ok_mod_api.json", tests_dir_path, name);
+	    if (len < 0 || (size_t)len >= sizeof(path)) {
+			fprintf(stderr, "Error: Filling mod_api test path failed\n");
+			exit(EXIT_FAILURE);
+		}
 
-	char* error = parse_mod_api(path);
-	if (error) {
-		fprintf(stderr, "Error: Expected parse_mod_api(\"%s\") to return NULL but it returned this error:\n", path);
-		fprintf(stderr, "%s", error);
-		exit(EXIT_FAILURE);
-	}
+		char* error = parse_mod_api(path);
+		if (error) {
+			fprintf(stderr, "Error: Expected parse_mod_api(\"%s\") to return NULL but it returned this error:\n", path);
+			fprintf(stderr, "%s", error);
+			fail_current_test();
+		}
+	});
 }
 
 static void run_mod_api_semantic_tests(void) {
@@ -1666,27 +1778,29 @@ static void test_error(
 	printf("Running tests/err/%s...\n", test_name);
 	fflush(stdout);
 
-	const char *msg = impl_forgot_to_set_msg;
-	compile_grug_file(grug_state, grug_path, &msg);
+	RUN_TRACKED_TEST("err", test_name, {
+		const char *msg = impl_forgot_to_set_msg;
+		compile_grug_file(grug_state, grug_path, &msg);
 
-	const char *expected_error = get_expected_error(expected_error_path);
+		const char *expected_error = get_expected_error(expected_error_path);
 
-	if (!msg) {
-		fprintf(stderr, "\nError: Compilation succeeded, but expected this error message:\n");
-		print_string_debug(expected_error);
-		exit(EXIT_FAILURE);
-	}
+		if (!msg) {
+			fprintf(stderr, "\nError: Compilation succeeded, but expected this error message:\n");
+			print_string_debug(expected_error);
+			fail_current_test();
+		}
 
-	if (!streq_normalized(msg, expected_error)) {
-		fprintf(stderr, "\nError: The output differs from the expected output.\n");
-		fprintf(stderr, "Output:\n");
-		print_string_debug(msg);
+		if (!streq_normalized(msg, expected_error)) {
+			fprintf(stderr, "\nError: The output differs from the expected output.\n");
+			fprintf(stderr, "Output:\n");
+			print_string_debug(msg);
 
-		fprintf(stderr, "Expected:\n");
-		print_string_debug(expected_error);
+			fprintf(stderr, "Expected:\n");
+			print_string_debug(expected_error);
 
-		exit(EXIT_FAILURE);
-	}
+			fail_current_test();
+		}
+	});
 }
 
 static void run_err_tests(struct grug_state *grug_state) {
@@ -1710,7 +1824,7 @@ static void json_mismatch_exit(void) {
 	assert(g_expected_json_for_mismatch);
 	fprintf(stderr, "\nCurrent JSON:\n%s\n", g_actual_json_for_mismatch);
 	fprintf(stderr, "\nExpected JSON:\n%s\n", g_expected_json_for_mismatch);
-	exit(EXIT_FAILURE);
+	fail_current_test();
 }
 
 static void compare_nodes(cJSON *exp, cJSON *act, const char *path) {
@@ -1827,7 +1941,7 @@ static void assert_jsons_are_equal(const char *actual_json, const char *expected
 
 	if (!exp) {
 		fprintf(stderr, "\nError: Failed to parse %s\n", expected_json_path);
-		exit(EXIT_FAILURE);
+		fail_current_test();
 	}
 
 	const char *act_end = NULL;
@@ -1844,7 +1958,7 @@ static void assert_jsons_are_equal(const char *actual_json, const char *expected
 				"Error: Implementation generated malformed JSON near:\n%s\n",
 				act_end ? act_end : actual_json);
 
-		exit(EXIT_FAILURE);
+		fail_current_test();
 	}
 
 	compare_nodes(exp, act, "root");
@@ -1895,7 +2009,7 @@ static void diff_roundtrip(
 	static char json_buf[MiB];
 	if (grug_to_json(grug_state, (char*)grug_path_bytes, json_buf, sizeof(json_buf))) {
 		fprintf(stderr, "Error: Failed to dump file AST\n");
-		exit(EXIT_FAILURE);
+		fail_current_test();
 	}
 
 	assert_jsons_are_equal(json_buf, get_expected_json_path(grug_path));
@@ -1903,7 +2017,7 @@ static void diff_roundtrip(
 	static char applied_buf[MiB];
 	if (json_to_grug(grug_state, json_buf, applied_buf, sizeof(applied_buf))) {
 		fprintf(stderr, "Error: Failed to apply file AST\n");
-		exit(EXIT_FAILURE);
+		fail_current_test();
 	}
 
 	if (!streq((const char *)grug_path_bytes, (const char *)applied_buf)) {
@@ -1914,7 +2028,7 @@ static void diff_roundtrip(
 		fprintf(stderr, "Expected:\n");
 		print_string_debug((const char *)grug_path_bytes);
 
-		exit(EXIT_FAILURE);
+		fail_current_test();
 	}
 }
 
@@ -2133,68 +2247,71 @@ static void test_code_reloading_empty_file(void) {
 		exit(EXIT_FAILURE);
 	}
 
-	const char *grug_rel = "reloading_empty_file/input-D.grug";
+	RUN_TRACKED_TEST("ok", "code_reloading_empty_file", {
+		const char *grug_rel = "reloading_empty_file/input-D.grug";
 
-	char grug_abs[4096];
-	snprintf(grug_abs, sizeof(grug_abs), "%s/%s", local_temp_dir, grug_rel);
+		char grug_abs[4096];
+		snprintf(grug_abs, sizeof(grug_abs), "%s/%s", local_temp_dir, grug_rel);
 
-	// Overwrite reloading_empty_file/input-D.grug with initialize(1)
-	FILE *f1 = fopen(grug_abs, "w");
-	check_null(f1, "fopen", grug_abs);
-	fputs("foo: number = 1\n\nexport a() {\n    initialize(foo)\n}\n", f1);
-	fclose(f1);
+		// Overwrite reloading_empty_file/input-D.grug with initialize(1)
+		FILE *f1 = fopen(grug_abs, "w");
+		check_null(f1, "fopen", grug_abs);
+		fputs("foo: number = 1\n\nexport a() {\n    initialize(foo)\n}\n", f1);
+		fclose(f1);
 
-	// Create file
-	const char *msg = impl_forgot_to_set_msg;
-	struct grug_file_id *file = compile_grug_file(grug_state, grug_rel, &msg);
-	if (msg) {
-		fprintf(stderr, "Error compiling input-D.grug: %s\n", msg);
-		exit(EXIT_FAILURE);
-	}
+		// Create file
+		const char *msg = impl_forgot_to_set_msg;
+		struct grug_file_id *file = compile_grug_file(grug_state, grug_rel, &msg);
+		if (msg) {
+			fprintf(stderr, "Error compiling input-D.grug: %s\n", msg);
+			fail_current_test();
+		}
 
-	// Create entity
-	msg = impl_forgot_to_set_msg;
-	struct grug_entity_id* entity = create_entity(grug_state, file, &msg);
-	if (msg) {
-		fprintf(stderr, "Error creating entity: %s\n", msg);
-		exit(EXIT_FAILURE);
-	}
+		// Create entity
+		msg = impl_forgot_to_set_msg;
+		struct grug_entity_id* entity = create_entity(grug_state, file, &msg);
+		if (msg) {
+			fprintf(stderr, "Error creating entity: %s\n", msg);
+			fail_current_test();
+		}
 
-	// Overwrite reloading_empty_file/input-D.grug with an empty file
-	FILE *f2 = fopen(grug_abs, "w");
-	check_null(f2, "fopen", grug_abs);
-	fclose(f2);
+		// Overwrite reloading_empty_file/input-D.grug with an empty file
+		FILE *f2 = fopen(grug_abs, "w");
+		check_null(f2, "fopen", grug_abs);
+		fclose(f2);
 
-	// Call update()
-	msg = impl_forgot_to_set_msg;
-	update(grug_state, &msg);
+		// Call update()
+		msg = impl_forgot_to_set_msg;
+		update(grug_state, &msg);
 
-	char* expected_error_message = 
-		"Error: File is empty\n"
-		"$  reloading_empty_file/input-D.grug";
-	if (!msg) {
-		fprintf(stderr, "\nError: Compilation succeeded, but expected this error message:\n");
-		print_string_debug(expected_error_message);
-		exit(EXIT_FAILURE);
-	}
+		char* expected_error_message = 
+			"Error: File is empty\n"
+			"$  reloading_empty_file/input-D.grug";
+		if (!msg) {
+			fprintf(stderr, "\nError: Compilation succeeded, but expected this error message:\n");
+			print_string_debug(expected_error_message);
+			fail_current_test();
+		}
 
-	if (!streq_normalized(msg, expected_error_message)) {
-		fprintf(stderr, "\nError: The error message differs from the expected error message.\n");
-		fprintf(stderr, "Output:\n");
-		print_string_debug(msg);
+		if (!streq_normalized(msg, expected_error_message)) {
+			fprintf(stderr, "\nError: The error message differs from the expected error message.\n");
+			fprintf(stderr, "Output:\n");
+			print_string_debug(msg);
 
-		fprintf(stderr, "Expected:\n");
-		print_string_debug(expected_error_message);
+			fprintf(stderr, "Expected:\n");
+			print_string_debug(expected_error_message);
 
-		exit(EXIT_FAILURE);
-	}
+			fail_current_test();
+		}
 
-	// Call on_a(), and run assert_number(game_fn_initialize_x, 1.0)
-	call_export_fn_argless(grug_state, entity, "a");
-	assert_number(game_fn_initialize_x, 1.0);
+		// Call on_a(), and run assert_number(game_fn_initialize_x, 1.0)
+		call_export_fn_argless(grug_state, entity, "a");
+		assert_number(game_fn_initialize_x, 1.0);
 
-	destroy_entity(grug_state, entity);
-	destroy_grug_file(grug_state, file);
+		destroy_entity(grug_state, entity);
+		destroy_grug_file(grug_state, file);
+	});
+
 	destroy_grug_state(grug_state);
 
 	remove_dir_recursive(local_temp_dir);
@@ -2230,57 +2347,60 @@ static void test_code_reloading(void) {
 		exit(EXIT_FAILURE);
 	}
 
-	const char *grug_rel = "code_reloading/input-D.grug";
+	RUN_TRACKED_TEST("ok", "code_reloading", {
+		const char *grug_rel = "code_reloading/input-D.grug";
 
-	char grug_abs[4096];
-	snprintf(grug_abs, sizeof(grug_abs), "%s/%s", local_temp_dir, grug_rel);
+		char grug_abs[4096];
+		snprintf(grug_abs, sizeof(grug_abs), "%s/%s", local_temp_dir, grug_rel);
 
-	// Overwrite code_reloading/input-D.grug with initialize(1)
-	FILE *f1 = fopen(grug_abs, "w");
-	check_null(f1, "fopen", grug_abs);
-	fputs("foo: number = 1\n\nexport a() {\n    initialize(foo)\n}\n", f1);
-	fclose(f1);
+		// Overwrite code_reloading/input-D.grug with initialize(1)
+		FILE *f1 = fopen(grug_abs, "w");
+		check_null(f1, "fopen", grug_abs);
+		fputs("foo: number = 1\n\nexport a() {\n    initialize(foo)\n}\n", f1);
+		fclose(f1);
 
-	// Create file
-	const char *msg = impl_forgot_to_set_msg;
-	struct grug_file_id *file = compile_grug_file(grug_state, grug_rel, &msg);
-	if (msg) {
-		fprintf(stderr, "Error compiling code_reloading-D.grug: %s\n", msg);
-		exit(EXIT_FAILURE);
-	}
+		// Create file
+		const char *msg = impl_forgot_to_set_msg;
+		struct grug_file_id *file = compile_grug_file(grug_state, grug_rel, &msg);
+		if (msg) {
+			fprintf(stderr, "Error compiling code_reloading-D.grug: %s\n", msg);
+			fail_current_test();
+		}
 
-	// Create entity
-	msg = impl_forgot_to_set_msg;
-	struct grug_entity_id* entity = create_entity(grug_state, file, &msg);
-	if (msg) {
-		fprintf(stderr, "Error creating entity: %s\n", msg);
-		exit(EXIT_FAILURE);
-	}
+		// Create entity
+		msg = impl_forgot_to_set_msg;
+		struct grug_entity_id* entity = create_entity(grug_state, file, &msg);
+		if (msg) {
+			fprintf(stderr, "Error creating entity: %s\n", msg);
+			fail_current_test();
+		}
 
-	// Call on_a(), and run assert_number(game_fn_initialize_x, 1.0)
-	call_export_fn_argless(grug_state, entity, "a");
-	assert_number(game_fn_initialize_x, 1.0);
+		// Call on_a(), and run assert_number(game_fn_initialize_x, 1.0)
+		call_export_fn_argless(grug_state, entity, "a");
+		assert_number(game_fn_initialize_x, 1.0);
 
-	// Overwrite code_reloading/input-D.grug with initialize(2)
-	FILE *f2 = fopen(grug_abs, "w");
-	check_null(f2, "fopen", grug_abs);
-	fputs("foo: number = 2\n\nexport a() {\n    initialize(foo)\n}\n", f2);
-	fclose(f2);
+		// Overwrite code_reloading/input-D.grug with initialize(2)
+		FILE *f2 = fopen(grug_abs, "w");
+		check_null(f2, "fopen", grug_abs);
+		fputs("foo: number = 2\n\nexport a() {\n    initialize(foo)\n}\n", f2);
+		fclose(f2);
 
-	// Call update()
-	msg = impl_forgot_to_set_msg;
-	update(grug_state, &msg);
-	if (msg) {
-		fprintf(stderr, "Error in update(): %s\n", msg);
-		exit(EXIT_FAILURE);
-	}
+		// Call update()
+		msg = impl_forgot_to_set_msg;
+		update(grug_state, &msg);
+		if (msg) {
+			fprintf(stderr, "Error in update(): %s\n", msg);
+			fail_current_test();
+		}
 
-	// Call on_a(), and run assert_number(game_fn_initialize_x, 2.0)
-	call_export_fn_argless(grug_state, entity, "a");
-	assert_number(game_fn_initialize_x, 2.0);
+		// Call on_a(), and run assert_number(game_fn_initialize_x, 2.0)
+		call_export_fn_argless(grug_state, entity, "a");
+		assert_number(game_fn_initialize_x, 2.0);
 
-	destroy_entity(grug_state, entity);
-	destroy_grug_file(grug_state, file);
+		destroy_entity(grug_state, entity);
+		destroy_grug_file(grug_state, file);
+	});
+
 	destroy_grug_state(grug_state);
 
 	remove_dir_recursive(local_temp_dir);
@@ -2290,21 +2410,30 @@ static void rerun_ok_tests(struct grug_state *grug_state) {
 	for (size_t i = 0; i < ok_test_datas_size; i++) {
 		struct ok_test_data* fn_data = &ok_test_datas[i];
 
+		if (!fn_data->file) {
+			// The first run never even got this test compiled successfully,
+			// so there is nothing valid left here to rerun.
+			continue;
+		}
+
 		printf("Rerunning tests/ok/%s...\n", fn_data->test_name_str);
 		fflush(stdout);
 		reset();
 
-		const char *msg = impl_forgot_to_set_msg;
-		struct grug_entity_id* entity = create_entity(grug_state, fn_data->file, &msg);
-		if (msg) {
-			fprintf(stderr, "Error creating entity: %s\n", msg);
-			exit(EXIT_FAILURE);
-		}
+		RUN_TRACKED_RERUN_TEST("ok", fn_data->test_name_str, {
+			const char *msg = impl_forgot_to_set_msg;
+			struct grug_entity_id* entity = create_entity(grug_state, fn_data->file, &msg);
+			if (msg) {
+				fprintf(stderr, "Error creating entity: %s\n", msg);
+				fail_current_test();
+			}
 
-		current_entity = entity;
-		fn_data->run(grug_state, entity);
+			current_entity = entity;
+			fn_data->run(grug_state, entity);
 
-		destroy_entity(grug_state, entity);
+			destroy_entity(grug_state, entity);
+		});
+
 		destroy_grug_file(grug_state, fn_data->file);
 	}
 }
@@ -2318,7 +2447,7 @@ static struct grug_file_id* prologue(void* grug_state, const char *grug_path) {
 		print_string_debug(msg);
 		fprintf(stderr, "----\n");
 
-		exit(EXIT_FAILURE);
+		fail_current_test();
 	}
 	return file;
 }
@@ -2327,22 +2456,30 @@ static void rerun_err_runtime_tests(struct grug_state *grug_state) {
 	for (size_t i = 0; i < err_runtime_test_datas_size; i++) {
 		struct runtime_error_test_data* fn_data = &runtime_error_test_datas[i];
 
+		if (!fn_data->file) {
+			// The first run never even got this test compiled successfully,
+			// so there is nothing valid left here to rerun.
+			continue;
+		}
+
 		printf("Rerunning tests/err_runtime/%s...\n", fn_data->test_name_str);
 		fflush(stdout);
 		reset();
 
-		const char *msg = impl_forgot_to_set_msg;
-		struct grug_entity_id* entity = create_entity(grug_state, fn_data->file, &msg);
+		RUN_TRACKED_RERUN_TEST("err_runtime", fn_data->test_name_str, {
+			const char *msg = impl_forgot_to_set_msg;
+			struct grug_entity_id* entity = create_entity(grug_state, fn_data->file, &msg);
 
-		// If the error happened inside create_entity(), don't call run()
-		if (!msg) {
-			current_entity = entity;
-			fn_data->run(grug_state, entity);	
-		}
+			// If the error happened inside create_entity(), don't call run()
+			if (!msg) {
+				current_entity = entity;
+				fn_data->run(grug_state, entity);	
+			}
 
-		if (!msg) {
-			destroy_entity(grug_state, entity);
-		}
+			if (!msg) {
+				destroy_entity(grug_state, entity);
+			}
+		});
 
 		destroy_grug_file(grug_state, fn_data->file);
 	}
@@ -2356,24 +2493,29 @@ static void run_err_runtime_tests(struct grug_state *grug_state) {
 		fflush(stdout);
 		reset();
 
-		struct grug_file_id* file = prologue(grug_state, fn_data->grug_path);
+		RUN_TRACKED_TEST("err_runtime", fn_data->test_name_str, {
+			struct grug_file_id* file = prologue(grug_state, fn_data->grug_path);
 
-		diff_roundtrip(grug_state, fn_data->grug_path);
+			// Assign this as early as possible, so that even if a later step
+			// in this test fails, rerun_err_runtime_tests() can still safely
+			// reuse (and clean up) the file that was compiled here.
+			fn_data->file = file;
 
-		fn_data->file = file;
+			diff_roundtrip(grug_state, fn_data->grug_path);
 
-		const char *msg = impl_forgot_to_set_msg;
-		struct grug_entity_id* entity = create_entity(grug_state, file, &msg);
+			const char *msg = impl_forgot_to_set_msg;
+			struct grug_entity_id* entity = create_entity(grug_state, file, &msg);
 
-		// If the error happened inside create_entity(), don't call run()
-		if (!msg) {
-			current_entity = entity;
-			fn_data->run(grug_state, entity);	
-		}
+			// If the error happened inside create_entity(), don't call run()
+			if (!msg) {
+				current_entity = entity;
+				fn_data->run(grug_state, entity);	
+			}
 
-		if (!msg) {
-			destroy_entity(grug_state, entity);
-		}
+			if (!msg) {
+				destroy_entity(grug_state, entity);
+			}
+		});
 	}
 }
 
@@ -2385,22 +2527,28 @@ static void run_ok_tests(struct grug_state *grug_state) {
 		fflush(stdout);
 		reset();
 
-		struct grug_file_id* file = prologue(grug_state, fn_data->grug_path);
+		RUN_TRACKED_TEST("ok", fn_data->test_name_str, {
+			struct grug_file_id* file = prologue(grug_state, fn_data->grug_path);
 
-		diff_roundtrip(grug_state, fn_data->grug_path);
+			// Assign this as early as possible, so that even if a later step
+			// in this test fails, rerun_ok_tests() can still safely reuse
+			// (and clean up) the file that was compiled here.
+			fn_data->file = file;
 
-		const char *msg = impl_forgot_to_set_msg;
-		struct grug_entity_id* entity = create_entity(grug_state, file, &msg);
-		if (msg) {
-			fprintf(stderr, "Error creating entity: %s\n", msg);
-			exit(EXIT_FAILURE);
-		}
+			diff_roundtrip(grug_state, fn_data->grug_path);
 
-		fn_data->file = file;
-		current_entity = entity;
-		fn_data->run(grug_state, entity);
+			const char *msg = impl_forgot_to_set_msg;
+			struct grug_entity_id* entity = create_entity(grug_state, file, &msg);
+			if (msg) {
+				fprintf(stderr, "Error creating entity: %s\n", msg);
+				fail_current_test();
+			}
 
-		destroy_entity(grug_state, entity);
+			current_entity = entity;
+			fn_data->run(grug_state, entity);
+
+			destroy_entity(grug_state, entity);
+		});
 	}
 }
 
@@ -5144,16 +5292,168 @@ static void add_runtime_error_tests(void) {
 	ADD_TEST_RUNTIME_ERROR(time_limit_exceeded_fibonacci, "D");
 }
 
+// Writes every recorded test result to `results_json_path` as 4-space
+// indented JSON.
+// A test only counts as passed overall if its first run passed, and (for
+// the "ok" and "err_runtime" categories, which get rerun) the rerun passed
+// too.
+static bool test_result_overall_passed(const struct test_result_entry *entry) {
+	return entry->passed && (!entry->has_rerun || entry->passed_rerun);
+}
+
+static int compare_test_result_ptrs_by_name(const void *a, const void *b) {
+	const struct test_result_entry *const *ea = a;
+	const struct test_result_entry *const *eb = b;
+	return strcmp((*ea)->name, (*eb)->name);
+}
+
+// cJSON_Print()'s formatted output isn't configurable: it hardcodes a tab
+// character for each level of indentation, and another single tab right
+// after every ":". This rewrites those tabs into 4-space indentation and a
+// single space after colons, matching normal JSON style. The caller must
+// free() the returned string.
+static char *reindent_cjson_output(const char *input) {
+	size_t input_len = strlen(input);
+
+	// Worst case is every byte being an indentation tab, which quadruples
+	// in size, plus room for the null terminator.
+	char *output = malloc(input_len * 4 + 1);
+	if (!output) {
+		fprintf(stderr, "Error: Out of memory while formatting results.json\n");
+		exit(EXIT_FAILURE);
+	}
+
+	size_t out_i = 0;
+	bool at_line_start = true; // The very start of the string counts too.
+
+	for (size_t i = 0; i < input_len; i++) {
+		char c = input[i];
+
+		if (c == '\t') {
+			if (at_line_start) {
+				// One of cJSON's indentation tabs: turn it into 4 spaces.
+				// Multiple levels of nesting means multiple consecutive
+				// tabs here, and at_line_start staying true handles that.
+				output[out_i++] = ' ';
+				output[out_i++] = ' ';
+				output[out_i++] = ' ';
+				output[out_i++] = ' ';
+			} else {
+				// The tab cJSON puts right after a ":".
+				output[out_i++] = ' ';
+			}
+		} else {
+			output[out_i++] = c;
+			at_line_start = (c == '\n');
+		}
+	}
+
+	output[out_i] = '\0';
+
+	return output;
+}
+
+static void write_results_json(const char *results_json_path) {
+	static const char *categories[] = {
+		"err",
+		"err_runtime",
+		"err_spaces",
+		"mod_api_schema",
+		"mod_api_semantics",
+		"ok",
+	};
+
+	size_t passed_count = 0;
+	for (size_t i = 0; i < test_results_size; i++) {
+		if (test_result_overall_passed(&test_results[i])) {
+			passed_count++;
+		}
+	}
+	size_t total = test_results_size;
+
+	int passed_percentage = total == 0
+		? 0
+		: (int)((passed_count * 100 + total / 2) / total); // Rounded, not truncated
+
+	cJSON *root = cJSON_CreateObject();
+
+	cJSON *summary_json = cJSON_CreateObject();
+	cJSON_AddNumberToObject(summary_json, "passed_percentage", passed_percentage);
+	cJSON_AddNumberToObject(summary_json, "passed_tests", (double)passed_count);
+	cJSON_AddNumberToObject(summary_json, "total_tests", (double)total);
+	cJSON_AddItemToObject(root, "summary", summary_json);
+
+	cJSON *tests_json = cJSON_CreateObject();
+	cJSON_AddItemToObject(root, "tests", tests_json);
+
+	// Every test directory (tests/ok/, tests/err/, etc.) is walked
+	// alphabetically, so the JSON keys for each category should be too.
+	static const struct test_result_entry *sorted[MAX_TEST_RESULTS];
+
+	for (size_t c = 0; c < sizeof(categories) / sizeof(categories[0]); c++) {
+		cJSON *category_json = cJSON_CreateObject();
+		cJSON_AddItemToObject(tests_json, categories[c], category_json);
+
+		size_t sorted_count = 0;
+		for (size_t i = 0; i < test_results_size; i++) {
+			if (streq(test_results[i].category, categories[c])) {
+				sorted[sorted_count++] = &test_results[i];
+			}
+		}
+
+		qsort(sorted, sorted_count, sizeof(sorted[0]), compare_test_result_ptrs_by_name);
+
+		for (size_t i = 0; i < sorted_count; i++) {
+			const struct test_result_entry *entry = sorted[i];
+
+			cJSON *test_json = cJSON_CreateObject();
+			if (entry->has_rerun) {
+				cJSON_AddBoolToObject(test_json, "passed", entry->passed && entry->passed_rerun);
+				cJSON_AddBoolToObject(test_json, "passed_run_1", entry->passed);
+				cJSON_AddBoolToObject(test_json, "passed_run_2", entry->passed_rerun);
+			} else {
+				cJSON_AddBoolToObject(test_json, "passed", entry->passed);
+			}
+			cJSON_AddItemToObject(category_json, entry->name, test_json);
+		}
+	}
+
+	char *json_str = cJSON_Print(root);
+	if (!json_str) {
+		fprintf(stderr, "Error: Failed to serialize results.json\n");
+		exit(EXIT_FAILURE);
+	}
+
+	char *formatted_json_str = reindent_cjson_output(json_str);
+	free(json_str);
+
+	FILE *f = fopen(results_json_path, "w");
+	check_null(f, "fopen", results_json_path);
+	fputs(formatted_json_str, f);
+	fputc('\n', f);
+	if (fclose(f) == EOF) {
+		perror("fclose");
+		exit(EXIT_FAILURE);
+	}
+
+	free(formatted_json_str);
+	cJSON_Delete(root);
+}
+
+
 void grug_tests_run(
 	const char *tests_dir_path_, 
 	const char *mod_api_path_, 
 	struct grug_state_vtable vtable,
-	const char *whitelisted_test_
+	struct grug_tests_options options
 ) {
 	// Set globals
 	tests_dir_path             = tests_dir_path_;
 	mod_api_path               = mod_api_path_;
-	whitelisted_test           = whitelisted_test_;
+	whitelisted_test           = options.whitelisted_test;
+	g_continue_on_fail         = options.continue_on_fail;
+
+	const char *results_json_path = options.results_json_path ? options.results_json_path : "results.json";
 
 	parse_mod_api              = vtable.parse_mod_api; assert(parse_mod_api);
 	create_grug_state          = vtable.create_grug_state; assert(create_grug_state);
@@ -5238,7 +5538,20 @@ void grug_tests_run(
 	}
 #endif
 
-	printf("\nAll tests passed! 🎉\n");
+	write_results_json(results_json_path);
+
+	size_t passed_count = 0;
+	for (size_t i = 0; i < test_results_size; i++) {
+		if (test_result_overall_passed(&test_results[i])) {
+			passed_count++;
+		}
+	}
+	size_t total = test_results_size;
+	int passed_percentage = total == 0
+		? 0
+		: (int)((passed_count * 100 + total / 2) / total); // Rounded, not truncated
+
+	printf("\nTests passed: %d%% (%zu/%zu)\n", passed_percentage, passed_count, total);
 	fflush(stdout);
 
 	destroy_grug_state(unsafe_grug_state);

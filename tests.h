@@ -246,6 +246,22 @@ struct grug_state_vtable {
 	game_fn_error_t game_fn_error;
 };
 
+/// Options controlling how grug_tests_run() behaves.
+struct grug_tests_options {
+	/// A specific test name to run. Pass NULL if all tests should be run.
+	const char *whitelisted_test;
+
+	/// By default, grug-tests stops immediately at the first failing test,
+	/// just like it always has. Set this to true (--continue-on-fail on the
+	/// command line) to keep running the remaining tests instead, so a
+	/// single run can report every failure at once.
+	bool continue_on_fail;
+
+	/// Path of the JSON file that the results are written to. Pass NULL to
+	/// use the default of "results.json" in the current working directory.
+	const char *results_json_path;
+};
+
 /**
  * @brief Runs all grug tests.
  *
@@ -255,15 +271,22 @@ struct grug_state_vtable {
  * - `tests/err_runtime/`
  * - `tests/ok/`
  *
+ * On completion (or, with `options.continue_on_fail` set, after every test
+ * has had a chance to run), the results of every test are written as JSON
+ * to `options.results_json_path` (or "results.json" by default), and a
+ * "Tests passed: X% (Y/Z)" summary is printed as the very last line of
+ * output.
+ *
  * @param tests_dir_path Path to grug-tests its tests/ directory.
  * @param mod_api_path Path to the mod_api.json in the root of grug-tests.
  * @param state_vtable vtable of the implementation's function pointers.
- * @param whitelisted_test A specific test name to run. Pass `NULL` if all tests should be run.
+ * @param options Options controlling which test(s) to run, continue-on-fail
+ * behavior, and the results.json path.
  */
 void grug_tests_run(const char *tests_dir_path,
 					const char *mod_api_path,
 					struct grug_state_vtable state_vtable,
-                    const char *whitelisted_test);
+                    struct grug_tests_options options);
 
 /**
  * @brief Handles runtime errors during grug test execution.

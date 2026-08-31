@@ -22,5 +22,6 @@ tests.out
 tests.o
 build/*
 makefile
+results.json
 *.svg
 *.rad

@@ -7,7 +7,7 @@
                 "type": "CALL_STATEMENT"
             }
         ],
-        "type": "GLOBAL_ON_FN"
+        "type": "EXPORT_FN"
     },
     {
         "type": "GLOBAL_EMPTY_LINE"
@@ -20,7 +20,7 @@
                 "type": "CALL_STATEMENT"
             }
         ],
-        "type": "GLOBAL_ON_FN"
+        "type": "EXPORT_FN"
     },
     {
         "type": "GLOBAL_EMPTY_LINE"
@@ -33,6 +33,6 @@
                 "type": "CALL_STATEMENT"
             }
         ],
-        "type": "GLOBAL_ON_FN"
+        "type": "EXPORT_FN"
     }
 ]

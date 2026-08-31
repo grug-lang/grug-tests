@@ -53,9 +53,9 @@ class GrugTransformer(Transformer[Tree[Any], Any]):
     def empty_line(self, items: List[Any]) -> Dict[str, str]:
         return {"type": "EMPTY_LINE_STATEMENT"}
 
-    def on_fn(self, items: List[Any]) -> Dict[str, Any]:
+    def export_fn(self, items: List[Any]) -> Dict[str, Any]:
         func: Dict[str, Any] = {
-            "type": "GLOBAL_ON_FN",
+            "type": "EXPORT_FN",
             "name": str(items[1]),
             "statements": items[-1],
         }
@@ -63,9 +63,9 @@ class GrugTransformer(Transformer[Tree[Any], Any]):
             func["parameters"] = items[2]
         return func
 
-    def helper_fn(self, items: List[Any]) -> Dict[str, Any]:
+    def local_fn(self, items: List[Any]) -> Dict[str, Any]:
         func: Dict[str, Any] = {
-            "type": "GLOBAL_HELPER_FN",
+            "type": "LOCAL_FN",
             "name": str(items[1]),
         }
         if items[2]:
@@ -120,9 +120,7 @@ class GrugTransformer(Transformer[Tree[Any], Any]):
 
     def type(self, items: List[Any]) -> Dict[str, Any]:
         generics = items[1:]
-        obj: Dict[str, Any] = {
-            "name": str(items[0])
-        }
+        obj: Dict[str, Any] = {"name": str(items[0])}
         if len(generics) != 0:
             obj["generics"] = generics
         return obj

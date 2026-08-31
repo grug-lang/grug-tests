@@ -33,7 +33,7 @@ static void (*p_grug_tests_run)(
     const char *,
 	const char *,
 	struct grug_state_vtable,
-    const char *
+    struct grug_tests_options
 );
 
 static void (*p_grug_tests_runtime_error_handler)(
@@ -1032,7 +1032,7 @@ static void load_tests_library(void) {
 
 	#pragma GCC diagnostic push
 	#pragma GCC diagnostic ignored "-Wpedantic"
-    p_grug_tests_run                         = (void (*)(const char*, const char*, struct grug_state_vtable, const char*))load_sym(h, "grug_tests_run");
+    p_grug_tests_run                         = (void (*)(const char*, const char*, struct grug_state_vtable, struct grug_tests_options))load_sym(h, "grug_tests_run");
     p_grug_tests_runtime_error_handler       = (void (*)(const char*, enum grug_runtime_error_type, const char*, const char*))load_sym(h, "grug_tests_runtime_error_handler");
     p_game_fn_nothing                        = (game_fn)load_sym(h, "game_fn_nothing");
     p_game_fn_magic                          = (game_fn)load_sym(h, "game_fn_magic");
@@ -1117,11 +1117,24 @@ int main(int argc, const char *argv[]) {
     load_tests_library();
 
     const char *whitelisted_test = NULL;
-    if (argc == 2) {
-        whitelisted_test = argv[1];
-    } else if (argc > 2) {
-        fprintf(stderr, "Usage: %s <test name>\n", argv[0]);
-        exit(EXIT_FAILURE);
+    const char *results_json_path = NULL;
+    bool continue_on_fail = false;
+
+    for (int i = 1; i < argc; i++) {
+        if (streq(argv[i], "--continue-on-fail")) {
+            continue_on_fail = true;
+        } else if (streq(argv[i], "--results-json-path")) {
+            if (i + 1 >= argc) {
+                fprintf(stderr, "Error: --results-json-path requires a path argument\n");
+                exit(EXIT_FAILURE);
+            }
+            results_json_path = argv[++i];
+        } else if (whitelisted_test == NULL) {
+            whitelisted_test = argv[i];
+        } else {
+            fprintf(stderr, "Usage: %s [test name] [--continue-on-fail] [--results-json-path <JSON path>]\n", argv[0]);
+            exit(EXIT_FAILURE);
+        }
     }
 
     p_grug_tests_run(
@@ -1141,6 +1154,11 @@ int main(int argc, const char *argv[]) {
 			.json_to_grug = json_to_grug,
 			.game_fn_error = game_fn_error,
 		},
-        whitelisted_test
+        (struct grug_tests_options) {
+            .whitelisted_test = whitelisted_test,
+            .continue_on_fail = continue_on_fail,
+            .results_json_path = results_json_path,
+        }
     );
 }
+

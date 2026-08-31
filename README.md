@@ -11,6 +11,15 @@ This is [grug](https://github.com/grug-lang/grug) its official test suite.
 3. Build the smoke tests with `cmake --build build`
 4. Run the smoke tests with `build/smoketest`
 
+## Command-line flags
+
+`smoketest` accepts an optional test name (to run just that one test), plus:
+
+- `--continue-on-fail`: By default grug-tests stops at the very first failing test. Pass this flag to keep running the rest of the suite instead, so a single run can surface every failing test at once.
+- `--results-json-path <JSON path>`: By default grug-tests writes a `results.json` file (4-space indented) to the current working directory, containing a `summary` (pass percentage, passed/total counts) and a `tests` breakdown per category. Each test has a `"passed"` key; for the `ok` and `err_runtime` categories, which each get run twice, a test also has `"passed_run_1"` and `"passed_run_2"`, and `"passed"` is only `true` when both of those are. Pass this flag to write it somewhere else instead.
+
+Example: `build/smoketest --continue-on-fail --results-json-path /tmp/results.json`
+
 ## Troubleshooting
 
 If a test fails, you can reproduce it by passing `CFLAGS="-DSEED=<failing test's printed seed>"` to CMake when configuring the build.

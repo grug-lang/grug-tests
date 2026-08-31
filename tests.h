@@ -9,34 +9,34 @@
 #include <assert.h>  
 
 #ifndef GRUG_TYPE_NUMBER
-    #define GRUG_TYPE_NUMBER double
+	#define GRUG_TYPE_NUMBER double
 #endif
 #ifndef GRUG_TYPE_BOOL
-    #define GRUG_TYPE_BOOL bool
+	#define GRUG_TYPE_BOOL bool
 #endif
 #ifndef GRUG_TYPE_STRING
-    #define GRUG_TYPE_STRING const char*
+	#define GRUG_TYPE_STRING const char*
 #endif
 #ifndef GRUG_TYPE_ID
-    #define GRUG_TYPE_ID uint64_t
+	#define GRUG_TYPE_ID uint64_t
 #endif
 
 #ifndef GRUG_TYPE_ON_FN_ID
-    #define GRUG_TYPE_ON_FN_ID uint64_t
+	#define GRUG_TYPE_ON_FN_ID uint64_t
 #endif
 
 union grug_value {
 #ifndef GRUG_NO_NUMBER
-    GRUG_TYPE_NUMBER _number;
+	GRUG_TYPE_NUMBER _number;
 #endif
 #ifndef GRUG_NO_BOOL
-    GRUG_TYPE_BOOL _bool;
+	GRUG_TYPE_BOOL _bool;
 #endif
 #ifndef GRUG_NO_STRING
-    GRUG_TYPE_STRING _string;
+	GRUG_TYPE_STRING _string;
 #endif
 #ifndef GRUG_NO_ID
-    GRUG_TYPE_ID _id;
+	GRUG_TYPE_ID _id;
 #endif
 };
 
@@ -286,7 +286,7 @@ struct grug_tests_options {
 void grug_tests_run(const char *tests_dir_path,
 					const char *mod_api_path,
 					struct grug_state_vtable state_vtable,
-                    struct grug_tests_options options);
+					struct grug_tests_options options);
 
 /**
  * @brief Handles runtime errors during grug test execution.
@@ -300,9 +300,9 @@ void grug_tests_run(const char *tests_dir_path,
  * @param on_fn_path Path to the grug source file containing the function.
  */
 void grug_tests_runtime_error_handler(const char *reason,
-                                      enum grug_runtime_error_type type,
-                                      const char *on_fn_name,
-                                      const char *on_fn_path);
+									  enum grug_runtime_error_type type,
+									  const char *on_fn_name,
+									  const char *on_fn_path);
 
 
 /**

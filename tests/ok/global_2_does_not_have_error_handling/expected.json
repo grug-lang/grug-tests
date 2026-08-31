@@ -9,7 +9,7 @@
             "type": "UNARY_EXPR"
         },
         "name": "g1",
-        "type": "GLOBAL_VARIABLE",
+        "type": "VARIABLE_STATEMENT",
         "variable_type": {
             "name": "number"
         }
@@ -20,7 +20,7 @@
             "value": "0"
         },
         "name": "g",
-        "type": "GLOBAL_VARIABLE",
+        "type": "VARIABLE_STATEMENT",
         "variable_type": {
             "name": "number"
         }

@@ -5,14 +5,14 @@
             "value": "420"
         },
         "name": "a",
-        "type": "GLOBAL_VARIABLE",
+        "type": "VARIABLE_STATEMENT",
         "variable_type": {
             "name": "number"
         }
     },
     {
         "comment": "foo",
-        "type": "GLOBAL_COMMENT"
+        "type": "COMMENT_STATEMENT"
     },
     {
         "assignment": {
@@ -20,7 +20,7 @@
             "value": "1337"
         },
         "name": "b",
-        "type": "GLOBAL_VARIABLE",
+        "type": "VARIABLE_STATEMENT",
         "variable_type": {
             "name": "number"
         }

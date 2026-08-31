@@ -5,7 +5,7 @@
             "value": "2"
         },
         "name": "a",
-        "type": "GLOBAL_VARIABLE",
+        "type": "VARIABLE_STATEMENT",
         "variable_type": {
             "name": "number"
         }
@@ -24,13 +24,13 @@
             "type": "BINARY_EXPR"
         },
         "name": "b",
-        "type": "GLOBAL_VARIABLE",
+        "type": "VARIABLE_STATEMENT",
         "variable_type": {
             "name": "number"
         }
     },
     {
-        "type": "GLOBAL_EMPTY_LINE"
+        "type": "EMPTY_LINE_STATEMENT"
     },
     {
         "name": "a",

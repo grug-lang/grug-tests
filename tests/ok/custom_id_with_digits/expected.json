@@ -11,7 +11,7 @@
             "type": "CALL_EXPR"
         },
         "name": "foo",
-        "type": "GLOBAL_VARIABLE",
+        "type": "VARIABLE_STATEMENT",
         "variable_type": {
             "name": "BoxedNumber"
         }

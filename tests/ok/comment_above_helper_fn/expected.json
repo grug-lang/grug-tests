@@ -10,15 +10,15 @@
         "type": "EXPORT_FN"
     },
     {
-        "type": "GLOBAL_EMPTY_LINE"
+        "type": "EMPTY_LINE_STATEMENT"
     },
     {
         "comment": "foo",
-        "type": "GLOBAL_COMMENT"
+        "type": "COMMENT_STATEMENT"
     },
     {
         "comment": "bar",
-        "type": "GLOBAL_COMMENT"
+        "type": "COMMENT_STATEMENT"
     },
     {
         "name": "_foo",

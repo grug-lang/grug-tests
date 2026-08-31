@@ -5,13 +5,13 @@
             "type": "STRING_EXPR"
         },
         "name": "message",
-        "type": "GLOBAL_VARIABLE",
+        "type": "VARIABLE_STATEMENT",
         "variable_type": {
             "name": "string"
         }
     },
     {
-        "type": "GLOBAL_EMPTY_LINE"
+        "type": "EMPTY_LINE_STATEMENT"
     },
     {
         "name": "a",

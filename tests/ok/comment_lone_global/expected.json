@@ -1,10 +1,10 @@
 [
     {
         "comment": "foo",
-        "type": "GLOBAL_COMMENT"
+        "type": "COMMENT_STATEMENT"
     },
     {
-        "type": "GLOBAL_EMPTY_LINE"
+        "type": "EMPTY_LINE_STATEMENT"
     },
     {
         "name": "a",

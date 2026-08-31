@@ -1,6 +1,6 @@
 [
     {
         "comment": "a\u0007b",
-        "type": "GLOBAL_COMMENT"
+        "type": "COMMENT_STATEMENT"
     }
 ]

@@ -35,20 +35,8 @@ parser: Lark = Lark(
 
 
 class GrugTransformer(Transformer[Tree[Any], Any]):
-    def start(self, items: List[Dict[str, Any]]) -> List[Any]:
-        res: List[Any] = []
-        for item in items:
-            typ: Optional[str] = item.get("type")
-            if typ == "VARIABLE_STATEMENT":
-                item["type"] = "GLOBAL_VARIABLE"
-            elif typ == "COMMENT_STATEMENT":
-                item["type"] = "GLOBAL_COMMENT"
-            elif typ == "EMPTY_LINE_STATEMENT":
-                item["type"] = "GLOBAL_EMPTY_LINE"
-
-            res.append(item)
-
-        return res
+    def start(self, items: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+        return items
 
     def empty_line(self, items: List[Any]) -> Dict[str, str]:
         return {"type": "EMPTY_LINE_STATEMENT"}

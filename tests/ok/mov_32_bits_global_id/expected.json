@@ -5,7 +5,7 @@
             "type": "CALL_EXPR"
         },
         "name": "v1",
-        "type": "GLOBAL_VARIABLE",
+        "type": "VARIABLE_STATEMENT",
         "variable_type": {
             "name": "Opponent"
         }
@@ -16,7 +16,7 @@
             "type": "CALL_EXPR"
         },
         "name": "v2",
-        "type": "GLOBAL_VARIABLE",
+        "type": "VARIABLE_STATEMENT",
         "variable_type": {
             "name": "Opponent"
         }
@@ -27,7 +27,7 @@
             "type": "CALL_EXPR"
         },
         "name": "v3",
-        "type": "GLOBAL_VARIABLE",
+        "type": "VARIABLE_STATEMENT",
         "variable_type": {
             "name": "Opponent"
         }
@@ -38,7 +38,7 @@
             "type": "CALL_EXPR"
         },
         "name": "v4",
-        "type": "GLOBAL_VARIABLE",
+        "type": "VARIABLE_STATEMENT",
         "variable_type": {
             "name": "Opponent"
         }
@@ -49,7 +49,7 @@
             "type": "CALL_EXPR"
         },
         "name": "v5",
-        "type": "GLOBAL_VARIABLE",
+        "type": "VARIABLE_STATEMENT",
         "variable_type": {
             "name": "Opponent"
         }
@@ -60,7 +60,7 @@
             "type": "CALL_EXPR"
         },
         "name": "v6",
-        "type": "GLOBAL_VARIABLE",
+        "type": "VARIABLE_STATEMENT",
         "variable_type": {
             "name": "Opponent"
         }
@@ -71,7 +71,7 @@
             "type": "CALL_EXPR"
         },
         "name": "v7",
-        "type": "GLOBAL_VARIABLE",
+        "type": "VARIABLE_STATEMENT",
         "variable_type": {
             "name": "Opponent"
         }
@@ -82,7 +82,7 @@
             "type": "CALL_EXPR"
         },
         "name": "v8",
-        "type": "GLOBAL_VARIABLE",
+        "type": "VARIABLE_STATEMENT",
         "variable_type": {
             "name": "Opponent"
         }
@@ -93,7 +93,7 @@
             "type": "CALL_EXPR"
         },
         "name": "v9",
-        "type": "GLOBAL_VARIABLE",
+        "type": "VARIABLE_STATEMENT",
         "variable_type": {
             "name": "Opponent"
         }
@@ -104,7 +104,7 @@
             "type": "CALL_EXPR"
         },
         "name": "v10",
-        "type": "GLOBAL_VARIABLE",
+        "type": "VARIABLE_STATEMENT",
         "variable_type": {
             "name": "Opponent"
         }
@@ -115,7 +115,7 @@
             "type": "CALL_EXPR"
         },
         "name": "v11",
-        "type": "GLOBAL_VARIABLE",
+        "type": "VARIABLE_STATEMENT",
         "variable_type": {
             "name": "Opponent"
         }
@@ -126,7 +126,7 @@
             "type": "CALL_EXPR"
         },
         "name": "v12",
-        "type": "GLOBAL_VARIABLE",
+        "type": "VARIABLE_STATEMENT",
         "variable_type": {
             "name": "Opponent"
         }
@@ -137,7 +137,7 @@
             "type": "CALL_EXPR"
         },
         "name": "v13",
-        "type": "GLOBAL_VARIABLE",
+        "type": "VARIABLE_STATEMENT",
         "variable_type": {
             "name": "Opponent"
         }
@@ -148,7 +148,7 @@
             "type": "CALL_EXPR"
         },
         "name": "v14",
-        "type": "GLOBAL_VARIABLE",
+        "type": "VARIABLE_STATEMENT",
         "variable_type": {
             "name": "Opponent"
         }
@@ -159,7 +159,7 @@
             "type": "CALL_EXPR"
         },
         "name": "v15",
-        "type": "GLOBAL_VARIABLE",
+        "type": "VARIABLE_STATEMENT",
         "variable_type": {
             "name": "Opponent"
         }
@@ -170,7 +170,7 @@
             "type": "CALL_EXPR"
         },
         "name": "v16",
-        "type": "GLOBAL_VARIABLE",
+        "type": "VARIABLE_STATEMENT",
         "variable_type": {
             "name": "Opponent"
         }

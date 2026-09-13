@@ -189,17 +189,6 @@
 					"return_type": {
 						"name": "$T"
 					}
-				},
-				"set": {
-					"description": "Sets the value inside the box",
-					"parameters": [
-						{
-							"name": "new_item",
-							"type": {
-								"name": "$T"
-							}
-						}
-					]
 				}
 			}
 		},

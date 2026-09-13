@@ -111,6 +111,7 @@ static game_fn p_game_fn_pair_second;
 
 static const char *saved_grug_file_path;
 static const char *saved_on_fn_name;
+static const char *saved_mods_dir_path;
 
 static bool streq(const char *a, const char *b) {
 	return strcmp(a, b) == 0;
@@ -130,14 +131,66 @@ static bool starts_with(const char *haystack, const char *needle) {
 }
 
 static bool update_called = false;
+static const char *updated_resource_paths[1];
+static size_t updated_resource_paths_count;
+static int resource_reloading_update_count = 0;
 static void update(struct grug_state* grug_state, const char** error_out) {
 	(void)grug_state;
+
+	// test_resource_reloading() never calls compile_grug_file() or
+	// create_entity(), so saved_grug_file_path is never set (or is stale,
+	// left over from whichever test ran before it): key off of the mods
+	// dir passed to create_grug_state() instead.
+	if (saved_mods_dir_path && streq(saved_mods_dir_path, ".grug_tmp_resource_reloading")) {
+		switch (resource_reloading_update_count) {
+			// 1st call: existing.lang was already there before
+			// create_grug_state() was called, so nothing is reported.
+			case 0:
+				updated_resource_paths_count = 0;
+				break;
+			// 2nd call: new.lang just appeared while watching was already
+			// live, so it's reported directly.
+			case 1:
+				updated_resource_paths[0] = "resource_reloading/new.lang";
+				updated_resource_paths_count = 1;
+				break;
+			// 3rd call: existing.lang was modified, so it's reported.
+			// new.lang wasn't touched again, so it isn't.
+			case 2:
+				updated_resource_paths[0] = "resource_reloading/existing.lang";
+				updated_resource_paths_count = 1;
+				break;
+			// 4th call: nothing was touched since the previous call, so
+			// nothing is reported.
+			default:
+				updated_resource_paths_count = 0;
+				break;
+		}
+		resource_reloading_update_count++;
+		*error_out = NULL;
+		return;
+	}
+
+	// Same reasoning as resource_reloading above: test_code_reloading_new_file()
+	// never calls compile_grug_file() or create_entity() either, since the
+	// whole point is that update() alone discovers and compiles the file.
+	if (saved_mods_dir_path && streq(saved_mods_dir_path, ".grug_tmp_reloading_new_file")) {
+		*error_out = "Error: File is empty\n$  reloading_new_file/input-D.grug";
+		return;
+	}
+
 	if (streq(saved_grug_file_path, "reloading_empty_file/input-D.grug")) {
 		*error_out = "Error: File is empty\n$  reloading_empty_file/input-D.grug";
 		return;
 	}
 	update_called = true;
 	*error_out = NULL;
+}
+
+static const char *const *get_updated_resources(struct grug_state* grug_state, size_t *count_out) {
+	(void)grug_state;
+	*count_out = updated_resource_paths_count;
+	return updated_resource_paths_count > 0 ? updated_resource_paths : NULL;
 }
 
 static struct grug_file_id *compile_grug_file(struct grug_state* grug_state, const char *grug_file_path, const char** error_out) {
@@ -1104,8 +1157,12 @@ static char* parse_mod_api(const char* mod_api_path) {
 
 static struct grug_state* create_grug_state(const char* mod_api_path, const char* mods_dir, bool safe_mode) {
 	(void)(mod_api_path);
-	(void)mods_dir;
 	(void)safe_mode;
+	saved_mods_dir_path = mods_dir;
+	if (mods_dir && streq(mods_dir, ".grug_tmp_resource_reloading")) {
+		resource_reloading_update_count = 0;
+		updated_resource_paths_count = 0;
+	}
 	return (struct grug_state*)42;
 }
 
@@ -1149,6 +1206,7 @@ int main(int argc, const char *argv[]) {
 			.create_entity = create_entity,
 			.destroy_entity = destroy_entity,
 			.update = update,
+			.get_updated_resources = get_updated_resources,
 			.call_export_fn = call_export_fn,
 			.grug_to_json = grug_to_json,
 			.json_to_grug = json_to_grug,

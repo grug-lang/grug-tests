@@ -269,18 +269,19 @@ static const char *whitelisted_test;
 
 static struct grug_entity_id* current_entity;
 
-static parse_mod_api_t      parse_mod_api;
-static create_grug_state_t  create_grug_state;
-static destroy_grug_state_t destroy_grug_state;
-static compile_grug_file_t  compile_grug_file;
-static destroy_grug_file_t  destroy_grug_file;
-static create_entity_t      create_entity;
-static destroy_entity_t     destroy_entity;
-static update_t             update;
-static call_export_fn_t     call_export_fn;
-static grug_to_json_t       grug_to_json;
-static json_to_grug_t       json_to_grug;
-static game_fn_error_t      game_fn_error;
+static parse_mod_api_t         parse_mod_api;
+static create_grug_state_t     create_grug_state;
+static destroy_grug_state_t    destroy_grug_state;
+static compile_grug_file_t     compile_grug_file;
+static destroy_grug_file_t     destroy_grug_file;
+static create_entity_t         create_entity;
+static destroy_entity_t        destroy_entity;
+static update_t                update;
+static get_updated_resources_t get_updated_resources;
+static call_export_fn_t        call_export_fn;
+static grug_to_json_t          grug_to_json;
+static json_to_grug_t          json_to_grug;
+static game_fn_error_t         game_fn_error;
 
 struct error_test_data {
 	const char *test_name_str;
@@ -2399,6 +2400,252 @@ static void test_code_reloading(void) {
 
 		destroy_entity(grug_state, entity);
 		destroy_grug_file(grug_state, file);
+	});
+
+	destroy_grug_state(grug_state);
+
+	remove_dir_recursive(local_temp_dir);
+}
+
+static void test_code_reloading_new_file(void) {
+	if (!is_whitelisted_test("code_reloading_new_file")) {
+		return;
+	}
+
+	printf("Running code reloading new file test...\n");
+	fflush(stdout);
+	reset();
+
+	static const char local_temp_dir[] = ".grug_tmp_reloading_new_file";
+
+	create_local_temp_dir(local_temp_dir);
+
+	void* grug_state = create_grug_state(
+		mod_api_path,
+		local_temp_dir,
+		true
+	);
+	if (!grug_state) {
+		fprintf(stderr, "Error: Failed to create grug state\n");
+		exit(EXIT_FAILURE);
+	}
+
+	// Deliberately created *after* create_grug_state(), not before: this
+	// mirrors resource_reloading's new.lang, so that this .grug file is a
+	// brand-new appearance rather than something already present in the
+	// initial baseline scan.
+	static const char mod_dir[] = ".grug_tmp_reloading_new_file/reloading_new_file";
+
+	if (MKDIR(mod_dir) != 0) {
+		fprintf(stderr, "Error: Failed to create local temp directory %s (errno: %d)\n", mod_dir, errno);
+		exit(EXIT_FAILURE);
+	}
+
+	RUN_TRACKED_TEST("ok", "code_reloading_new_file", {
+		const char *grug_rel = "reloading_new_file/input-D.grug";
+
+		char grug_abs[4096];
+		snprintf(grug_abs, sizeof(grug_abs), "%s/%s", local_temp_dir, grug_rel);
+
+		// This file is deliberately never passed to compile_grug_file():
+		// it's only ever written directly to disk. The only way update()
+		// could possibly know about this specific file's (deliberately
+		// caused) "File is empty" compile error is if it discovered and
+		// tried to compile the file entirely on its own. This is what
+		// lets a system like grug-for-minecraft auto-compile a script a
+		// modder drops into the mods directory while the game is already
+		// running, without the host having to call compile_grug_file()
+		// itself first.
+		FILE *f = fopen(grug_abs, "w");
+		check_null(f, "fopen", grug_abs);
+		fclose(f);
+
+		const char *msg = impl_forgot_to_set_msg;
+		update(grug_state, &msg);
+
+		char* expected_error_message =
+			"Error: File is empty\n"
+			"$  reloading_new_file/input-D.grug";
+		if (!msg) {
+			fprintf(stderr, "\nError: Expected update() to report a compile error for a brand-new .grug file that was never explicitly compiled, proving it was auto-discovered, but no error was reported.\n");
+			fail_current_test();
+		}
+
+		if (!streq_normalized(msg, expected_error_message)) {
+			fprintf(stderr, "\nError: The error message differs from the expected error message.\n");
+			fprintf(stderr, "Output:\n");
+			print_string_debug(msg);
+
+			fprintf(stderr, "Expected:\n");
+			print_string_debug(expected_error_message);
+
+			fail_current_test();
+		}
+	});
+
+	destroy_grug_state(grug_state);
+
+	remove_dir_recursive(local_temp_dir);
+}
+
+static bool updated_resources_contains(const char *const *paths, size_t count, const char *path) {
+	for (size_t i = 0; i < count; i++) {
+		if (streq_normalized(paths[i], path)) {
+			return true;
+		}
+	}
+	return false;
+}
+
+static void test_resource_reloading(void) {
+	if (!is_whitelisted_test("resource_reloading")) {
+		return;
+	}
+
+	printf("Running resource reloading test...\n");
+	fflush(stdout);
+	reset();
+
+	static const char local_temp_dir[] = ".grug_tmp_resource_reloading";
+
+	create_local_temp_dir(local_temp_dir);
+
+	static const char mod_dir[] = ".grug_tmp_resource_reloading/resource_reloading";
+
+	if (MKDIR(mod_dir) != 0) {
+		fprintf(stderr, "Error: Failed to create local temp directory %s (errno: %d)\n", mod_dir, errno);
+		exit(EXIT_FAILURE);
+	}
+
+	// Neither of these is ever referenced by a `resource` string inside any
+	// .grug script, to prove that grug reports them as updated regardless:
+	// this is what lets a system like grug-for-minecraft's StationAPI-style
+	// auto-discovery of assets (.lang files, recipe JSONs, textures, ...)
+	// hot reload correctly.
+	const char *existing_rel = "resource_reloading/existing.lang";
+	const char *new_rel = "resource_reloading/new.lang";
+
+	char existing_abs[4096];
+	snprintf(existing_abs, sizeof(existing_abs), "%s/%s", local_temp_dir, existing_rel);
+	char new_abs[4096];
+	snprintf(new_abs, sizeof(new_abs), "%s/%s", local_temp_dir, new_rel);
+
+	// Deliberately created *before* create_grug_state(), to simulate a file
+	// that was already sitting in the mods directory when the host started
+	// (the kind of thing a normal startup asset walk, not hot reloading,
+	// is expected to pick up).
+	FILE *f1 = fopen(existing_abs, "w");
+	check_null(f1, "fopen", existing_abs);
+	fputs("greeting=Hello\n", f1);
+	fclose(f1);
+
+	void* grug_state = create_grug_state(
+		mod_api_path,
+		local_temp_dir,
+		true
+	);
+	if (!grug_state) {
+		fprintf(stderr, "Error: Failed to create grug state\n");
+		exit(EXIT_FAILURE);
+	}
+
+	RUN_TRACKED_TEST("ok", "resource_reloading", {
+		// existing.lang was already there before create_grug_state() was
+		// even called, so it should not be reported as "updated" just
+		// because watching has started.
+		const char *msg = impl_forgot_to_set_msg;
+		update(grug_state, &msg);
+		if (msg) {
+			fprintf(stderr, "Error in update(): %s\n", msg);
+			fail_current_test();
+		}
+
+		size_t count = SIZE_MAX;
+		get_updated_resources(grug_state, &count);
+		assert_size_t(count, (size_t)0);
+
+		// Create a second resource file for the first time, this time
+		// *while* watching is already live. Unlike existing.lang above,
+		// there's no other mechanism (like a startup walk) that could ever
+		// tell the host about this path, so it needs to be reported
+		// directly as soon as it's noticed, not only once it's modified a
+		// second time.
+		FILE *f2 = fopen(new_abs, "w");
+		check_null(f2, "fopen", new_abs);
+		fputs("farewell=Bye\n", f2);
+		fclose(f2);
+
+		msg = impl_forgot_to_set_msg;
+		update(grug_state, &msg);
+		if (msg) {
+			fprintf(stderr, "Error in update(): %s\n", msg);
+			fail_current_test();
+		}
+
+		count = 0;
+		const char *const *paths = get_updated_resources(grug_state, &count);
+
+		// new.lang just appeared, so it should be reported...
+		if (!updated_resources_contains(paths, count, new_rel)) {
+			fprintf(stderr, "\nError: Expected \"%s\" to be reported by get_updated_resources(), but it wasn't.\n", new_rel);
+			fail_current_test();
+		}
+
+		// ...but existing.lang wasn't touched, so it should still not be
+		// reported.
+		if (updated_resources_contains(paths, count, existing_rel)) {
+			fprintf(stderr, "\nError: Expected \"%s\" to not be reported by get_updated_resources(), since it wasn't modified.\n", existing_rel);
+			fail_current_test();
+		}
+
+		// Now modify existing.lang, and leave new.lang untouched.
+		FILE *f3 = fopen(existing_abs, "w");
+		check_null(f3, "fopen", existing_abs);
+		fputs("greeting=Hi\n", f3);
+		fclose(f3);
+
+		msg = impl_forgot_to_set_msg;
+		update(grug_state, &msg);
+		if (msg) {
+			fprintf(stderr, "Error in update(): %s\n", msg);
+			fail_current_test();
+		}
+
+		count = 0;
+		paths = get_updated_resources(grug_state, &count);
+
+		// existing.lang was modified, so it should be reported...
+		if (!updated_resources_contains(paths, count, existing_rel)) {
+			fprintf(stderr, "\nError: Expected \"%s\" to be reported by get_updated_resources(), but it wasn't.\n", existing_rel);
+			fail_current_test();
+		}
+
+		// ...but new.lang wasn't touched since the previous update() call,
+		// so it should not be reported again. If it is, the implementation
+		// likely forgot to record a baseline timestamp for new.lang after
+		// reporting its initial appearance above, and is treating it as
+		// perpetually "new".
+		if (updated_resources_contains(paths, count, new_rel)) {
+			fprintf(stderr, "\nError: Expected \"%s\" to not be reported by get_updated_resources() again, since it wasn't modified since the previous update() call.\n", new_rel);
+			fail_current_test();
+		}
+
+		// Finally, with nothing touched at all since the previous
+		// update() call, nothing should be reported. If existing.lang is
+		// still here, the implementation likely forgot to advance its
+		// stored baseline timestamp after reporting it as changed above,
+		// and is comparing against the original (now stale) timestamp
+		// forever.
+		msg = impl_forgot_to_set_msg;
+		update(grug_state, &msg);
+		if (msg) {
+			fprintf(stderr, "Error in update(): %s\n", msg);
+			fail_current_test();
+		}
+
+		count = SIZE_MAX;
+		get_updated_resources(grug_state, &count);
+		assert_size_t(count, (size_t)0);
 	});
 
 	destroy_grug_state(grug_state);
@@ -5462,6 +5709,7 @@ void grug_tests_run(
 	create_entity              = vtable.create_entity; assert(create_entity);
 	destroy_entity             = vtable.destroy_entity; assert(destroy_entity);
 	update                     = vtable.update; assert(update);
+	get_updated_resources      = vtable.get_updated_resources; assert(get_updated_resources);
 	call_export_fn             = vtable.call_export_fn; assert(call_export_fn);
 	grug_to_json               = vtable.grug_to_json; assert(grug_to_json);
 	json_to_grug               = vtable.json_to_grug; assert(json_to_grug);
@@ -5526,6 +5774,8 @@ void grug_tests_run(
 
 	test_code_reloading();
 	test_code_reloading_empty_file();
+	test_code_reloading_new_file();
+	test_resource_reloading();
 
 	run_err_spaces_tests(unsafe_grug_state);
 	run_err_tests(unsafe_grug_state);

@@ -173,6 +173,25 @@ typedef void (*destroy_entity_t)(struct grug_state* state, struct grug_entity_id
 typedef void (*update_t)(struct grug_state* state, const char** error_out);
 
 /**
+ * @typedef get_updated_resources_t
+ * @brief Function pointer type for retrieving the paths of every non-`.grug`
+ * file within the mods directory that changed since the previous call to
+ * `update_t`.
+ *
+ * Unlike `.grug` scripts, grug does not recompile or reload whatever lives
+ * at these paths itself; the host is expected to do so (e.g. by reloading a
+ * texture, a `.lang` file, or some JSON data). A path is reported here
+ * regardless of whether any `.grug` script actually refers to it with a
+ * `resource` string.
+ *
+ * @param state Current active grug state.
+ * @param count_out Out parameter for the number of updated resource paths.
+ * @return Array of `*count_out` paths, relative to the mods directory. Only
+ * valid until the next call to `update_t`. May be `NULL` if `*count_out` is 0.
+ */
+typedef const char* const* (*get_updated_resources_t)(struct grug_state* state, size_t* count_out);
+
+/**
  * @typedef call_export_fn_t
  * @brief Function pointer type for invoking a grug function handler.
  *
@@ -240,6 +259,7 @@ struct grug_state_vtable {
 	create_entity_t create_entity;
 	destroy_entity_t destroy_entity;
 	update_t update;
+	get_updated_resources_t get_updated_resources;
 	call_export_fn_t call_export_fn;
 	grug_to_json_t grug_to_json;
 	json_to_grug_t json_to_grug;

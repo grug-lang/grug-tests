@@ -5805,4 +5805,13 @@ void grug_tests_run(
 
 	destroy_grug_state(unsafe_grug_state);
 	destroy_grug_state(grug_state);
+
+	// Without --continue-on-fail, fail_current_test() already exit()s the
+	// moment the first test fails. With it, we keep running the whole
+	// suite instead, so the failure has to be surfaced here at the end,
+	// or callers would have no way to detect it besides parsing
+	// results.json themselves.
+	if (g_continue_on_fail && passed_count < total) {
+		exit(EXIT_FAILURE);
+	}
 }

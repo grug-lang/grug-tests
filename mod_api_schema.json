@@ -3,6 +3,9 @@
     "type": "object",
     "additionalProperties": false,
     "properties": {
+        "constraints": {
+            "$ref": "#/definitions/constraintsObject"
+        },
         "entities": {
             "type": "object",
             "additionalProperties": {
@@ -55,12 +58,9 @@
                     "description": {
                         "type": "string"
                     },
-					"used_generics": {
-						"type": "array",
-						"items": {
-							"type": "string"
-						}
-					},
+                    "used_generics": {
+                        "$ref": "#/definitions/usedGenericsArray"
+                    },
                     "static_methods": {
                         "$ref": "#/definitions/functionsObject"
                     },
@@ -82,12 +82,9 @@
                     "description": {
                         "type": "string"
                     },
-					"used_generics": {
-						"type": "array",
-						"items": {
-							"type": "string"
-						}
-					},
+                    "used_generics": {
+                        "$ref": "#/definitions/usedGenericsArray"
+                    },
                     "return_type": {
                         "$ref": "#/definitions/type"
                     },
@@ -99,6 +96,70 @@
         }
     },
     "definitions": {
+        "constraintsObject": {
+            "type": "object",
+            "additionalProperties": {
+                "$ref": "#/definitions/constraint"
+            }
+        },
+        "constraint": {
+            "type": "object",
+            "required": [
+                "description",
+                "implementors"
+            ],
+            "additionalProperties": false,
+            "properties": {
+                "description": {
+                    "type": "string"
+                },
+                "implementors": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/constraintImplementor"
+                    }
+                }
+            }
+        },
+        "constraintImplementor": {
+            "type": "object",
+            "required": [
+                "type"
+            ],
+            "additionalProperties": false,
+            "properties": {
+                "used_generics": {
+                    "$ref": "#/definitions/usedGenericsArray"
+                },
+                "type": {
+                    "$ref": "#/definitions/type"
+                }
+            }
+        },
+        "usedGenericsArray": {
+            "type": "array",
+            "items": {
+                "$ref": "#/definitions/genericUsage"
+            }
+        },
+        "genericUsage": {
+            "type": "object",
+            "required": [
+                "name"
+            ],
+            "additionalProperties": false,
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "constraints": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
         "functionsObject": {
             "type": "object",
             "additionalProperties": {
@@ -112,10 +173,7 @@
                         "type": "string"
                     },
                     "used_generics": {
-                        "type": "array",
-                        "items": {
-                            "type": "string"
-                        }
+                        "$ref": "#/definitions/usedGenericsArray"
                     },
                     "description": {
                         "type": "string"
@@ -150,26 +208,35 @@
         },
         "type": {
             "type": "object",
-			"required": [
-				"name"
-			],
-			"additionalProperties": false,
-			"properties": {
-				"name": {
-					"type": "string"
-				},
-				"generics": {
-					"type": "array",
-					"items": {
-						"$ref": "#/definitions/type"
-					}
-				},
-				"resource_extension": {
-					"type": "string"
-				},
-				"entity_type": {
-					"type": "string"
-				}
+            "required": [
+                "name"
+            ],
+            "additionalProperties": false,
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "used_generics": {
+                    "$ref": "#/definitions/usedGenericsArray"
+                },
+                "constraints": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "generics": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/type"
+                    }
+                },
+                "resource_extension": {
+                    "type": "string"
+                },
+                "entity_type": {
+                    "type": "string"
+                }
             }
         }
     }

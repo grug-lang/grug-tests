@@ -1,9 +1,11 @@
 {
-    "host_functions": {
-		"test": {
+	"classes": {
+		"Test": {
 			"description": "Foo",
 			"used_generics": [
-				42
+				{
+					"name": 42
+				}
 			]
 		}
 	}

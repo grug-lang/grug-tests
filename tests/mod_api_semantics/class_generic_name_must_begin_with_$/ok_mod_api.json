@@ -1,9 +1,11 @@
 {
 	"classes": {
 		"Test": {
-			"description": "Foo",
+			"description": "hello",
 			"used_generics": [
-				42
+				{
+					"name": "$Hi"
+				}
 			]
 		}
 	}

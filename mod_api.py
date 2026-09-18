@@ -26,22 +26,30 @@ KEY_ORDER_LIST: List[str] = [
 KEY_ORDER: Dict[str, int] = {k: i for i, k in enumerate(KEY_ORDER_LIST)}
 
 
-def order_data(data: Any) -> Any:
-    """Recursively sorts dictionaries based on KEY_ORDER, falling back to alphabetical."""
+def order_data(data: Any, *, top_level: bool = False) -> Any:
+    """Recursively sorts dictionaries based on KEY_ORDER.
+
+    At the top level only, 'constraints' is forced to the first position.
+    """
     if isinstance(data, dict):
-        # Cast explicitly tells Pyright the key/value types instead of leaving them Unknown
         d = cast(Dict[str, Any], data)
 
         def sort_key(k: str) -> Tuple[int, str]:
+            if top_level and k == "constraints":
+                return (-1, k)
+
             return (KEY_ORDER.get(k, 9999), k)
 
         sorted_keys: List[str] = sorted(d.keys(), key=sort_key)
-        return {k: order_data(d[k]) for k in sorted_keys}
+
+        return {
+            k: order_data(d[k], top_level=False)
+            for k in sorted_keys
+        }
 
     elif isinstance(data, list):
-        # Cast explicitly tells Pyright the item types
         l = cast(List[Any], data)
-        return [order_data(item) for item in l]
+        return [order_data(item, top_level=False) for item in l]
 
     else:
         return data
@@ -58,7 +66,7 @@ def main() -> None:
         print(f"Error reading or parsing {path}: {e}")
         sys.exit(1)
 
-    ordered_data: Any = order_data(data)
+    ordered_data: Any = order_data(data, top_level=True)
 
     # sort_keys=False is crucial here because we already structured the dict correctly.
     expected: str = json.dumps(ordered_data, indent="\t", sort_keys=False) + "\n"

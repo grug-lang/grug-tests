@@ -3,7 +3,9 @@
 		"test": {
 			"description": "Foo",
 			"used_generics": [
-				"T"
+				{
+					"name": "$T"
+				}
 			]
 		}
 	}

@@ -234,6 +234,9 @@
                 "resource_extension": {
                     "type": "string"
                 },
+                "optional": {
+                    "type": "boolean"
+                },
                 "entity_type": {
                     "type": "string"
                 }

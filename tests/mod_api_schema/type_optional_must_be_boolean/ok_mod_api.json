@@ -1,0 +1,19 @@
+{
+	"entities": {},
+	"classes": {},
+	"host_functions": {
+		"f": {
+			"description": "foo",
+			"parameters": [
+				{
+					"name": "p",
+					"type": {
+						"name": "resource",
+						"resource_extension": "",
+						"optional": true
+					}
+				}
+			]
+		}
+	}
+}

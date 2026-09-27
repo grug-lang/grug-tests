@@ -21,6 +21,7 @@ KEY_ORDER_LIST: List[str] = [
     "type",
     "generics",
     "resource_extension",
+    "optional",
     "entity_type",
 ]
 KEY_ORDER: Dict[str, int] = {k: i for i, k in enumerate(KEY_ORDER_LIST)}

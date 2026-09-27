@@ -742,7 +742,8 @@
 					"name": "path",
 					"type": {
 						"name": "resource",
-						"resource_extension": ""
+						"resource_extension": "",
+						"optional": true
 					}
 				}
 			]

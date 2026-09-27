@@ -1727,6 +1727,7 @@ static void run_mod_api_schema_tests(void) {
 	run_mod_api_schema_test("root_must_be_object");
 	run_mod_api_schema_test("static_method_description_must_be_present");
 	run_mod_api_schema_test("static_method_must_be_object");
+	run_mod_api_schema_test("type_optional_must_be_boolean");
 }
 
 static void run_mod_api_semantic_test(const char *name) {

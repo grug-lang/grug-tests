@@ -1,0 +1,64 @@
+[
+    {
+        "type": "EXPORT_FN",
+        "name": "a",
+        "statements": [
+            {
+                "type": "VARIABLE_STATEMENT",
+                "name": "p",
+                "assignment": {
+                    "type": "CALL_EXPR",
+                    "name": "make_pair",
+                    "arguments": [
+                        {
+                            "type": "NUMBER_EXPR",
+                            "value": "1"
+                        },
+                        {
+                            "type": "STRING_EXPR",
+                            "str": "two"
+                        }
+                    ]
+                },
+                "variable_type": {
+                    "name": "Pair",
+                    "generics": [
+                        {
+                            "name": "number"
+                        },
+                        {
+                            "name": "string"
+                        }
+                    ]
+                }
+            },
+            {
+                "type": "VARIABLE_STATEMENT",
+                "name": "q",
+                "assignment": {
+                    "type": "CALL_EXPR",
+                    "name": "make_pair",
+                    "arguments": [
+                        {
+                            "type": "TRUE_EXPR"
+                        },
+                        {
+                            "type": "FALSE_EXPR"
+                        }
+                    ]
+                },
+                "variable_type": {
+                    "name": "Pair",
+                    "generics": [
+                        {
+                            "name": "bool"
+                        },
+                        {
+                            "name": "bool"
+                        }
+                    ]
+                }
+            }
+        ]
+    }
+]

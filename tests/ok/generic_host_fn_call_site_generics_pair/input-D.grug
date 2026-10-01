@@ -1,0 +1,4 @@
+export a() {
+    p: Pair[number, string] = make_pair(1, "two")
+    q: Pair[bool, bool] = make_pair(true, false)
+}

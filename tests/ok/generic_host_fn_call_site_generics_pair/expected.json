@@ -1,27 +1,25 @@
 [
     {
-        "type": "EXPORT_FN",
         "name": "a",
         "statements": [
             {
-                "type": "VARIABLE_STATEMENT",
-                "name": "p",
                 "assignment": {
-                    "type": "CALL_EXPR",
-                    "name": "make_pair",
                     "arguments": [
                         {
                             "type": "NUMBER_EXPR",
                             "value": "1"
                         },
                         {
-                            "type": "STRING_EXPR",
-                            "str": "two"
+                            "str": "two",
+                            "type": "STRING_EXPR"
                         }
-                    ]
+                    ],
+                    "name": "make_pair",
+                    "type": "CALL_EXPR"
                 },
+                "name": "p",
+                "type": "VARIABLE_STATEMENT",
                 "variable_type": {
-                    "name": "Pair",
                     "generics": [
                         {
                             "name": "number"
@@ -29,15 +27,12 @@
                         {
                             "name": "string"
                         }
-                    ]
+                    ],
+                    "name": "Pair"
                 }
             },
             {
-                "type": "VARIABLE_STATEMENT",
-                "name": "q",
                 "assignment": {
-                    "type": "CALL_EXPR",
-                    "name": "make_pair",
                     "arguments": [
                         {
                             "type": "TRUE_EXPR"
@@ -45,10 +40,13 @@
                         {
                             "type": "FALSE_EXPR"
                         }
-                    ]
+                    ],
+                    "name": "make_pair",
+                    "type": "CALL_EXPR"
                 },
+                "name": "q",
+                "type": "VARIABLE_STATEMENT",
                 "variable_type": {
-                    "name": "Pair",
                     "generics": [
                         {
                             "name": "bool"
@@ -56,9 +54,11 @@
                         {
                             "name": "bool"
                         }
-                    ]
+                    ],
+                    "name": "Pair"
                 }
             }
-        ]
+        ],
+        "type": "EXPORT_FN"
     }
 ]

@@ -1,52 +1,52 @@
 [
     {
-        "type": "EXPORT_FN",
         "name": "a",
         "statements": [
             {
-                "type": "VARIABLE_STATEMENT",
-                "name": "x",
                 "assignment": {
-                    "type": "CALL_EXPR",
-                    "name": "box",
                     "arguments": [
                         {
                             "type": "NUMBER_EXPR",
                             "value": "1"
                         }
-                    ]
+                    ],
+                    "name": "box",
+                    "type": "CALL_EXPR"
                 },
+                "name": "x",
+                "type": "VARIABLE_STATEMENT",
                 "variable_type": {
-                    "name": "Box",
                     "generics": [
                         {
                             "name": "number"
                         }
-                    ]
+                    ],
+                    "name": "Box"
                 }
             },
             {
-                "type": "VARIABLE_STATEMENT",
-                "name": "y",
                 "assignment": {
-                    "type": "CALL_EXPR",
-                    "name": "box",
                     "arguments": [
                         {
-                            "type": "STRING_EXPR",
-                            "str": "two"
+                            "str": "two",
+                            "type": "STRING_EXPR"
                         }
-                    ]
+                    ],
+                    "name": "box",
+                    "type": "CALL_EXPR"
                 },
+                "name": "y",
+                "type": "VARIABLE_STATEMENT",
                 "variable_type": {
-                    "name": "Box",
                     "generics": [
                         {
                             "name": "string"
                         }
-                    ]
+                    ],
+                    "name": "Box"
                 }
             }
-        ]
+        ],
+        "type": "EXPORT_FN"
     }
 ]

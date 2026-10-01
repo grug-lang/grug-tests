@@ -1,4 +1,3 @@
-// TODO: Verify the generics used passed to the host functions
 #include "tests.h"
 
 #include "cJSON.h"

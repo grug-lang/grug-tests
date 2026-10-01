@@ -1221,9 +1221,24 @@ union grug_value game_fn_vec_number_insert(struct grug_state* grug_state, const 
 	return grug_void();
 }
 
+// Records the generic type arguments that a generic host function was called
+// with, so tests can verify that every call site passes the generics it
+// declared instead of reusing an earlier call site's generics. See the
+// "generic_host_fn_call_site_generics" tests.
+static uint32_t recorded_generic_types[16];
+static size_t recorded_generic_types_len;
+static void record_generic_types(const struct grug_type generics[], size_t generics_len) {
+	for (size_t i = 0; i < generics_len; i++) {
+		if (recorded_generic_types_len < sizeof(recorded_generic_types) / sizeof(recorded_generic_types[0])) {
+			recorded_generic_types[recorded_generic_types_len] = generics[i].type;
+		}
+		recorded_generic_types_len++;
+	}
+}
+
 static union grug_value* box_last_created;
 union grug_value game_fn_box(struct grug_state* grug_state, const union grug_value args[], const struct grug_type generics[]) {
-	(void)generics;
+	record_generic_types(generics, 1);
 	(void)grug_state;
 	ASSERT_16_BYTE_STACK_ALIGNED();
 	game_fn_box_call_count++;
@@ -1299,7 +1314,7 @@ union grug_value game_fn_dict_put(struct grug_state* grug_state, const union gru
 
 static union grug_value (*last_pair)[2];
 union grug_value game_fn_make_pair(struct grug_state* grug_state, const union grug_value args[], const struct grug_type generics[]) {
-	(void)generics;
+	record_generic_types(generics, 2);
 	(void)grug_state;
 	ASSERT_16_BYTE_STACK_ALIGNED();
 	game_fn_make_pair_call_count++;
@@ -3563,6 +3578,36 @@ static void ok_generics_simple_2(struct grug_state* grug_state, struct grug_enti
 	assert_string((*last_pair)[1]._string, "Hello");
 }
 
+// Two call sites of the same generic host function ("box") with different
+// generic type arguments. Each call site must pass its own generics; a bug in
+// the backend once deduplicated host fn constants by function pointer alone, so
+// the second call site silently reused the first call site's generics and the
+// dispatcher picked the wrong instantiation.
+static void ok_generic_host_fn_call_site_generics(struct grug_state* grug_state, struct grug_entity_id* entity) {
+	recorded_generic_types_len = 0;
+
+	call_export_fn_argless(grug_state, entity, "a");
+
+	assert_size_t(recorded_generic_types_len, (size_t)2);
+	assert_size_t((size_t)recorded_generic_types[0], (size_t)GRUG_TYPE_ENUM_NUMBER);
+	assert_size_t((size_t)recorded_generic_types[1], (size_t)GRUG_TYPE_ENUM_STRING);
+}
+
+// Same as above, but for a two-generic host function ("make_pair"). This also
+// guards against a partial fix that keys the host fn constant on only the first
+// generic type.
+static void ok_generic_host_fn_call_site_generics_pair(struct grug_state* grug_state, struct grug_entity_id* entity) {
+	recorded_generic_types_len = 0;
+
+	call_export_fn_argless(grug_state, entity, "a");
+
+	assert_size_t(recorded_generic_types_len, (size_t)4);
+	assert_size_t((size_t)recorded_generic_types[0], (size_t)GRUG_TYPE_ENUM_NUMBER);
+	assert_size_t((size_t)recorded_generic_types[1], (size_t)GRUG_TYPE_ENUM_STRING);
+	assert_size_t((size_t)recorded_generic_types[2], (size_t)GRUG_TYPE_ENUM_BOOL);
+	assert_size_t((size_t)recorded_generic_types[3], (size_t)GRUG_TYPE_ENUM_BOOL);
+}
+
 static void ok_global_2_does_not_have_error_handling(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	(void)grug_state;
 	(void)entity;
@@ -5379,6 +5424,8 @@ static void add_ok_tests(void) {
 	ADD_TEST_OK(ge_false, "D");
 	ADD_TEST_OK(ge_true_1, "D");
 	ADD_TEST_OK(ge_true_2, "D");
+	ADD_TEST_OK(generic_host_fn_call_site_generics, "D");
+	ADD_TEST_OK(generic_host_fn_call_site_generics_pair, "D");
 	ADD_TEST_OK(generic_static_method, "D");
 	ADD_TEST_OK(generic_type_as_operand_1, "D");
 	ADD_TEST_OK(generic_type_as_operand_2, "D");

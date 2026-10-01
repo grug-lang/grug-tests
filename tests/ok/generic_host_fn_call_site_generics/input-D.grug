@@ -1,0 +1,4 @@
+export a() {
+    x: Box[number] = box(1)
+    y: Box[string] = box("two")
+}

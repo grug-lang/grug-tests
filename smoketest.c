@@ -623,6 +623,35 @@ static void call_export_fn(struct grug_state* grug_state, struct grug_entity_id*
 		union grug_value pair   = CALL_GENERIC(grug_state, make_pair, type, grug_number(25), grug_string("Hello"));
 		CALL_GENERIC(grug_state, pair_second, type, pair);
 		CALL_GENERIC(grug_state, pair_first , type, pair);
+	} else if (starts_with(path, "ok/generic_host_fn_call_site_generics/")) {
+		struct grug_type type_number = {
+			.type = GRUG_TYPE_ENUM_NUMBER,
+		};
+		struct grug_type type_string = {
+			.type = GRUG_TYPE_ENUM_STRING,
+		};
+		CALL_GENERIC(grug_state, box, &type_number, grug_number(1));
+		CALL_GENERIC(grug_state, box, &type_string, grug_string("two"));
+	} else if (starts_with(path, "ok/generic_host_fn_call_site_generics_pair/")) {
+		struct grug_type type_number_string[2] = {
+			{
+				.type = GRUG_TYPE_ENUM_NUMBER,
+			},
+			{
+				.type = GRUG_TYPE_ENUM_STRING,
+			}
+		};
+		CALL_GENERIC(grug_state, make_pair, type_number_string, grug_number(1), grug_string("two"));
+
+		struct grug_type type_bool_bool[2] = {
+			{
+				.type = GRUG_TYPE_ENUM_BOOL,
+			},
+			{
+				.type = GRUG_TYPE_ENUM_BOOL,
+			}
+		};
+		CALL_GENERIC(grug_state, make_pair, type_bool_bool, grug_bool(true), grug_bool(false));
 	} else if (starts_with(path, "ok/global_call_using_me/")) {
 		CALL(grug_state, set_position, grug_id(1337));
 	} else if (starts_with(path, "ok/global_can_use_earlier_global/")) {

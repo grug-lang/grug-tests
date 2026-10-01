@@ -1,0 +1,52 @@
+[
+    {
+        "name": "a",
+        "statements": [
+            {
+                "assignment": {
+                    "arguments": [
+                        {
+                            "type": "NUMBER_EXPR",
+                            "value": "1"
+                        }
+                    ],
+                    "name": "box",
+                    "type": "CALL_EXPR"
+                },
+                "name": "x",
+                "type": "VARIABLE_STATEMENT",
+                "variable_type": {
+                    "generics": [
+                        {
+                            "name": "number"
+                        }
+                    ],
+                    "name": "Box"
+                }
+            },
+            {
+                "assignment": {
+                    "arguments": [
+                        {
+                            "str": "two",
+                            "type": "STRING_EXPR"
+                        }
+                    ],
+                    "name": "box",
+                    "type": "CALL_EXPR"
+                },
+                "name": "y",
+                "type": "VARIABLE_STATEMENT",
+                "variable_type": {
+                    "generics": [
+                        {
+                            "name": "string"
+                        }
+                    ],
+                    "name": "Box"
+                }
+            }
+        ],
+        "type": "EXPORT_FN"
+    }
+]

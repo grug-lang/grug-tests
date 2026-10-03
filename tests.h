@@ -354,6 +354,7 @@ union grug_value game_fn_blocked_alrm                      (struct grug_state* g
 union grug_value game_fn_spawn                             (struct grug_state* grug_state, const union grug_value args[], const struct grug_type generics[]);
 union grug_value game_fn_spawn_d                           (struct grug_state* grug_state, const union grug_value args[], const struct grug_type generics[]);
 union grug_value game_fn_has_resource                      (struct grug_state* grug_state, const union grug_value args[], const struct grug_type generics[]);
+union grug_value game_fn_has_optional_resource             (struct grug_state* grug_state, const union grug_value args[], const struct grug_type generics[]);
 union grug_value game_fn_has_entity                        (struct grug_state* grug_state, const union grug_value args[], const struct grug_type generics[]);
 union grug_value game_fn_has_string                        (struct grug_state* grug_state, const union grug_value args[], const struct grug_type generics[]);
 union grug_value game_fn_get_opponent                      (struct grug_state* grug_state, const union grug_value args[], const struct grug_type generics[]);

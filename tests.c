@@ -386,6 +386,10 @@ static enum grug_runtime_error_type runtime_error_type = 0;
 static char runtime_error_on_fn_name[256];
 static char runtime_error_on_fn_path[256];
 
+static bool reenter_from_error_handler = false;
+static size_t reenter_depth = 0;
+static void* reenter_state = NULL;
+
 static bool streq(const char *a, const char *b) {
 	return strcmp(a, b) == 0;
 }
@@ -4844,6 +4848,12 @@ void grug_tests_runtime_error_handler(const char *reason, enum grug_runtime_erro
 	runtime_error_type = type;
 	strcpy(runtime_error_on_fn_name, on_fn_name);
 	strcpy(runtime_error_on_fn_path, on_fn_path);
+
+	if (reenter_from_error_handler && reenter_depth == 0) {
+		reenter_depth++;
+		call_export_fn_argless(reenter_state, current_entity, "b");
+		reenter_depth--;
+	}
 }
 
 static void runtime_error_all(struct grug_state* grug_state, struct grug_entity_id* entity) {
@@ -5084,6 +5094,52 @@ static void runtime_error_on_fn_method_calls_erroring_on_fn(struct grug_state* g
 
 	assert_string(runtime_error_on_fn_name, "b");
 	assert_string(runtime_error_on_fn_path, "err_runtime/on_fn_method_calls_erroring_on_fn/input-E.grug");
+}
+
+static void runtime_error_reentrant_error_handler(struct grug_state* grug_state, struct grug_entity_id* entity) {
+	assert_call_count(cause_game_fn_error, 0);
+	assert_call_count(nothing, 0);
+	assert_call_count(say, 0);
+	assert_error_handler_call_count(0);
+
+	reenter_state = grug_state;
+	reenter_from_error_handler = true;
+	call_export_fn_argless(grug_state, entity, "a");
+	reenter_from_error_handler = false;
+	reenter_state = NULL;
+
+	assert_call_count(nothing, 1);
+	assert_call_count(say, 1);
+
+	assert_error_handler_call_count(1);
+	assert_true(had_runtime_error);
+	assert_runtime_error_type(GRUG_ON_FN_GAME_FN_ERROR);
+	assert_runtime_error_reason("cause_game_fn_error(): Example game function error");
+	assert_string(runtime_error_on_fn_name, "a");
+	assert_string(runtime_error_on_fn_path, "err_runtime/reentrant_error_handler/input-E.grug");
+}
+
+static void runtime_error_reentrant_error_handler_second_error(struct grug_state* grug_state, struct grug_entity_id* entity) {
+	assert_call_count(cause_game_fn_error, 0);
+	assert_call_count(nothing, 0);
+	assert_call_count(say, 0);
+	assert_error_handler_call_count(0);
+
+	reenter_state = grug_state;
+	reenter_from_error_handler = true;
+	call_export_fn_argless(grug_state, entity, "a");
+	reenter_from_error_handler = false;
+	reenter_state = NULL;
+
+	assert_call_count(cause_game_fn_error, 2);
+	assert_call_count(nothing, 1);
+	assert_call_count(say, 0);
+	assert_error_handler_call_count(2);
+	assert_true(had_runtime_error);
+	assert_runtime_error_type(GRUG_ON_FN_GAME_FN_ERROR);
+	assert_runtime_error_reason("cause_game_fn_error(): Example game function error");
+	assert_string(runtime_error_on_fn_name, "b");
+	assert_string(runtime_error_on_fn_path, "err_runtime/reentrant_error_handler_second_error/input-E.grug");
 }
 
 static void runtime_error_stack_overflow(struct grug_state* grug_state, struct grug_entity_id* entity) {
@@ -5603,6 +5659,8 @@ static void add_runtime_error_tests(void) {
 	ADD_TEST_RUNTIME_ERROR(on_fn_calls_erroring_on_fn, "E");
 	ADD_TEST_RUNTIME_ERROR(on_fn_errors_after_it_calls_other_on_fn, "E");
 	ADD_TEST_RUNTIME_ERROR(on_fn_method_calls_erroring_on_fn, "E");
+	ADD_TEST_RUNTIME_ERROR(reentrant_error_handler, "E");
+	ADD_TEST_RUNTIME_ERROR(reentrant_error_handler_second_error, "E");
 	ADD_TEST_RUNTIME_ERROR(stack_overflow, "D");
 	ADD_TEST_RUNTIME_ERROR(time_limit_exceeded, "D");
 	ADD_TEST_RUNTIME_ERROR(time_limit_exceeded_exponential_calls, "D");

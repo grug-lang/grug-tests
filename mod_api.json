@@ -732,7 +732,7 @@
 				}
 			]
 		},
-		"has_resource": {
+		"has_optional_resource": {
 			"description": "foo",
 			"return_type": {
 				"name": "bool"
@@ -744,6 +744,21 @@
 						"name": "resource",
 						"resource_extension": "",
 						"optional": true
+					}
+				}
+			]
+		},
+		"has_resource": {
+			"description": "foo",
+			"return_type": {
+				"name": "bool"
+			},
+			"parameters": [
+				{
+					"name": "path",
+					"type": {
+						"name": "resource",
+						"resource_extension": ""
 					}
 				}
 			]

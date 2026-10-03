@@ -339,6 +339,7 @@ static size_t game_fn_blocked_alrm_call_count;
 static size_t game_fn_spawn_call_count;
 static size_t game_fn_spawn_d_call_count;
 static size_t game_fn_has_resource_call_count;
+static size_t game_fn_has_optional_resource_call_count;
 static size_t game_fn_has_entity_call_count;
 static size_t game_fn_has_string_call_count;
 static size_t game_fn_get_opponent_call_count;
@@ -642,6 +643,19 @@ union grug_value game_fn_spawn_d(struct grug_state* grug_state, const union grug
 	strcpy(game_fn_spawn_d_name, args[0]._string);
 	return grug_void();
 }
+
+static char game_fn_has_resource_path[256];
+union grug_value game_fn_has_optional_resource(struct grug_state* grug_state, const union grug_value args[], const struct grug_type generics[]) {
+	(void)generics;
+	(void)grug_state;
+	ASSERT_16_BYTE_STACK_ALIGNED();
+	game_fn_has_optional_resource_call_count++;
+
+	strcpy(game_fn_has_resource_path, args[0]._string);
+
+	return grug_bool(true);
+}
+
 static char game_fn_has_resource_path[256];
 union grug_value game_fn_has_resource(struct grug_state* grug_state, const union grug_value args[], const struct grug_type generics[]) {
 	(void)generics;
@@ -2070,6 +2084,7 @@ static void reset(void) {
 	game_fn_spawn_call_count                          = 0;
 	game_fn_spawn_d_call_count                        = 0;
 	game_fn_has_resource_call_count                   = 0;
+	game_fn_has_optional_resource_call_count          = 0;
 	game_fn_has_entity_call_count                     = 0;
 	game_fn_has_string_call_count                     = 0;
 	game_fn_get_opponent_call_count                   = 0;
@@ -4135,6 +4150,17 @@ static void ok_on_fn_three_unused_third(struct grug_state* grug_state, struct gr
 	assert_call_count(nothing, 2);
 }
 
+static void ok_optional_resource(struct grug_state* grug_state, struct grug_entity_id* entity) {
+	assert_call_count(has_optional_resource, 0);
+	assert_call_count(initialize_bool, 0);
+	call_export_fn_argless(grug_state, entity, "a");
+	assert_string(game_fn_has_resource_path, "ok/optional_resource/foo.txt");
+	assert_call_count(has_optional_resource, 1);
+	assert_call_count(initialize_bool, 1);
+
+	assert_true(game_fn_initialize_bool_b);
+}
+
 static void ok_or_false(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	assert_call_count(initialize_bool, 0);
 	call_export_fn_argless(grug_state, entity, "a");
@@ -5501,6 +5527,7 @@ static void add_ok_tests(void) {
 	ADD_TEST_OK(on_fn_three_unused_first, "J");
 	ADD_TEST_OK(on_fn_three_unused_second, "J");
 	ADD_TEST_OK(on_fn_three_unused_third, "J");
+	ADD_TEST_OK(optional_resource, "D");
 	ADD_TEST_OK(or_false, "D");
 	ADD_TEST_OK(or_short_circuit, "D");
 	ADD_TEST_OK(or_true_1, "D");

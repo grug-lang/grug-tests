@@ -1,0 +1,9 @@
+export a() {
+    cause_game_fn_error()
+    nothing()
+}
+
+export b() {
+    nothing()
+    say("b")
+}

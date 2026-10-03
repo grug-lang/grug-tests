@@ -338,6 +338,20 @@ static void call_export_fn(struct grug_state* grug_state, struct grug_entity_id*
 		p_grug_tests_runtime_error_handler("Took longer than 100 milliseconds to run", GRUG_ON_FN_TIME_LIMIT_EXCEEDED, on_fn_name, path);
 	} else if (starts_with(path, "err_runtime/time_limit_exceeded_fibonacci/")) {
 		p_grug_tests_runtime_error_handler("Took longer than 100 milliseconds to run", GRUG_ON_FN_TIME_LIMIT_EXCEEDED, on_fn_name, path);
+	} else if (starts_with(path, "err_runtime/reentrant_error_handler/")) {
+		if (streq(on_fn_name, "a")) {
+			CALL_ARGLESS(grug_state, cause_game_fn_error);
+		} else {
+			CALL_ARGLESS(grug_state, nothing);
+			CALL(grug_state, say, grug_string("b"));
+		}
+	} else if (starts_with(path, "err_runtime/reentrant_error_handler_second_error/")) {
+		if (streq(on_fn_name, "a")) {
+			CALL_ARGLESS(grug_state, cause_game_fn_error);
+		} else {
+			CALL_ARGLESS(grug_state, nothing);
+			CALL_ARGLESS(grug_state, cause_game_fn_error);
+		}
 	} else if (starts_with(path, "ok/addition_as_argument/")) {
 		CALL(grug_state, initialize, grug_number(3.0));
 	} else if (starts_with(path, "ok/addition_as_two_arguments/")) {

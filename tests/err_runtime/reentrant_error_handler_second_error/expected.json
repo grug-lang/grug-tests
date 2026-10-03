@@ -1,0 +1,43 @@
+[
+    {
+        "name": "a",
+        "statements": [
+            {
+                "name": "cause_game_fn_error",
+                "type": "CALL_STATEMENT"
+            },
+            {
+                "name": "nothing",
+                "type": "CALL_STATEMENT"
+            }
+        ],
+        "type": "EXPORT_FN"
+    },
+    {
+        "type": "EMPTY_LINE_STATEMENT"
+    },
+    {
+        "name": "b",
+        "statements": [
+            {
+                "name": "nothing",
+                "type": "CALL_STATEMENT"
+            },
+            {
+                "name": "cause_game_fn_error",
+                "type": "CALL_STATEMENT"
+            },
+            {
+                "arguments": [
+                    {
+                        "str": "b",
+                        "type": "STRING_EXPR"
+                    }
+                ],
+                "name": "say",
+                "type": "CALL_STATEMENT"
+            }
+        ],
+        "type": "EXPORT_FN"
+    }
+]

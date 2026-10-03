@@ -1,1 +1,24 @@
-[]
+[
+    {
+        "name": "a",
+        "statements": [
+            {
+                "arguments": [
+                    {
+                        "arguments": [
+                            {
+                                "str": "optional_resource/foo.txt",
+                                "type": "RESOURCE_EXPR"
+                            }
+                        ],
+                        "name": "has_optional_resource",
+                        "type": "CALL_EXPR"
+                    }
+                ],
+                "name": "initialize_bool",
+                "type": "CALL_STATEMENT"
+            }
+        ],
+        "type": "EXPORT_FN"
+    }
+]

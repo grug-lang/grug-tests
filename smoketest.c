@@ -66,6 +66,7 @@ static game_fn p_game_fn_blocked_alrm;
 static game_fn p_game_fn_spawn;
 static game_fn p_game_fn_spawn_d;
 static game_fn p_game_fn_has_resource;
+static game_fn p_game_fn_has_optional_resource;
 static game_fn p_game_fn_has_entity;
 static game_fn p_game_fn_has_string;
 static game_fn p_game_fn_get_opponent;
@@ -800,6 +801,9 @@ static void call_export_fn(struct grug_state* grug_state, struct grug_entity_id*
 		CALL_ARGLESS(grug_state, nothing);
 	} else if (starts_with(path, "ok/on_fn_three_unused_third/")) {
 		CALL_ARGLESS(grug_state, nothing);
+	} else if (starts_with(path, "ok/optional_resource/")) {
+		union grug_value result = CALL(grug_state, has_optional_resource, grug_string("ok/optional_resource/foo.txt"));
+		CALL(grug_state, initialize_bool, result);
 	} else if (starts_with(path, "ok/or_false/")) {
 		CALL(grug_state, initialize_bool, grug_bool(false));
 	} else if (starts_with(path, "ok/or_short_circuit/")) {
@@ -1141,6 +1145,7 @@ static void load_tests_library(void) {
 	p_game_fn_spawn                          = (game_fn)load_sym(h, "game_fn_spawn");
 	p_game_fn_spawn_d                        = (game_fn)load_sym(h, "game_fn_spawn_d");
 	p_game_fn_has_resource                   = (game_fn)load_sym(h, "game_fn_has_resource");
+	p_game_fn_has_optional_resource          = (game_fn)load_sym(h, "game_fn_has_optional_resource");
 	p_game_fn_has_entity                     = (game_fn)load_sym(h, "game_fn_has_entity");
 	p_game_fn_has_string                     = (game_fn)load_sym(h, "game_fn_has_string");
 	p_game_fn_get_opponent                   = (game_fn)load_sym(h, "game_fn_get_opponent");

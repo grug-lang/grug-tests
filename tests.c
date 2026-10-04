@@ -268,6 +268,7 @@ static const char *mod_api_path;
 static const char *whitelisted_test;
 
 static struct grug_entity_id* current_entity;
+static struct grug_file_id* current_file;
 
 static parse_mod_api_t         parse_mod_api;
 static create_grug_state_t     create_grug_state;
@@ -2706,6 +2707,7 @@ static void rerun_ok_tests(struct grug_state *grug_state) {
 			}
 
 			current_entity = entity;
+			current_file = fn_data->file;
 			fn_data->run(grug_state, entity);
 
 			destroy_entity(grug_state, entity);
@@ -2750,6 +2752,7 @@ static void rerun_err_runtime_tests(struct grug_state *grug_state) {
 			// If the error happened inside create_entity(), don't call run()
 			if (!msg) {
 				current_entity = entity;
+				current_file = fn_data->file;
 				fn_data->run(grug_state, entity);	
 			}
 
@@ -2786,6 +2789,7 @@ static void run_err_runtime_tests(struct grug_state *grug_state) {
 			// If the error happened inside create_entity(), don't call run()
 			if (!msg) {
 				current_entity = entity;
+				current_file = file;
 				fn_data->run(grug_state, entity);	
 			}
 
@@ -2822,6 +2826,7 @@ static void run_ok_tests(struct grug_state *grug_state) {
 			}
 
 			current_entity = entity;
+			current_file = file;
 			fn_data->run(grug_state, entity);
 
 			destroy_entity(grug_state, entity);
@@ -5142,6 +5147,40 @@ static void runtime_error_reentrant_error_handler_second_error(struct grug_state
 	assert_string(runtime_error_on_fn_path, "err_runtime/reentrant_error_handler_second_error/input-E.grug");
 }
 
+static void runtime_error_finished_error_does_not_leak(struct grug_state* grug_state, struct grug_entity_id* entity) {
+	assert_call_count(cause_game_fn_error, 0);
+	assert_call_count(nothing, 0);
+	assert_call_count(get_opponent, 1);
+	assert_error_handler_call_count(0);
+
+	call_export_fn_argless(grug_state, entity, "a");
+
+	assert_call_count(cause_game_fn_error, 1);
+	assert_call_count(nothing, 0);
+	assert_error_handler_call_count(1);
+	assert_true(had_runtime_error);
+	assert_runtime_error_type(GRUG_ON_FN_GAME_FN_ERROR);
+	assert_runtime_error_reason("cause_game_fn_error(): Example game function error");
+	assert_string(runtime_error_on_fn_name, "a");
+	assert_string(runtime_error_on_fn_path, "err_runtime/finished_error_does_not_leak/input-E.grug");
+
+	call_export_fn_argless(grug_state, entity, "b");
+	assert_call_count(nothing, 1);
+
+	const char *msg = impl_forgot_to_set_msg;
+	struct grug_entity_id* second_entity = create_entity(grug_state, current_file, &msg);
+	if (msg) {
+		fprintf(stderr, "Error creating second entity: %s\n", msg);
+		fail_current_test();
+	}
+	if (second_entity == NULL) {
+		fprintf(stderr, "Error: create_entity() returned NULL for the second entity\n");
+		fail_current_test();
+	}
+	assert_call_count(get_opponent, 2);
+	destroy_entity(grug_state, second_entity);
+}
+
 static void runtime_error_stack_overflow(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	call_export_fn_argless(grug_state, entity, "a");
 
@@ -5661,6 +5700,7 @@ static void add_runtime_error_tests(void) {
 	ADD_TEST_RUNTIME_ERROR(on_fn_method_calls_erroring_on_fn, "E");
 	ADD_TEST_RUNTIME_ERROR(reentrant_error_handler, "E");
 	ADD_TEST_RUNTIME_ERROR(reentrant_error_handler_second_error, "E");
+	ADD_TEST_RUNTIME_ERROR(finished_error_does_not_leak, "E");
 	ADD_TEST_RUNTIME_ERROR(stack_overflow, "D");
 	ADD_TEST_RUNTIME_ERROR(time_limit_exceeded, "D");
 	ADD_TEST_RUNTIME_ERROR(time_limit_exceeded_exponential_calls, "D");

@@ -1,0 +1,43 @@
+[
+    {
+        "assignment": {
+            "name": "get_opponent",
+            "type": "CALL_EXPR"
+        },
+        "name": "opponent",
+        "type": "VARIABLE_STATEMENT",
+        "variable_type": {
+            "name": "Opponent"
+        }
+    },
+    {
+        "type": "EMPTY_LINE_STATEMENT"
+    },
+    {
+        "name": "a",
+        "statements": [
+            {
+                "name": "cause_game_fn_error",
+                "type": "CALL_STATEMENT"
+            },
+            {
+                "name": "nothing",
+                "type": "CALL_STATEMENT"
+            }
+        ],
+        "type": "EXPORT_FN"
+    },
+    {
+        "type": "EMPTY_LINE_STATEMENT"
+    },
+    {
+        "name": "b",
+        "statements": [
+            {
+                "name": "nothing",
+                "type": "CALL_STATEMENT"
+            }
+        ],
+        "type": "EXPORT_FN"
+    }
+]

@@ -239,6 +239,8 @@ static struct grug_entity_id* create_entity(struct grug_state* grug_state, struc
 
 	if (starts_with(path, "err_runtime/game_fn_error_global_scope/")) {
 		CALL_ARGLESS(grug_state, cause_game_fn_error);
+	} else if (starts_with(path, "err_runtime/finished_error_does_not_leak/")) {
+		CALL_ARGLESS(grug_state, get_opponent);
 	} else if (starts_with(path, "ok/custom_id_transfer_between_globals/")) {
 		CALL_ARGLESS(grug_state, get_opponent);
 	} else if (starts_with(path, "ok/custom_id_with_digits/")) {
@@ -351,6 +353,12 @@ static void call_export_fn(struct grug_state* grug_state, struct grug_entity_id*
 		} else {
 			CALL_ARGLESS(grug_state, nothing);
 			CALL_ARGLESS(grug_state, cause_game_fn_error);
+		}
+	} else if (starts_with(path, "err_runtime/finished_error_does_not_leak/")) {
+		if (streq(on_fn_name, "a")) {
+			CALL_ARGLESS(grug_state, cause_game_fn_error);
+		} else {
+			CALL_ARGLESS(grug_state, nothing);
 		}
 	} else if (starts_with(path, "ok/addition_as_argument/")) {
 		CALL(grug_state, initialize, grug_number(3.0));

@@ -2587,8 +2587,11 @@ static void test_resource_reloading(void) {
 		}
 
 		size_t count = SIZE_MAX;
-		get_updated_resources(grug_state, &count);
-		assert_size_t(count, (size_t)0);
+		const char* const* paths = get_updated_resources(grug_state, &count);
+		if (count != 0) {
+			fprintf(stderr, "\nError: Expected count (%zu) to be 0 since no file was updated since the state was created\n", count);
+			fail_current_test();
+		}
 
 		// Create a second resource file for the first time, this time
 		// *while* watching is already live. Unlike existing.lang above,
@@ -2609,7 +2612,7 @@ static void test_resource_reloading(void) {
 		}
 
 		count = 0;
-		const char *const *paths = get_updated_resources(grug_state, &count);
+		paths = get_updated_resources(grug_state, &count);
 
 		// new.lang just appeared, so it should be reported...
 		if (!updated_resources_contains(paths, count, new_rel)) {
@@ -2671,7 +2674,10 @@ static void test_resource_reloading(void) {
 
 		count = SIZE_MAX;
 		get_updated_resources(grug_state, &count);
-		assert_size_t(count, (size_t)0);
+		if (count != 0) {
+			fprintf(stderr, "\nError: Expected count (%zu) to be 0 since no file was updated since the previous update() call.\n", count);
+			fail_current_test();
+		}
 	});
 
 	destroy_grug_state(grug_state);

@@ -227,7 +227,7 @@ static size_t print_ty(struct grug_type ty, char* restrict buf, size_t max_len) 
 			return filled_len;
 		}
 		break;
-		default: 
+		default:
 		return 0;
 	}
 }
@@ -3802,6 +3802,8 @@ static void ok_generic_type_as_operand_5(struct grug_state* grug_state, struct g
 
 	assert_call_count(default, 2);
 	assert_call_count(identity, 1);
+	
+	assert_ty(game_fn_default_last_type, (struct grug_type) {.type = GRUG_TYPE_ENUM_NUMBER});
 
 	assert_number(game_fn_default_last_value._number, 0.0);
 	assert_number(game_fn_identity_x._number, 0.0);

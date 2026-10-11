@@ -11,6 +11,9 @@
 #include <setjmp.h>
 #include <stdio.h>
 #include <stdlib.h>
+// gcc undefs min, but msvc doesn't, We wanna do this to make sure they both
+// have the same behavior
+#undef min
 #include <string.h>
 #include <time.h>
 
@@ -122,7 +125,7 @@ static void fail_current_test(void) {
 } while (0)
 
 static size_t min(size_t left, size_t right) {
-	(left < right)? left : right;
+	return (left < right)? left : right;
 }
 
 static bool type_eq(struct grug_type got, struct grug_type expected) {
@@ -1431,8 +1434,8 @@ union grug_value game_fn_default(struct grug_state* grug_state, const union grug
             return game_fn_default_string(grug_state, args, generics);
         case GRUG_TYPE_ENUM_ID:
             if (streq(generics[0].data.id.name, "Pair")) {
-				union grug_value first  = game_fn_default(grug_state, (union grug_value[]){}, &generics[0].data.id.generics[0]);
-				union grug_value second = game_fn_default(grug_state, (union grug_value[]){}, &generics[0].data.id.generics[1]);
+				union grug_value first  = game_fn_default(grug_state, args, &generics[0].data.id.generics[0]);
+				union grug_value second = game_fn_default(grug_state, args, &generics[0].data.id.generics[1]);
 	game_fn_default_last_type = generics[0];
 				game_fn_default_last_value = game_fn_make_pair(grug_state, 
 					(union grug_value[]){

@@ -22,11 +22,15 @@
 					"used_generics": [
 						{
 							"name": "$T1",
-							"constraints": [ "Default" ]
+							"constraints": [
+								"Default"
+							]
 						},
 						{
 							"name": "$T2",
-							"constraints": [ "Default" ]
+							"constraints": [
+								"Default"
+							]
 						}
 					],
 					"type": {

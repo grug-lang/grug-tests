@@ -2249,6 +2249,104 @@ static void create_local_temp_dir(const char *local_temp_dir) {
 	}
 }
 
+static void test_code_reloading_destroyed_entity(void) {
+	if (!is_whitelisted_test("code_reloading_destroyed_entity")) {
+		return;
+	}
+
+	printf("Running code reloading destroyed entity test...\n");
+	fflush(stdout);
+	reset();
+
+	static const char local_temp_dir[] = ".grug_tmp_code_reloading_destroyed_entity";
+
+	create_local_temp_dir(local_temp_dir);
+
+	static const char mod_dir[] = ".grug_tmp_code_reloading_destroyed_entity/code_reloading_destroyed_entity";
+
+	if (MKDIR(mod_dir) != 0) {
+		fprintf(stderr, "Error: Failed to create local temp directory %s (errno: %d)\n", mod_dir, errno);
+		exit(EXIT_FAILURE);
+	}
+
+	void* grug_state = create_grug_state(
+		mod_api_path,
+		local_temp_dir,
+		true
+	);
+	if (!grug_state) {
+		fprintf(stderr, "Error: Failed to create grug state\n");
+		exit(EXIT_FAILURE);
+	}
+
+	RUN_TRACKED_TEST("ok", "code_reloading_destroyed_entity", {
+		const char *grug_rel = "code_reloading_destroyed_entity/input-D.grug";
+
+		char grug_abs[4096];
+		snprintf(grug_abs, sizeof(grug_abs), "%s/%s", local_temp_dir, grug_rel);
+
+		// The member scope reaches a host function, so every initialization is
+		// counted and a re-initialization is visible from here.
+		FILE *f1 = fopen(grug_abs, "w");
+		check_null(f1, "fopen", grug_abs);
+		fputs("foo: number = identity(1)\n", f1);
+		fclose(f1);
+
+		// Create file
+		const char *msg = impl_forgot_to_set_msg;
+		struct grug_file_id *file = compile_grug_file(grug_state, grug_rel, &msg);
+		if (msg) {
+			fprintf(stderr, "Error compiling code_reloading_destroyed_entity-D.grug: %s\n", msg);
+			fail_current_test();
+		}
+
+		// Two entities, so the second one does not land in the first slot of the
+		// arena. A destroy that is silently skipped leaves it tracked, and the
+		// reload below re-initializes it.
+		msg = impl_forgot_to_set_msg;
+		struct grug_entity_id* live = create_entity(grug_state, file, &msg);
+		if (msg) {
+			fprintf(stderr, "Error creating entity: %s\n", msg);
+			fail_current_test();
+		}
+
+		msg = impl_forgot_to_set_msg;
+		struct grug_entity_id* destroyed = create_entity(grug_state, file, &msg);
+		if (msg) {
+			fprintf(stderr, "Error creating entity: %s\n", msg);
+			fail_current_test();
+		}
+
+		assert_size_t(game_fn_identity_call_count, (size_t)2);
+
+		destroy_entity(grug_state, destroyed);
+
+		// Overwrite code_reloading_destroyed_entity/input-D.grug, then reload it
+		FILE *f2 = fopen(grug_abs, "w");
+		check_null(f2, "fopen", grug_abs);
+		fputs("foo: number = identity(2)\n", f2);
+		fclose(f2);
+
+		msg = impl_forgot_to_set_msg;
+		update(grug_state, &msg);
+		if (msg) {
+			fprintf(stderr, "Error in update(): %s\n", msg);
+			fail_current_test();
+		}
+
+		// Only the live entity may run its member scope again. Three means the
+		// destroyed one was re-initialized.
+		assert_size_t(game_fn_identity_call_count, (size_t)3);
+
+		destroy_entity(grug_state, live);
+		destroy_grug_file(grug_state, file);
+	});
+
+	destroy_grug_state(grug_state);
+
+	remove_dir_recursive(local_temp_dir);
+}
+
 static void test_code_reloading_empty_file(void) {
 	if (!is_whitelisted_test("code_reloading_empty_file")) {
 		return;
@@ -5941,6 +6039,7 @@ void grug_tests_run(
 	rerun_err_runtime_tests(grug_state);
 
 	test_code_reloading();
+	test_code_reloading_destroyed_entity();
 	test_code_reloading_empty_file();
 	test_code_reloading_new_file();
 	test_resource_reloading();

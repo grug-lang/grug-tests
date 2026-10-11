@@ -121,7 +121,11 @@ static void fail_current_test(void) {
 	g_in_test = false; \
 } while (0)
 
-bool type_eq(struct grug_type got, struct grug_type expected) {
+static size_t min(size_t left, size_t right) {
+	(left < right)? left : right;
+}
+
+static bool type_eq(struct grug_type got, struct grug_type expected) {
 	if (expected.type != got.type) {
 		return false;
 	} else if (expected.type == GRUG_TYPE_ENUM_RESOURCE) {
@@ -156,7 +160,7 @@ bool type_eq(struct grug_type got, struct grug_type expected) {
 	return true;
 }
 
-size_t print_ty(struct grug_type ty, char* restrict buf, size_t max_len) {
+static size_t print_ty(struct grug_type ty, char* restrict buf, size_t max_len) {
 	switch (ty.type) {
 		case GRUG_TYPE_ENUM_BOOL: {
 			char str_lit[] = "bool";

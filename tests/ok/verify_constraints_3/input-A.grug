@@ -1,0 +1,1 @@
+x: Pair[number, string] = default()

@@ -1,0 +1,33 @@
+[
+    {
+        "type": "EXPORT_FN",
+        "name": "a",
+        "statements": [
+            {
+                "type": "VARIABLE_STATEMENT",
+                "name": "x",
+                "assignment": {
+                    "type": "CALL_EXPR",
+                    "name": "identity",
+                    "arguments": [
+                        {
+                            "type": "BINARY_EXPR",
+                            "operator": "PLUS_TOKEN",
+                            "left_expr": {
+                                "type": "CALL_EXPR",
+                                "name": "default"
+                            },
+                            "right_expr": {
+                                "type": "CALL_EXPR",
+                                "name": "default"
+                            }
+                        }
+                    ]
+                },
+                "variable_type": {
+                    "name": "number"
+                }
+            }
+        ]
+    }
+]

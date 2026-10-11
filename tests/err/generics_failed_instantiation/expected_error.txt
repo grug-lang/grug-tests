@@ -1,3 +1,3 @@
-  in member scope (err/generics_failed_instantiation/input-A.grug:1:13)
-Error: host function 'default' expects type 'number' to implement constraint 'Default' but it doesn't
-1 $ x: number = default()
+  in member scope (err/generics_failed_instantiation/input-A.grug:1:27)
+Error: host function 'default' expects type 'Dict[number, string]' to implement constraint 'Default' but it doesn't
+1 $ x: Dict[number, string] = default()

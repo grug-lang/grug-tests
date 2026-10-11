@@ -1,0 +1,13 @@
+[
+    {
+        "type": "VARIABLE_STATEMENT",
+        "name": "x",
+        "variable_type": {
+            "name": "string"
+        },
+        "assignment": {
+            "type": "CALL_EXPR",
+            "name": "default"
+        }
+    }
+]

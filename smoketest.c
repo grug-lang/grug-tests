@@ -176,6 +176,15 @@ static void update(struct grug_state* grug_state, const char** error_out) {
 		*error_out = "Error: File is empty\n$  reloading_empty_file/input-D.grug";
 		return;
 	}
+	// test_code_reloading_destroyed_entity() destroyed one of its two entities,
+	// so the reload runs the member scope of the live one once more and nothing
+	// else.
+	if (saved_mods_dir_path && streq(saved_mods_dir_path, ".grug_tmp_code_reloading_destroyed_entity")) {
+		CALL(grug_state, identity, grug_number(2.0));
+		*error_out = NULL;
+		return;
+	}
+
 	update_called = true;
 	*error_out = NULL;
 }
@@ -253,6 +262,8 @@ static struct grug_entity_id* create_entity(struct grug_state* grug_state, struc
 		CALL_ARGLESS(grug_state, get_opponent);
 	} else if (starts_with(path, "ok/string_returned_by_game_fn_assigned_to_member/")) {
 		CALL_ARGLESS(grug_state, get_os);
+	} else if (starts_with(path, "code_reloading_destroyed_entity/input-D.grug")) {
+		CALL(grug_state, identity, grug_number(1.0));
 	}
 
 	*error_out = NULL;

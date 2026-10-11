@@ -532,6 +532,21 @@ static void call_export_fn_argless(void* grug_state, struct grug_entity_id* enti
 	call_export_fn(grug_state, entity, on_fn_name, NULL, 0);
 }
 
+// Records the generic type arguments that a generic host function was called
+// with, so tests can verify that every call site passes the generics it
+// declared instead of reusing an earlier call site's generics. See the
+// "generic_host_fn_call_site_generics" tests.
+static struct grug_type recorded_generic_types[16];
+static size_t recorded_generic_types_len;
+static void record_generic_types(const struct grug_type generics[], size_t generics_len) {
+	for (size_t i = 0; i < generics_len; i++) {
+		if (recorded_generic_types_len < sizeof(recorded_generic_types) / sizeof(recorded_generic_types[0])) {
+			recorded_generic_types[recorded_generic_types_len] = generics[i];
+		}
+		recorded_generic_types_len++;
+	}
+}
+
 union grug_value game_fn_nothing(struct grug_state* grug_state, const union grug_value args[], const struct grug_type generics[]) {
 	(void)generics;
 	(void)grug_state;
@@ -575,6 +590,7 @@ union grug_value game_fn_initialize_bool(struct grug_state* grug_state, const un
 }
 static union grug_value game_fn_identity_x;
 union grug_value game_fn_identity(struct grug_state* grug_state, const union grug_value args[], const struct grug_type generics[]) {
+	record_generic_types(generics, 1);
 	(void)generics;
 	(void)grug_state;
 	ASSERT_16_BYTE_STACK_ALIGNED();
@@ -1363,21 +1379,6 @@ union grug_value game_fn_vec_number_insert(struct grug_state* grug_state, const 
 	return grug_void();
 }
 
-// Records the generic type arguments that a generic host function was called
-// with, so tests can verify that every call site passes the generics it
-// declared instead of reusing an earlier call site's generics. See the
-// "generic_host_fn_call_site_generics" tests.
-static uint32_t recorded_generic_types[16];
-static size_t recorded_generic_types_len;
-static void record_generic_types(const struct grug_type generics[], size_t generics_len) {
-	for (size_t i = 0; i < generics_len; i++) {
-		if (recorded_generic_types_len < sizeof(recorded_generic_types) / sizeof(recorded_generic_types[0])) {
-			recorded_generic_types[recorded_generic_types_len] = generics[i].type;
-		}
-		recorded_generic_types_len++;
-	}
-}
-
 static union grug_value* box_last_created;
 union grug_value game_fn_box(struct grug_state* grug_state, const union grug_value args[], const struct grug_type generics[]) {
 	record_generic_types(generics, 1);
@@ -1419,10 +1420,9 @@ static union grug_value game_fn_default_string(struct grug_state* grug_state, co
 	return game_fn_default_last_value;
 }
 
-static struct grug_type game_fn_default_last_type = {0};
 union grug_value game_fn_default(struct grug_state* grug_state, const union grug_value args[], const struct grug_type generics[]) {
 	game_fn_default_call_count++;
-	game_fn_default_last_type = generics[0];
+	record_generic_types(generics, 1);
     switch (generics[0].type) {
 		case GRUG_TYPE_ENUM_BOOL:
 			game_fn_default_last_value = grug_bool(false);
@@ -1436,13 +1436,12 @@ union grug_value game_fn_default(struct grug_state* grug_state, const union grug
             if (streq(generics[0].data.id.name, "Pair")) {
 				union grug_value first  = game_fn_default(grug_state, args, &generics[0].data.id.generics[0]);
 				union grug_value second = game_fn_default(grug_state, args, &generics[0].data.id.generics[1]);
-	game_fn_default_last_type = generics[0];
 				game_fn_default_last_value = game_fn_make_pair(grug_state, 
 					(union grug_value[]){
 						first, 
 						second,
 					},
-					generics
+					generics[0].data.id.generics
 				);
 				return game_fn_default_last_value;
 			}
@@ -2274,6 +2273,7 @@ static void reset(void) {
 	game_fn_make_pair_call_count                      = 0;
 	game_fn_pair_first_call_count                     = 0;
 	game_fn_pair_second_call_count                    = 0;
+	recorded_generic_types_len                        = 0;
 }
 
 static void remove_dir_recursive(const char* path) {
@@ -3803,7 +3803,10 @@ static void ok_generic_type_as_operand_5(struct grug_state* grug_state, struct g
 	assert_call_count(default, 2);
 	assert_call_count(identity, 1);
 	
-	assert_ty(game_fn_default_last_type, (struct grug_type) {.type = GRUG_TYPE_ENUM_NUMBER});
+	assert_size_t(recorded_generic_types_len, (size_t)3);
+	assert_ty(recorded_generic_types[0], (struct grug_type) {.type = GRUG_TYPE_ENUM_NUMBER});
+	assert_ty(recorded_generic_types[1], (struct grug_type) {.type = GRUG_TYPE_ENUM_NUMBER});
+	assert_ty(recorded_generic_types[2], (struct grug_type) {.type = GRUG_TYPE_ENUM_NUMBER});
 
 	assert_number(game_fn_default_last_value._number, 0.0);
 	assert_number(game_fn_identity_x._number, 0.0);
@@ -3883,8 +3886,8 @@ static void ok_generic_host_fn_call_site_generics(struct grug_state* grug_state,
 	call_export_fn_argless(grug_state, entity, "a");
 
 	assert_size_t(recorded_generic_types_len, (size_t)2);
-	assert_size_t((size_t)recorded_generic_types[0], (size_t)GRUG_TYPE_ENUM_NUMBER);
-	assert_size_t((size_t)recorded_generic_types[1], (size_t)GRUG_TYPE_ENUM_STRING);
+	assert_ty(recorded_generic_types[0], (struct grug_type) {.type = GRUG_TYPE_ENUM_NUMBER});
+	assert_ty(recorded_generic_types[1], (struct grug_type) {.type = GRUG_TYPE_ENUM_STRING});
 }
 
 // Same as above, but for a two-generic host function ("make_pair"). This also
@@ -3896,10 +3899,10 @@ static void ok_generic_host_fn_call_site_generics_pair(struct grug_state* grug_s
 	call_export_fn_argless(grug_state, entity, "a");
 
 	assert_size_t(recorded_generic_types_len, (size_t)4);
-	assert_size_t((size_t)recorded_generic_types[0], (size_t)GRUG_TYPE_ENUM_NUMBER);
-	assert_size_t((size_t)recorded_generic_types[1], (size_t)GRUG_TYPE_ENUM_STRING);
-	assert_size_t((size_t)recorded_generic_types[2], (size_t)GRUG_TYPE_ENUM_BOOL);
-	assert_size_t((size_t)recorded_generic_types[3], (size_t)GRUG_TYPE_ENUM_BOOL);
+	assert_ty(recorded_generic_types[0], (struct grug_type) {.type = GRUG_TYPE_ENUM_NUMBER});
+	assert_ty(recorded_generic_types[1], (struct grug_type) {.type = GRUG_TYPE_ENUM_STRING});
+	assert_ty(recorded_generic_types[2], (struct grug_type) {.type = GRUG_TYPE_ENUM_BOOL});
+	assert_ty(recorded_generic_types[3], (struct grug_type) {.type = GRUG_TYPE_ENUM_BOOL});
 }
 
 static void ok_global_2_does_not_have_error_handling(struct grug_state* grug_state, struct grug_entity_id* entity) {
@@ -5104,8 +5107,9 @@ static void ok_verify_constraints_1(struct grug_state* grug_state, struct grug_e
 	(void)(grug_state);
 	(void)(entity);
 	assert_call_count(default, 1);
+	assert_size_t(recorded_generic_types_len, (size_t)1);
 	assert_ty (
-		game_fn_default_last_type,
+		recorded_generic_types[0],
 		((struct grug_type) {
 			.type = GRUG_TYPE_ENUM_BOOL,
 		})
@@ -5117,8 +5121,9 @@ static void ok_verify_constraints_2(struct grug_state* grug_state, struct grug_e
 	(void)(grug_state);
 	(void)(entity);
 	assert_call_count(default, 1);
+	assert_size_t(recorded_generic_types_len, (size_t)1);
 	assert_ty (
-		game_fn_default_last_type,
+		recorded_generic_types[0],
 		((struct grug_type) {
 			.type = GRUG_TYPE_ENUM_STRING,
 		})
@@ -5144,10 +5149,13 @@ static void ok_verify_constraints_3(struct grug_state* grug_state, struct grug_e
 			}
 		}
 	};
-	assert_ty (
-		game_fn_default_last_type,
-		expected_ty
-	);
+
+	assert_size_t(recorded_generic_types_len, (size_t)5);
+	assert_ty (recorded_generic_types[0], expected_ty);
+	assert_ty (recorded_generic_types[1], (struct grug_type){.type = GRUG_TYPE_ENUM_NUMBER});
+	assert_ty (recorded_generic_types[2], (struct grug_type){.type = GRUG_TYPE_ENUM_STRING});
+	assert_ty (recorded_generic_types[3], (struct grug_type){.type = GRUG_TYPE_ENUM_NUMBER});
+	assert_ty (recorded_generic_types[4], (struct grug_type){.type = GRUG_TYPE_ENUM_STRING});
 	assert_ptr(game_fn_default_last_value._id);
 	assert_number(((union grug_value*)(game_fn_default_last_value._id))[0]._number, 0.0);
 	assert_string(((union grug_value*)(game_fn_default_last_value._id))[1]._string, "");

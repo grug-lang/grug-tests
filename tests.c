@@ -121,6 +121,122 @@ static void fail_current_test(void) {
 	g_in_test = false; \
 } while (0)
 
+bool type_eq(struct grug_type got, struct grug_type expected) {
+	if (expected.type != got.type) {
+		return false;
+	} else if (expected.type == GRUG_TYPE_ENUM_RESOURCE) {
+		return streq(expected.data.resource_extension, got.data.resource_extension);
+	} else if (expected.type == GRUG_TYPE_ENUM_ENTITY) {
+		// TODO: I think strcmp (which streq calls) already has these checks
+		// builtin, but i'm not sure.  Figure this out before merge
+		
+		// If both are null or both point to the same string
+		if (expected.data.entity_type == got.data.entity_type) {
+			return true;
+		// If only one is null
+		} else if (expected.data.entity_type == NULL) {
+			return false;
+		} else {
+			return streq(expected.data.entity_type, got.data.entity_type);
+		}
+	} else if (expected.type == GRUG_TYPE_ENUM_ID) {
+		if (!streq(expected.data.id.name, got.data.id.name)) {
+			return false;
+		}
+		if (expected.data.id.generics_len != got.data.id.generics_len) {
+			return false;
+		}
+		for (size_t i = 0; i < expected.data.id.generics_len; i++) {
+			if (!type_eq(expected.data.id.generics[i], got.data.id.generics[i])) {
+				return false;
+			}
+		}
+		return true;
+	}
+	return true;
+}
+
+size_t print_ty(struct grug_type ty, char* restrict buf, size_t max_len) {
+	switch (ty.type) {
+		case GRUG_TYPE_ENUM_BOOL: {
+			char str_lit[] = "bool";
+			memcpy(buf, str_lit, min(max_len, sizeof(str_lit) - 1));
+			return sizeof(str_lit) - 1;
+		}
+		break;
+		case GRUG_TYPE_ENUM_NUMBER: {
+			char str_lit[] = "number";
+			memcpy(buf, str_lit, min(max_len, sizeof(str_lit) - 1));
+			return sizeof(str_lit) - 1;
+		}
+		break;
+		case GRUG_TYPE_ENUM_VOID: {
+			char str_lit[] = "void";
+			memcpy(buf, str_lit, min(max_len, sizeof(str_lit) - 1));
+			return sizeof(str_lit) - 1;
+		}
+		break;
+		case GRUG_TYPE_ENUM_STRING: {
+			char str_lit[] = "string";
+			memcpy(buf, str_lit, min(max_len, sizeof(str_lit) - 1));
+			return sizeof(str_lit) - 1;
+		}
+		break;
+		case GRUG_TYPE_ENUM_RESOURCE: {
+			char str_lit[] = "resource";
+			memcpy(buf, str_lit, min(max_len, sizeof(str_lit) - 1));
+			return sizeof(str_lit) - 1;
+		}
+		break;
+		case GRUG_TYPE_ENUM_ENTITY: {
+			char str_lit[] = "entity";
+			memcpy(buf, str_lit, min(max_len, sizeof(str_lit) - 1));
+			return sizeof(str_lit) - 1;
+		}
+		break;
+		case GRUG_TYPE_ENUM_ID: {
+			size_t filled_len = 0;
+
+			size_t name_len = strlen(ty.data.id.name);
+			name_len = min(max_len - filled_len, name_len);
+			memcpy(buf + filled_len, ty.data.id.name, name_len);
+			filled_len += name_len;
+			
+			if (ty.data.id.generics_len > 0) {
+				if (filled_len < max_len - 1) { buf[filled_len++] = '['; }
+				for (size_t i = 0; i < ty.data.id.generics_len; i++) {
+					filled_len += print_ty(ty.data.id.generics[i], buf + filled_len, max_len - filled_len);
+					if (i != ty.data.id.generics_len - 1) {
+						if (filled_len < max_len - 1) { 
+							buf[filled_len++] = ','; 
+						}
+						if (filled_len < max_len - 1) { 
+							buf[filled_len++] = ' '; 
+						}
+					}
+				}
+				if (filled_len < max_len - 1) { buf[filled_len++] = ']'; }
+			}
+			return filled_len;
+		}
+		break;
+		default: 
+		return 0;
+	}
+}
+
+#define assert_ty(got, exp) do {                                                                                    \
+	if (!type_eq(got, exp)) {                                                                                  \
+		char got_buf[1024] = {0};                                                                                   \
+		got_buf[print_ty(got, got_buf, sizeof(got_buf) - 1)] = '\0';                                                \
+		char exp_buf[1024] = {0};                                                                                   \
+		exp_buf[print_ty(exp, exp_buf, sizeof(exp_buf) - 1)] = '\0';                                                \
+                                                                                                                    \
+		fprintf(stderr, "%s:%d: Assertion expected type %s == %s failed.\n", __FILE__, __LINE__, exp_buf, got_buf); \
+		fail_current_test();                                                                                        \
+	}                                                                                                               \
+} while (0)                                                                                                         \
+
 #define assert_ptr(ptr) do { \
 	if (!ptr) { \
 		fprintf(stderr, "%s:%d: Assertion null pointer (%s) failed.\n", __FILE__, __LINE__, #ptr); \
@@ -371,6 +487,7 @@ static size_t game_fn_vec_number_insert_call_count;
 static size_t game_fn_box_call_count;
 static size_t game_fn_box_get_call_count;
 
+static size_t game_fn_default_call_count;
 static size_t game_fn_default_string_call_count;
 
 static size_t game_fn_make_pair_call_count;
@@ -444,14 +561,14 @@ union grug_value game_fn_initialize_bool(struct grug_state* grug_state, const un
 	game_fn_initialize_bool_b = args[0]._bool;
 	return grug_void();
 }
-static double game_fn_identity_x;
+static union grug_value game_fn_identity_x;
 union grug_value game_fn_identity(struct grug_state* grug_state, const union grug_value args[], const struct grug_type generics[]) {
 	(void)generics;
 	(void)grug_state;
 	ASSERT_16_BYTE_STACK_ALIGNED();
 	game_fn_identity_call_count++;
 
-	game_fn_identity_x = args[0]._number;
+	game_fn_identity_x = args[0];
 
 	return args[0];
 }
@@ -1278,6 +1395,7 @@ union grug_value game_fn_box_get(struct grug_state* grug_state, const union grug
 	return *box;
 }
 
+static union grug_value game_fn_default_last_value = {0};
 static union grug_value game_fn_default_string(struct grug_state* grug_state, const union grug_value args[], const struct grug_type generics[]) {
 	(void)generics;
 	(void)grug_state;
@@ -1285,17 +1403,42 @@ static union grug_value game_fn_default_string(struct grug_state* grug_state, co
 	ASSERT_16_BYTE_STACK_ALIGNED();
 	game_fn_default_string_call_count++;
 
-	return grug_string("");
+	game_fn_default_last_value = grug_string("");
+	return game_fn_default_last_value;
 }
 
+static struct grug_type game_fn_default_last_type = {0};
 union grug_value game_fn_default(struct grug_state* grug_state, const union grug_value args[], const struct grug_type generics[]) {
+	game_fn_default_call_count++;
+	game_fn_default_last_type = generics[0];
     switch (generics[0].type) {
+		case GRUG_TYPE_ENUM_BOOL:
+			game_fn_default_last_value = grug_bool(false);
+			return game_fn_default_last_value;
+		case GRUG_TYPE_ENUM_NUMBER:
+			game_fn_default_last_value = grug_number(0.0);
+			return game_fn_default_last_value;
         case GRUG_TYPE_ENUM_STRING:
             return game_fn_default_string(grug_state, args, generics);
         case GRUG_TYPE_ENUM_ID:
+            if (streq(generics[0].data.id.name, "Pair")) {
+				union grug_value first  = game_fn_default(grug_state, (union grug_value[]){}, &generics[0].data.id.generics[0]);
+				union grug_value second = game_fn_default(grug_state, (union grug_value[]){}, &generics[0].data.id.generics[1]);
+	game_fn_default_last_type = generics[0];
+				game_fn_default_last_value = game_fn_make_pair(grug_state, 
+					(union grug_value[]){
+						first, 
+						second,
+					},
+					generics
+				);
+				return game_fn_default_last_value;
+			}
             if (streq(generics[0].data.id.name, "Vec")) {
-                return game_fn_vec_number_new(grug_state, args, generics);
+                game_fn_default_last_value = game_fn_vec_number_new(grug_state, args, generics);
+				return game_fn_default_last_value;
             }
+		default:
             // Fallthrough to error
             break;
     }
@@ -2114,6 +2257,7 @@ static void reset(void) {
 	game_fn_utils_call_count                          = 0;
 	game_fn_box_call_count                            = 0;
 	game_fn_box_get_call_count                        = 0;
+	game_fn_default_call_count                        = 0;
 	game_fn_default_string_call_count                 = 0;
 	game_fn_make_pair_call_count                      = 0;
 	game_fn_pair_first_call_count                     = 0;
@@ -3536,6 +3680,19 @@ static void ok_generic_type_as_operand_4(struct grug_state* grug_state, struct g
 	assert_number(box_last_got._number, 25.0);
 }
 
+static void ok_generic_type_as_operand_5(struct grug_state* grug_state, struct grug_entity_id* entity) {
+	assert_call_count(default, 0);
+	assert_call_count(identity, 0);
+
+	call_export_fn_argless(grug_state, entity, "a");
+
+	assert_call_count(default, 2);
+	assert_call_count(identity, 1);
+
+	assert_number(game_fn_default_last_value._number, 0.0);
+	assert_number(game_fn_identity_x._number, 0.0);
+}
+
 static void ok_generics_simple(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	assert_call_count(vec_number_new, 0);
 	assert_call_count(vec_number_push, 0);
@@ -3642,6 +3799,12 @@ static void ok_global_call_using_me(struct grug_state* grug_state, struct grug_e
 	assert_call_count(set_position, 1);
 
 	assert_id(game_fn_set_position_pos, 1337);
+}
+
+static void ok_global_calls_method(struct grug_state* grug_state, struct grug_entity_id* entity) {
+	(void)grug_state;
+	(void)entity;
+	assert_call_count(vec_number_new, 1); 
 }
 
 static void ok_global_can_use_earlier_global(struct grug_state* grug_state, struct grug_entity_id* entity) {
@@ -4073,7 +4236,7 @@ static void ok_on_fn_calling_game_fn_plt_order(struct grug_state* grug_state, st
 	assert_call_count(max, 1);
 
 	assert_number(game_fn_initialize_x, 42.0);
-	assert_number(game_fn_identity_x, 69.0);
+	assert_number(game_fn_identity_x._number, 69.0);
 	assert_number(game_fn_max_x, 1337.0);
 	assert_number(game_fn_max_y, 8192.0);
 }
@@ -4821,6 +4984,59 @@ static void ok_variable_string_local(struct grug_state* grug_state, struct grug_
 	assert_string(game_fn_say_message, "foo");
 }
 
+static void ok_verify_constraints_1(struct grug_state* grug_state, struct grug_entity_id* entity) {
+	(void)(grug_state);
+	(void)(entity);
+	assert_call_count(default, 1);
+	assert_ty (
+		game_fn_default_last_type,
+		((struct grug_type) {
+			.type = GRUG_TYPE_ENUM_BOOL,
+		})
+	);
+	assert_false(game_fn_default_last_value._bool);
+}
+
+static void ok_verify_constraints_2(struct grug_state* grug_state, struct grug_entity_id* entity) {
+	(void)(grug_state);
+	(void)(entity);
+	assert_call_count(default, 1);
+	assert_ty (
+		game_fn_default_last_type,
+		((struct grug_type) {
+			.type = GRUG_TYPE_ENUM_STRING,
+		})
+	);
+	assert_string(game_fn_default_last_value._string, "");
+}
+
+static void ok_verify_constraints_3(struct grug_state* grug_state, struct grug_entity_id* entity) {
+	(void)(grug_state);
+	(void)(entity);
+	// Once directly, and twice indirectly
+	assert_call_count(default, 3);
+	struct grug_type expected_ty = {
+		.type = GRUG_TYPE_ENUM_ID,
+		.data = {
+			.id = {
+				.name = "Pair",
+				.generics_len = 2,
+				.generics = (struct grug_type[]){
+					{ .type = GRUG_TYPE_ENUM_NUMBER },
+					{ .type = GRUG_TYPE_ENUM_STRING }
+				}
+			}
+		}
+	};
+	assert_ty (
+		game_fn_default_last_type,
+		expected_ty
+	);
+	assert_ptr(game_fn_default_last_value._id);
+	assert_number(((union grug_value*)(game_fn_default_last_value._id))[0]._number, 0.0);
+	assert_string(((union grug_value*)(game_fn_default_last_value._id))[1]._string, "");
+}
+
 static void ok_void_function_early_return(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	assert_call_count(nothing, 0);
 	call_export_fn_argless(grug_state, entity, "a");
@@ -5463,10 +5679,12 @@ static void add_ok_tests(void) {
 	ADD_TEST_OK(generic_type_as_operand_2, "D");
 	ADD_TEST_OK(generic_type_as_operand_3, "D");
 	ADD_TEST_OK(generic_type_as_operand_4, "D");
+	ADD_TEST_OK(generic_type_as_operand_5, "D");
 	ADD_TEST_OK(generics_simple, "J");
 	ADD_TEST_OK(generics_simple_2, "D");
 	ADD_TEST_OK(global_2_does_not_have_error_handling, "A");
 	ADD_TEST_OK(global_call_using_me, "D");
+	ADD_TEST_OK(global_calls_method, "A");
 	ADD_TEST_OK(global_can_use_earlier_global, "D");
 	ADD_TEST_OK(global_containing_negation, "D");
 	ADD_TEST_OK(global_id, "D");
@@ -5595,6 +5813,9 @@ static void add_ok_tests(void) {
 	ADD_TEST_OK(variable_reassignment_does_not_dealloc_outer_variable, "D");
 	ADD_TEST_OK(variable_string_global, "D");
 	ADD_TEST_OK(variable_string_local, "D");
+	ADD_TEST_OK(verify_constraints_1, "A");
+	ADD_TEST_OK(verify_constraints_2, "A");
+	ADD_TEST_OK(verify_constraints_3, "A");
 	ADD_TEST_OK(void_function_early_return, "D");
 	ADD_TEST_OK(while_false, "D");
 	ADD_TEST_OK(write_to_global_variable, "D");

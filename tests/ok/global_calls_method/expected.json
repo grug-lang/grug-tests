@@ -1,0 +1,22 @@
+[
+    {
+        "type": "VARIABLE_STATEMENT",
+        "name": "x",
+        "variable_type": {
+            "name": "Vec",
+            "generics": [
+                {
+                    "name": "number"
+                }
+            ]
+        },
+        "assignment": {
+            "type": "CALL_EXPR",
+            "name": "new",
+            "receiver": {
+                "type": "IDENTIFIER_EXPR",
+                "str": "Vec"
+            }
+        }
+    }
+]

@@ -2,7 +2,61 @@
 	"constraints": {
 		"Default": {
 			"description": "A type where a default value can be created with no inputs",
-			"implementors": []
+			"implementors": [
+				{
+					"type": {
+						"name": "number"
+					}
+				},
+				{
+					"type": {
+						"name": "string"
+					}
+				},
+				{
+					"type": {
+						"name": "bool"
+					}
+				},
+				{
+					"used_generics": [
+						{
+							"name": "$T1",
+							"constraints": [ "Default" ]
+						},
+						{
+							"name": "$T2",
+							"constraints": [ "Default" ]
+						}
+					],
+					"type": {
+						"name": "Pair",
+						"generics": [
+							{
+								"name": "$T1"
+							},
+							{
+								"name": "$T2"
+							}
+						]
+					}
+				},
+				{
+					"used_generics": [
+						{
+							"name": "$T"
+						}
+					],
+					"type": {
+						"name": "Vec",
+						"generics": [
+							{
+								"name": "$T"
+							}
+						]
+					}
+				}
+			]
 		},
 		"Hash": {
 			"description": "A type that can be hashed deterministically",
@@ -779,6 +833,11 @@
 		},
 		"identity": {
 			"description": "foo",
+			"used_generics": [
+				{
+					"name": "$T"
+				}
+			],
 			"return_type": {
 				"name": "number"
 			},
@@ -786,7 +845,7 @@
 				{
 					"name": "x",
 					"type": {
-						"name": "number"
+						"name": "$T"
 					}
 				}
 			]

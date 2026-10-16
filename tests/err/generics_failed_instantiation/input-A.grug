@@ -1,1 +1,1 @@
-x: number = default()
+x: Dict[number, string] = default()

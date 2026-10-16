@@ -11,13 +11,24 @@
 #include <setjmp.h>
 #include <stdio.h>
 #include <stdlib.h>
-// gcc undefs min, but msvc doesn't, We wanna do this to make sure they both
-// have the same behavior
 #undef min
 #include <string.h>
 #include <time.h>
 
 #define MiB (1024 * 1024)
+
+#if defined(_WIN32)
+#include <direct.h>
+#define NOMINMAX
+#include <windows.h>
+#define MKDIR(path) _mkdir(path)
+#elif defined(__linux__)
+#include <dirent.h>
+#include <sys/stat.h>
+#include <unistd.h>
+#define MKDIR(path) mkdir(path, 0755)
+#endif
+
 
 // -----------------------------
 // Test result tracking
@@ -134,18 +145,7 @@ static bool type_eq(struct grug_type got, struct grug_type expected) {
 	} else if (expected.type == GRUG_TYPE_ENUM_RESOURCE) {
 		return streq(expected.data.resource_extension, got.data.resource_extension);
 	} else if (expected.type == GRUG_TYPE_ENUM_ENTITY) {
-		// TODO: I think strcmp (which streq calls) already has these checks
-		// builtin, but i'm not sure.  Figure this out before merge
-		
-		// If both are null or both point to the same string
-		if (expected.data.entity_type == got.data.entity_type) {
-			return true;
-		// If only one is null
-		} else if (expected.data.entity_type == NULL) {
-			return false;
-		} else {
-			return streq(expected.data.entity_type, got.data.entity_type);
-		}
+		return streq(expected.data.entity_type, got.data.entity_type);
 	} else if (expected.type == GRUG_TYPE_ENUM_ID) {
 		if (!streq(expected.data.id.name, got.data.id.name)) {
 			return false;
@@ -163,42 +163,43 @@ static bool type_eq(struct grug_type got, struct grug_type expected) {
 	return true;
 }
 
-static size_t print_ty(struct grug_type ty, char* restrict buf, size_t max_len) {
+static size_t print_type(struct grug_type ty, char* restrict buf, size_t max_len) {
 	switch (ty.type) {
 		case GRUG_TYPE_ENUM_BOOL: {
 			char str_lit[] = "bool";
-			memcpy(buf, str_lit, min(max_len, sizeof(str_lit) - 1));
-			return sizeof(str_lit) - 1;
+			size_t actual_size = min(max_len, sizeof(str_lit) - 1);
+			memcpy(buf, str_lit, actual_size);
+			return actual_size;
 		}
 		break;
 		case GRUG_TYPE_ENUM_NUMBER: {
 			char str_lit[] = "number";
-			memcpy(buf, str_lit, min(max_len, sizeof(str_lit) - 1));
-			return sizeof(str_lit) - 1;
+			memcpy(buf, str_lit, actual_size);
+			return actual_size;
 		}
 		break;
 		case GRUG_TYPE_ENUM_VOID: {
 			char str_lit[] = "void";
-			memcpy(buf, str_lit, min(max_len, sizeof(str_lit) - 1));
-			return sizeof(str_lit) - 1;
+			memcpy(buf, str_lit, actual_size);
+			return actual_size;
 		}
 		break;
 		case GRUG_TYPE_ENUM_STRING: {
 			char str_lit[] = "string";
-			memcpy(buf, str_lit, min(max_len, sizeof(str_lit) - 1));
-			return sizeof(str_lit) - 1;
+			memcpy(buf, str_lit, actual_size);
+			return actual_size;
 		}
 		break;
 		case GRUG_TYPE_ENUM_RESOURCE: {
 			char str_lit[] = "resource";
-			memcpy(buf, str_lit, min(max_len, sizeof(str_lit) - 1));
-			return sizeof(str_lit) - 1;
+			memcpy(buf, str_lit, actual_size);
+			return actual_size;
 		}
 		break;
 		case GRUG_TYPE_ENUM_ENTITY: {
 			char str_lit[] = "entity";
-			memcpy(buf, str_lit, min(max_len, sizeof(str_lit) - 1));
-			return sizeof(str_lit) - 1;
+			memcpy(buf, str_lit, actual_size);
+			return actual_size;
 		}
 		break;
 		case GRUG_TYPE_ENUM_ID: {
@@ -212,7 +213,7 @@ static size_t print_ty(struct grug_type ty, char* restrict buf, size_t max_len) 
 			if (ty.data.id.generics_len > 0) {
 				if (filled_len < max_len - 1) { buf[filled_len++] = '['; }
 				for (size_t i = 0; i < ty.data.id.generics_len; i++) {
-					filled_len += print_ty(ty.data.id.generics[i], buf + filled_len, max_len - filled_len);
+					filled_len += print_type(ty.data.id.generics[i], buf + filled_len, max_len - filled_len);
 					if (i != ty.data.id.generics_len - 1) {
 						if (filled_len < max_len - 1) { 
 							buf[filled_len++] = ','; 
@@ -232,12 +233,12 @@ static size_t print_ty(struct grug_type ty, char* restrict buf, size_t max_len) 
 	}
 }
 
-#define assert_ty(got, exp) do {                                                                                    \
+#define assert_type(got, exp) do {                                                                                    \
 	if (!type_eq(got, exp)) {                                                                                  \
 		char got_buf[1024] = {0};                                                                                   \
-		got_buf[print_ty(got, got_buf, sizeof(got_buf) - 1)] = '\0';                                                \
+		got_buf[print_type(got, got_buf, sizeof(got_buf) - 1)] = '\0';                                                \
 		char exp_buf[1024] = {0};                                                                                   \
-		exp_buf[print_ty(exp, exp_buf, sizeof(exp_buf) - 1)] = '\0';                                                \
+		exp_buf[print_type(exp, exp_buf, sizeof(exp_buf) - 1)] = '\0';                                                \
                                                                                                                     \
 		fprintf(stderr, "%s:%d: Assertion expected type %s == %s failed.\n", __FILE__, __LINE__, exp_buf, got_buf); \
 		fail_current_test();                                                                                        \
@@ -327,17 +328,6 @@ static const char *get_type_name[] = {
 		fail_current_test(); \
 	} \
 } while (0)
-
-#if defined(_WIN32)
-#include <direct.h>
-#include <windows.h>
-#define MKDIR(path) _mkdir(path)
-#elif defined(__linux__)
-#include <dirent.h>
-#include <sys/stat.h>
-#include <unistd.h>
-#define MKDIR(path) mkdir(path, 0755)
-#endif
 
 // Most implementations shouldn't pass -DASSERT_ALIGNMENT.
 // It caught a ton of stack misalignment bugs
@@ -3804,9 +3794,9 @@ static void ok_generic_type_as_operand_5(struct grug_state* grug_state, struct g
 	assert_call_count(identity, 1);
 	
 	assert_size_t(recorded_generic_types_len, (size_t)3);
-	assert_ty(recorded_generic_types[0], (struct grug_type) {.type = GRUG_TYPE_ENUM_NUMBER});
-	assert_ty(recorded_generic_types[1], (struct grug_type) {.type = GRUG_TYPE_ENUM_NUMBER});
-	assert_ty(recorded_generic_types[2], (struct grug_type) {.type = GRUG_TYPE_ENUM_NUMBER});
+	assert_type(recorded_generic_types[0], (struct grug_type) {.type = GRUG_TYPE_ENUM_NUMBER});
+	assert_type(recorded_generic_types[1], (struct grug_type) {.type = GRUG_TYPE_ENUM_NUMBER});
+	assert_type(recorded_generic_types[2], (struct grug_type) {.type = GRUG_TYPE_ENUM_NUMBER});
 
 	assert_number(game_fn_default_last_value._number, 0.0);
 	assert_number(game_fn_identity_x._number, 0.0);
@@ -3886,8 +3876,8 @@ static void ok_generic_host_fn_call_site_generics(struct grug_state* grug_state,
 	call_export_fn_argless(grug_state, entity, "a");
 
 	assert_size_t(recorded_generic_types_len, (size_t)2);
-	assert_ty(recorded_generic_types[0], (struct grug_type) {.type = GRUG_TYPE_ENUM_NUMBER});
-	assert_ty(recorded_generic_types[1], (struct grug_type) {.type = GRUG_TYPE_ENUM_STRING});
+	assert_type(recorded_generic_types[0], (struct grug_type) {.type = GRUG_TYPE_ENUM_NUMBER});
+	assert_type(recorded_generic_types[1], (struct grug_type) {.type = GRUG_TYPE_ENUM_STRING});
 }
 
 // Same as above, but for a two-generic host function ("make_pair"). This also
@@ -3899,10 +3889,10 @@ static void ok_generic_host_fn_call_site_generics_pair(struct grug_state* grug_s
 	call_export_fn_argless(grug_state, entity, "a");
 
 	assert_size_t(recorded_generic_types_len, (size_t)4);
-	assert_ty(recorded_generic_types[0], (struct grug_type) {.type = GRUG_TYPE_ENUM_NUMBER});
-	assert_ty(recorded_generic_types[1], (struct grug_type) {.type = GRUG_TYPE_ENUM_STRING});
-	assert_ty(recorded_generic_types[2], (struct grug_type) {.type = GRUG_TYPE_ENUM_BOOL});
-	assert_ty(recorded_generic_types[3], (struct grug_type) {.type = GRUG_TYPE_ENUM_BOOL});
+	assert_type(recorded_generic_types[0], (struct grug_type) {.type = GRUG_TYPE_ENUM_NUMBER});
+	assert_type(recorded_generic_types[1], (struct grug_type) {.type = GRUG_TYPE_ENUM_STRING});
+	assert_type(recorded_generic_types[2], (struct grug_type) {.type = GRUG_TYPE_ENUM_BOOL});
+	assert_type(recorded_generic_types[3], (struct grug_type) {.type = GRUG_TYPE_ENUM_BOOL});
 }
 
 static void ok_global_2_does_not_have_error_handling(struct grug_state* grug_state, struct grug_entity_id* entity) {
@@ -5108,7 +5098,7 @@ static void ok_verify_constraints_1(struct grug_state* grug_state, struct grug_e
 	(void)(entity);
 	assert_call_count(default, 1);
 	assert_size_t(recorded_generic_types_len, (size_t)1);
-	assert_ty (
+	assert_type (
 		recorded_generic_types[0],
 		((struct grug_type) {
 			.type = GRUG_TYPE_ENUM_BOOL,
@@ -5122,7 +5112,7 @@ static void ok_verify_constraints_2(struct grug_state* grug_state, struct grug_e
 	(void)(entity);
 	assert_call_count(default, 1);
 	assert_size_t(recorded_generic_types_len, (size_t)1);
-	assert_ty (
+	assert_type (
 		recorded_generic_types[0],
 		((struct grug_type) {
 			.type = GRUG_TYPE_ENUM_STRING,
@@ -5151,11 +5141,11 @@ static void ok_verify_constraints_3(struct grug_state* grug_state, struct grug_e
 	};
 
 	assert_size_t(recorded_generic_types_len, (size_t)5);
-	assert_ty (recorded_generic_types[0], expected_ty);
-	assert_ty (recorded_generic_types[1], (struct grug_type){.type = GRUG_TYPE_ENUM_NUMBER});
-	assert_ty (recorded_generic_types[2], (struct grug_type){.type = GRUG_TYPE_ENUM_STRING});
-	assert_ty (recorded_generic_types[3], (struct grug_type){.type = GRUG_TYPE_ENUM_NUMBER});
-	assert_ty (recorded_generic_types[4], (struct grug_type){.type = GRUG_TYPE_ENUM_STRING});
+	assert_type (recorded_generic_types[0], expected_ty);
+	assert_type (recorded_generic_types[1], (struct grug_type){.type = GRUG_TYPE_ENUM_NUMBER});
+	assert_type (recorded_generic_types[2], (struct grug_type){.type = GRUG_TYPE_ENUM_STRING});
+	assert_type (recorded_generic_types[3], (struct grug_type){.type = GRUG_TYPE_ENUM_NUMBER});
+	assert_type (recorded_generic_types[4], (struct grug_type){.type = GRUG_TYPE_ENUM_STRING});
 	assert_ptr(game_fn_default_last_value._id);
 	assert_number(((union grug_value*)(game_fn_default_last_value._id))[0]._number, 0.0);
 	assert_string(((union grug_value*)(game_fn_default_last_value._id))[1]._string, "");

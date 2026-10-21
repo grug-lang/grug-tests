@@ -55,16 +55,21 @@ enum grug_type_enum {
 	GRUG_TYPE_ENUM_ENTITY
 };
 
+struct grug_str {
+	char* ptr;
+	size_t len;
+};
+
 struct grug_type {
 	uint32_t type;
 	union {
 		struct {
-			char* name;
+			struct grug_str name;
 			struct grug_type* generics;
 			size_t generics_len;
 		} id;
-		char* resource_extension;
-		char* entity_type;
+		struct grug_str entity_type;
+		struct grug_str resource_extension;
 	} data;
 };
 

@@ -150,11 +150,11 @@ static bool type_eq(struct grug_type got, struct grug_type expected) {
 	if (expected.type != got.type) {
 		return false;
 	} else if (expected.type == GRUG_TYPE_ENUM_RESOURCE) {
-		return streq(expected.data.resource_extension, got.data.resource_extension);
+		return streq(expected.data.resource_extension.ptr, got.data.resource_extension.ptr);
 	} else if (expected.type == GRUG_TYPE_ENUM_ENTITY) {
-		return streq(expected.data.entity_type, got.data.entity_type);
+		return streq(expected.data.entity_type.ptr, got.data.entity_type.ptr);
 	} else if (expected.type == GRUG_TYPE_ENUM_ID) {
-		if (!streq(expected.data.id.name, got.data.id.name)) {
+		if (!streq(expected.data.id.name.ptr, got.data.id.name.ptr)) {
 			return false;
 		}
 		if (expected.data.id.generics_len != got.data.id.generics_len) {
@@ -217,9 +217,9 @@ static size_t print_type(struct grug_type ty, char* restrict buf, size_t max_len
 		case GRUG_TYPE_ENUM_ID: {
 			size_t filled_len = 0;
 
-			size_t name_len = strlen(ty.data.id.name);
+			size_t name_len = ty.data.id.name.len;
 			name_len = min(max_len - filled_len, name_len);
-			memcpy(buf + filled_len, ty.data.id.name, name_len);
+			memcpy(buf + filled_len, ty.data.id.name.ptr, name_len);
 			filled_len += name_len;
 			
 			if (ty.data.id.generics_len > 0) {
@@ -1459,7 +1459,7 @@ union grug_value game_fn_default(struct grug_state* grug_state, const union grug
         case GRUG_TYPE_ENUM_STRING:
             return game_fn_default_string(grug_state, args, generics);
         case GRUG_TYPE_ENUM_ID:
-            if (streq(generics[0].data.id.name, "Pair")) {
+            if (streq(generics[0].data.id.name.ptr, "Pair")) {
 				union grug_value first  = game_fn_default(grug_state, args, &generics[0].data.id.generics[0]);
 				union grug_value second = game_fn_default(grug_state, args, &generics[0].data.id.generics[1]);
 				game_fn_default_last_value = game_fn_make_pair(grug_state, 
@@ -1471,7 +1471,7 @@ union grug_value game_fn_default(struct grug_state* grug_state, const union grug
 				);
 				return game_fn_default_last_value;
 			}
-            if (streq(generics[0].data.id.name, "Vec")) {
+            if (streq(generics[0].data.id.name.ptr, "Vec")) {
                 game_fn_default_last_value = game_fn_vec_number_new(grug_state, args, generics);
 				return game_fn_default_last_value;
             }
@@ -3956,6 +3956,7 @@ static void ok_generic_host_fn_call_site_generics_pair(struct grug_state* grug_s
 
 	call_export_fn_argless(grug_state, entity, "a");
 
+	assert_call_count(make_pair, 2);
 	assert_size_t(recorded_generic_types_len, (size_t)4);
 	assert_type(recorded_generic_types[0], (struct grug_type) {.type = GRUG_TYPE_ENUM_NUMBER});
 	assert_type(recorded_generic_types[1], (struct grug_type) {.type = GRUG_TYPE_ENUM_STRING});

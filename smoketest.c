@@ -181,7 +181,7 @@ static void update(struct grug_state* grug_state, const char** error_out) {
 	// so the reload runs the member scope of the live one once more and nothing
 	// else.
 	if (saved_mods_dir_path && streq(saved_mods_dir_path, ".grug_tmp_code_reloading_destroyed_entity")) {
-		CALL(grug_state, identity, grug_number(2.0));
+		CALL_GENERIC(grug_state, identity, &(struct grug_type) {.type=GRUG_TYPE_ENUM_NUMBER}, grug_number(2.0));
 		*error_out = NULL;
 		return;
 	}
@@ -300,7 +300,7 @@ static struct grug_entity_id* create_entity(struct grug_state* grug_state, struc
 	} else if (starts_with(path, "ok/string_returned_by_game_fn_assigned_to_member/")) {
 		CALL_ARGLESS(grug_state, get_os);
 	} else if (starts_with(path, "code_reloading_destroyed_entity/input-D.grug")) {
-		CALL(grug_state, identity, grug_number(1.0));
+		CALL_GENERIC(grug_state, identity, &(struct grug_type) {.type=GRUG_TYPE_ENUM_NUMBER}, grug_number(1.0));
 	}
 
 	*error_out = NULL;

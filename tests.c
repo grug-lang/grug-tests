@@ -174,30 +174,35 @@ static size_t print_type(struct grug_type ty, char* restrict buf, size_t max_len
 		break;
 		case GRUG_TYPE_ENUM_NUMBER: {
 			char str_lit[] = "number";
+			size_t actual_size = min(max_len, sizeof(str_lit) - 1);
 			memcpy(buf, str_lit, actual_size);
 			return actual_size;
 		}
 		break;
 		case GRUG_TYPE_ENUM_VOID: {
 			char str_lit[] = "void";
+			size_t actual_size = min(max_len, sizeof(str_lit) - 1);
 			memcpy(buf, str_lit, actual_size);
 			return actual_size;
 		}
 		break;
 		case GRUG_TYPE_ENUM_STRING: {
 			char str_lit[] = "string";
+			size_t actual_size = min(max_len, sizeof(str_lit) - 1);
 			memcpy(buf, str_lit, actual_size);
 			return actual_size;
 		}
 		break;
 		case GRUG_TYPE_ENUM_RESOURCE: {
 			char str_lit[] = "resource";
+			size_t actual_size = min(max_len, sizeof(str_lit) - 1);
 			memcpy(buf, str_lit, actual_size);
 			return actual_size;
 		}
 		break;
 		case GRUG_TYPE_ENUM_ENTITY: {
 			char str_lit[] = "entity";
+			size_t actual_size = min(max_len, sizeof(str_lit) - 1);
 			memcpy(buf, str_lit, actual_size);
 			return actual_size;
 		}

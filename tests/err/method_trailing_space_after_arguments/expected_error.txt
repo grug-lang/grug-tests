@@ -1,0 +1,3 @@
+  in a (err/method_trailing_space_after_arguments/input-D.grug:2:16)
+Error: Expected ')' but got space (' ')
+2 $ x.nothing(x )

@@ -1,0 +1,3 @@
+  in a (err/type_named_underscore/input-D.grug:2:8)
+Error: `_` is not a valid type name
+2 $ x: _ = hello()

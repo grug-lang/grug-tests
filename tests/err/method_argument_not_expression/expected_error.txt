@@ -1,0 +1,3 @@
+  in a (err/method_argument_not_expression/input-D.grug:2:15)
+Error: Expected a primary expression token but got '+'
+2 $ x.nothing(+)

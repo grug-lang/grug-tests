@@ -1,0 +1,9 @@
+y: number = 4
+
+export a(x: number) {
+    _hello(2)
+}
+
+local _hello(y: number) {
+    nothing()
+}

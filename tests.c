@@ -1425,6 +1425,7 @@ static union grug_value game_fn_default_string(struct grug_state* grug_state, co
 union grug_value game_fn_default(struct grug_state* grug_state, const union grug_value args[], const struct grug_type generics[]) {
 	game_fn_default_call_count++;
 	record_generic_types(generics, 1);
+	ASSERT_16_BYTE_STACK_ALIGNED();
     switch (generics[0].type) {
 		case GRUG_TYPE_ENUM_BOOL:
 			game_fn_default_last_value = grug_bool(false);
@@ -2843,7 +2844,7 @@ static void test_resource_reloading(void) {
 		}
 
 		size_t count = SIZE_MAX;
-		const char* const* paths = get_updated_resources(grug_state, &count);
+		get_updated_resources(grug_state, &count);
 		if (count != 0) {
 			fprintf(stderr, "\nError: Expected count (%zu) to be 0 since no file was updated since the state was created\n", count);
 			fail_current_test();
@@ -2868,7 +2869,7 @@ static void test_resource_reloading(void) {
 		}
 
 		count = 0;
-		paths = get_updated_resources(grug_state, &count);
+		const char* const* paths = get_updated_resources(grug_state, &count);
 
 		// new.lang just appeared, so it should be reported...
 		if (!updated_resources_contains(paths, count, new_rel)) {

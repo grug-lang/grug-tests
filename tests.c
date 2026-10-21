@@ -1,3 +1,10 @@
+// TODO: add tests
+// 	- function call argument fails to parse as expression
+// 	- function call does not have `)` after final expression
+// 	- Variable does not have type after `:`
+// 	- Variable has type `_` (_ indicates variable type inference. Variable type
+// 	inference is not allowed normally, but i think `_` should be disallowed
+// 	from being a type name anyway)
 #include "tests.h"
 
 #include "cJSON.h"
@@ -5671,6 +5678,7 @@ static void add_error_tests(void) {
 	ADD_TEST_ERROR(helper_fn_is_not_called_5, "D");
 	ADD_TEST_ERROR(helper_fn_missing_return_statement, "D");
 	ADD_TEST_ERROR(helper_fn_no_return_value_expected, "D");
+	ADD_TEST_ERROR(helper_fn_parameter_shadows_global_variable, "F");
 	ADD_TEST_ERROR(helper_fn_return_value_expected, "D");
 	ADD_TEST_ERROR(helper_fn_return_with_comment_after_it, "D");
 	ADD_TEST_ERROR(i32_logical_not, "D");
@@ -5693,9 +5701,11 @@ static void add_error_tests(void) {
 	ADD_TEST_ERROR(me_cant_be_written_to, "D");
 	ADD_TEST_ERROR(me_plus_1, "D");
 	ADD_TEST_ERROR(me_plus_me, "D");
+	ADD_TEST_ERROR(method_argument_not_expression, "D");
 	ADD_TEST_ERROR(method_called_statically, "D");
 	ADD_TEST_ERROR(method_on_number, "D");
 	ADD_TEST_ERROR(method_on_type_without_methods, "D");
+	ADD_TEST_ERROR(method_trailing_space_after_arguments, "D");
 	ADD_TEST_ERROR(missing_empty_line_between_global_and_on_fn, "D");
 	ADD_TEST_ERROR(missing_empty_line_between_on_fn_and_helper_fn, "D");
 	ADD_TEST_ERROR(mixing_custom_ids_binary_expr, "D");
@@ -5766,6 +5776,7 @@ static void add_error_tests(void) {
 	ADD_TEST_ERROR(string_pointer_arithmetic, "D");
 	ADD_TEST_ERROR(string_times_string, "D");
 	ADD_TEST_ERROR(trailing_space_in_comment, "D");
+	ADD_TEST_ERROR(type_named_underscore, "D");
 	ADD_TEST_ERROR(type_not_word, "D");
 	ADD_TEST_ERROR(unary_plus_does_not_exist, "D");
 	ADD_TEST_ERROR(unclosed_double_quote, "A");

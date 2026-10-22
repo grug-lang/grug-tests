@@ -1,0 +1,3 @@
+export a() {
+    x: number = r"a.txt"
+}

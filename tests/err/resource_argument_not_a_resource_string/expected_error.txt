@@ -1,0 +1,3 @@
+  in a (err/resource_argument_not_a_resource_string/input-D.grug:2:10)
+Error: The host function 'draw' expects a resource string for argument 'sprite_path'
+2 $ draw(default())

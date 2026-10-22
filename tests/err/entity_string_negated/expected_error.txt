@@ -1,0 +1,3 @@
+  in a (err/entity_string_negated/input-D.grug:2:18)
+Error: An entity string can only be passed directly to a host function
+2 $ x: number = -e"a"

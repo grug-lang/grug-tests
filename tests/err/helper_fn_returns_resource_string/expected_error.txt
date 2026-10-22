@@ -1,0 +1,3 @@
+  in _f (err/helper_fn_returns_resource_string/input-D.grug:6:12)
+Error: Function '_f' is supposed to return number, not resource
+6 $ return r"a.txt"

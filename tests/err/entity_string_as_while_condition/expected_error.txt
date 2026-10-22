@@ -1,0 +1,3 @@
+  in a (err/entity_string_as_while_condition/input-D.grug:2:11)
+Error: While condition must be bool but got 'entity'
+2 $ while e"a" {

@@ -1,0 +1,3 @@
+  in a (err/entity_argument_not_an_entity_string/input-D.grug:2:13)
+Error: The host function 'spawn_d' expects an entity string for argument 'name'
+2 $ spawn_d(identity(1))

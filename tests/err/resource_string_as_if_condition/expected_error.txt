@@ -1,0 +1,3 @@
+  in a (err/resource_string_as_if_condition/input-D.grug:2:8)
+Error: If condition must be bool but got 'resource'
+2 $ if r"a.txt" {

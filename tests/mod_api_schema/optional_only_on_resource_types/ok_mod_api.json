@@ -1,0 +1,17 @@
+{
+	"host_functions": {
+		"test": {
+			"description": "Foo",
+			"parameters": [
+				{
+					"name": "x",
+					"type": {
+						"name": "resource",
+						"resource_extension": ".txt",
+						"optional": true
+					}
+				}
+			]
+		}
+	}
+}

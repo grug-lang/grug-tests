@@ -214,6 +214,20 @@
             "required": [
                 "name"
             ],
+            "if": {
+                "properties": {
+                    "name": {
+                        "const": "resource"
+                    }
+                }
+            },
+            "else": {
+                "not": {
+                    "required": [
+                        "optional"
+                    ]
+                }
+            },
             "additionalProperties": false,
             "properties": {
                 "name": {

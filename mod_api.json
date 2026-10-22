@@ -943,7 +943,7 @@
 				}
 			],
 			"return_type": {
-				"name": "number"
+				"name": "$T"
 			},
 			"parameters": [
 				{

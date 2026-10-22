@@ -1,0 +1,7 @@
+export a() {
+    x: number = _f()
+}
+
+local _f() number {
+    return r"a.txt"
+}

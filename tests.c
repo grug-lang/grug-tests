@@ -5677,6 +5677,7 @@ static void add_error_tests(void) {
 	ADD_TEST_ERROR(empty_line_twice_between_local_statements, "D");
 	ADD_TEST_ERROR(empty_line_while_group, "D");
 	ADD_TEST_ERROR(empty_on_fn, "D");
+	ADD_TEST_ERROR(entity_argument_not_an_entity_string, "D");
 	ADD_TEST_ERROR(entity_cant_be_empty_string, "D");
 	ADD_TEST_ERROR(entity_cant_be_passed_to_helper_fn, "D");
 	ADD_TEST_ERROR(entity_cant_be_passed_to_helper_fn_2, "D");
@@ -5687,7 +5688,10 @@ static void add_error_tests(void) {
 	ADD_TEST_ERROR(entity_mod_name_cant_be_current_mod, "D");
 	ADD_TEST_ERROR(entity_mod_name_is_missing, "D");
 	ADD_TEST_ERROR(entity_name_is_missing, "D");
+	ADD_TEST_ERROR(entity_string_as_while_condition, "D");
+	ADD_TEST_ERROR(entity_string_compared, "D");
 	ADD_TEST_ERROR(entity_string_must_be_prefixed, "D");
+	ADD_TEST_ERROR(entity_string_negated, "D");
 	ADD_TEST_ERROR(entity_type_for_helper_fn_return_type, "D");
 	ADD_TEST_ERROR(f32_missing_digit_after_decimal_point, "D");
 	ADD_TEST_ERROR(f32_too_big, "D");
@@ -5768,6 +5772,7 @@ static void add_error_tests(void) {
 	ADD_TEST_ERROR(helper_fn_parameter_shadows_global_variable, "F");
 	ADD_TEST_ERROR(helper_fn_return_value_expected, "D");
 	ADD_TEST_ERROR(helper_fn_return_with_comment_after_it, "D");
+	ADD_TEST_ERROR(helper_fn_returns_resource_string, "D");
 	ADD_TEST_ERROR(i32_logical_not, "D");
 	ADD_TEST_ERROR(id_invalid_binary_op, "D");
 	ADD_TEST_ERROR(if_condition_not_bool, "D");
@@ -5836,6 +5841,7 @@ static void add_error_tests(void) {
 	ADD_TEST_ERROR(print_csv_wrong_extension_1, "D");
 	ADD_TEST_ERROR(print_csv_wrong_extension_2, "D");
 	ADD_TEST_ERROR(print_csv_wrong_extension_3, "D");
+	ADD_TEST_ERROR(resource_argument_not_a_resource_string, "D");
 	ADD_TEST_ERROR(resource_cant_be_empty_string, "D");
 	ADD_TEST_ERROR(resource_cant_be_passed_to_helper_fn, "D");
 	ADD_TEST_ERROR(resource_cant_be_passed_to_helper_fn_2, "D");
@@ -5853,7 +5859,12 @@ static void add_error_tests(void) {
 	ADD_TEST_ERROR(resource_cant_refer_to_current_directory_3, "D");
 	ADD_TEST_ERROR(resource_cant_refer_to_current_directory_4, "D");
 	ADD_TEST_ERROR(resource_does_not_exist, "D");
+	ADD_TEST_ERROR(resource_string_added_to_number, "D");
+	ADD_TEST_ERROR(resource_string_as_if_condition, "D");
+	ADD_TEST_ERROR(resource_string_assigned_to_number_variable, "D");
+	ADD_TEST_ERROR(resource_string_compared, "D");
 	ADD_TEST_ERROR(resource_string_must_be_prefixed, "D");
+	ADD_TEST_ERROR(resource_string_reassigned_to_number_variable, "D");
 	ADD_TEST_ERROR(resource_type_for_global, "A");
 	ADD_TEST_ERROR(resource_type_for_helper_fn_return_type, "D");
 	ADD_TEST_ERROR(resource_type_for_local, "D");

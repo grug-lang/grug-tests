@@ -653,6 +653,8 @@ static void call_export_fn(struct grug_state* grug_state, struct grug_entity_id*
 	} else if (starts_with(path, "ok/constraint_implementors_refer_to_each_other/")) {
 		CALL_GENERIC(grug_state, show, &(struct grug_type){.type = GRUG_TYPE_ENUM_NUMBER}, grug_number(1.0));
 		CALL_GENERIC(grug_state, show, &(struct grug_type){.type = GRUG_TYPE_ENUM_BOOL}, grug_bool(true));
+	} else if (starts_with(path, "ok/generic_return_type/")) {
+		CALL_GENERIC(grug_state, identity, &(struct grug_type){.type = GRUG_TYPE_ENUM_STRING}, grug_string("foo"));
 	} else if (starts_with(path, "ok/generic_type_as_operand_5/")) {
 		struct grug_type type = {
 			.type = GRUG_TYPE_ENUM_NUMBER,

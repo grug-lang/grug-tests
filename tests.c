@@ -3919,6 +3919,18 @@ static void ok_reg_fn_without_generic_fallback(struct grug_state* grug_state, st
 	assert_number(game_fn_specialized_number_number_b, 2.0);
 }
 
+// identity() returns its generic type, so it can return a string
+static void ok_generic_return_type(struct grug_state* grug_state, struct grug_entity_id* entity) {
+	recorded_generic_types_len = 0;
+
+	call_export_fn_argless(grug_state, entity, "a");
+
+	assert_call_count(identity, 1);
+	assert_string(game_fn_identity_x._string, "foo");
+	assert_size_t(recorded_generic_types_len, (size_t)1);
+	assert_type(recorded_generic_types[0], (struct grug_type) {.type = GRUG_TYPE_ENUM_STRING});
+}
+
 static void ok_generic_type_as_operand_5(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	assert_call_count(default, 0);
 	assert_call_count(identity, 0);
@@ -6065,6 +6077,7 @@ static void add_ok_tests(void) {
 	ADD_TEST_OK(ge_true_2, "D");
 	ADD_TEST_OK(generic_host_fn_call_site_generics, "D");
 	ADD_TEST_OK(generic_host_fn_call_site_generics_pair, "D");
+	ADD_TEST_OK(generic_return_type, "D");
 	ADD_TEST_OK(generic_static_method, "D");
 	ADD_TEST_OK(generic_type_as_operand_1, "D");
 	ADD_TEST_OK(generic_type_as_operand_2, "D");

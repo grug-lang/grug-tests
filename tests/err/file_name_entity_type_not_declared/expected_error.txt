@@ -1,0 +1,2 @@
+Error: Entity 'Nonexistent' is not registered in the mod_api.json
+$  err/file_name_entity_type_not_declared/input-Nonexistent.grug

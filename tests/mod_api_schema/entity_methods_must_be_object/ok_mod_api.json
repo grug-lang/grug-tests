@@ -1,0 +1,8 @@
+{
+	"entities": {
+		"Test": {
+			"description": "Foo",
+			"methods": {}
+		}
+	}
+}

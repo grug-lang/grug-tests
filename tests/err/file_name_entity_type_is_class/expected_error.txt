@@ -1,0 +1,2 @@
+Error: 'Utils' is a class, not an entity
+$  err/file_name_entity_type_is_class/input-Utils.grug

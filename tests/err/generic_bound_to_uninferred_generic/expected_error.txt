@@ -1,0 +1,3 @@
+  in a (err/generic_bound_to_uninferred_generic/input-D.grug:2:14)
+Error: unable to infer generics in function 'default'
+2 $ identity(default())

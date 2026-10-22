@@ -1,0 +1,47 @@
+{
+	"constraints": {
+		"Test": {
+			"description": "Foo",
+			"implementors": [
+				{
+					"used_generics": [
+						{
+							"name": "$U"
+						}
+					],
+					"type": {
+						"name": "Box",
+						"generics": [
+							{
+								"name": "$U"
+							}
+						]
+					}
+				}
+			]
+		}
+	},
+	"host_functions": {
+		"test": {
+			"description": "Foo",
+			"used_generics": [
+				{
+					"name": "$T",
+					"constraints": [
+						"Test"
+					]
+				}
+			]
+		}
+	},
+	"classes": {
+		"Box": {
+			"description": "Foo",
+			"used_generics": [
+				{
+					"name": "$T"
+				}
+			]
+		}
+	}
+}

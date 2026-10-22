@@ -1,0 +1,20 @@
+{
+	"classes": {
+		"Box": {
+			"description": "Foo",
+			"used_generics": [
+				{
+					"name": "$T"
+				}
+			],
+			"methods": {
+				"get": {
+					"description": "Foo",
+					"return_type": {
+						"name": "Box"
+					}
+				}
+			}
+		}
+	}
+}

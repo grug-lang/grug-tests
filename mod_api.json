@@ -133,6 +133,22 @@
 					}
 				}
 			},
+			"methods": {
+				"double": {
+					"description": "foo",
+					"return_type": {
+						"name": "number"
+					},
+					"parameters": [
+						{
+							"name": "x",
+							"type": {
+								"name": "number"
+							}
+						}
+					]
+				}
+			},
 			"export_functions": [
 				{
 					"name": "a",
@@ -630,6 +646,44 @@
 					"name": "x",
 					"type": {
 						"name": "number"
+					}
+				}
+			]
+		},
+		"count_matching": {
+			"description": "Takes a pair whose second item is a pair of two items of the same type",
+			"used_generics": [
+				{
+					"name": "$A"
+				},
+				{
+					"name": "$B"
+				}
+			],
+			"return_type": {
+				"name": "number"
+			},
+			"parameters": [
+				{
+					"name": "pair",
+					"type": {
+						"name": "Pair",
+						"generics": [
+							{
+								"name": "$A"
+							},
+							{
+								"name": "Pair",
+								"generics": [
+									{
+										"name": "$B"
+									},
+									{
+										"name": "$B"
+									}
+								]
+							}
+						]
 					}
 				}
 			]

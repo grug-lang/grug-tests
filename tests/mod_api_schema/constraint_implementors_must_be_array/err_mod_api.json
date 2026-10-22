@@ -1,0 +1,8 @@
+{
+	"constraints": {
+		"Test": {
+			"description": "Foo",
+			"implementors": 42
+		}
+	}
+}

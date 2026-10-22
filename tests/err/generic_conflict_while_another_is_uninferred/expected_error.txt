@@ -1,0 +1,3 @@
+  in a (err/generic_conflict_while_another_is_uninferred/input-D.grug:2:32)
+Error: Function call 'count_matching' expected the type Pair[_, Pair[string, _]] for argument 'pair', but got Pair[_, Pair[number, _]]
+2 $ x: number = count_matching(make_pair(1, make_pair(2, "x")))

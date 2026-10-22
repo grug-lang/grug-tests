@@ -1,0 +1,26 @@
+{
+	"classes": {
+		"Box": {
+			"description": "Foo",
+			"used_generics": [
+				{
+					"name": "$T"
+				}
+			]
+		}
+	},
+	"host_functions": {
+		"test": {
+			"description": "Foo",
+			"return_type": {
+				"name": "Box",
+				"generics": [
+					{
+						"name": "resource",
+						"resource_extension": ""
+					}
+				]
+			}
+		}
+	}
+}

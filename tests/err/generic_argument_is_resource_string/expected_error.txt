@@ -1,0 +1,3 @@
+  in a (err/generic_argument_is_resource_string/input-D.grug:2:14)
+Error: Function call 'identity' can't take a resource string for its generic argument 'x'
+2 $ identity(r"foo.txt")

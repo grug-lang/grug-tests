@@ -1879,6 +1879,9 @@ static void run_mod_api_schema_tests(void) {
 	run_mod_api_schema_test("class_must_be_object");
 	run_mod_api_schema_test("class_static_methods_must_be_object");
 	run_mod_api_schema_test("classes_must_be_object");
+	run_mod_api_schema_test("constraint_implementor_cannot_be_bare_generic");
+	run_mod_api_schema_test("constraint_implementor_cannot_be_entity");
+	run_mod_api_schema_test("constraint_implementor_cannot_be_resource");
 	run_mod_api_schema_test("constraint_implementor_must_be_object");
 	run_mod_api_schema_test("constraint_must_be_declared");
 	run_mod_api_schema_test("constraint_must_be_object");
@@ -5590,6 +5593,7 @@ static void add_error_tests(void) {
 	ADD_TEST_ERROR(cant_declare_me_locally, "D");
 	ADD_TEST_ERROR(cant_declare_variable_in_fn_call, "D");
 	ADD_TEST_ERROR(cant_redefine_global, "D");
+	ADD_TEST_ERROR(close_bracket_as_expression, "A");
 	ADD_TEST_ERROR(comment_at_the_end_of_another_statement, "D");
 	ADD_TEST_ERROR(comment_empty, "A");
 	ADD_TEST_ERROR(comment_lone_global_at_end, "A");
@@ -5635,6 +5639,8 @@ static void add_error_tests(void) {
 	ADD_TEST_ERROR(game_function_call_less_args_expected, "D");
 	ADD_TEST_ERROR(game_function_call_more_args_expected, "D");
 	ADD_TEST_ERROR(game_function_call_no_args_expected, "D");
+	ADD_TEST_ERROR(generic_argument_is_entity_string, "D");
+	ADD_TEST_ERROR(generic_argument_is_resource_string, "D");
 	ADD_TEST_ERROR(global_cant_be_me, "A");
 	ADD_TEST_ERROR(global_cant_call_helper_fn, "A");
 	ADD_TEST_ERROR(global_cant_call_on_fn, "D");
@@ -5658,6 +5664,7 @@ static void add_error_tests(void) {
 	ADD_TEST_ERROR(generics_type_cant_have_generics, "A");
 	ADD_TEST_ERROR(generics_unable_to_infer, "D");
 	ADD_TEST_ERROR(global_id_cant_be_reassigned, "D");
+	ADD_TEST_ERROR(global_method_argument_calls_local_function, "A");
 	ADD_TEST_ERROR(global_variable_after_on_fns, "D");
 	ADD_TEST_ERROR(global_variable_already_uses_local_variable_name, "D");
 	ADD_TEST_ERROR(global_variable_contains_double_negation, "A");
@@ -5787,6 +5794,7 @@ static void add_error_tests(void) {
 	ADD_TEST_ERROR(type_not_word, "D");
 	ADD_TEST_ERROR(unary_plus_does_not_exist, "D");
 	ADD_TEST_ERROR(unclosed_double_quote, "A");
+	ADD_TEST_ERROR(unexpected_end_of_file, "A");
 	ADD_TEST_ERROR(unknown_method, "D");
 	ADD_TEST_ERROR(unknown_variable, "D");
 	ADD_TEST_ERROR(unrecognized_character, "A");

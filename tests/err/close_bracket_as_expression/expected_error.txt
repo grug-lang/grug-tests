@@ -1,0 +1,3 @@
+  in member scope (err/close_bracket_as_expression/input-A.grug:1:13)
+Error: Expected a primary expression token but got ']'
+1 $ x: number = ]

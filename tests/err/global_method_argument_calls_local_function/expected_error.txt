@@ -1,0 +1,3 @@
+  in member scope (err/global_method_argument_calls_local_function/input-A.grug:1:40)
+Error: The global variable 'x' isn't allowed to call local functions
+1 $ x: VecNumber = VecNumber.with_capacity(_f())

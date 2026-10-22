@@ -1,0 +1,3 @@
+export a() {
+    identity(e"foo")
+}

@@ -1,0 +1,5 @@
+x: VecNumber = VecNumber.with_capacity(_f())
+
+local _f() number {
+    return 1
+}

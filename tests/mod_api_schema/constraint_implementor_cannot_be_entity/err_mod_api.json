@@ -1,0 +1,28 @@
+{
+	"constraints": {
+		"Test": {
+			"description": "Foo",
+			"implementors": [
+				{
+					"type": {
+						"name": "entity",
+						"entity_type": ""
+					}
+				}
+			]
+		}
+	},
+	"host_functions": {
+		"test": {
+			"description": "Foo",
+			"used_generics": [
+				{
+					"name": "$T",
+					"constraints": [
+						"Test"
+					]
+				}
+			]
+		}
+	}
+}

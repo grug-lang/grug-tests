@@ -1,0 +1,76 @@
+{
+	"constraints": {
+		"Foo": {
+			"description": "Foo",
+			"implementors": [
+				{
+					"type": {
+						"name": "number"
+					}
+				},
+				{
+					"used_generics": [
+						{
+							"name": "$T",
+							"constraints": [
+								"Bar"
+							]
+						}
+					],
+					"type": {
+						"name": "$T"
+					}
+				}
+			]
+		},
+		"Bar": {
+			"description": "Foo",
+			"implementors": [
+				{
+					"type": {
+						"name": "bool"
+					}
+				},
+				{
+					"used_generics": [
+						{
+							"name": "$T",
+							"constraints": [
+								"Foo"
+							]
+						}
+					],
+					"type": {
+						"name": "$T"
+					}
+				}
+			]
+		}
+	},
+	"classes": {
+		"Box": {
+			"description": "Foo",
+			"used_generics": [
+				{
+					"name": "$T",
+					"constraints": [
+						"Foo"
+					]
+				}
+			]
+		}
+	},
+	"host_functions": {
+		"test": {
+			"description": "Foo",
+			"return_type": {
+				"name": "Box",
+				"generics": [
+					{
+						"name": "bool"
+					}
+				]
+			}
+		}
+	}
+}

@@ -2,13 +2,7 @@
 	"constraints": {
 		"Test": {
 			"description": "Foo",
-			"implementors": [
-				{
-					"type": {
-						"name": "number"
-					}
-				}
-			]
+			"implementors": []
 		}
 	},
 	"host_functions": {

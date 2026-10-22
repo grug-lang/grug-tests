@@ -1,20 +1,13 @@
 {
-	"entities": {},
-	"classes": {
-		"SomeClass": {
-			"description": "Something",
-			"methods": {
-				"test": {
-					"description": "Foo",
-					"parameters": [
-						{
-							"name": "input",
-							"type": 42
-						}
-					]
+	"host_functions": {
+		"test": {
+			"description": "Foo",
+			"parameters": [
+				{
+					"name": "input",
+					"type": 42
 				}
-			}
+			]
 		}
-	},
-	"host_functions": {}
+	}
 }

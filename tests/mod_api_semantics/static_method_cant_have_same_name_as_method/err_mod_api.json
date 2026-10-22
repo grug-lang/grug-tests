@@ -4,12 +4,12 @@
 			"description": "Foo",
 			"static_methods": {
 				"new": {
-					"description": "A static method with the same name."
+					"description": "Foo"
 				}
 			},
 			"methods": {
 				"new": {
-					"description": "A method."
+					"description": "Foo"
 				}
 			}
 		}

@@ -1,16 +1,3 @@
 {
-	"constraints": [],
-	"host_functions": {
-		"test": {
-			"description": "Foo",
-			"used_generics": [
-				{
-					"name": "$T",
-					"constraints": [
-						"Test"
-					]
-				}
-			]
-		}
-	}
+	"constraints": []
 }

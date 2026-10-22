@@ -340,6 +340,7 @@ union grug_value game_fn_initialize_bool                   (struct grug_state* g
 union grug_value game_fn_identity                          (struct grug_state* grug_state, const union grug_value args[], const struct grug_type generics[]);
 union grug_value game_fn_max                               (struct grug_state* grug_state, const union grug_value args[], const struct grug_type generics[]);
 union grug_value game_fn_say                               (struct grug_state* grug_state, const union grug_value args[], const struct grug_type generics[]);
+union grug_value game_fn_show                              (struct grug_state* grug_state, const union grug_value args[], const struct grug_type generics[]);
 union grug_value game_fn_sin                               (struct grug_state* grug_state, const union grug_value args[], const struct grug_type generics[]);
 union grug_value game_fn_cos                               (struct grug_state* grug_state, const union grug_value args[], const struct grug_type generics[]);
 union grug_value game_fn_count_matching                    (struct grug_state* grug_state, const union grug_value args[], const struct grug_type generics[]);
@@ -390,6 +391,8 @@ union grug_value game_fn_box                               (struct grug_state* g
 union grug_value game_fn_box_get                           (struct grug_state* grug_state, const union grug_value args[], const struct grug_type generics[]);
 
 union grug_value game_fn_default(struct grug_state* grug_state, const union grug_value args[], const struct grug_type generics[]);
+game_fn reg_game_fn_default(struct grug_type* types);
+game_fn reg_game_fn_specialized(struct grug_type* types);
 
 union grug_value game_fn_dict                              (struct grug_state* grug_state, const union grug_value args[], const struct grug_type generics[]);
 union grug_value game_fn_dict_from_vec                     (struct grug_state* grug_state, const union grug_value args[], const struct grug_type generics[]);

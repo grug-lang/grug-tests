@@ -55,7 +55,6 @@ static game_fn p_game_fn_max;
 static game_fn p_game_fn_say;
 static game_fn p_game_fn_sin;
 static game_fn p_game_fn_cos;
-static game_fn p_game_fn_count_matching;
 static game_fn p_game_fn_mega;
 static game_fn p_game_fn_eval_order_1;
 static game_fn p_game_fn_eval_order_2;
@@ -536,6 +535,9 @@ static void call_export_fn(struct grug_state* grug_state, struct grug_entity_id*
 		CALL(grug_state, spawn, grug_string("ok:foo"));
 	} else if (starts_with(path, "ok/entity_in_on_fn_with_mod_specified/")) {
 		CALL(grug_state, spawn, grug_string("wow:foo"));
+	} else if (starts_with(path, "ok/entity_method/")) {
+		CALL(grug_state, d_double, grug_id(42), grug_number(21));
+		CALL(grug_state, set_is_happy, grug_bool(true));
 	} else if (starts_with(path, "ok/eq_false/")) {
 		CALL(grug_state, initialize_bool, grug_bool(false));
 	} else if (starts_with(path, "ok/eq_true/")) {
@@ -880,6 +882,19 @@ static void call_export_fn(struct grug_state* grug_state, struct grug_entity_id*
 		CALL_ARGLESS(grug_state, nothing);
 	} else if (starts_with(path, "ok/on_fn_three_unused_third/")) {
 		CALL_ARGLESS(grug_state, nothing);
+	} else if (starts_with(path, "ok/opaque_id_as_generic/")) {
+		struct grug_type type = {
+			.type = GRUG_TYPE_ENUM_ID,
+			.data = {
+				.id = {
+					.name = "Position",
+					.generics_len = 0,
+				}
+			}
+		};
+		union grug_value position = CALL(grug_state, get_position, grug_id(42));
+		union grug_value box = CALL_GENERIC(grug_state, box, &type, position);
+		CALL(grug_state, set_position, CALL_GENERIC(grug_state, box_get, &type, box));
 	} else if (starts_with(path, "ok/optional_resource/")) {
 		union grug_value result = CALL(grug_state, has_optional_resource, grug_string("ok/optional_resource/foo.txt"));
 		CALL(grug_state, initialize_bool, result);
@@ -1213,7 +1228,6 @@ static void load_tests_library(void) {
 	p_game_fn_say                            = (game_fn)load_sym(h, "game_fn_say");
 	p_game_fn_sin                            = (game_fn)load_sym(h, "game_fn_sin");
 	p_game_fn_cos                            = (game_fn)load_sym(h, "game_fn_cos");
-	p_game_fn_count_matching                 = (game_fn)load_sym(h, "game_fn_count_matching");
 	p_game_fn_mega                           = (game_fn)load_sym(h, "game_fn_mega");
 	p_game_fn_eval_order_1                   = (game_fn)load_sym(h, "game_fn_eval_order_1");
 	p_game_fn_eval_order_2                   = (game_fn)load_sym(h, "game_fn_eval_order_2");

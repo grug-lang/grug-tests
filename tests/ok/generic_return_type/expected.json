@@ -1,0 +1,25 @@
+[
+    {
+        "name": "a",
+        "statements": [
+            {
+                "assignment": {
+                    "arguments": [
+                        {
+                            "str": "foo",
+                            "type": "STRING_EXPR"
+                        }
+                    ],
+                    "name": "identity",
+                    "type": "CALL_EXPR"
+                },
+                "name": "x",
+                "type": "VARIABLE_STATEMENT",
+                "variable_type": {
+                    "name": "string"
+                }
+            }
+        ],
+        "type": "EXPORT_FN"
+    }
+]

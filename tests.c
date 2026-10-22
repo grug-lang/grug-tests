@@ -1930,6 +1930,7 @@ static void run_mod_api_schema_tests(void) {
 	run_mod_api_schema_test("method_must_be_object");
 	run_mod_api_schema_test("methods_must_be_object");
 	run_mod_api_schema_test("mod_api_must_be_valid_json");
+	run_mod_api_schema_test("optional_only_on_resource_types");
 	run_mod_api_schema_test("parameter_must_be_object");
 	run_mod_api_schema_test("parameter_type_must_be_object");
 	run_mod_api_schema_test("parameter_type_must_be_present");

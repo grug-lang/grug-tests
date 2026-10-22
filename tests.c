@@ -1879,6 +1879,10 @@ static void run_mod_api_schema_tests(void) {
 	run_mod_api_schema_test("class_must_be_object");
 	run_mod_api_schema_test("class_static_methods_must_be_object");
 	run_mod_api_schema_test("classes_must_be_object");
+	run_mod_api_schema_test("constraint_implementor_must_be_object");
+	run_mod_api_schema_test("constraint_must_be_declared");
+	run_mod_api_schema_test("constraint_must_be_object");
+	run_mod_api_schema_test("constraints_must_be_object");
 	run_mod_api_schema_test("description_must_be_present");
 	run_mod_api_schema_test("description_must_be_string");
 	run_mod_api_schema_test("entities_must_be_object");
@@ -1886,6 +1890,8 @@ static void run_mod_api_schema_tests(void) {
 	run_mod_api_schema_test("entity_static_methods_must_be_object");
 	run_mod_api_schema_test("export_fn_must_be_object");
 	run_mod_api_schema_test("export_functions_must_be_array");
+	run_mod_api_schema_test("generic_constraint_must_be_string");
+	run_mod_api_schema_test("generic_must_be_object");
 	run_mod_api_schema_test("host_fn_generic_name_must_be_string");
 	run_mod_api_schema_test("host_fn_must_be_object");
 	run_mod_api_schema_test("host_functions_must_be_object");

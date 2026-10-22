@@ -450,6 +450,8 @@ static size_t game_fn_initialize_bool_call_count;
 static size_t game_fn_identity_call_count;
 static size_t game_fn_max_call_count;
 static size_t game_fn_say_call_count;
+static size_t game_fn_show_call_count;
+static size_t game_fn_specialized_number_number_call_count;
 static size_t game_fn_sin_call_count;
 static size_t game_fn_cos_call_count;
 static size_t game_fn_d_double_call_count;
@@ -638,6 +640,36 @@ union grug_value game_fn_say(struct grug_state* grug_state, const union grug_val
 
 	strcpy(game_fn_say_message, args[0]._string);
 	return grug_void();
+}
+static union grug_value game_fn_show_x;
+union grug_value game_fn_show(struct grug_state* grug_state, const union grug_value args[], const struct grug_type generics[]) {
+	record_generic_types(generics, 1);
+	(void)grug_state;
+	ASSERT_16_BYTE_STACK_ALIGNED();
+	game_fn_show_call_count++;
+
+	game_fn_show_x = args[0];
+	return grug_void();
+}
+static double game_fn_specialized_number_number_a;
+static double game_fn_specialized_number_number_b;
+static union grug_value game_fn_specialized_number_number(struct grug_state* grug_state, const union grug_value args[], const struct grug_type generics[]) {
+	(void)generics;
+	(void)grug_state;
+	ASSERT_16_BYTE_STACK_ALIGNED();
+	game_fn_specialized_number_number_call_count++;
+
+	game_fn_specialized_number_number_a = args[0]._number;
+	game_fn_specialized_number_number_b = args[1]._number;
+	return grug_void();
+}
+// specialized() has no generic game function to fall back to, so calling it
+// with anything but two numbers is a compile error
+game_fn reg_game_fn_specialized(struct grug_type* types) {
+	if (types[0].type == GRUG_TYPE_ENUM_NUMBER && types[1].type == GRUG_TYPE_ENUM_NUMBER) {
+		return game_fn_specialized_number_number;
+	}
+	return NULL;
 }
 static double game_fn_sin_x;
 union grug_value game_fn_sin(struct grug_state* grug_state, const union grug_value args[], const struct grug_type generics[]) {
@@ -1435,7 +1467,7 @@ union grug_value game_fn_box_get(struct grug_state* grug_state, const union grug
 
 static union grug_value game_fn_default_last_value = {0};
 static union grug_value game_fn_default_string(struct grug_state* grug_state, const union grug_value args[], const struct grug_type generics[]) {
-	(void)generics;
+	record_generic_types(generics, 1);
 	(void)grug_state;
 	(void)args;
 	ASSERT_16_BYTE_STACK_ALIGNED();
@@ -1456,8 +1488,9 @@ union grug_value game_fn_default(struct grug_state* grug_state, const union grug
 		case GRUG_TYPE_ENUM_NUMBER:
 			game_fn_default_last_value = grug_number(0.0);
 			return game_fn_default_last_value;
-        case GRUG_TYPE_ENUM_STRING:
-            return game_fn_default_string(grug_state, args, generics);
+		case GRUG_TYPE_ENUM_STRING:
+			game_fn_default_last_value = grug_string("");
+			return game_fn_default_last_value;
         case GRUG_TYPE_ENUM_ID:
             if (streq(generics[0].data.id.name, "Pair")) {
 				union grug_value first  = game_fn_default(grug_state, args, &generics[0].data.id.generics[0]);
@@ -1482,6 +1515,15 @@ union grug_value game_fn_default(struct grug_state* grug_state, const union grug
     
     fprintf(stderr, "Error: Unsupported default instantiation\n");
     exit(EXIT_FAILURE);
+}
+
+// Specializes default() for strings. Returning NULL for every other type makes
+// the implementation fall back to the generic game_fn_default.
+game_fn reg_game_fn_default(struct grug_type* types) {
+	if (types[0].type == GRUG_TYPE_ENUM_STRING) {
+		return game_fn_default_string;
+	}
+	return NULL;
 }
 
 union grug_value game_fn_dict(struct grug_state* grug_state, const union grug_value args[], const struct grug_type generics[]) {
@@ -1984,7 +2026,6 @@ static void run_mod_api_semantic_tests(void) {
 	run_mod_api_semantic_test("cannot_have_generic_on_undeclared_class");
 	run_mod_api_semantic_test("class_cannot_have_same_name_as_entity");
 	run_mod_api_semantic_test("class_generic_name_must_begin_with_$");
-	run_mod_api_semantic_test("constraint_implementor_cannot_be_bare_generic");
 	run_mod_api_semantic_test("constraint_implementor_cannot_be_entity");
 	run_mod_api_semantic_test("constraint_implementor_cannot_be_resource");
 	run_mod_api_semantic_test("constraint_implementor_generic_constraint_must_be_declared");
@@ -2004,6 +2045,8 @@ static void run_mod_api_semantic_tests(void) {
 	run_mod_api_semantic_test("resource_nested_in_constrained_type");
 	run_mod_api_semantic_test("static_method_cant_have_same_name_as_method");
 	run_mod_api_semantic_test("static_method_cant_return_entity");
+	run_mod_api_semantic_test("type_must_implement_mutually_referential_constraint");
+	run_mod_api_semantic_test("type_must_implement_self_referential_constraint");
 }
 
 static void test_error(
@@ -2280,6 +2323,8 @@ static void reset(void) {
 	game_fn_identity_call_count                       = 0;
 	game_fn_max_call_count                            = 0;
 	game_fn_say_call_count                            = 0;
+	game_fn_show_call_count                           = 0;
+	game_fn_specialized_number_number_call_count      = 0;
 	game_fn_sin_call_count                            = 0;
 	game_fn_cos_call_count                            = 0;
 	game_fn_d_double_call_count                       = 0;
@@ -3852,6 +3897,28 @@ static void ok_generic_type_as_operand_4(struct grug_state* grug_state, struct g
 	assert_number(box_last_got._number, 25.0);
 }
 
+// Show and Print each have a bare generic implementor that requires
+// the other constraint, so number and bool implement both
+static void ok_constraint_implementors_refer_to_each_other(struct grug_state* grug_state, struct grug_entity_id* entity) {
+	recorded_generic_types_len = 0;
+
+	call_export_fn_argless(grug_state, entity, "a");
+
+	assert_call_count(show, 2);
+	assert_true(game_fn_show_x._bool);
+	assert_size_t(recorded_generic_types_len, (size_t)2);
+	assert_type(recorded_generic_types[0], (struct grug_type) {.type = GRUG_TYPE_ENUM_NUMBER});
+	assert_type(recorded_generic_types[1], (struct grug_type) {.type = GRUG_TYPE_ENUM_BOOL});
+}
+
+static void ok_reg_fn_without_generic_fallback(struct grug_state* grug_state, struct grug_entity_id* entity) {
+	call_export_fn_argless(grug_state, entity, "a");
+
+	assert_call_count(specialized_number_number, 1);
+	assert_number(game_fn_specialized_number_number_a, 1.0);
+	assert_number(game_fn_specialized_number_number_b, 2.0);
+}
+
 static void ok_generic_type_as_operand_5(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	assert_call_count(default, 0);
 	assert_call_count(identity, 0);
@@ -5200,7 +5267,9 @@ static void ok_verify_constraints_1(struct grug_state* grug_state, struct grug_e
 static void ok_verify_constraints_2(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	(void)(grug_state);
 	(void)(entity);
-	assert_call_count(default, 1);
+	// reg_game_fn_default specializes default() for strings
+	assert_call_count(default, 0);
+	assert_call_count(default_string, 1);
 	assert_size_t(recorded_generic_types_len, (size_t)1);
 	assert_type (
 		recorded_generic_types[0],
@@ -5665,6 +5734,7 @@ static void add_error_tests(void) {
 	ADD_TEST_ERROR(comment_at_the_end_of_another_statement, "D");
 	ADD_TEST_ERROR(comment_empty, "A");
 	ADD_TEST_ERROR(comment_lone_global_at_end, "A");
+	ADD_TEST_ERROR(constraint_implementors_refer_to_each_other, "D");
 	ADD_TEST_ERROR(double_negation, "D");
 	ADD_TEST_ERROR(double_not, "D");
 	ADD_TEST_ERROR(empty_file, "A");
@@ -5841,6 +5911,7 @@ static void add_error_tests(void) {
 	ADD_TEST_ERROR(print_csv_wrong_extension_1, "D");
 	ADD_TEST_ERROR(print_csv_wrong_extension_2, "D");
 	ADD_TEST_ERROR(print_csv_wrong_extension_3, "D");
+	ADD_TEST_ERROR(reg_fn_without_generic_fallback, "D");
 	ADD_TEST_ERROR(resource_argument_not_a_resource_string, "D");
 	ADD_TEST_ERROR(resource_cant_be_empty_string, "D");
 	ADD_TEST_ERROR(resource_cant_be_passed_to_helper_fn, "D");
@@ -5861,6 +5932,7 @@ static void add_error_tests(void) {
 	ADD_TEST_ERROR(resource_does_not_exist, "D");
 	ADD_TEST_ERROR(resource_string_added_to_number, "D");
 	ADD_TEST_ERROR(resource_string_as_if_condition, "D");
+	ADD_TEST_ERROR(resource_string_as_while_condition, "D");
 	ADD_TEST_ERROR(resource_string_assigned_to_number_variable, "D");
 	ADD_TEST_ERROR(resource_string_compared, "D");
 	ADD_TEST_ERROR(resource_string_must_be_prefixed, "D");
@@ -5936,6 +6008,7 @@ static void add_ok_tests(void) {
 	ADD_TEST_OK(comment_lone_block, "D");
 	ADD_TEST_OK(comment_lone_block_at_end, "D");
 	ADD_TEST_OK(comment_lone_global, "D");
+	ADD_TEST_OK(constraint_implementors_refer_to_each_other, "D");
 	ADD_TEST_OK(continue, "D");
 	ADD_TEST_OK(custom_id_transfer_between_globals, "D");
 	ADD_TEST_OK(custom_id_with_digits, "A");
@@ -6079,6 +6152,7 @@ static void add_ok_tests(void) {
 	ADD_TEST_OK(pass_string_argument_to_game_fn, "D");
 	ADD_TEST_OK(pass_string_argument_to_helper_fn, "D");
 	ADD_TEST_OK(print_csv, "D");
+	ADD_TEST_OK(reg_fn_without_generic_fallback, "D");
 	ADD_TEST_OK(resource_and_entity, "D");
 	ADD_TEST_OK(resource_can_contain_dot_1, "D");
 	ADD_TEST_OK(resource_can_contain_dot_2, "D");

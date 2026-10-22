@@ -1,14 +1,19 @@
 {
 	"constraints": {
-		"Test": {
+		"Foo": {
 			"description": "Foo",
 			"implementors": [
+				{
+					"type": {
+						"name": "number"
+					}
+				},
 				{
 					"used_generics": [
 						{
 							"name": "$T",
 							"constraints": [
-								"Test"
+								"Foo"
 							]
 						}
 					],
@@ -19,17 +24,30 @@
 			]
 		}
 	},
-	"host_functions": {
-		"test": {
+	"classes": {
+		"Box": {
 			"description": "Foo",
 			"used_generics": [
 				{
 					"name": "$T",
 					"constraints": [
-						"Test"
+						"Foo"
 					]
 				}
 			]
+		}
+	},
+	"host_functions": {
+		"test": {
+			"description": "Foo",
+			"return_type": {
+				"name": "Box",
+				"generics": [
+					{
+						"name": "string"
+					}
+				]
+			}
 		}
 	}
 }

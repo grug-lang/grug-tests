@@ -1,66 +1,25 @@
 {
 	"constraints": {
-		"Hash": {
+		"Test": {
 			"description": "Foo",
 			"implementors": [
 				{
 					"type": {
 						"name": "number"
 					}
-				},
-				{
-					"used_generics": [
-						{
-							"name": "$A",
-							"constraints": [
-								"Hash"
-							]
-						},
-						{
-							"name": "$B",
-							"constraints": [
-								"Hash"
-							]
-						}
-					],
-					"type": {
-						"name": "Pair",
-						"generics": [
-							{
-								"name": "$A"
-							},
-							{
-								"name": "$B"
-							}
-						]
-					}
 				}
 			]
 		}
 	},
 	"classes": {
-		"Pair": {
+		"Box": {
 			"description": "Foo",
 			"used_generics": [
 				{
-					"name": "$T1"
-				},
-				{
-					"name": "$T2"
-				}
-			]
-		},
-		"Dict": {
-			"description": "Foo",
-			"used_generics": [
-				{
-					"name": "$K",
+					"name": "$T",
 					"constraints": [
-						"Hash"
+						"Test"
 					]
-				},
-				{
-					"name": "$V"
 				}
 			]
 		}
@@ -68,21 +27,9 @@
 	"host_functions": {
 		"test": {
 			"description": "Foo",
-			"used_generics": [],
 			"return_type": {
-				"name": "Dict",
+				"name": "Box",
 				"generics": [
-					{
-						"name": "Pair",
-						"generics": [
-							{
-								"name": "string"
-							},
-							{
-								"name": "number"
-							}
-						]
-					},
 					{
 						"name": "string"
 					}

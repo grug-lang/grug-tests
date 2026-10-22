@@ -1,9 +1,5 @@
 {
-	"entities": {},
 	"classes": {
-		"Test": {
-			"used_generics": [ ]
-		}
-	},
-	"host_functions": {}
+		"Test": {}
+	}
 }

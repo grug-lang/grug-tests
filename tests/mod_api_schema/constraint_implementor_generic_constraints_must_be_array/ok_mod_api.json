@@ -6,43 +6,13 @@
 				{
 					"used_generics": [
 						{
-							"name": "$U",
-							"constraints": [
-								"Test"
-							]
+							"name": "$T",
+							"constraints": []
 						}
 					],
 					"type": {
-						"name": "Box",
-						"generics": [
-							{
-								"name": "$U"
-							}
-						]
+						"name": "$T"
 					}
-				}
-			]
-		}
-	},
-	"host_functions": {
-		"test": {
-			"description": "Foo",
-			"used_generics": [
-				{
-					"name": "$T",
-					"constraints": [
-						"Test"
-					]
-				}
-			]
-		}
-	},
-	"classes": {
-		"Box": {
-			"description": "Foo",
-			"used_generics": [
-				{
-					"name": "$T"
 				}
 			]
 		}

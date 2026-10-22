@@ -1,0 +1,3 @@
+  in a (err/resource_string_as_while_condition/input-D.grug:2:11)
+Error: While condition must be bool but got 'resource'
+2 $ while r"a.txt" {

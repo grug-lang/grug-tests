@@ -117,6 +117,52 @@
 					}
 				}
 			]
+		},
+		"Print": {
+			"description": "A type that can be printed. Its implementors and Show's refer to each other",
+			"implementors": [
+				{
+					"type": {
+						"name": "bool"
+					}
+				},
+				{
+					"used_generics": [
+						{
+							"name": "$T",
+							"constraints": [
+								"Show"
+							]
+						}
+					],
+					"type": {
+						"name": "$T"
+					}
+				}
+			]
+		},
+		"Show": {
+			"description": "A type that can be shown. Its implementors and Print's refer to each other",
+			"implementors": [
+				{
+					"type": {
+						"name": "number"
+					}
+				},
+				{
+					"used_generics": [
+						{
+							"name": "$T",
+							"constraints": [
+								"Print"
+							]
+						}
+					],
+					"type": {
+						"name": "$T"
+					}
+				}
+			]
 		}
 	},
 	"entities": {
@@ -1962,6 +2008,25 @@
 				}
 			]
 		},
+		"show": {
+			"description": "Shows a value whose type implements Show",
+			"used_generics": [
+				{
+					"name": "$T",
+					"constraints": [
+						"Show"
+					]
+				}
+			],
+			"parameters": [
+				{
+					"name": "x",
+					"type": {
+						"name": "$T"
+					}
+				}
+			]
+		},
 		"sin": {
 			"description": "foo",
 			"return_type": {
@@ -1996,6 +2061,31 @@
 					"type": {
 						"name": "entity",
 						"entity_type": "D"
+					}
+				}
+			]
+		},
+		"specialized": {
+			"description": "Its reg fn only has a version for two numbers, and there is no generic version",
+			"used_generics": [
+				{
+					"name": "$A"
+				},
+				{
+					"name": "$B"
+				}
+			],
+			"parameters": [
+				{
+					"name": "a",
+					"type": {
+						"name": "$A"
+					}
+				},
+				{
+					"name": "b",
+					"type": {
+						"name": "$B"
 					}
 				}
 			]

@@ -1,16 +1,4 @@
 {
-	"constraints": {
-		"Test": {
-			"description": "Foo",
-			"implementors": [
-				{
-					"type": {
-						"name": "number"
-					}
-				}
-			]
-		}
-	},
 	"host_functions": {
 		"test": {
 			"description": "Foo",

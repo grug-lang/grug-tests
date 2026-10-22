@@ -4,10 +4,7 @@
 			"description": "Foo",
 			"static_methods": {
 				"new": {
-					"description": "Creates a Test.",
-					"return_type": {
-						"name": "Test"
-					}
+					"description": "Foo"
 				}
 			}
 		}

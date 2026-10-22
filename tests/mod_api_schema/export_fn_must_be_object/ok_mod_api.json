@@ -1,15 +1,13 @@
 {
 	"entities": {
 		"A": {
-			"description": "",
+			"description": "Foo",
 			"export_functions": [
 				{
 					"name": "hello",
-					"description": "Hello"
+					"description": "Foo"
 				}
 			]
 		}
-	},
-	"classes": {},
-	"host_functions": {}
+	}
 }

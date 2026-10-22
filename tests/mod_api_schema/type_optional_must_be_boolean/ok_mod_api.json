@@ -1,15 +1,13 @@
 {
-	"entities": {},
-	"classes": {},
 	"host_functions": {
-		"f": {
-			"description": "foo",
+		"test": {
+			"description": "Foo",
 			"parameters": [
 				{
-					"name": "p",
+					"name": "input",
 					"type": {
 						"name": "resource",
-						"resource_extension": "",
+						"resource_extension": ".txt",
 						"optional": true
 					}
 				}

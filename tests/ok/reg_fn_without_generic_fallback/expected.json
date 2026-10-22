@@ -1,0 +1,22 @@
+[
+    {
+        "name": "a",
+        "statements": [
+            {
+                "arguments": [
+                    {
+                        "type": "NUMBER_EXPR",
+                        "value": "1"
+                    },
+                    {
+                        "type": "NUMBER_EXPR",
+                        "value": "2"
+                    }
+                ],
+                "name": "specialized",
+                "type": "CALL_STATEMENT"
+            }
+        ],
+        "type": "EXPORT_FN"
+    }
+]

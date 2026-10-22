@@ -1,12 +1,10 @@
 {
 	"entities": {
 		"A": {
-			"description": "",
+			"description": "Foo",
 			"export_functions": [
 				42
 			]
 		}
-	},
-	"classes": {},
-	"host_functions": {}
+	}
 }

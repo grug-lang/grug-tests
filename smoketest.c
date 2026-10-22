@@ -51,8 +51,11 @@ static game_fn p_game_fn_initialize;
 static game_fn p_game_fn_initialize_bool;
 static game_fn p_game_fn_identity;
 static game_fn p_game_fn_default;
+static generic_fn_reg p_reg_game_fn_default;
+static generic_fn_reg p_reg_game_fn_specialized;
 static game_fn p_game_fn_max;
 static game_fn p_game_fn_say;
+static game_fn p_game_fn_show;
 static game_fn p_game_fn_sin;
 static game_fn p_game_fn_cos;
 static game_fn p_game_fn_mega;
@@ -275,7 +278,8 @@ static struct grug_entity_id* create_entity(struct grug_state* grug_state, struc
 	} else if (starts_with(path, "ok/verify_constraints_1/")) {
 		CALL_ARGLESS_GENERIC(grug_state, default, &(struct grug_type){.type = GRUG_TYPE_ENUM_BOOL});
 	} else if (starts_with(path, "ok/verify_constraints_2/")) {
-		CALL_ARGLESS_GENERIC(grug_state, default, &(struct grug_type){.type = GRUG_TYPE_ENUM_STRING});
+		struct grug_type type = {.type = GRUG_TYPE_ENUM_STRING};
+		p_reg_game_fn_default(&type)(grug_state, NULL, &type);
 	} else if (starts_with(path, "ok/verify_constraints_3/")) {
 		// C doesn't have rvalue static promotion :(
 		static struct grug_type types_array[] = {
@@ -643,6 +647,12 @@ static void call_export_fn(struct grug_state* grug_state, struct grug_entity_id*
 		union grug_value box = CALL_GENERIC(grug_state, box, &type, grug_number(25.0));
 		CALL_GENERIC(grug_state, box_get, &type, box);
 		CALL_GENERIC(grug_state, box, &type, grug_number(117.0));
+	} else if (starts_with(path, "ok/reg_fn_without_generic_fallback/")) {
+		struct grug_type types[] = {{.type = GRUG_TYPE_ENUM_NUMBER}, {.type = GRUG_TYPE_ENUM_NUMBER}};
+		p_reg_game_fn_specialized(types)(grug_state, (const union grug_value[]){grug_number(1.0), grug_number(2.0)}, types);
+	} else if (starts_with(path, "ok/constraint_implementors_refer_to_each_other/")) {
+		CALL_GENERIC(grug_state, show, &(struct grug_type){.type = GRUG_TYPE_ENUM_NUMBER}, grug_number(1.0));
+		CALL_GENERIC(grug_state, show, &(struct grug_type){.type = GRUG_TYPE_ENUM_BOOL}, grug_bool(true));
 	} else if (starts_with(path, "ok/generic_type_as_operand_5/")) {
 		struct grug_type type = {
 			.type = GRUG_TYPE_ENUM_NUMBER,
@@ -1224,8 +1234,11 @@ static void load_tests_library(void) {
 	p_game_fn_initialize_bool                = (game_fn)load_sym(h, "game_fn_initialize_bool");
 	p_game_fn_identity                       = (game_fn)load_sym(h, "game_fn_identity");
 	p_game_fn_default                        = (game_fn)load_sym(h, "game_fn_default");
+	p_reg_game_fn_default                    = (generic_fn_reg)load_sym(h, "reg_game_fn_default");
+	p_reg_game_fn_specialized                = (generic_fn_reg)load_sym(h, "reg_game_fn_specialized");
 	p_game_fn_max                            = (game_fn)load_sym(h, "game_fn_max");
 	p_game_fn_say                            = (game_fn)load_sym(h, "game_fn_say");
+	p_game_fn_show                           = (game_fn)load_sym(h, "game_fn_show");
 	p_game_fn_sin                            = (game_fn)load_sym(h, "game_fn_sin");
 	p_game_fn_cos                            = (game_fn)load_sym(h, "game_fn_cos");
 	p_game_fn_mega                           = (game_fn)load_sym(h, "game_fn_mega");

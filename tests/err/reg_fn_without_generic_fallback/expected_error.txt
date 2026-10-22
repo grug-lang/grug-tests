@@ -1,0 +1,3 @@
+  in a (err/reg_fn_without_generic_fallback/input-D.grug:2:5)
+Error: The host function 'specialized' has no version for the generics [number, string]
+2 $ specialized(1, "hi")

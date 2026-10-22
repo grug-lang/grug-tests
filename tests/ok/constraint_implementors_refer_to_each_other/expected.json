@@ -1,0 +1,27 @@
+[
+    {
+        "name": "a",
+        "statements": [
+            {
+                "arguments": [
+                    {
+                        "type": "NUMBER_EXPR",
+                        "value": "1"
+                    }
+                ],
+                "name": "show",
+                "type": "CALL_STATEMENT"
+            },
+            {
+                "arguments": [
+                    {
+                        "type": "TRUE_EXPR"
+                    }
+                ],
+                "name": "show",
+                "type": "CALL_STATEMENT"
+            }
+        ],
+        "type": "EXPORT_FN"
+    }
+]

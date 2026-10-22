@@ -1,17 +1,10 @@
 {
-	"entities": {},
-	"classes": {
-		"SomeClass": {
-			"description": "Something",
-			"methods": {
-				"test": {
-					"description": "Foo",
-					"parameters": [
-						42
-					]
-				}
-			}
+	"host_functions": {
+		"test": {
+			"description": "Foo",
+			"parameters": [
+				42
+			]
 		}
-	},
-	"host_functions": {}
+	}
 }

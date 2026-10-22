@@ -1,0 +1,3 @@
+  in a (err/constraint_implementors_refer_to_each_other/input-D.grug:2:5)
+Error: host function 'show' expects type 'string' to implement constraint 'Show' but it doesn't
+2 $ show("hello")

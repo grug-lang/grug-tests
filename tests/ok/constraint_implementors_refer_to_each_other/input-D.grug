@@ -1,0 +1,4 @@
+export a() {
+    show(1)
+    show(true)
+}

@@ -45,6 +45,7 @@ static void (*p_grug_tests_runtime_error_handler)(
 
 static game_fn p_game_fn_nothing;
 static game_fn p_game_fn_magic;
+static game_fn p_game_fn_d_double;
 static game_fn p_game_fn_d_magic;
 static game_fn p_game_fn_initialize;
 static game_fn p_game_fn_initialize_bool;
@@ -54,6 +55,7 @@ static game_fn p_game_fn_max;
 static game_fn p_game_fn_say;
 static game_fn p_game_fn_sin;
 static game_fn p_game_fn_cos;
+static game_fn p_game_fn_count_matching;
 static game_fn p_game_fn_mega;
 static game_fn p_game_fn_eval_order_1;
 static game_fn p_game_fn_eval_order_2;
@@ -1201,6 +1203,7 @@ static void load_tests_library(void) {
 	p_grug_tests_runtime_error_handler       = (void (*)(const char*, enum grug_runtime_error_type, const char*, const char*))load_sym(h, "grug_tests_runtime_error_handler");
 	p_game_fn_nothing                        = (game_fn)load_sym(h, "game_fn_nothing");
 	p_game_fn_magic                          = (game_fn)load_sym(h, "game_fn_magic");
+	p_game_fn_d_double                       = (game_fn)load_sym(h, "game_fn_d_double");
 	p_game_fn_d_magic                        = (game_fn)load_sym(h, "game_fn_d_magic");
 	p_game_fn_initialize                     = (game_fn)load_sym(h, "game_fn_initialize");
 	p_game_fn_initialize_bool                = (game_fn)load_sym(h, "game_fn_initialize_bool");
@@ -1210,6 +1213,7 @@ static void load_tests_library(void) {
 	p_game_fn_say                            = (game_fn)load_sym(h, "game_fn_say");
 	p_game_fn_sin                            = (game_fn)load_sym(h, "game_fn_sin");
 	p_game_fn_cos                            = (game_fn)load_sym(h, "game_fn_cos");
+	p_game_fn_count_matching                 = (game_fn)load_sym(h, "game_fn_count_matching");
 	p_game_fn_mega                           = (game_fn)load_sym(h, "game_fn_mega");
 	p_game_fn_eval_order_1                   = (game_fn)load_sym(h, "game_fn_eval_order_1");
 	p_game_fn_eval_order_2                   = (game_fn)load_sym(h, "game_fn_eval_order_2");

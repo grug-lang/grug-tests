@@ -1,0 +1,4 @@
+export a() {
+    position: Box[Position] = box(get_position(me))
+    set_position(position.get())
+}

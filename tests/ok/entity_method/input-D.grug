@@ -1,0 +1,4 @@
+export a() {
+    x: number = me.double(21)
+    set_is_happy(x == 42)
+}

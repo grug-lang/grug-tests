@@ -1,0 +1,3 @@
+  in a (err/generic_argument_shape_mismatch/input-D.grug:2:45)
+Error: Function call 'dict_from_vec' expected the type Vec for argument 'list', but got Box
+2 $ x: Dict[number, string] = dict_from_vec(box(1))

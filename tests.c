@@ -452,6 +452,8 @@ static size_t game_fn_max_call_count;
 static size_t game_fn_say_call_count;
 static size_t game_fn_sin_call_count;
 static size_t game_fn_cos_call_count;
+static size_t game_fn_d_double_call_count;
+static size_t game_fn_count_matching_call_count;
 static size_t game_fn_mega_call_count;
 static size_t game_fn_eval_order_1_call_count;
 static size_t game_fn_eval_order_2_call_count;
@@ -566,6 +568,18 @@ union grug_value game_fn_magic(struct grug_state* grug_state, const union grug_v
 
 	return grug_number(42.0);
 }
+static double game_fn_d_double_x;
+union grug_value game_fn_d_double(struct grug_state* grug_state, const union grug_value args[], const struct grug_type generics[]) {
+	(void)generics;
+	(void)grug_state;
+	ASSERT_16_BYTE_STACK_ALIGNED();
+	game_fn_d_double_call_count++;
+
+	// args[0] is the entity the method is called on
+	game_fn_d_double_x = args[1]._number;
+
+	return grug_number(args[1]._number * 2);
+}
 union grug_value game_fn_d_magic(struct grug_state* grug_state, const union grug_value args[], const struct grug_type generics[]) {
 	(void)generics;
 	return game_fn_magic(grug_state, args, generics);
@@ -646,6 +660,15 @@ union grug_value game_fn_cos(struct grug_state* grug_state, const union grug_val
 	game_fn_cos_x = args[0]._number;
 
 	return grug_number(cos(args[0]._number));
+}
+union grug_value game_fn_count_matching(struct grug_state* grug_state, const union grug_value args[], const struct grug_type generics[]) {
+	record_generic_types(generics, 2);
+	(void)grug_state;
+	(void)args;
+	ASSERT_16_BYTE_STACK_ALIGNED();
+	game_fn_count_matching_call_count++;
+
+	return grug_number(2);
 }
 static double game_fn_mega_f1;
 static double game_fn_mega_i1;
@@ -1879,24 +1902,30 @@ static void run_mod_api_schema_tests(void) {
 	run_mod_api_schema_test("class_must_be_object");
 	run_mod_api_schema_test("class_static_methods_must_be_object");
 	run_mod_api_schema_test("classes_must_be_object");
-	run_mod_api_schema_test("constraint_implementor_cannot_be_bare_generic");
-	run_mod_api_schema_test("constraint_implementor_cannot_be_entity");
-	run_mod_api_schema_test("constraint_implementor_cannot_be_resource");
+	run_mod_api_schema_test("constraint_implementor_generic_constraint_must_be_string");
+	run_mod_api_schema_test("constraint_implementor_generic_constraints_must_be_array");
+	run_mod_api_schema_test("constraint_implementor_generic_must_be_object");
 	run_mod_api_schema_test("constraint_implementor_must_be_object");
-	run_mod_api_schema_test("constraint_must_be_declared");
+	run_mod_api_schema_test("constraint_implementor_used_generics_must_be_array");
+	run_mod_api_schema_test("constraint_implementors_must_be_array");
 	run_mod_api_schema_test("constraint_must_be_object");
 	run_mod_api_schema_test("constraints_must_be_object");
 	run_mod_api_schema_test("description_must_be_present");
 	run_mod_api_schema_test("description_must_be_string");
 	run_mod_api_schema_test("entities_must_be_object");
+	run_mod_api_schema_test("entity_methods_must_be_object");
 	run_mod_api_schema_test("entity_must_be_object");
+	run_mod_api_schema_test("entity_static_method_must_be_object");
 	run_mod_api_schema_test("entity_static_methods_must_be_object");
 	run_mod_api_schema_test("export_fn_must_be_object");
 	run_mod_api_schema_test("export_functions_must_be_array");
 	run_mod_api_schema_test("generic_constraint_must_be_string");
+	run_mod_api_schema_test("generic_constraints_must_be_array");
 	run_mod_api_schema_test("generic_must_be_object");
 	run_mod_api_schema_test("host_fn_generic_name_must_be_string");
 	run_mod_api_schema_test("host_fn_must_be_object");
+	run_mod_api_schema_test("host_fn_parameters_must_be_array");
+	run_mod_api_schema_test("host_fn_used_generics_must_be_array");
 	run_mod_api_schema_test("host_functions_must_be_object");
 	run_mod_api_schema_test("method_must_be_object");
 	run_mod_api_schema_test("methods_must_be_object");
@@ -1907,6 +1936,7 @@ static void run_mod_api_schema_tests(void) {
 	run_mod_api_schema_test("root_must_be_object");
 	run_mod_api_schema_test("static_method_description_must_be_present");
 	run_mod_api_schema_test("static_method_must_be_object");
+	run_mod_api_schema_test("type_generics_must_be_array");
 	run_mod_api_schema_test("type_optional_must_be_boolean");
 }
 
@@ -1953,11 +1983,24 @@ static void run_mod_api_semantic_tests(void) {
 	run_mod_api_semantic_test("cannot_have_generic_on_undeclared_class");
 	run_mod_api_semantic_test("class_cannot_have_same_name_as_entity");
 	run_mod_api_semantic_test("class_generic_name_must_begin_with_$");
+	run_mod_api_semantic_test("constraint_implementor_cannot_be_bare_generic");
+	run_mod_api_semantic_test("constraint_implementor_cannot_be_entity");
+	run_mod_api_semantic_test("constraint_implementor_cannot_be_resource");
+	run_mod_api_semantic_test("constraint_implementor_generic_constraint_must_be_declared");
+	run_mod_api_semantic_test("constraint_must_be_declared");
+	run_mod_api_semantic_test("entity_method_and_static_method_cant_share_name");
+	run_mod_api_semantic_test("generic_cant_be_entity");
+	run_mod_api_semantic_test("generic_cant_be_resource");
 	run_mod_api_semantic_test("generic_must_be_declared");
+	run_mod_api_semantic_test("generic_must_implement_constraint");
+	run_mod_api_semantic_test("generic_nested_in_constrained_type_must_implement_constraint");
+	run_mod_api_semantic_test("generic_type_must_implement_constraint");
 	run_mod_api_semantic_test("host_fn_cannot_return_entity");
 	run_mod_api_semantic_test("host_fn_cannot_return_resource");
 	run_mod_api_semantic_test("host_fn_generic_name_must_begin_with_$");
+	run_mod_api_semantic_test("method_type_must_have_declared_generic_count");
 	run_mod_api_semantic_test("number_of_generics_on_class_must_match");
+	run_mod_api_semantic_test("resource_nested_in_constrained_type");
 	run_mod_api_semantic_test("static_method_cant_have_same_name_as_method");
 	run_mod_api_semantic_test("static_method_cant_return_entity");
 }
@@ -2238,6 +2281,8 @@ static void reset(void) {
 	game_fn_say_call_count                            = 0;
 	game_fn_sin_call_count                            = 0;
 	game_fn_cos_call_count                            = 0;
+	game_fn_d_double_call_count                       = 0;
+	game_fn_count_matching_call_count                 = 0;
 	game_fn_mega_call_count                           = 0;
 	game_fn_eval_order_1_call_count                   = 0;
 	game_fn_eval_order_2_call_count                   = 0;
@@ -3922,6 +3967,18 @@ static void ok_global_2_does_not_have_error_handling(struct grug_state* grug_sta
 	(void)entity;
 }
 
+static void ok_opaque_id_as_generic(struct grug_state* grug_state, struct grug_entity_id* entity) {
+	assert_call_count(get_position, 0);
+	assert_call_count(box, 0);
+	assert_call_count(box_get, 0);
+	assert_call_count(set_position, 0);
+	call_export_fn_argless(grug_state, entity, "a");
+	assert_call_count(get_position, 1);
+	assert_call_count(box, 1);
+	assert_call_count(box_get, 1);
+	assert_call_count(set_position, 1);
+}
+
 static void ok_global_call_using_me(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	assert_call_count(get_position, 1); // Called by create_entity()
 	assert_call_count(set_position, 0);
@@ -4889,6 +4946,16 @@ static void ok_state_is_not_null_of_method(struct grug_state* grug_state, struct
 	assert_call_count(Utils_assert_state_is_not_null, 1);
 }
 
+static void ok_entity_method(struct grug_state* grug_state, struct grug_entity_id* entity) {
+	assert_call_count(d_double, 0);
+	assert_call_count(set_is_happy, 0);
+	call_export_fn_argless(grug_state, entity, "a");
+	assert_call_count(d_double, 1);
+	assert_call_count(set_is_happy, 1);
+	assert_number(game_fn_d_double_x, 21.0);
+	assert_true(game_fn_set_is_happy_is_happy);
+}
+
 static void ok_static_method_on_entity(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	assert_call_count(magic, 0);
 	assert_call_count(set_is_happy, 0);
@@ -5633,6 +5700,8 @@ static void add_error_tests(void) {
 	ADD_TEST_ERROR(file_name_missing_entity_type, "");
 	ADD_TEST_ERROR_FILE_NAME(file_name_missing_dash, "input.grug");
 	ADD_TEST_ERROR_FILE_NAME(file_name_missing_period, "input-Dgrug");
+	ADD_TEST_ERROR(file_name_entity_type_not_declared, "Nonexistent");
+	ADD_TEST_ERROR(file_name_entity_type_is_class, "Utils");
 	ADD_TEST_ERROR(game_fn_call_gets_void, "D");
 	ADD_TEST_ERROR(game_fn_does_not_exist, "D");
 	ADD_TEST_ERROR(game_function_call_gets_wrong_arg_type, "D");
@@ -5641,6 +5710,9 @@ static void add_error_tests(void) {
 	ADD_TEST_ERROR(game_function_call_no_args_expected, "D");
 	ADD_TEST_ERROR(generic_argument_is_entity_string, "D");
 	ADD_TEST_ERROR(generic_argument_is_resource_string, "D");
+	ADD_TEST_ERROR(generic_argument_shape_mismatch, "D");
+	ADD_TEST_ERROR(generic_bound_to_uninferred_generic, "D");
+	ADD_TEST_ERROR(generic_conflict_while_another_is_uninferred, "D");
 	ADD_TEST_ERROR(global_cant_be_me, "A");
 	ADD_TEST_ERROR(global_cant_call_helper_fn, "A");
 	ADD_TEST_ERROR(global_cant_call_on_fn, "D");
@@ -5755,6 +5827,7 @@ static void add_error_tests(void) {
 	ADD_TEST_ERROR(on_function_more_args_expected, "G");
 	ADD_TEST_ERROR(on_function_no_args_expected, "D");
 	ADD_TEST_ERROR(on_function_no_return_value_expected, "D");
+	ADD_TEST_ERROR(open_bracket_as_expression, "A");
 	ADD_TEST_ERROR(open_parenthesis_after_number, "D");
 	ADD_TEST_ERROR(parameter_shadows_global_variable, "F");
 	ADD_TEST_ERROR(pass_bool_to_i32_game_param, "D");
@@ -5787,6 +5860,7 @@ static void add_error_tests(void) {
 	ADD_TEST_ERROR(static_call_on_undeclared_name, "D");
 	ADD_TEST_ERROR(static_method_called_on_value, "D");
 	ADD_TEST_ERROR(static_method_not_found, "D");
+	ADD_TEST_ERROR(string_escaped_line_break, "A");
 	ADD_TEST_ERROR(string_pointer_arithmetic, "D");
 	ADD_TEST_ERROR(string_times_string, "D");
 	ADD_TEST_ERROR(trailing_space_in_comment, "D");
@@ -5868,6 +5942,7 @@ static void add_ok_tests(void) {
 	ADD_TEST_OK(entity_duplicate, "D");
 	ADD_TEST_OK(entity_in_on_fn, "D");
 	ADD_TEST_OK(entity_in_on_fn_with_mod_specified, "D");
+	ADD_TEST_OK(entity_method, "D");
 	ADD_TEST_OK(eq_false, "D");
 	ADD_TEST_OK(eq_true, "D");
 	ADD_TEST_OK(evaluation_order_is_left_to_right_1, "D");
@@ -5982,6 +6057,7 @@ static void add_ok_tests(void) {
 	ADD_TEST_OK(on_fn_three_unused_first, "J");
 	ADD_TEST_OK(on_fn_three_unused_second, "J");
 	ADD_TEST_OK(on_fn_three_unused_third, "J");
+	ADD_TEST_OK(opaque_id_as_generic, "D");
 	ADD_TEST_OK(optional_resource, "D");
 	ADD_TEST_OK(or_false, "D");
 	ADD_TEST_OK(or_short_circuit, "D");

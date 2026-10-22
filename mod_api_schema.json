@@ -21,6 +21,9 @@
                     "static_methods": {
                         "$ref": "#/definitions/functionsObject"
                     },
+                    "methods": {
+                        "$ref": "#/definitions/functionsObject"
+                    },
                     "export_functions": {
                         "type": "array",
                         "items": {

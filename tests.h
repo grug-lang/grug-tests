@@ -333,6 +333,7 @@ void grug_tests_runtime_error_handler(const char *reason,
  */
 union grug_value game_fn_nothing                           (struct grug_state* grug_state, const union grug_value args[], const struct grug_type generics[]);
 union grug_value game_fn_magic                             (struct grug_state* grug_state, const union grug_value args[], const struct grug_type generics[]);
+union grug_value game_fn_d_double                          (struct grug_state* grug_state, const union grug_value args[], const struct grug_type generics[]);
 union grug_value game_fn_d_magic                           (struct grug_state* grug_state, const union grug_value args[], const struct grug_type generics[]);
 union grug_value game_fn_initialize                        (struct grug_state* grug_state, const union grug_value args[], const struct grug_type generics[]);
 union grug_value game_fn_initialize_bool                   (struct grug_state* grug_state, const union grug_value args[], const struct grug_type generics[]);
@@ -341,6 +342,7 @@ union grug_value game_fn_max                               (struct grug_state* g
 union grug_value game_fn_say                               (struct grug_state* grug_state, const union grug_value args[], const struct grug_type generics[]);
 union grug_value game_fn_sin                               (struct grug_state* grug_state, const union grug_value args[], const struct grug_type generics[]);
 union grug_value game_fn_cos                               (struct grug_state* grug_state, const union grug_value args[], const struct grug_type generics[]);
+union grug_value game_fn_count_matching                    (struct grug_state* grug_state, const union grug_value args[], const struct grug_type generics[]);
 union grug_value game_fn_mega                              (struct grug_state* grug_state, const union grug_value args[], const struct grug_type generics[]);
 union grug_value game_fn_eval_order_1                      (struct grug_state* grug_state, const union grug_value args[], const struct grug_type generics[]);
 union grug_value game_fn_eval_order_2                      (struct grug_state* grug_state, const union grug_value args[], const struct grug_type generics[]);

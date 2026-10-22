@@ -1,0 +1,17 @@
+{
+	"entities": {
+		"Test": {
+			"description": "Foo",
+			"methods": {
+				"m": {
+					"description": "Foo"
+				}
+			},
+			"static_methods": {
+				"other": {
+					"description": "Foo"
+				}
+			}
+		}
+	}
+}

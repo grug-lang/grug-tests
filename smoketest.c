@@ -421,6 +421,9 @@ static void call_export_fn(struct grug_state* grug_state, struct grug_entity_id*
 		CALL(grug_state, initialize, grug_number(14.0));
 	} else if (starts_with(path, "ok/addition_with_multiplication_2/")) {
 		CALL(grug_state, initialize, grug_number(10.0));
+	} else if (starts_with(path, "ok/and_argument_evaluates_both_operands/")) {
+		CALL_ARGLESS(grug_state, get_false);
+		CALL(grug_state, mega, grug_number(1.0), grug_number(21.0), grug_bool(true), grug_number(2.0), grug_number(3.0), grug_number(4.0), grug_bool(false), grug_number(1337.0), grug_number(5.0), grug_number(6.0), grug_number(7.0), grug_number(8.0), grug_id(42), grug_string("foo"));
 	} else if (starts_with(path, "ok/and_false_1/")) {
 		CALL(grug_state, initialize_bool, grug_bool(false));
 	} else if (starts_with(path, "ok/and_false_2/")) {
@@ -647,6 +650,21 @@ static void call_export_fn(struct grug_state* grug_state, struct grug_entity_id*
 		union grug_value box = CALL_GENERIC(grug_state, box, &type, grug_number(25.0));
 		CALL_GENERIC(grug_state, box_get, &type, box);
 		CALL_GENERIC(grug_state, box, &type, grug_number(117.0));
+	} else if (starts_with(path, "ok/logical_argument_after_other_arguments/")) {
+		CALL_ARGLESS(grug_state, get_false);
+		CALL_ARGLESS(grug_state, get_false);
+		CALL(grug_state, mega, grug_number(1.0), grug_number(21.0), grug_bool(true), grug_number(2.0), grug_number(3.0), grug_number(4.0), grug_bool(false), grug_number(1337.0), grug_number(5.0), grug_number(6.0), grug_number(7.0), grug_number(8.0), grug_id(42), grug_string("foo"));
+	} else if (starts_with(path, "ok/logical_arguments_in_both_bool_positions/")) {
+		CALL_ARGLESS(grug_state, get_false);
+		CALL_ARGLESS(grug_state, get_false);
+		CALL(grug_state, mega, grug_number(1.0), grug_number(21.0), grug_bool(true), grug_number(2.0), grug_number(3.0), grug_number(4.0), grug_bool(true), grug_number(1337.0), grug_number(5.0), grug_number(6.0), grug_number(7.0), grug_number(8.0), grug_id(42), grug_string("foo"));
+	} else if (starts_with(path, "ok/or_argument_evaluates_both_operands/")) {
+		CALL_ARGLESS(grug_state, get_false);
+		CALL(grug_state, mega, grug_number(1.0), grug_number(21.0), grug_bool(true), grug_number(2.0), grug_number(3.0), grug_number(4.0), grug_bool(false), grug_number(1337.0), grug_number(5.0), grug_number(6.0), grug_number(7.0), grug_number(8.0), grug_id(42), grug_string("foo"));
+	} else if (starts_with(path, "ok/or_chain_argument_evaluates_all_operands/")) {
+		CALL_ARGLESS(grug_state, get_false);
+		CALL_ARGLESS(grug_state, get_false);
+		CALL(grug_state, mega, grug_number(1.0), grug_number(21.0), grug_bool(true), grug_number(2.0), grug_number(3.0), grug_number(4.0), grug_bool(false), grug_number(1337.0), grug_number(5.0), grug_number(6.0), grug_number(7.0), grug_number(8.0), grug_id(42), grug_string("foo"));
 	} else if (starts_with(path, "ok/reg_fn_without_generic_fallback/")) {
 		struct grug_type types[] = {{.type = GRUG_TYPE_ENUM_NUMBER}, {.type = GRUG_TYPE_ENUM_NUMBER}};
 		p_reg_game_fn_specialized(types)(grug_state, (const union grug_value[]){grug_number(1.0), grug_number(2.0)}, types);

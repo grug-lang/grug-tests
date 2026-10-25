@@ -3227,6 +3227,29 @@ static void ok_addition_with_multiplication_2(struct grug_state* grug_state, str
 	assert_number(game_fn_initialize_x, 10.0);
 }
 
+static void ok_and_argument_evaluates_both_operands(struct grug_state* grug_state, struct grug_entity_id* entity) {
+	assert_call_count(mega, 0);
+	assert_call_count(get_false, 0);
+	call_export_fn_argless(grug_state, entity, "a");
+	assert_call_count(mega, 1);
+	assert_call_count(get_false, 1);
+
+	assert_number(game_fn_mega_f1, 1.0);
+	assert_number(game_fn_mega_i1, 21.0);
+	assert_true(game_fn_mega_b1);
+	assert_number(game_fn_mega_f2, 2.0);
+	assert_number(game_fn_mega_f3, 3.0);
+	assert_number(game_fn_mega_f4, 4.0);
+	assert_false(game_fn_mega_b2);
+	assert_number(game_fn_mega_i2, 1337.0);
+	assert_number(game_fn_mega_f5, 5.0);
+	assert_number(game_fn_mega_f6, 6.0);
+	assert_number(game_fn_mega_f7, 7.0);
+	assert_number(game_fn_mega_f8, 8.0);
+	assert_id(game_fn_mega_id, 42);
+	assert_string(game_fn_mega_str, "foo");
+}
+
 static void ok_and_false_1(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	assert_call_count(initialize_bool, 0);
 	call_export_fn_argless(grug_state, entity, "a");
@@ -3909,6 +3932,98 @@ static void ok_constraint_implementors_refer_to_each_other(struct grug_state* gr
 	assert_size_t(recorded_generic_types_len, (size_t)2);
 	assert_type(recorded_generic_types[0], (struct grug_type) {.type = GRUG_TYPE_ENUM_NUMBER});
 	assert_type(recorded_generic_types[1], (struct grug_type) {.type = GRUG_TYPE_ENUM_BOOL});
+}
+
+static void ok_logical_argument_after_other_arguments(struct grug_state* grug_state, struct grug_entity_id* entity) {
+	assert_call_count(mega, 0);
+	assert_call_count(get_false, 0);
+	call_export_fn_argless(grug_state, entity, "a");
+	assert_call_count(mega, 1);
+	assert_call_count(get_false, 2);
+
+	assert_number(game_fn_mega_f1, 1.0);
+	assert_number(game_fn_mega_i1, 21.0);
+	assert_true(game_fn_mega_b1);
+	assert_number(game_fn_mega_f2, 2.0);
+	assert_number(game_fn_mega_f3, 3.0);
+	assert_number(game_fn_mega_f4, 4.0);
+	assert_false(game_fn_mega_b2);
+	assert_number(game_fn_mega_i2, 1337.0);
+	assert_number(game_fn_mega_f5, 5.0);
+	assert_number(game_fn_mega_f6, 6.0);
+	assert_number(game_fn_mega_f7, 7.0);
+	assert_number(game_fn_mega_f8, 8.0);
+	assert_id(game_fn_mega_id, 42);
+	assert_string(game_fn_mega_str, "foo");
+}
+
+static void ok_logical_arguments_in_both_bool_positions(struct grug_state* grug_state, struct grug_entity_id* entity) {
+	assert_call_count(mega, 0);
+	assert_call_count(get_false, 0);
+	call_export_fn_argless(grug_state, entity, "a");
+	assert_call_count(mega, 1);
+	assert_call_count(get_false, 2);
+
+	assert_number(game_fn_mega_f1, 1.0);
+	assert_number(game_fn_mega_i1, 21.0);
+	assert_true(game_fn_mega_b1);
+	assert_number(game_fn_mega_f2, 2.0);
+	assert_number(game_fn_mega_f3, 3.0);
+	assert_number(game_fn_mega_f4, 4.0);
+	assert_true(game_fn_mega_b2);
+	assert_number(game_fn_mega_i2, 1337.0);
+	assert_number(game_fn_mega_f5, 5.0);
+	assert_number(game_fn_mega_f6, 6.0);
+	assert_number(game_fn_mega_f7, 7.0);
+	assert_number(game_fn_mega_f8, 8.0);
+	assert_id(game_fn_mega_id, 42);
+	assert_string(game_fn_mega_str, "foo");
+}
+
+static void ok_or_argument_evaluates_both_operands(struct grug_state* grug_state, struct grug_entity_id* entity) {
+	assert_call_count(mega, 0);
+	assert_call_count(get_false, 0);
+	call_export_fn_argless(grug_state, entity, "a");
+	assert_call_count(mega, 1);
+	assert_call_count(get_false, 1);
+
+	assert_number(game_fn_mega_f1, 1.0);
+	assert_number(game_fn_mega_i1, 21.0);
+	assert_true(game_fn_mega_b1);
+	assert_number(game_fn_mega_f2, 2.0);
+	assert_number(game_fn_mega_f3, 3.0);
+	assert_number(game_fn_mega_f4, 4.0);
+	assert_false(game_fn_mega_b2);
+	assert_number(game_fn_mega_i2, 1337.0);
+	assert_number(game_fn_mega_f5, 5.0);
+	assert_number(game_fn_mega_f6, 6.0);
+	assert_number(game_fn_mega_f7, 7.0);
+	assert_number(game_fn_mega_f8, 8.0);
+	assert_id(game_fn_mega_id, 42);
+	assert_string(game_fn_mega_str, "foo");
+}
+
+static void ok_or_chain_argument_evaluates_all_operands(struct grug_state* grug_state, struct grug_entity_id* entity) {
+	assert_call_count(mega, 0);
+	assert_call_count(get_false, 0);
+	call_export_fn_argless(grug_state, entity, "a");
+	assert_call_count(mega, 1);
+	assert_call_count(get_false, 2);
+
+	assert_number(game_fn_mega_f1, 1.0);
+	assert_number(game_fn_mega_i1, 21.0);
+	assert_true(game_fn_mega_b1);
+	assert_number(game_fn_mega_f2, 2.0);
+	assert_number(game_fn_mega_f3, 3.0);
+	assert_number(game_fn_mega_f4, 4.0);
+	assert_false(game_fn_mega_b2);
+	assert_number(game_fn_mega_i2, 1337.0);
+	assert_number(game_fn_mega_f5, 5.0);
+	assert_number(game_fn_mega_f6, 6.0);
+	assert_number(game_fn_mega_f7, 7.0);
+	assert_number(game_fn_mega_f8, 8.0);
+	assert_id(game_fn_mega_id, 42);
+	assert_string(game_fn_mega_str, "foo");
 }
 
 static void ok_reg_fn_without_generic_fallback(struct grug_state* grug_state, struct grug_entity_id* entity) {
@@ -5994,6 +6109,7 @@ static void add_ok_tests(void) {
 	ADD_TEST_OK(addition_as_two_arguments, "D");
 	ADD_TEST_OK(addition_with_multiplication, "D");
 	ADD_TEST_OK(addition_with_multiplication_2, "D");
+	ADD_TEST_OK(and_argument_evaluates_both_operands, "D");
 	ADD_TEST_OK(and_false_1, "D");
 	ADD_TEST_OK(and_false_2, "D");
 	ADD_TEST_OK(and_false_3, "D");
@@ -6121,6 +6237,8 @@ static void add_ok_tests(void) {
 	ADD_TEST_OK(le_true_1, "D");
 	ADD_TEST_OK(le_true_2, "D");
 	ADD_TEST_OK(local_id_can_be_reassigned, "D");
+	ADD_TEST_OK(logical_argument_after_other_arguments, "D");
+	ADD_TEST_OK(logical_arguments_in_both_bool_positions, "D");
 	ADD_TEST_OK(lt_false, "D");
 	ADD_TEST_OK(lt_true, "D");
 	ADD_TEST_OK(max_args, "D");
@@ -6157,6 +6275,8 @@ static void add_ok_tests(void) {
 	ADD_TEST_OK(on_fn_three_unused_third, "J");
 	ADD_TEST_OK(opaque_id_as_generic, "D");
 	ADD_TEST_OK(optional_resource, "D");
+	ADD_TEST_OK(or_argument_evaluates_both_operands, "D");
+	ADD_TEST_OK(or_chain_argument_evaluates_all_operands, "D");
 	ADD_TEST_OK(or_false, "D");
 	ADD_TEST_OK(or_short_circuit, "D");
 	ADD_TEST_OK(or_true_1, "D");

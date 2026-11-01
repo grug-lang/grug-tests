@@ -1,0 +1,9 @@
+# A loop that runs longer than the time limit but ends, so safe mode stops it
+# with a time limit error and unsafe mode runs all of it
+export a() {
+    i: number = 0
+    while i < 8000000 {
+        i = i + 1
+    }
+    say("finished")
+}

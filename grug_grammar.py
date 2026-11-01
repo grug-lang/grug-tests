@@ -337,5 +337,6 @@ if __name__ == "__main__":
     root: Path = Path("tests")
     check_dir(root / "ok", fix)
     check_dir(root / "err_runtime", fix)
+    check_dir(root / "mode", fix)
 
     print("All grammar checks passed")

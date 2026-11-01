@@ -97,6 +97,9 @@ enum grug_runtime_error_type {
  * @param mod_api_path Path to the mod_api.json this state will be initialized with.
  * @param mods_dir Path to the mods directory this state should use.
  * @param safe_mode Whether the mods are run in safe mode, where runtime errors must be thrown.
+ *        Unsafe mode skips the time limit, the recursion limit and the unwinding of a host
+ *        function error, and nothing else: a host function error is still reported to the runtime
+ *        error handler in unsafe mode. tests/mode/ holds the tests that differ between the two.
  * @return NULL if an error occurred. If no state is needed, return a dummy value like 42.
  */
 typedef struct grug_state* (*create_grug_state_t) (

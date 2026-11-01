@@ -1,0 +1,30 @@
+[
+    {
+        "comment": "A host function that reports an error. Safe mode unwinds the script, so the",
+        "type": "COMMENT_STATEMENT"
+    },
+    {
+        "comment": "call after it never runs, while unsafe mode keeps the report and carries on",
+        "type": "COMMENT_STATEMENT"
+    },
+    {
+        "name": "a",
+        "statements": [
+            {
+                "name": "cause_game_fn_error",
+                "type": "CALL_STATEMENT"
+            },
+            {
+                "arguments": [
+                    {
+                        "str": "after the error",
+                        "type": "STRING_EXPR"
+                    }
+                ],
+                "name": "say",
+                "type": "CALL_STATEMENT"
+            }
+        ],
+        "type": "EXPORT_FN"
+    }
+]

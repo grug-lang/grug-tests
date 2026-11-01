@@ -1,0 +1,6 @@
+# A host function that reports an error. Safe mode unwinds the script, so the
+# call after it never runs, while unsafe mode keeps the report and carries on
+export a() {
+    cause_game_fn_error()
+    say("after the error")
+}

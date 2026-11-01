@@ -1,0 +1,91 @@
+[
+    {
+        "comment": "Recursion deeper than the recursion limit that still ends, so safe mode stops",
+        "type": "COMMENT_STATEMENT"
+    },
+    {
+        "comment": "it with a stack overflow error and unsafe mode runs all of it",
+        "type": "COMMENT_STATEMENT"
+    },
+    {
+        "name": "a",
+        "statements": [
+            {
+                "arguments": [
+                    {
+                        "type": "NUMBER_EXPR",
+                        "value": "5000"
+                    }
+                ],
+                "name": "_deep",
+                "type": "CALL_STATEMENT"
+            },
+            {
+                "arguments": [
+                    {
+                        "str": "finished",
+                        "type": "STRING_EXPR"
+                    }
+                ],
+                "name": "say",
+                "type": "CALL_STATEMENT"
+            }
+        ],
+        "type": "EXPORT_FN"
+    },
+    {
+        "type": "EMPTY_LINE_STATEMENT"
+    },
+    {
+        "name": "_deep",
+        "parameters": [
+            {
+                "name": "n",
+                "type": {
+                    "name": "number"
+                }
+            }
+        ],
+        "statements": [
+            {
+                "condition": {
+                    "left_expr": {
+                        "str": "n",
+                        "type": "IDENTIFIER_EXPR"
+                    },
+                    "operator": "EQUALS_TOKEN",
+                    "right_expr": {
+                        "type": "NUMBER_EXPR",
+                        "value": "0"
+                    },
+                    "type": "BINARY_EXPR"
+                },
+                "if_statements": [
+                    {
+                        "type": "RETURN_STATEMENT"
+                    }
+                ],
+                "type": "IF_STATEMENT"
+            },
+            {
+                "arguments": [
+                    {
+                        "left_expr": {
+                            "str": "n",
+                            "type": "IDENTIFIER_EXPR"
+                        },
+                        "operator": "MINUS_TOKEN",
+                        "right_expr": {
+                            "type": "NUMBER_EXPR",
+                            "value": "1"
+                        },
+                        "type": "BINARY_EXPR"
+                    }
+                ],
+                "name": "_deep",
+                "type": "CALL_STATEMENT"
+            }
+        ],
+        "type": "LOCAL_FN"
+    }
+]

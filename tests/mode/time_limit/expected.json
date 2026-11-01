@@ -1,0 +1,70 @@
+[
+    {
+        "comment": "A loop that runs longer than the time limit but ends, so safe mode stops it",
+        "type": "COMMENT_STATEMENT"
+    },
+    {
+        "comment": "with a time limit error and unsafe mode runs all of it",
+        "type": "COMMENT_STATEMENT"
+    },
+    {
+        "name": "a",
+        "statements": [
+            {
+                "assignment": {
+                    "type": "NUMBER_EXPR",
+                    "value": "0"
+                },
+                "name": "i",
+                "type": "VARIABLE_STATEMENT",
+                "variable_type": {
+                    "name": "number"
+                }
+            },
+            {
+                "condition": {
+                    "left_expr": {
+                        "str": "i",
+                        "type": "IDENTIFIER_EXPR"
+                    },
+                    "operator": "LESS_TOKEN",
+                    "right_expr": {
+                        "type": "NUMBER_EXPR",
+                        "value": "8000000"
+                    },
+                    "type": "BINARY_EXPR"
+                },
+                "statements": [
+                    {
+                        "assignment": {
+                            "left_expr": {
+                                "str": "i",
+                                "type": "IDENTIFIER_EXPR"
+                            },
+                            "operator": "PLUS_TOKEN",
+                            "right_expr": {
+                                "type": "NUMBER_EXPR",
+                                "value": "1"
+                            },
+                            "type": "BINARY_EXPR"
+                        },
+                        "name": "i",
+                        "type": "VARIABLE_STATEMENT"
+                    }
+                ],
+                "type": "WHILE_STATEMENT"
+            },
+            {
+                "arguments": [
+                    {
+                        "str": "finished",
+                        "type": "STRING_EXPR"
+                    }
+                ],
+                "name": "say",
+                "type": "CALL_STATEMENT"
+            }
+        ],
+        "type": "EXPORT_FN"
+    }
+]

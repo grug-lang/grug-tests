@@ -436,6 +436,18 @@ struct runtime_error_test_data {
 static struct runtime_error_test_data runtime_error_test_datas[420420];
 static size_t err_runtime_test_datas_size;
 
+// A test whose result differs between safe and unsafe mode, so it is run once
+// in each and asserts both outcomes from the mode it is given. Every check it
+// exercises is one of the three unsafe mode skips, which is the only thing that
+// may differ between the two runs.
+struct mode_test_data {
+	void (*run)(struct grug_state* grug_state, struct grug_entity_id* entity, bool safe_mode);
+	const char *test_name_str;
+	const char *grug_path;
+};
+static struct mode_test_data mode_test_datas[420420];
+static size_t mode_test_datas_size;
+
 #pragma GCC diagnostic push
 #ifdef __clang__
 #if __has_warning("-Wunused-but-set-global")
@@ -1673,6 +1685,16 @@ static void print_string_debug(const char* str) {
 			.test_name_str = #test_name,\
 			.grug_path = "err_runtime/"#test_name "/input-"entity_type".grug",\
 			.expected_error_path = "err_runtime/"#test_name "/expected_error.txt",\
+		};\
+	}\
+} while (0)
+
+#define ADD_TEST_MODE(test_name, entity_type) do {\
+	if (is_whitelisted_test(#test_name)) {\
+		mode_test_datas[mode_test_datas_size++] = (struct mode_test_data){\
+			.run = mode_##test_name,\
+			.test_name_str = #test_name,\
+			.grug_path = "mode/"#test_name "/input-"entity_type".grug",\
 		};\
 	}\
 } while (0)
@@ -3156,6 +3178,97 @@ static void run_err_runtime_tests(struct grug_state *grug_state) {
 			}
 		});
 	}
+}
+
+// Runs every mode test once in safe mode and once in unsafe mode, which is the
+// only pair of runs whose expected outcomes differ. The two states differ in
+// nothing else, so a difference here is exactly one of the three checks unsafe
+// mode skips.
+static void run_mode_tests(struct grug_state *grug_state, bool safe_mode) {
+	for (volatile size_t i = 0; i < mode_test_datas_size; i++) {
+		struct mode_test_data* fn_data = &mode_test_datas[i];
+
+		printf("Running tests/mode/%s in %s mode...\n", fn_data->test_name_str, safe_mode ? "safe" : "unsafe");
+		fflush(stdout);
+		reset();
+
+		// One test's result differs between the modes, so each run is recorded
+		// as its own test rather than overwriting the other's result
+		char tracked_name[192];
+		snprintf(tracked_name, sizeof(tracked_name), "%s (%s mode)", fn_data->test_name_str, safe_mode ? "safe" : "unsafe");
+
+		RUN_TRACKED_TEST("mode", tracked_name, {
+			struct grug_file_id* file = prologue(grug_state, fn_data->grug_path);
+
+			diff_roundtrip(grug_state, fn_data->grug_path);
+
+			const char *msg = impl_forgot_to_set_msg;
+			struct grug_entity_id* entity = create_entity(grug_state, file, &msg);
+			if (msg) {
+				fprintf(stderr, "Error creating entity: %s\n", msg);
+				fail_current_test();
+			}
+
+			current_entity = entity;
+			current_file = file;
+			fn_data->run(grug_state, entity, safe_mode);
+
+			destroy_entity(grug_state, entity);
+			destroy_grug_file(grug_state, file);
+		});
+	}
+}
+
+// Safe mode stops the loop at the time limit, so the call after it never runs.
+// Unsafe mode skips that check, so the loop runs out and the file finishes.
+static void mode_time_limit(struct grug_state* grug_state, struct grug_entity_id* entity, bool safe_mode) {
+	call_export_fn_argless(grug_state, entity, "a");
+
+	assert_call_count(say, safe_mode ? 0 : 1);
+
+	if (safe_mode) {
+		assert_true(had_runtime_error);
+		assert_error_handler_call_count(1);
+		assert_runtime_error_type(GRUG_ON_FN_TIME_LIMIT_EXCEEDED);
+		assert_string(runtime_error_on_fn_path, "mode/time_limit/input-D.grug");
+	} else {
+		assert_false(had_runtime_error);
+		assert_error_handler_call_count(0);
+	}
+}
+
+// The same for the recursion limit: safe mode stops the recursion and unsafe
+// mode runs all 5000 frames.
+static void mode_stack_overflow(struct grug_state* grug_state, struct grug_entity_id* entity, bool safe_mode) {
+	call_export_fn_argless(grug_state, entity, "a");
+
+	assert_call_count(say, safe_mode ? 0 : 1);
+
+	if (safe_mode) {
+		assert_true(had_runtime_error);
+		assert_error_handler_call_count(1);
+		assert_runtime_error_type(GRUG_ON_FN_STACK_OVERFLOW);
+		assert_string(runtime_error_on_fn_path, "mode/stack_overflow/input-D.grug");
+	} else {
+		assert_false(had_runtime_error);
+		assert_error_handler_call_count(0);
+	}
+}
+
+// The third check: a host function error is reported in both modes, since
+// unsafe mode only drops the unwinding. Safe mode stops the script at the
+// erroring call, so `say` after it never runs, and unsafe mode carries on with
+// the value the host function returned.
+static void mode_game_fn_error(struct grug_state* grug_state, struct grug_entity_id* entity, bool safe_mode) {
+	call_export_fn_argless(grug_state, entity, "a");
+
+	assert_call_count(cause_game_fn_error, 1);
+	assert_true(had_runtime_error);
+	assert_error_handler_call_count(1);
+	assert_runtime_error_type(GRUG_ON_FN_GAME_FN_ERROR);
+	assert_string(runtime_error_on_fn_path, "mode/game_fn_error/input-D.grug");
+
+	assert_call_count(say, safe_mode ? 0 : 1);
 }
 
 static void run_ok_tests(struct grug_state *grug_state) {
@@ -6347,6 +6460,12 @@ static void add_ok_tests(void) {
 	ADD_TEST_OK(write_to_global_variable, "D");
 }
 
+static void add_mode_tests(void) {
+	ADD_TEST_MODE(time_limit, "D");
+	ADD_TEST_MODE(stack_overflow, "D");
+	ADD_TEST_MODE(game_fn_error, "D");
+}
+
 static void add_runtime_error_tests(void) {
 	ADD_TEST_RUNTIME_ERROR(all, "D");
 	ADD_TEST_RUNTIME_ERROR(game_fn_error, "V");
@@ -6568,6 +6687,7 @@ void grug_tests_run(
 
 	add_error_tests();
 	add_runtime_error_tests();
+	add_mode_tests();
 	add_ok_tests();
 
 #ifdef SHUFFLES
@@ -6603,6 +6723,11 @@ void grug_tests_run(
 	test_code_reloading_empty_file();
 	test_code_reloading_new_file();
 	test_resource_reloading();
+
+	// The mode tests are the ones that differ between the two states, so they
+	// run in both instead of only in the unsafe one
+	run_mode_tests(grug_state, true);
+	run_mode_tests(unsafe_grug_state, false);
 
 	run_err_spaces_tests(unsafe_grug_state);
 	run_err_tests(unsafe_grug_state);

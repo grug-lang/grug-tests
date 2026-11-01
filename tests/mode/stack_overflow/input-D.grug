@@ -1,0 +1,13 @@
+# Recursion deeper than the recursion limit that still ends, so safe mode stops
+# it with a stack overflow error and unsafe mode runs all of it
+export a() {
+    _deep(5000)
+    say("finished")
+}
+
+local _deep(n: number) {
+    if n == 0 {
+        return
+    }
+    _deep(n - 1)
+}

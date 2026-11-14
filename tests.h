@@ -55,11 +55,6 @@ enum grug_type_enum {
 	GRUG_TYPE_ENUM_ENTITY
 };
 
-struct grug_str {
-	char* ptr;
-	size_t len;
-};
-
 struct grug_type {
 	uint32_t type;
 	union {

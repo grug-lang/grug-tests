@@ -1,4 +1,5 @@
 import json
+import re
 import sys
 from pathlib import Path
 from typing import Any, Dict, Iterator, List, Optional, Union
@@ -8,6 +9,9 @@ from lark.indenter import Indenter
 
 with open("grug_grammar.lark") as f:
     grammar: str = f.read()
+
+
+_ESCAPES = {"\\": "\\", "\"": "\"", "t": "\t", "n": "\n", "r": "\r"}
 
 
 class TreeIndenter(Indenter):
@@ -174,6 +178,8 @@ class GrugTransformer(Transformer[Tree[Any], Any]):
         s = str(items[0])
         if s.startswith('"') and s.endswith('"'):
             s = s[1:-1]
+        # Only a string, not an entity or resource, decodes escapes, like the tokenizer
+        s = re.sub(r'\\([\\"tnr])', lambda m: _ESCAPES[m.group(1)], s)
         return {"type": "STRING_EXPR", "str": s}
 
     def entity_lit(self, items: List[Any]) -> Dict[str, Any]:

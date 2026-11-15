@@ -1,0 +1,13 @@
+[
+    {
+        "assignment": {
+            "str": "a\"b\\c\td\ne\rf",
+            "type": "STRING_EXPR"
+        },
+        "name": "foo",
+        "type": "VARIABLE_STATEMENT",
+        "variable_type": {
+            "name": "string"
+        }
+    }
+]

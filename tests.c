@@ -5287,6 +5287,11 @@ static void ok_string_returned_by_helper_fn_from_game_fn(struct grug_state* grug
 	assert_string(game_fn_has_string_str, "foo");
 }
 
+static void ok_string_with_escapes(struct grug_state* grug_state, struct grug_entity_id* entity) {
+	(void)grug_state;
+	(void)entity;
+}
+
 static void ok_sub_rsp_32_bits_local_variables_i32(struct grug_state* grug_state, struct grug_entity_id* entity) {
 	assert_call_count(initialize, 0);
 	call_export_fn_argless(grug_state, entity, "a");
@@ -6327,6 +6332,7 @@ static void add_ok_tests(void) {
 	ADD_TEST_OK(string_returned_by_game_fn_assigned_to_member, "D");
 	ADD_TEST_OK(string_returned_by_helper_fn, "D");
 	ADD_TEST_OK(string_returned_by_helper_fn_from_game_fn, "D");
+	ADD_TEST_OK(string_with_escapes, "A");
 	ADD_TEST_OK(sub_rsp_32_bits_local_variables_i32, "D");
 	ADD_TEST_OK(sub_rsp_32_bits_local_variables_id, "D");
 	ADD_TEST_OK(subtraction_negative_result, "D");

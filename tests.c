@@ -4150,6 +4150,7 @@ static void ok_generic_host_fn_call_site_generics_pair(struct grug_state* grug_s
 
 	call_export_fn_argless(grug_state, entity, "a");
 
+	assert_call_count(make_pair, 2);
 	assert_size_t(recorded_generic_types_len, (size_t)4);
 	assert_type(recorded_generic_types[0], (struct grug_type) {.type = GRUG_TYPE_ENUM_NUMBER});
 	assert_type(recorded_generic_types[1], (struct grug_type) {.type = GRUG_TYPE_ENUM_STRING});

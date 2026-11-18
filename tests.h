@@ -62,9 +62,10 @@ struct grug_type {
 			char* name;
 			struct grug_type* generics;
 			size_t generics_len;
+			uint32_t num_spans;
 		} id;
-		char* resource_extension;
 		char* entity_type;
+		char* resource_extension;
 	} data;
 };
 
